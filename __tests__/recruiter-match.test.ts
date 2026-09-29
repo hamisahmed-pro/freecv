@@ -5,10 +5,16 @@ import {
   MATCH_MIN_SCORE,
   anonymizeProfile,
   buildFtsQuery,
+  computeMissingSkills,
   extractJDKeywords,
+  filterPoolByMinYears,
+  mergeMustHaveSkills,
+  normalizeMatchFilters,
+  runMatchPipeline,
   scoreCandidate,
   tierFor,
   type ExtractedJD,
+  type MatchFilters,
   type MatchPoolRow,
 } from '../lib/recruiter-match';
 
@@ -133,4 +139,176 @@ test('buildFtsQuery combines title and skills', () => {
   const q = buildFtsQuery(jd());
   assert.ok(q.includes('Senior Backend Engineer'));
   assert.ok(q.includes('PostgreSQL'));
+});
+
+// --- Advanced search filters -------------------------------------------
+
+const noFilters = (): MatchFilters =>
+  normalizeMatchFilters(undefined);
+
+const nullFts = (_id: string): number | null => null;
+
+// --- normalizeMatchFilters ---
+
+test('normalizeMatchFilters defaults on garbage input', () => {
+  const f = normalizeMatchFilters(undefined);
+  assert.equal(f.minYears, null);
+  assert.deepEqual(f.mustHaveSkills, []);
+  assert.deepEqual(f.tiers, []);
+  assert.equal(f.sort, 'score');
+});
+
+test('normalizeMatchFilters trims, dedupes case-insensitively, caps at 40', () => {
+  const skills = [' React ', 'react', 'REACT', 'Node.js', '', '   '];
+  for (let i = 0; i < 50; i++) skills.push(`Skill${i}`);
+  const f = normalizeMatchFilters({ mustHaveSkills: skills });
+  assert.equal(f.mustHaveSkills.length, 40);
+  assert.ok(f.mustHaveSkills.includes('React'));
+  assert.ok(f.mustHaveSkills.includes('Node.js'));
+  assert.equal(
+    new Set(f.mustHaveSkills.map((s) => s.toLowerCase())).size,
+    f.mustHaveSkills.length
+  );
+});
+
+test('normalizeMatchFilters rejects invalid minYears, keeps finite >= 0', () => {
+  assert.equal(normalizeMatchFilters({ minYears: -1 }).minYears, null);
+  assert.equal(normalizeMatchFilters({ minYears: NaN }).minYears, null);
+  assert.equal(normalizeMatchFilters({ minYears: Infinity }).minYears, null);
+  assert.equal(normalizeMatchFilters({ minYears: 'abc' }).minYears, null);
+  assert.equal(normalizeMatchFilters({ minYears: 0 }).minYears, 0);
+  assert.equal(normalizeMatchFilters({ minYears: 5 }).minYears, 5);
+});
+
+test('normalizeMatchFilters keeps valid tiers, drops invalid, defaults sort', () => {
+  const f = normalizeMatchFilters({ tiers: ['excellent', 'bogus', 'strong', 'excellent'], sort: 'newest' });
+  assert.deepEqual(f.tiers, ['excellent', 'strong']);
+  assert.equal(f.sort, 'score');
+  assert.equal(normalizeMatchFilters({ sort: 'experience' }).sort, 'experience');
+});
+
+// --- mergeMustHaveSkills ---
+
+test('mergeMustHaveSkills merges into the JD, deduping case-insensitively', () => {
+  const j = jd();
+  const merged = mergeMustHaveSkills(j, normalizeMatchFilters({ mustHaveSkills: ['docker', 'Kubernetes'] }));
+  assert.ok(merged.mustHaveSkills.includes('Docker') || merged.mustHaveSkills.includes('docker'));
+  assert.ok(merged.mustHaveSkills.includes('Kubernetes'));
+  // 'docker' dedupes against nothing in extracted.mustHaveSkills ('Docker' is in niceToHave)
+  assert.ok(merged.mustHaveSkills.includes('Node.js'));
+  assert.ok(merged.mustHaveSkills.length <= 40);
+  // input not mutated
+  assert.equal(j.mustHaveSkills.length, 3);
+});
+
+test('mergeMustHaveSkills dedupes against extracted must-haves', () => {
+  const merged = mergeMustHaveSkills(jd(), normalizeMatchFilters({ mustHaveSkills: ['node.js', 'Go'] }));
+  assert.equal(
+    merged.mustHaveSkills.filter((s) => s.toLowerCase() === 'node.js').length,
+    1
+  );
+  assert.ok(merged.mustHaveSkills.includes('Go'));
+});
+
+test('mergeMustHaveSkills returns the input JD unchanged when filters add nothing', () => {
+  const j = jd();
+  assert.equal(mergeMustHaveSkills(j, normalizeMatchFilters({})), j);
+});
+
+// --- filterPoolByMinYears ---
+
+test('filterPoolByMinYears excludes below-minimum, keeps unknown experience', () => {
+  const pool = [
+    profile({ id: 'a', experience_years: 2 }),
+    profile({ id: 'b', experience_years: 5 }),
+    profile({ id: 'c', experience_years: null }),
+  ];
+  const out = filterPoolByMinYears(pool, 3);
+  assert.deepEqual(out.map((p) => p.id), ['b', 'c']);
+  assert.equal(filterPoolByMinYears(pool, null), pool);
+});
+
+// --- computeMissingSkills ---
+
+test('computeMissingSkills is case-insensitive', () => {
+  assert.deepEqual(
+    computeMissingSkills(['React', 'Go', 'Kubernetes'], ['react', 'GO']),
+    ['Kubernetes']
+  );
+});
+
+// --- runMatchPipeline ---
+
+test('pipeline default (no filters) scores, tiers, excludes below minimum, sorts score desc', () => {
+  const pool = [
+    profile({ id: 'strong' }),
+    profile({ id: 'weak', current_title: 'Barista', skills: ['Espresso'], experience_years: 1, city: 'Kano' }),
+  ];
+  const { matches, counts } = runMatchPipeline(pool, jd(), noFilters(), nullFts);
+  assert.ok(matches.every((m) => m.score >= MATCH_MIN_SCORE));
+  assert.equal(counts.total, matches.length);
+  assert.equal(counts.total, counts.excellent + counts.strong + counts.moderate);
+  for (let i = 1; i < matches.length; i++) {
+    assert.ok(matches[i - 1].score >= matches[i].score, 'score desc');
+  }
+});
+
+test('pipeline applies minYears hard filter before scoring', () => {
+  const pool = [
+    profile({ id: 'junior', experience_years: 1, skills: ['Node.js', 'TypeScript', 'PostgreSQL'] }),
+    profile({ id: 'senior', experience_years: 6, skills: ['Node.js', 'TypeScript', 'PostgreSQL'] }),
+  ];
+  const f = normalizeMatchFilters({ minYears: 3 });
+  const { matches } = runMatchPipeline(pool, jd(), f, nullFts);
+  assert.ok(!matches.some((m) => m.profileId === 'junior'), JSON.stringify(matches.map((m) => m.profileId)));
+});
+
+test('pipeline tier filter keeps only selected tiers', () => {
+  const f = normalizeMatchFilters({ tiers: ['excellent'] });
+  const { matches, counts } = runMatchPipeline([profile({ id: 'a' })], jd(), f, nullFts);
+  assert.ok(matches.every((m) => m.tier === 'excellent'));
+  assert.equal(counts.total, counts.excellent);
+  assert.equal(counts.strong, 0);
+  assert.equal(counts.moderate, 0);
+});
+
+test('pipeline sort=experience orders years desc, nulls last, tie-break score desc', () => {
+  const pool = [
+    profile({ id: 'none', experience_years: null, skills: ['Node.js', 'TypeScript', 'PostgreSQL'] }),
+    profile({ id: 'mid', experience_years: 3, skills: ['Node.js', 'TypeScript', 'PostgreSQL'] }),
+    profile({ id: 'vet', experience_years: 9, skills: ['Node.js', 'TypeScript', 'PostgreSQL'] }),
+  ];
+  const f = normalizeMatchFilters({ sort: 'experience' });
+  const { matches } = runMatchPipeline(pool, jd(), f, nullFts);
+  const ids = matches.map((m) => m.profileId);
+  // unknown-experience candidate sorts last
+  assert.equal(ids[ids.length - 1], 'none');
+  // known experience sorts desc
+  const years = matches.filter((m) => m.profile.yearsExperience != null).map((m) => m.profile.yearsExperience);
+  for (let i = 1; i < years.length; i++) assert.ok((years[i - 1] as number) >= (years[i] as number));
+});
+
+test('pipeline merged filter skills influence reasons and missingSkills', () => {
+  const j = mergeMustHaveSkills(jd(), normalizeMatchFilters({ mustHaveSkills: ['Kubernetes', 'GraphQL'] }));
+  const { matches } = runMatchPipeline([profile({ id: 'a' })], j, noFilters(), nullFts);
+  assert.equal(matches.length, 1);
+  const m = matches[0];
+  assert.ok(m.reasons.some((r) => r === '3/5 required skills'), JSON.stringify(m.reasons));
+  assert.ok(m.missingSkills.includes('Kubernetes'));
+  assert.ok(m.missingSkills.includes('GraphQL'));
+  // matchedSkills ∩ missingSkills must be empty
+  assert.ok(!m.missingSkills.some((s) => m.matchedSkills.some((mm) => mm.toLowerCase() === s.toLowerCase())));
+  assert.ok(m.matchedSkills.includes('Node.js'));
+});
+
+test('pipeline counts reflect the filtered set, not the raw scored set', () => {
+  const pool = [
+    profile({ id: 'a', experience_years: 5 }),
+    profile({ id: 'b', experience_years: 1, skills: ['Node.js', 'TypeScript', 'PostgreSQL'] }),
+  ];
+  const unfiltered = runMatchPipeline(pool, jd(), noFilters(), nullFts);
+  const filtered = runMatchPipeline(pool, jd(), normalizeMatchFilters({ minYears: 4 }), nullFts);
+  assert.ok(unfiltered.counts.total >= filtered.counts.total);
+  assert.equal(filtered.counts.total, filtered.matches.length);
+  assert.ok(filtered.counts.total < unfiltered.counts.total || unfiltered.counts.total === 0);
 });
