@@ -33,7 +33,7 @@ function fmtPrice(minor: number, currency: string) {
 
 export default function RecruiterDashboard() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(undefined); // undefined = auth not yet resolved
   const [loading, setLoading] = useState(true);
 
   // credits
@@ -59,10 +59,24 @@ export default function RecruiterDashboard() {
 
   /* ------------------------------ auth ------------------------------ */
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user || null));
-    const { data: l } = supabase.auth.onAuthStateChange((_e, s) => setUser(s?.user || null));
-    return () => l.subscription.unsubscribe();
+    let cancelled = false;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!cancelled) setUser(data.session?.user || null);
+    });
+    const { data: l } = supabase.auth.onAuthStateChange((_e, s) => {
+      if (!cancelled) setUser(s?.user || null);
+    });
+    return () => { cancelled = true; l.subscription.unsubscribe(); };
   }, []);
+
+  // Logged-out users go to sign-in — but only AFTER the session check has
+  // resolved. Redirecting while `user` is still undefined (unknown) is what
+  // caused the dashboard <-> login ping-pong loop.
+  useEffect(() => {
+    if (user === null) {
+      router.replace("/recruiter/login?next=/recruiter/dashboard");
+    }
+  }, [user, router]);
 
   const loadCredits = useCallback(async () => {
     try {
@@ -90,6 +104,7 @@ export default function RecruiterDashboard() {
 
   // boot: auth → credits; landing handoff (result or pending JD); payment callback
   useEffect(() => {
+    if (user === undefined) return; // session check hasn't resolved — stay on the loading shell
     if (!user) { setLoading(false); return; }
     (async () => {
       await loadCredits();
@@ -253,7 +268,8 @@ export default function RecruiterDashboard() {
   }
 
   if (!user) {
-    router.push("/recruiter/login?next=/recruiter/dashboard");
+    // The redirect is handled by the effect above; this shell only covers the
+    // brief moment between the session resolving to null and the navigation.
     return shell(
       <div className="flex flex-col items-center gap-3 py-32 text-[#141312]/60">
         <Loader2 size={30} className="animate-spin text-[#2233FF]" />
