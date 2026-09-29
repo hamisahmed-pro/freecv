@@ -1217,6 +1217,54 @@ export const jobTitleSeoEntries: JobTitleSeoEntry[] = [
       { q: "How do I show results without revealing client data?", a: "Use percentages and indexed growth from your real work. “Grew engagement ~3x in six months” is honest without naming figures." },
       { q: "Do I need video editing skills listed?", a: "If you edit, name the tools (CapCut, Premiere, native editors). Short-form video is central to most social roles now." }
     ]
+  },
+  {
+    slug: "tutor",
+    jobTitle: "Tutor",
+    metaTitle: "Tutoring Resume Example — Free Template & Writing Guide | Cvyon",
+    metaDescription: "Free tutoring resume example with tutor-specific writing tips, ATS guidance and FAQs. Build and download your tutor resume in minutes — no sign-up.",
+    intro: "Tutoring resumes are read by two audiences: parents and students who want to trust you, and agencies or learning centers that want proof you deliver results. Both look for the same things — your subjects, your students' progress, and a presentation that feels competent and approachable. Here is how to write a tutoring resume that books clients and passes agency screens.",
+    tips: [
+      { title: "Lead with subjects and levels, not adjectives", body: "“Algebra I–II, SAT Math (700+ scorers), grades 6–12” tells a parent everything in one line. Name every subject and the exact levels you teach — this is the first filter for tutoring work." },
+      { title: "Show student progress with real numbers", body: "Grade improvements, score gains, and exam pass rates from your actual students are the strongest currency a tutor has. “Raised 12 students an average of one full letter grade in a semester” beats any paragraph about passion." },
+      { title: "Name your formats", body: "One-on-one, small group, online, in-home — say which you do. Agencies and platforms match tutors to formats, and parents search by them. List your tools too (Zoom, whiteboard apps, shared docs)." },
+      { title: "Credentials go near the top", body: "Degrees, teaching certificates, and test scores of your own (your SAT/GRE if strong) belong high on the page. For parents choosing between strangers, credentials are the trust shortcut." }
+    ],
+    templateStyles: [
+      { name: "Tutor", slug: "tutor", why: "Made for this exact role — clear, encouraging, and structured for subjects and results." },
+      { name: "Pedagogue", slug: "pedagogue", why: "A warm, approachable educator's design that builds parent trust at a glance." },
+      { name: "ParsePerfect", slug: "parseperfect", why: "Plain structure and real text that agency portals and ATS parsers read reliably." }
+    ],
+    atsNotes: "Tutoring agencies and platforms run resumes through parsers that match on subject names, grade levels, and credential keywords. Keep subjects and levels as plain text in a single column with standard headings — never inside graphics or text boxes. Run the finished resume through Cvyon's free ATS grader before you submit.",
+    faqs: [
+      { q: "Should a tutoring resume be one page?", a: "Yes for most tutors. One page forces your subjects, results, and credentials to the front — everything a parent or agency needs. Add a second page only with many years of agency or center experience." },
+      { q: "How do I list private clients without naming them?", a: "Describe them anonymously: “Private SAT math tutor, 15 students, grades 10–12.” Never name minors or families — describe the work and the outcomes." },
+      { q: "Do online tutors need a different resume?", a: "Mostly the same, with your online setup explicit: platforms used, whiteboard and scheduling tools, and comfort with remote sessions. Agencies hiring remote tutors screen for this." }
+    ]
+  },
+  {
+    slug: "legal-assistant",
+    jobTitle: "Legal Assistant",
+    metaTitle: "Legal Assistant Resume Template — Free & Formal | Cvyon",
+    metaDescription: "Free formal legal assistant resume templates for legal assistants, paralegals and attorneys. ATS-friendly, no sign-up, download in minutes.",
+    intro: "Legal hiring is formal by tradition and precise by necessity. Partners and office managers scan for your practice areas, the software you run, and evidence you handle confidential work carefully. A legal assistant resume should look conservative, read fast, and contain zero errors. Here is how to write one.",
+    tips: [
+      { title: "Name your practice areas explicitly", body: "Litigation, corporate, family law, real estate — state them plainly. Firms hire for the areas they practice, and both partners and parsers match on these terms." },
+      { title: "List your legal software by name", body: "Document management, e-filing, billing, and case management systems — name the exact products you use. “Legal tech stack” vagueness loses to a literal list every time." },
+      { title: "Show precision through the document itself", body: "In legal hiring, your resume is a writing sample. Consistent formatting, perfect spelling, and aligned dates signal the detail-orientation the job demands. Proofread it twice, then once more." },
+      { title: "Handle confidentiality visibly", body: "Describe sensitive work without breaching it: “Managed discovery documents for active litigation” says everything a firm needs without naming a client or matter. Discretion demonstrated is discretion trusted." }
+    ],
+    templateStyles: [
+      { name: "Barrister", slug: "barrister", why: "A formal, traditional design with the conservative voice legal hiring expects." },
+      { name: "Counsel", slug: "counsel", why: "Understated and precise — reads like it belongs in a law office." },
+      { name: "Brief", slug: "brief", why: "Crisp single-column structure that keeps every detail scannable and parser-safe." }
+    ],
+    atsNotes: "Law firms and legal departments run applicant systems that match on practice-area terms, software names, and credentials. Keep everything as plain text in a single column with standard headings — Work Experience, Skills, Education. Conservative formatting is both tradition and parseability. Confirm with Cvyon's free ATS grader.",
+    faqs: [
+      { q: "Should legal assistant resumes include an objective?", a: "A short professional summary works better: practice areas, years, and key software in two lines. Objectives read dated; summaries read current." },
+      { q: "How do I describe litigation support without naming cases?", a: "Describe the work category and scale: “Prepared trial binders and exhibit lists for multi-week civil litigation.” Firms understand the constraint — they live it." },
+      { q: "Do I need a different resume for paralegal vs legal assistant roles?", a: "Mostly one resume with the emphasis shifted: paralegal applications lead with substantive legal work (research, drafting), legal assistant applications lead with office and case-management skills." }
+    ]
   }
 ];
 
