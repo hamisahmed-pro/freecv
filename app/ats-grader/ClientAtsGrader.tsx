@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useResumeStore } from "@/store/useResumeStore";
-import { UploadCloud, FileText, CheckCircle2, AlertCircle, Sparkles, Loader2, Target, Lightbulb, ChevronLeft } from "lucide-react";
+import { UploadCloud, FileText, CheckCircle2, AlertCircle, Sparkles, Loader2, Target, Lightbulb, ChevronLeft, X, Share2, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { trackEvent } from "@/lib/analytics";
@@ -33,10 +33,28 @@ export default function ClientAtsGrader() {
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AtsResult | null>(null);
+  const [challengeScore, setChallengeScore] = useState<number | null>(null);
+  const [bannerVisible, setBannerVisible] = useState(false);
+  const [canNativeShare, setCanNativeShare] = useState(false);
+  const [copied, setCopied] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     trackEvent('ats_grader_viewed');
+    // Challenge banner: honor ?s=<0-100> share links, ignore everything else.
+    try {
+      const raw = new URLSearchParams(window.location.search).get('s');
+      if (raw && /^\d{1,3}$/.test(raw.trim())) {
+        const n = parseInt(raw.trim(), 10);
+        if (n >= 0 && n <= 100) {
+          setChallengeScore(n);
+          setBannerVisible(true);
+        }
+      }
+    } catch {
+      /* ignore malformed query strings */
+    }
+    setCanNativeShare(typeof navigator !== 'undefined' && typeof navigator.share === 'function');
   }, []);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -81,6 +99,48 @@ export default function ClientAtsGrader() {
         tips: result.tips
       });
       router.push('/build');
+    }
+  };
+
+  // ---- Share-your-score viral loop ----
+  const scoreInt = result ? Math.max(0, Math.min(100, Math.round(result.score))) : 0;
+  const shareText = `My resume scored ${scoreInt}/100 on Cvyon's free ATS grader. Think yours beats it?`;
+  const shareUrl = `https://cvyon.com/ats-grader?s=${scoreInt}`;
+
+  const doShare = (channel: 'native' | 'x' | 'facebook' | 'whatsapp' | 'linkedin' | 'copy') => {
+    trackEvent('ats_score_shared', undefined, { score: scoreInt, channel });
+    const encodedText = encodeURIComponent(shareText);
+    const encodedUrl = encodeURIComponent(shareUrl);
+    switch (channel) {
+      case 'native':
+        if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+          navigator.share({ title: "Cvyon ATS Grader", text: shareText, url: shareUrl }).catch(() => { /* user dismissed */ });
+        }
+        break;
+      case 'x':
+        window.open(`https://x.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`, '_blank', 'noopener,noreferrer');
+        break;
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`, '_blank', 'noopener,noreferrer');
+        break;
+      case 'whatsapp':
+        window.open(`https://wa.me/?text=${encodedText}%20${encodedUrl}`, '_blank', 'noopener,noreferrer');
+        break;
+      case 'linkedin':
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`, '_blank', 'noopener,noreferrer');
+        break;
+      case 'copy':
+        if (typeof navigator !== 'undefined' && navigator.clipboard) {
+          navigator.clipboard.writeText(`${shareText} ${shareUrl}`).then(() => {
+            setCopied(true);
+            window.setTimeout(() => setCopied(false), 2000);
+          }).catch(() => {
+            toast.error("Could not copy link.");
+          });
+        } else {
+          toast.error("Copy not supported in this browser.");
+        }
+        break;
     }
   };
   
@@ -173,6 +233,26 @@ export default function ClientAtsGrader() {
       </header>
 
       <main className="relative z-10 max-w-5xl mx-auto px-5 py-12 lg:py-20 lg:px-8">
+        {challengeScore !== null && bannerVisible && (
+          <div className="mb-10 border-[3px] border-[#141312] bg-[#FFE14D] hs p-4 sm:p-5 flex items-start sm:items-center gap-4">
+            <div className="flex-1">
+              <p className="fh font-black text-base sm:text-lg uppercase tracking-wide leading-tight">
+                Someone scored {challengeScore}/100 on this grader
+              </p>
+              <p className="fm text-xs sm:text-sm font-bold uppercase tracking-wider text-[#141312]/70 mt-1">
+                Can you beat it? Upload your resume to find out.
+              </p>
+            </div>
+            <button
+              onClick={() => setBannerVisible(false)}
+              aria-label="Dismiss challenge"
+              className="shrink-0 border-[2px] border-[#141312] bg-[#E8E7E1] p-1.5 hover:bg-[#FF4326] hover:text-[#E8E7E1] transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        )}
+
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h1 className="fd text-4xl sm:text-6xl uppercase tracking-tighter leading-[0.9] mb-6">
             Pass the <span className="text-[#FF4326]">bots.</span><br />
@@ -257,6 +337,32 @@ export default function ClientAtsGrader() {
                     </span>
                     <span className="fh text-3xl font-black text-[#E8E7E1]/50 pb-2">/100</span>
                   </div>
+                </div>
+
+                {/* SHARE YOUR SCORE */}
+                <div className="mb-8 border-[3px] border-[#FFE14D] bg-[#FFE14D]/10 p-5 sm:p-6 text-center">
+                  <p className="fm text-xs font-bold uppercase tracking-widest text-[#FFE14D] mb-3">Share your score</p>
+                  <p className="fh text-sm sm:text-base font-bold mb-5 leading-relaxed">
+                    I scored <span className="text-[#FFE14D]">{scoreInt}/100</span> — think you can beat it?
+                  </p>
+                  {canNativeShare ? (
+                    <button
+                      onClick={() => doShare('native')}
+                      className="inline-flex items-center gap-2 border-[3px] border-[#FFE14D] bg-[#FFE14D] px-6 py-3 fh text-sm font-black uppercase tracking-wider text-[#141312] transition-all hover:-translate-y-0.5"
+                    >
+                      <Share2 size={18} /> Share
+                    </button>
+                  ) : (
+                    <div className="flex flex-wrap justify-center gap-2">
+                      <button onClick={() => doShare('x')} className="px-4 py-2 border-2 border-[#E8E7E1]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFE14D] hover:text-[#141312] hover:border-[#FFE14D] transition-colors">X</button>
+                      <button onClick={() => doShare('facebook')} className="px-4 py-2 border-2 border-[#E8E7E1]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFE14D] hover:text-[#141312] hover:border-[#FFE14D] transition-colors">Facebook</button>
+                      <button onClick={() => doShare('whatsapp')} className="px-4 py-2 border-2 border-[#E8E7E1]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFE14D] hover:text-[#141312] hover:border-[#FFE14D] transition-colors">WhatsApp</button>
+                      <button onClick={() => doShare('linkedin')} className="px-4 py-2 border-2 border-[#E8E7E1]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFE14D] hover:text-[#141312] hover:border-[#FFE14D] transition-colors">LinkedIn</button>
+                      <button onClick={() => doShare('copy')} className="px-4 py-2 border-2 border-[#E8E7E1]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFE14D] hover:text-[#141312] hover:border-[#FFE14D] transition-colors inline-flex items-center gap-1.5">
+                        {copied ? <><Check size={14} /> Copied</> : <><Copy size={14} /> Copy link</>}
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex-1 space-y-8 overflow-y-auto pr-2 custom-scrollbar">
