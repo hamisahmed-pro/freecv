@@ -9,9 +9,9 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { temporal } from 'zundo';
 import {
-  User, Briefcase, GraduationCap, Wrench, Plus, Trash2, Download, X, Eye, EyeOff, Layout,
+  User, Briefcase, GraduationCap, Wrench, Plus, Trash2, Download, X, Eye, Layout,
   FolderOpen, Award, Users, Paintbrush, Sparkles, Loader2, GripVertical, FileText,
-  BarChart3, RefreshCw, Undo2, Redo2, ChevronDown, ChevronUp, ZoomIn, ZoomOut, Upload, Share2, Pencil, Target
+  BarChart3, RefreshCw, Undo2, Redo2, ChevronDown, ZoomIn, ZoomOut, Upload, Share2, Pencil
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { clsx, type ClassValue } from 'clsx';
@@ -38,7 +38,7 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-import { useResumeStore, initialData, type ResumeData, type PersonalInfo, type Experience, type Education, type Skill, type Project, type Certification, type CustomSection, type CustomSectionItem, type Reference, type ResumeSectionId, type ResumeDensity, DEFAULT_SECTION_ORDER } from '@/store/useResumeStore';
+import { useResumeStore, initialData, type ResumeData, type PersonalInfo, type Experience, type Education, type Skill, type Project, type Certification, type CustomSection, type CustomSectionItem, type Reference, type ResumeSectionId, DEFAULT_SECTION_ORDER } from '@/store/useResumeStore';
 import { setRecruiterConsent } from '@/lib/recruiter-api';
 
 // --- Riso primitives ---
@@ -87,26 +87,24 @@ const Card = ({ children, className }: any) => (
   </div>
 );
 
-// Collapsible section wrapper. Sections start expanded on desktop (lg+)
-// and collapsed on smaller screens; the header toggles on every viewport.
-// (The old approach — "lg:block" overriding "hidden" in CSS — lost the
-// cascade in production builds, leaving the Density/Theme controls
-// unreachable on desktop, so expansion is now state-driven instead.)
-const SectionAccordion = ({ id, icon: Icon, title, description, action, onRemove, tools, defaultOpen = false, children }: any) => {
+// Section header. On desktop (lg+) this is the ORIGINAL pre-redesign look:
+// a plain non-interactive heading with the section always expanded (the
+// .section-* CSS below enforces that without relying on Tailwind's
+// responsive-variant cascade, which silently lost to .hidden in
+// production builds). Below lg it collapses into a tappable accordion —
+// the mobile tabs/panes pattern — so the long editor becomes a compact
+// list of sections on phones.
+const SectionAccordion = ({ id, icon: Icon, title, description, action, onRemove, defaultOpen = false, children }: any) => {
   const [open, setOpen] = useState(defaultOpen);
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.innerWidth >= 1024) setOpen(true);
-  }, []);
-  const toggle = () => setOpen((o: boolean) => !o);
   return (
     <div>
       <div className="flex justify-between items-center gap-3 mb-6">
         <button
           type="button"
-          onClick={toggle}
+          onClick={() => setOpen((o: boolean) => !o)}
           aria-expanded={open}
           aria-controls={`section-body-${id}`}
-          className="flex-1 min-w-0 text-left cursor-pointer"
+          className="section-toggle flex-1 min-w-0 text-left cursor-pointer"
         >
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-4 min-w-0">
@@ -118,16 +116,11 @@ const SectionAccordion = ({ id, icon: Icon, title, description, action, onRemove
                 <p className="fm text-[10px] font-bold uppercase tracking-[0.18em] text-[#141312]/50">{description}</p>
               </div>
             </div>
-            <span className={cn("shrink-0 p-2 border-2 border-[#141312] bg-white text-[#141312] transition-transform", open && "rotate-180")}>
+            <span className={cn("section-toggle-chevron shrink-0 p-2 border-2 border-[#141312] bg-white text-[#141312] transition-transform", open && "rotate-180")}>
               <ChevronDown size={16} />
             </span>
           </div>
         </button>
-        {tools && (
-          <div className="shrink-0 flex items-center gap-1.5">
-            {tools}
-          </div>
-        )}
         {(action || onRemove) && (
           <div className="shrink-0 flex items-center gap-2" onClickCapture={() => setOpen(true)}>
             {action}
@@ -139,38 +132,10 @@ const SectionAccordion = ({ id, icon: Icon, title, description, action, onRemove
           </div>
         )}
       </div>
-      <div id={`section-body-${id}`} className={open ? "block" : "hidden"}>
+      <div id={`section-body-${id}`} className={cn("section-body", open ? "block" : "hidden")}>
         {children}
       </div>
     </div>
-  );
-};
-
-// Per-section header controls: eye toggle (hide from resume output) plus
-// move up/down. Rendered outside the accordion's own toggle button so they
-// never trigger open/close. `hideEye` omits the visibility toggle for
-// editor-only sections (cover letter) that never render into the output.
-const SectionHeaderTools = ({ id, isHidden, isFirst, isLast, onToggle, onMove, hideEye = false }: {
-  id: ResumeSectionId; isHidden: boolean; isFirst: boolean; isLast: boolean;
-  onToggle: (id: ResumeSectionId) => void; onMove: (id: ResumeSectionId, dir: 'up' | 'down') => void;
-  hideEye?: boolean;
-}) => {
-  const btn = "p-1.5 border-2 border-[#141312] bg-white text-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-[#141312]";
-  return (
-    <>
-      <button type="button" onClick={() => onMove(id, 'up')} disabled={isFirst} title="Move section up" aria-label="Move section up" className={btn}>
-        <ChevronUp size={13} />
-      </button>
-      <button type="button" onClick={() => onMove(id, 'down')} disabled={isLast} title="Move section down" aria-label="Move section down" className={btn}>
-        <ChevronDown size={13} />
-      </button>
-      {!hideEye && (
-        <button type="button" onClick={() => onToggle(id)} title={isHidden ? 'Show section in resume output' : 'Hide section from resume output'} aria-label={isHidden ? 'Show section in resume output' : 'Hide section from resume output'} aria-pressed={isHidden}
-          className={cn(btn, isHidden && "bg-[#141312]/30")}>
-          {isHidden ? <EyeOff size={13} /> : <Eye size={13} />}
-        </button>
-      )}
-    </>
   );
 };
 
@@ -206,7 +171,7 @@ const HTMLPreview = ({ Tmpl, data }: { Tmpl: any, data: any }) => {
     <div ref={containerRef} className="w-full h-full bg-[#E8E7E1] flex justify-center overflow-auto p-4 sm:p-8 cv-riso custom-scrollbar">
       <div
         data-cvyon-template-stage
-        className={cn("bg-white shadow-2xl flex-shrink-0 relative border-[3px] border-[#141312] hs-c", data.density === 'compact' && "density-compact")}
+        className="bg-white shadow-2xl flex-shrink-0 relative border-[3px] border-[#141312] hs-c"
         style={{ width: '816px', height: '1056px', transform: `scale(${scale})`, transformOrigin: 'top center', marginBottom: `-${1056 * (1 - scale)}px`, '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
       >
         <Tmpl data={data} themeColor={data.theme?.color || '#2563eb'} />
@@ -235,8 +200,7 @@ export default function FreeCVApp() {
     toggleProjects, addProject, updateProject, removeProject,
     toggleCertifications, addCertification, updateCertification, removeCertification,
     toggleReferences, addReference, updateReference, removeReference, setConsents,
-    reorderExperience, reorderEducation, reorderSkills, setAllData, addCustomSection, updateCustomSectionTitle, removeCustomSection, addCustomSectionItem, updateCustomSectionItem, removeCustomSectionItem, reorderCustomSections, reorderCustomSectionItems,
-    toggleSectionVisibility, moveSection, setDensity
+    reorderExperience, reorderEducation, reorderSkills, setAllData, addCustomSection, updateCustomSectionTitle, removeCustomSection, addCustomSectionItem, updateCustomSectionItem, removeCustomSectionItem, reorderCustomSections, reorderCustomSectionItems
   } = useResumeStore();
 
   const data = useMemo(() => ({
@@ -247,7 +211,6 @@ export default function FreeCVApp() {
     customSections: storeData.customSections || [],
     sectionVisibility: storeData.sectionVisibility || {},
     sectionOrder: storeData.sectionOrder && storeData.sectionOrder.length ? storeData.sectionOrder : DEFAULT_SECTION_ORDER,
-    density: storeData.density === 'compact' ? 'compact' : 'comfortable',
     consents: storeData.consents || { recruiterShare: false, emailJobs: false, analytics: false }
   }), [storeData]);
 
@@ -310,13 +273,6 @@ export default function FreeCVApp() {
     }
   }, [data.atsRecommendations]);
   const [isATSLoading, setIsATSLoading] = useState(false);
-
-  // Tailor-to-job modal state
-  const [isTailorOpen, setIsTailorOpen] = useState(false);
-  const [tailorJobDesc, setTailorJobDesc] = useState('');
-  const [tailorResult, setTailorResult] = useState<any>(null);
-  const [isTailorLoading, setIsTailorLoading] = useState(false);
-  const [tailorApplied, setTailorApplied] = useState<{ summary: boolean; skills: string[]; bullets: number[] }>({ summary: false, skills: [], bullets: [] });
 
   const [isRewriterOpen, setIsRewriterOpen] = useState(false);
   const [rewriteTone, setRewriteTone] = useState('Executive');
@@ -489,9 +445,9 @@ export default function FreeCVApp() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) { e.preventDefault(); useResumeStore.temporal.getState().undo(); }
       if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); useResumeStore.temporal.getState().redo(); }
-      // Escape dismisses the ATS grader / AI rewriter / tailor overlays (the jobs
-      // modal handles its own Escape via its portal).
-      if (e.key === 'Escape') { setIsATSOpen(false); setIsRewriterOpen(false); setIsTailorOpen(false); }
+      // Escape dismisses the ATS grader / AI rewriter overlays
+      // (the jobs modal handles its own Escape via its portal).
+      if (e.key === 'Escape') { setIsATSOpen(false); setIsRewriterOpen(false); }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -516,53 +472,6 @@ export default function FreeCVApp() {
     setIsATSLoading(false);
   };
 
-  // ---- Tailor to Job ----
-  const handleTailor = async () => {
-    if (!tailorJobDesc.trim()) return;
-    setIsTailorLoading(true);
-    setTailorResult(null);
-    setTailorApplied({ summary: false, skills: [], bullets: [] });
-    try {
-      const resumePayload = { ...data, personalInfo: { ...data.personalInfo, profilePicture: undefined } };
-      const res = await fetch('/api/ai/tailor-resume', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ resumeData: resumePayload, jobDescription: tailorJobDesc }) });
-      if (!res.ok) {
-        const text = await res.text(); let errMsg = '';
-        try { const err = JSON.parse(text); errMsg = err.error || `API error: ${res.status}`; } catch (e) { errMsg = text.includes('An error') ? 'The AI request timed out. Please try again.' : `API error: ${res.status}`; }
-        throw new Error(errMsg);
-      }
-      const resData = await res.json();
-      setTailorResult(resData);
-    } catch (err: any) { toast.error('Tailoring failed: ' + err.message); }
-    setIsTailorLoading(false);
-  };
-
-  const applyTailorSummary = () => {
-    if (!tailorResult?.summary) return;
-    updateSummary(tailorResult.summary);
-    setTailorApplied(prev => ({ ...prev, summary: true }));
-    toast.success('Summary updated');
-  };
-
-  const applyTailorSkill = (skill: string) => {
-    addSkill(skill);
-    setTailorApplied(prev => ({ ...prev, skills: [...prev.skills, skill] }));
-    toast.success(`Skill added: ${skill}`);
-  };
-
-  const applyTailorBullet = (index: number) => {
-    const b = tailorResult?.bulletImprovements?.[index];
-    if (!b) return;
-    const exp = data.experience.find(e => e.id === b.experienceId);
-    if (!exp) { toast.error('That experience entry no longer exists.'); return; }
-    // Match the bullet line exactly; the AI was instructed to copy it verbatim.
-    const lines = (exp.description || '').split('\n');
-    const lineIdx = lines.findIndex(l => l.trim() === (b.original || '').trim());
-    if (lineIdx === -1) { toast.error('Could not find the original bullet — it may have been edited.'); return; }
-    lines[lineIdx] = b.improved;
-    updateExperience(b.experienceId, { description: lines.join('\n') });
-    setTailorApplied(prev => ({ ...prev, bullets: [...prev.bullets, index] }));
-    toast.success('Bullet updated');
-  };
 
   const handleRewrite = async () => {
     setIsRewriting(true);
@@ -639,7 +548,7 @@ export default function FreeCVApp() {
       // Capture the rendered template (inlined computed styles + table
       // layout) so the DOCX matches the selected template's design. Falls
       // back to the server-side generic builder when capture is unavailable.
-      // previewData carries the user's section visibility + density, so both
+      // previewData carries the user's section visibility, so both
       // the capture path and the generic fallback stay consistent.
       let body: any = previewData;
       try {
@@ -703,21 +612,9 @@ export default function FreeCVApp() {
   // ---- Editor section blocks: visibility toggles + up/down ordering ----
   // Each block keeps its own JSX (and mobile accordion state); the editor
   // renders them in sectionOrder via editorSectionIds below.
-  const makeSectionTools = (id: ResumeSectionId, opts?: { hideEye?: boolean }) => (
-    <SectionHeaderTools
-      id={id}
-      isHidden={data.sectionVisibility[id] === false}
-      isFirst={editorSectionIds[0] === id}
-      isLast={editorSectionIds[editorSectionIds.length - 1] === id}
-      onToggle={toggleSectionVisibility}
-      onMove={moveSection}
-      hideEye={opts?.hideEye}
-    />
-  );
-
   const sectionBlocks: Record<ResumeSectionId, React.ReactNode> = {
     personal: (
-    <SectionAccordion id="personal" tools={makeSectionTools('personal')} icon={User} title="Personal Identity" description="Who are you and what do you do?" defaultOpen>
+    <SectionAccordion id="personal" icon={User} title="Personal Identity" description="Who are you and what do you do?" defaultOpen>
     <Card>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input label="Full Name" value={data.personalInfo.fullName} onChange={(e: any) => updatePersonalInfo({ fullName: e.target.value })} placeholder="Jane Doe" />
@@ -811,7 +708,7 @@ export default function FreeCVApp() {
     </SectionAccordion>
     ),
     experience: (
-    <SectionAccordion id="experience" tools={makeSectionTools('experience')} icon={Briefcase} title="Professional Experience" description="Showcase your career milestones"
+    <SectionAccordion id="experience" icon={Briefcase} title="Professional Experience" description="Showcase your career milestones"
       action={<button onClick={addExperience} aria-label="Add experience" className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors shrink-0"><Plus size={18} /></button>}>
     <Droppable droppableId="experience" type="experience">
       {(provided) => (
@@ -865,7 +762,7 @@ export default function FreeCVApp() {
     </SectionAccordion>
     ),
     education: (
-    <SectionAccordion id="education" tools={makeSectionTools('education')} icon={GraduationCap} title="Education" description="Where did you learn your craft?"
+    <SectionAccordion id="education" icon={GraduationCap} title="Education" description="Where did you learn your craft?"
       action={<button onClick={addEducation} aria-label="Add education" className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors shrink-0"><Plus size={18} /></button>}>
     <Droppable droppableId="education" type="education">
       {(provided) => (
@@ -900,7 +797,7 @@ export default function FreeCVApp() {
     </SectionAccordion>
     ),
     skills: (
-    <SectionAccordion id="skills" tools={makeSectionTools('skills')} icon={Wrench} title="Skill Arsenal" description="What tools do you master?">
+    <SectionAccordion id="skills" icon={Wrench} title="Skill Arsenal" description="What tools do you master?">
     <Card>
       <form onSubmit={handleAddSkill} className="flex gap-2 mb-6">
         <input
@@ -955,7 +852,7 @@ export default function FreeCVApp() {
     </SectionAccordion>
     ),
     projects: data.showProjects ? (
-      <SectionAccordion id="projects" tools={makeSectionTools('projects')} icon={FolderOpen} title="Projects" description="Showcase your key projects" onRemove={toggleProjects}
+      <SectionAccordion id="projects" icon={FolderOpen} title="Projects" description="Showcase your key projects" onRemove={toggleProjects}
         action={<button onClick={addProject} aria-label="Add project" className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors shrink-0"><Plus size={18} /></button>}>
         {(data.projects || []).map((proj) => (
           <Card key={proj.id}>
@@ -972,7 +869,7 @@ export default function FreeCVApp() {
       </SectionAccordion>
     ) : null,
     certifications: data.showCertifications ? (
-      <SectionAccordion id="certifications" tools={makeSectionTools('certifications')} icon={Award} title="Certifications" description="Official recognitions" onRemove={toggleCertifications}
+      <SectionAccordion id="certifications" icon={Award} title="Certifications" description="Official recognitions" onRemove={toggleCertifications}
         action={<button onClick={addCertification} aria-label="Add certification" className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors shrink-0"><Plus size={18} /></button>}>
         {(data.certifications || []).map((cert) => (
           <Card key={cert.id}>
@@ -989,7 +886,7 @@ export default function FreeCVApp() {
       </SectionAccordion>
     ) : null,
     references: data.showReferences ? (
-      <SectionAccordion id="references" tools={makeSectionTools('references')} icon={Users} title="References" description="People who vouch for you" onRemove={toggleReferences}
+      <SectionAccordion id="references" icon={Users} title="References" description="People who vouch for you" onRemove={toggleReferences}
         action={<button onClick={addReference} aria-label="Add reference" className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors shrink-0"><Plus size={18} /></button>}>
         {(data.references || []).map((ref) => (
           <Card key={ref.id}>
@@ -1007,7 +904,7 @@ export default function FreeCVApp() {
       </SectionAccordion>
     ) : null,
     'cover-letter': (
-      <SectionAccordion id="cover-letter" tools={makeSectionTools('cover-letter', { hideEye: true })} icon={FileText} title="Cover Letter" description="Generate a tailored cover letter.">
+      <SectionAccordion id="cover-letter" icon={FileText} title="Cover Letter" description="Generate a tailored cover letter.">
         <CoverLetterTab />
       </SectionAccordion>
     ),
@@ -1076,9 +973,6 @@ export default function FreeCVApp() {
             <button onClick={() => setIsRewriterOpen(true)} className="flex items-center gap-2 px-4 py-2.5 border-2 border-[#141312] bg-white text-[#141312] hs-sm fm text-[11px] font-bold uppercase tracking-[0.16em] transition-all hover:bg-[#FF4326] hover:text-[#141312] hover:border-[#FF4326]">
               <RefreshCw size={14} /> AI Rewriter
             </button>
-            <button onClick={() => { setTailorResult(null); setTailorApplied({ summary: false, skills: [], bullets: [] }); setIsTailorOpen(true); }} className="flex items-center gap-2 px-4 py-2.5 border-2 border-[#141312] bg-white text-[#141312] hs-sm fm text-[11px] font-bold uppercase tracking-[0.16em] transition-all hover:bg-[#2233FF] hover:text-white hover:border-[#2233FF]">
-              <Target size={14} /> Tailor to Job
-            </button>
           </div>
 
           {/* Template Gallery Button */}
@@ -1120,30 +1014,11 @@ export default function FreeCVApp() {
           </Card>
           </SectionAccordion>
 
-          {/* Density control — persisted in resume state, applies to preview, PDF, DOCX */}
-          <SectionAccordion id="density" icon={Layout} title="Resume Density" description="Comfortable or compact spacing">
-          <Card>
-            <div className="grid grid-cols-2 gap-3">
-              {(['comfortable', 'compact'] as const).map((d) => (
-                <button key={d} type="button" onClick={() => setDensity(d)}
-                  className={cn("px-4 py-3 fm text-[11px] font-bold uppercase tracking-[0.16em] border-2 transition-all",
-                    data.density === d
-                      ? "bg-[#141312] text-[#E8E7E1] border-[#141312] hs-sm"
-                      : "bg-white text-[#141312]/60 border-[#141312]/30 hover:border-[#141312] hover:text-[#141312]")}>
-                  {d}
-                </button>
-              ))}
-            </div>
-            <p className="fm text-[10px] text-[#141312]/45 mt-3 leading-relaxed">Compact tightens spacing and type size across the on-screen preview, PDF and DOCX exports.</p>
-          </Card>
-          </SectionAccordion>
-
           <DragDropContext onDragEnd={onDragEnd}>
 
             <ImportResume />
 
-            {/* Editor sections — rendered in the user's chosen order.
-                Visibility toggles strip sections from the output via previewData. */}
+            {/* Editor sections — rendered in the user's chosen order. */}
             {editorSectionIds.map((id) => (
               <React.Fragment key={id}>{sectionBlocks[id]}</React.Fragment>
             ))}
@@ -1466,97 +1341,6 @@ export default function FreeCVApp() {
         </div>
       )}
 
-      {/* TAILOR TO JOB MODAL */}
-      {isTailorOpen && (
-        <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm overflow-y-auto print:hidden">
-          <div className="min-h-screen px-4 flex items-center justify-center py-10">
-            <div className="rounded-none border-[3px] border-[#141312] hs max-w-2xl w-full p-6 sm:p-8 flex flex-col relative bg-white text-[#141312]">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="fd text-2xl font-black leading-tight flex items-center gap-2"><Target className="text-[#2233FF]" /> Tailor to Job</h2>
-                <button onClick={() => setIsTailorOpen(false)} className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] rounded-none transition-colors"><X size={20} /></button>
-              </div>
-              <p className="text-sm mb-6 text-[#141312]/65">Paste the job description and AI will rewrite your summary, suggest keyword-aligned skills, and sharpen your experience bullets — using only what's already on your resume. Nothing is invented.</p>
-              <label className="fm text-[10px] font-bold uppercase tracking-[0.2em] mb-2 block text-[#141312]/60">Job Description</label>
-              <textarea
-                value={tailorJobDesc}
-                onChange={(e) => setTailorJobDesc(e.target.value)}
-                placeholder="Paste the job posting here..."
-                rows={7}
-                maxLength={15000}
-                className="w-full bg-white border-2 border-[#141312] rounded-none px-4 py-3 text-sm text-[#141312] outline-none transition-shadow focus:shadow-[3px_3px_0_#2233FF] resize-y mb-4"
-              />
-              <button onClick={handleTailor} disabled={isTailorLoading || !tailorJobDesc.trim()}
-                className="w-full bg-[#2233FF] hover:bg-[#141312] disabled:opacity-50 text-[#E8E7E1] border-[3px] border-[#141312] hs py-4 fm font-bold uppercase tracking-widest text-sm transition-all flex justify-center items-center gap-2 mb-6">
-                {isTailorLoading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
-                {isTailorLoading ? 'Tailoring Resume...' : 'Tailor My Resume'}
-              </button>
-
-              {tailorResult && (
-                <div className="space-y-6">
-                  {/* Rewritten summary */}
-                  {tailorResult.summary && (
-                    <div className="border-2 border-[#141312] bg-white hs-sm p-5">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="fm text-[11px] font-bold uppercase tracking-[0.2em] text-[#141312]/60">Rewritten Summary</h3>
-                        <button onClick={applyTailorSummary} disabled={tailorApplied.summary}
-                          className="fm text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 border-2 border-[#0E8A4B] text-[#0E8A4B] hover:bg-[#0E8A4B] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-default disabled:hover:bg-transparent disabled:hover:text-[#0E8A4B]">
-                          {tailorApplied.summary ? 'Applied ✓' : 'Apply'}
-                        </button>
-                      </div>
-                      <p className="text-sm text-[#141312]/80 leading-relaxed whitespace-pre-wrap">{tailorResult.summary}</p>
-                    </div>
-                  )}
-
-                  {/* Skills to add */}
-                  {Array.isArray(tailorResult.skillsToAdd) && tailorResult.skillsToAdd.length > 0 && (
-                    <div className="border-2 border-[#141312] bg-white hs-sm p-5">
-                      <h3 className="fm text-[11px] font-bold uppercase tracking-[0.2em] text-[#141312]/60 mb-3">Skills to Add</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {tailorResult.skillsToAdd.map((skill: string) => {
-                          const applied = tailorApplied.skills.includes(skill);
-                          return (
-                            <button key={skill} onClick={() => !applied && applyTailorSkill(skill)} disabled={applied}
-                              className={cn("fm text-[11px] font-bold px-3 py-1.5 border-2 transition-colors",
-                                applied ? "border-[#0E8A4B] bg-[#0E8A4B]/10 text-[#0E8A4B]/60 cursor-default"
-                                        : "border-[#141312] bg-white text-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1]")}>
-                              {applied ? `${skill} ✓` : `+ ${skill}`}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Improved bullets */}
-                  {Array.isArray(tailorResult.bulletImprovements) && tailorResult.bulletImprovements.length > 0 && (
-                    <div className="border-2 border-[#141312] bg-white hs-sm p-5">
-                      <h3 className="fm text-[11px] font-bold uppercase tracking-[0.2em] text-[#141312]/60 mb-3">Sharpened Experience Bullets</h3>
-                      <div className="space-y-4">
-                        {tailorResult.bulletImprovements.map((b: any, i: number) => {
-                          const applied = tailorApplied.bullets.includes(i);
-                          const exp = data.experience.find(e => e.id === b.experienceId);
-                          return (
-                            <div key={i} className="border-t-2 border-[#141312]/10 pt-4 first:border-t-0 first:pt-0">
-                              {exp && <p className="fm text-[10px] font-bold uppercase tracking-widest text-[#141312]/45 mb-2">{exp.role} @ {exp.company}</p>}
-                              <p className="text-xs text-[#141312]/50 line-through mb-1.5">{b.original}</p>
-                              <p className="text-sm text-[#141312]/85 leading-relaxed mb-3">{b.improved}</p>
-                              <button onClick={() => applyTailorBullet(i)} disabled={applied}
-                                className="fm text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 border-2 border-[#0E8A4B] text-[#0E8A4B] hover:bg-[#0E8A4B] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-default disabled:hover:bg-transparent disabled:hover:text-[#0E8A4B]">
-                                {applied ? 'Applied ✓' : 'Apply Bullet'}
-                              </button>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* DOWNLOAD OPTIONS MODAL (MOBILE) */}
       {isDownloadModalOpen && (
         <div className="fixed inset-0 z-[300] bg-black/60 backdrop-blur-sm flex items-end justify-center print:hidden lg:hidden">
@@ -1589,301 +1373,16 @@ export default function FreeCVApp() {
         }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #14131233; border-radius: 0; }
-                /* Compact density: generated from html_templates usage — 292 rules. */
-        .density-compact .-ml-16 { margin-left: -2.48rem !important; }
-        .density-compact .-mt-4 { margin-top: -0.62rem !important; }
-        .density-compact .-mx-12 { margin-left: -1.86rem; margin-right: -1.86rem !important; }
-        .density-compact .gap-1 { gap: 0.155rem !important; }
-        .density-compact .gap-1\\.5 { gap: 0.232rem !important; }
-        .density-compact .gap-10 { gap: 1.55rem !important; }
-        .density-compact .gap-12 { gap: 1.86rem !important; }
-        .density-compact .gap-2 { gap: 0.31rem !important; }
-        .density-compact .gap-2\\.5 { gap: 0.388rem !important; }
-        .density-compact .gap-3 { gap: 0.465rem !important; }
-        .density-compact .gap-4 { gap: 0.62rem !important; }
-        .density-compact .gap-5 { gap: 0.775rem !important; }
-        .density-compact .gap-6 { gap: 0.93rem !important; }
-        .density-compact .gap-7 { gap: 1.085rem !important; }
-        .density-compact .gap-8 { gap: 1.24rem !important; }
-        .density-compact .gap-9 { gap: 1.395rem !important; }
-        .density-compact .gap-x-10 { column-gap: 1.55rem !important; }
-        .density-compact .gap-x-2 { column-gap: 0.31rem !important; }
-        .density-compact .gap-x-3 { column-gap: 0.465rem !important; }
-        .density-compact .gap-x-4 { column-gap: 0.62rem !important; }
-        .density-compact .gap-x-5 { column-gap: 0.775rem !important; }
-        .density-compact .gap-x-6 { column-gap: 0.93rem !important; }
-        .density-compact .gap-x-8 { column-gap: 1.24rem !important; }
-        .density-compact .gap-y-1 { row-gap: 0.155rem !important; }
-        .density-compact .gap-y-1\\.5 { row-gap: 0.232rem !important; }
-        .density-compact .gap-y-2 { row-gap: 0.31rem !important; }
-        .density-compact .gap-y-3 { row-gap: 0.465rem !important; }
-        .density-compact .gap-y-4 { row-gap: 0.62rem !important; }
-        .density-compact .gap-y-5 { row-gap: 0.775rem !important; }
-        .density-compact .gap-y-6 { row-gap: 0.93rem !important; }
-        .density-compact .gap-y-8 { row-gap: 1.24rem !important; }
-        .density-compact .mb-0\\.5 { margin-bottom: 0.077rem !important; }
-        .density-compact .mb-1 { margin-bottom: 0.155rem !important; }
-        .density-compact .mb-1\\.5 { margin-bottom: 0.232rem !important; }
-        .density-compact .mb-10 { margin-bottom: 1.55rem !important; }
-        .density-compact .mb-12 { margin-bottom: 1.86rem !important; }
-        .density-compact .mb-14 { margin-bottom: 2.17rem !important; }
-        .density-compact .mb-16 { margin-bottom: 2.48rem !important; }
-        .density-compact .mb-2 { margin-bottom: 0.31rem !important; }
-        .density-compact .mb-2\\.5 { margin-bottom: 0.388rem !important; }
-        .density-compact .mb-20 { margin-bottom: 3.1rem !important; }
-        .density-compact .mb-3 { margin-bottom: 0.465rem !important; }
-        .density-compact .mb-4 { margin-bottom: 0.62rem !important; }
-        .density-compact .mb-5 { margin-bottom: 0.775rem !important; }
-        .density-compact .mb-6 { margin-bottom: 0.93rem !important; }
-        .density-compact .mb-7 { margin-bottom: 1.085rem !important; }
-        .density-compact .mb-8 { margin-bottom: 1.24rem !important; }
-        .density-compact .mb-9 { margin-bottom: 1.395rem !important; }
-        .density-compact .ml-10 { margin-left: 1.55rem !important; }
-        .density-compact .ml-2 { margin-left: 0.31rem !important; }
-        .density-compact .ml-3 { margin-left: 0.465rem !important; }
-        .density-compact .ml-3\\.5 { margin-left: 0.542rem !important; }
-        .density-compact .ml-4 { margin-left: 0.62rem !important; }
-        .density-compact .ml-5 { margin-left: 0.775rem !important; }
-        .density-compact .ml-6 { margin-left: 0.93rem !important; }
-        .density-compact .ml-8 { margin-left: 1.24rem !important; }
-        .density-compact .ml-\\[154px\\] { margin-left: 95.5px !important; }
-        .density-compact .ml-\\[26px\\] { margin-left: 16.1px !important; }
-        .density-compact .mr-1\\.5 { margin-right: 0.232rem !important; }
-        .density-compact .mr-2 { margin-right: 0.31rem !important; }
-        .density-compact .mr-3 { margin-right: 0.465rem !important; }
-        .density-compact .mr-5 { margin-right: 0.775rem !important; }
-        .density-compact .mt-0\\.5 { margin-top: 0.077rem !important; }
-        .density-compact .mt-1 { margin-top: 0.155rem !important; }
-        .density-compact .mt-1\\.5 { margin-top: 0.232rem !important; }
-        .density-compact .mt-10 { margin-top: 1.55rem !important; }
-        .density-compact .mt-11 { margin-top: 1.705rem !important; }
-        .density-compact .mt-12 { margin-top: 1.86rem !important; }
-        .density-compact .mt-14 { margin-top: 2.17rem !important; }
-        .density-compact .mt-16 { margin-top: 2.48rem !important; }
-        .density-compact .mt-2 { margin-top: 0.31rem !important; }
-        .density-compact .mt-2\\.5 { margin-top: 0.388rem !important; }
-        .density-compact .mt-3 { margin-top: 0.465rem !important; }
-        .density-compact .mt-4 { margin-top: 0.62rem !important; }
-        .density-compact .mt-5 { margin-top: 0.775rem !important; }
-        .density-compact .mt-6 { margin-top: 0.93rem !important; }
-        .density-compact .mt-7 { margin-top: 1.085rem !important; }
-        .density-compact .mt-8 { margin-top: 1.24rem !important; }
-        .density-compact .mt-9 { margin-top: 1.395rem !important; }
-        .density-compact .mt-\\[2px\\] { margin-top: 1.2px !important; }
-        .density-compact .mt-\\[3px\\] { margin-top: 1.9px !important; }
-        .density-compact .mt-\\[4px\\] { margin-top: 2.5px !important; }
-        .density-compact .mt-\\[5px\\] { margin-top: 3.1px !important; }
-        .density-compact .mt-\\[7px\\] { margin-top: 4.3px !important; }
-        .density-compact .mx-2 { margin-left: 0.31rem; margin-right: 0.31rem !important; }
-        .density-compact .mx-3 { margin-left: 0.465rem; margin-right: 0.465rem !important; }
-        .density-compact .mx-5 { margin-left: 0.775rem; margin-right: 0.775rem !important; }
-        .density-compact .my-1 { margin-top: 0.155rem; margin-bottom: 0.155rem !important; }
-        .density-compact .my-10 { margin-top: 1.55rem; margin-bottom: 1.55rem !important; }
-        .density-compact .my-3 { margin-top: 0.465rem; margin-bottom: 0.465rem !important; }
-        .density-compact .my-6 { margin-top: 0.93rem; margin-bottom: 0.93rem !important; }
-        .density-compact .p-10 { padding: 1.55rem !important; }
-        .density-compact .p-12 { padding: 1.86rem !important; }
-        .density-compact .p-14 { padding: 2.17rem !important; }
-        .density-compact .p-16 { padding: 2.48rem !important; }
-        .density-compact .p-3 { padding: 0.465rem !important; }
-        .density-compact .p-4 { padding: 0.62rem !important; }
-        .density-compact .p-5 { padding: 0.775rem !important; }
-        .density-compact .p-6 { padding: 0.93rem !important; }
-        .density-compact .p-7 { padding: 1.085rem !important; }
-        .density-compact .p-8 { padding: 1.24rem !important; }
-        .density-compact .pb-1 { padding-bottom: 0.155rem !important; }
-        .density-compact .pb-1\\.5 { padding-bottom: 0.232rem !important; }
-        .density-compact .pb-10 { padding-bottom: 1.55rem !important; }
-        .density-compact .pb-12 { padding-bottom: 1.86rem !important; }
-        .density-compact .pb-14 { padding-bottom: 2.17rem !important; }
-        .density-compact .pb-2 { padding-bottom: 0.31rem !important; }
-        .density-compact .pb-2\\.5 { padding-bottom: 0.388rem !important; }
-        .density-compact .pb-3 { padding-bottom: 0.465rem !important; }
-        .density-compact .pb-4 { padding-bottom: 0.62rem !important; }
-        .density-compact .pb-5 { padding-bottom: 0.775rem !important; }
-        .density-compact .pb-6 { padding-bottom: 0.93rem !important; }
-        .density-compact .pb-7 { padding-bottom: 1.085rem !important; }
-        .density-compact .pb-8 { padding-bottom: 1.24rem !important; }
-        .density-compact .pl-10 { padding-left: 1.55rem !important; }
-        .density-compact .pl-16 { padding-left: 2.48rem !important; }
-        .density-compact .pl-2\\.5 { padding-left: 0.388rem !important; }
-        .density-compact .pl-3 { padding-left: 0.465rem !important; }
-        .density-compact .pl-4 { padding-left: 0.62rem !important; }
-        .density-compact .pl-5 { padding-left: 0.775rem !important; }
-        .density-compact .pl-6 { padding-left: 0.93rem !important; }
-        .density-compact .pl-8 { padding-left: 1.24rem !important; }
-        .density-compact .pl-\\[116px\\] { padding-left: 71.9px !important; }
-        .density-compact .pr-10 { padding-right: 1.55rem !important; }
-        .density-compact .pr-12 { padding-right: 1.86rem !important; }
-        .density-compact .pr-2 { padding-right: 0.31rem !important; }
-        .density-compact .pr-4 { padding-right: 0.62rem !important; }
-        .density-compact .pr-6 { padding-right: 0.93rem !important; }
-        .density-compact .pr-8 { padding-right: 1.24rem !important; }
-        .density-compact .pt-1 { padding-top: 0.155rem !important; }
-        .density-compact .pt-1\\.5 { padding-top: 0.232rem !important; }
-        .density-compact .pt-10 { padding-top: 1.55rem !important; }
-        .density-compact .pt-12 { padding-top: 1.86rem !important; }
-        .density-compact .pt-14 { padding-top: 2.17rem !important; }
-        .density-compact .pt-16 { padding-top: 2.48rem !important; }
-        .density-compact .pt-3 { padding-top: 0.465rem !important; }
-        .density-compact .pt-4 { padding-top: 0.62rem !important; }
-        .density-compact .pt-6 { padding-top: 0.93rem !important; }
-        .density-compact .pt-7 { padding-top: 1.085rem !important; }
-        .density-compact .pt-8 { padding-top: 1.24rem !important; }
-        .density-compact .pt-9 { padding-top: 1.395rem !important; }
-        .density-compact .px-1 { padding-left: 0.155rem; padding-right: 0.155rem !important; }
-        .density-compact .px-10 { padding-left: 1.55rem; padding-right: 1.55rem !important; }
-        .density-compact .px-11 { padding-left: 1.705rem; padding-right: 1.705rem !important; }
-        .density-compact .px-12 { padding-left: 1.86rem; padding-right: 1.86rem !important; }
-        .density-compact .px-14 { padding-left: 2.17rem; padding-right: 2.17rem !important; }
-        .density-compact .px-16 { padding-left: 2.48rem; padding-right: 2.48rem !important; }
-        .density-compact .px-2 { padding-left: 0.31rem; padding-right: 0.31rem !important; }
-        .density-compact .px-2\\.5 { padding-left: 0.388rem; padding-right: 0.388rem !important; }
-        .density-compact .px-20 { padding-left: 3.1rem; padding-right: 3.1rem !important; }
-        .density-compact .px-3 { padding-left: 0.465rem; padding-right: 0.465rem !important; }
-        .density-compact .px-3\\.5 { padding-left: 0.542rem; padding-right: 0.542rem !important; }
-        .density-compact .px-4 { padding-left: 0.62rem; padding-right: 0.62rem !important; }
-        .density-compact .px-5 { padding-left: 0.775rem; padding-right: 0.775rem !important; }
-        .density-compact .px-6 { padding-left: 0.93rem; padding-right: 0.93rem !important; }
-        .density-compact .px-7 { padding-left: 1.085rem; padding-right: 1.085rem !important; }
-        .density-compact .px-8 { padding-left: 1.24rem; padding-right: 1.24rem !important; }
-        .density-compact .px-9 { padding-left: 1.395rem; padding-right: 1.395rem !important; }
-        .density-compact .py-0\\.5 { padding-top: 0.077rem; padding-bottom: 0.077rem !important; }
-        .density-compact .py-1 { padding-top: 0.155rem; padding-bottom: 0.155rem !important; }
-        .density-compact .py-1\\.5 { padding-top: 0.232rem; padding-bottom: 0.232rem !important; }
-        .density-compact .py-10 { padding-top: 1.55rem; padding-bottom: 1.55rem !important; }
-        .density-compact .py-11 { padding-top: 1.705rem; padding-bottom: 1.705rem !important; }
-        .density-compact .py-12 { padding-top: 1.86rem; padding-bottom: 1.86rem !important; }
-        .density-compact .py-14 { padding-top: 2.17rem; padding-bottom: 2.17rem !important; }
-        .density-compact .py-16 { padding-top: 2.48rem; padding-bottom: 2.48rem !important; }
-        .density-compact .py-2 { padding-top: 0.31rem; padding-bottom: 0.31rem !important; }
-        .density-compact .py-2\\.5 { padding-top: 0.388rem; padding-bottom: 0.388rem !important; }
-        .density-compact .py-24 { padding-top: 3.72rem; padding-bottom: 3.72rem !important; }
-        .density-compact .py-3 { padding-top: 0.465rem; padding-bottom: 0.465rem !important; }
-        .density-compact .py-3\\.5 { padding-top: 0.542rem; padding-bottom: 0.542rem !important; }
-        .density-compact .py-4 { padding-top: 0.62rem; padding-bottom: 0.62rem !important; }
-        .density-compact .py-5 { padding-top: 0.775rem; padding-bottom: 0.775rem !important; }
-        .density-compact .py-6 { padding-top: 0.93rem; padding-bottom: 0.93rem !important; }
-        .density-compact .py-7 { padding-top: 1.085rem; padding-bottom: 1.085rem !important; }
-        .density-compact .py-8 { padding-top: 1.24rem; padding-bottom: 1.24rem !important; }
-        .density-compact .py-9 { padding-top: 1.395rem; padding-bottom: 1.395rem !important; }
-        .density-compact .space-y-0\\.5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.077rem !important; }
-        .density-compact .space-y-1 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.155rem !important; }
-        .density-compact .space-y-1\\.5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.232rem !important; }
-        .density-compact .space-y-10 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.55rem !important; }
-        .density-compact .space-y-12 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.86rem !important; }
-        .density-compact .space-y-14 > :not([hidden]) ~ :not([hidden]) { margin-top: 2.17rem !important; }
-        .density-compact .space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.31rem !important; }
-        .density-compact .space-y-2\\.5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.388rem !important; }
-        .density-compact .space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.465rem !important; }
-        .density-compact .space-y-3\\.5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.542rem !important; }
-        .density-compact .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.62rem !important; }
-        .density-compact .space-y-5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.775rem !important; }
-        .density-compact .space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.93rem !important; }
-        .density-compact .space-y-7 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.085rem !important; }
-        .density-compact .space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.24rem !important; }
-        .density-compact .space-y-9 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.395rem !important; }
-        .density-compact .leading-5 { line-height: 1rem !important; }
-        .density-compact .leading-6 { line-height: 1.2rem !important; }
-        .density-compact .leading-\\[0\\.85\\] { line-height: 0.72 !important; }
-        .density-compact .leading-\\[0\\.95\\] { line-height: 0.81 !important; }
-        .density-compact .leading-\\[0\\.9\\] { line-height: 0.77 !important; }
-        .density-compact .leading-\\[1\\.02\\] { line-height: 0.87 !important; }
-        .density-compact .leading-\\[1\\.05\\] { line-height: 0.89 !important; }
-        .density-compact .leading-\\[1\\.55\\] { line-height: 1.32 !important; }
-        .density-compact .leading-\\[1\\.65\\] { line-height: 1.4 !important; }
-        .density-compact .leading-\\[1\\.6\\] { line-height: 1.36 !important; }
-        .density-compact .leading-\\[1\\.75\\] { line-height: 1.49 !important; }
-        .density-compact .leading-\\[1\\.7\\] { line-height: 1.44 !important; }
-        .density-compact .leading-\\[1\\.85\\] { line-height: 1.57 !important; }
-        .density-compact .leading-\\[1\\.8\\] { line-height: 1.53 !important; }
-        .density-compact .leading-\\[1\\.95\\] { line-height: 1.66 !important; }
-        .density-compact .leading-\\[1\\.9\\] { line-height: 1.61 !important; }
-        .density-compact .leading-\\[2\\.1\\] { line-height: 1.78 !important; }
-        .density-compact .leading-\\[2\\.2\\] { line-height: 1.87 !important; }
-        .density-compact .leading-\\[2\\.4\\] { line-height: 2.04 !important; }
-        .density-compact .leading-\\[2\\] { line-height: 1.7 !important; }
-        .density-compact .text-2xl { font-size: 1.2rem; line-height: 1.6rem !important; }
-        .density-compact .text-3xl { font-size: 1.5rem; line-height: 1.8rem !important; }
-        .density-compact .text-4xl { font-size: 1.8rem; line-height: 2rem !important; }
-        .density-compact .text-5xl { font-size: 2.4rem; line-height: 0.8rem !important; }
-        .density-compact .text-\\[10px\\] { font-size: 8px !important; }
-        .density-compact .text-\\[11\\.5px\\] { font-size: 9.2px !important; }
-        .density-compact .text-\\[11px\\] { font-size: 8.8px !important; }
-        .density-compact .text-\\[12\\.5px\\] { font-size: 10px !important; }
-        .density-compact .text-\\[12px\\] { font-size: 9.6px !important; }
-        .density-compact .text-\\[13\\.5px\\] { font-size: 10.8px !important; }
-        .density-compact .text-\\[13px\\] { font-size: 10.4px !important; }
-        .density-compact .text-\\[14\\.5px\\] { font-size: 11.6px !important; }
-        .density-compact .text-\\[14px\\] { font-size: 11.2px !important; }
-        .density-compact .text-\\[15\\.5px\\] { font-size: 12.4px !important; }
-        .density-compact .text-\\[15px\\] { font-size: 12px !important; }
-        .density-compact .text-\\[16px\\] { font-size: 12.8px !important; }
-        .density-compact .text-\\[17px\\] { font-size: 13.6px !important; }
-        .density-compact .text-\\[22px\\] { font-size: 17.6px !important; }
-        .density-compact .text-\\[26px\\] { font-size: 20.8px !important; }
-        .density-compact .text-\\[28px\\] { font-size: 22.4px !important; }
-        .density-compact .text-\\[32px\\] { font-size: 25.6px !important; }
-        .density-compact .text-\\[34px\\] { font-size: 27.2px !important; }
-        .density-compact .text-\\[36px\\] { font-size: 28.8px !important; }
-        .density-compact .text-\\[38px\\] { font-size: 30.4px !important; }
-        .density-compact .text-\\[40px\\] { font-size: 32px !important; }
-        .density-compact .text-\\[42px\\] { font-size: 33.6px !important; }
-        .density-compact .text-\\[44px\\] { font-size: 35.2px !important; }
-        .density-compact .text-\\[46px\\] { font-size: 36.8px !important; }
-        .density-compact .text-\\[52px\\] { font-size: 41.6px !important; }
-        .density-compact .text-\\[56px\\] { font-size: 44.8px !important; }
-        .density-compact .text-\\[64px\\] { font-size: 51.2px !important; }
-        .density-compact .text-\\[8px\\] { font-size: 6.4px !important; }
-        .density-compact .text-\\[9px\\] { font-size: 7.2px !important; }
-        .density-compact .text-base { font-size: 0.8rem; line-height: 1.2rem !important; }
-        .density-compact .text-lg { font-size: 0.9rem; line-height: 1.4rem !important; }
-        .density-compact .text-sm { font-size: 0.7rem; line-height: 1rem !important; }
-        .density-compact .text-xl { font-size: 1rem; line-height: 1.4rem !important; }
-        .density-compact .text-xs { font-size: 0.6rem; line-height: 0.8rem !important; }
-        .density-compact .leading-loose { line-height: 1.65 !important; }
-        .density-compact .leading-none { line-height: 1 !important; }
-        .density-compact .leading-relaxed { line-height: 1.35 !important; }
-        .density-compact .leading-snug { line-height: 1.15 !important; }
-        .density-compact .leading-tight { line-height: 1.05 !important; }
-
-      
-        .density-compact .-mt-\\[0\\.75in\\] { margin-top: -0.46in !important; }
-        .density-compact .-mx-\\[0\\.75in\\] { margin-left: -0.46in; margin-right: -0.46in !important; }
-        .density-compact .-mx-\\[0\\.9in\\] { margin-left: -0.56in; margin-right: -0.56in !important; }
-        .density-compact .p-\\[0\\.75in\\] { padding: 0.46in !important; }
-        .density-compact .p-\\[0\\.85in\\] { padding: 0.53in !important; }
-        .density-compact .p-\\[0\\.9in\\] { padding: 0.56in !important; }
-        .density-compact .p-\\[1\\.25in\\] { padding: 0.78in !important; }
-        .density-compact .p-\\[1\\.2in\\] { padding: 0.74in !important; }
-        .density-compact .p-\\[1in\\] { padding: 0.62in !important; }
-        .density-compact .pb-\\[0\\.85in\\] { padding-bottom: 0.53in !important; }
-        .density-compact .pb-\\[0\\.8in\\] { padding-bottom: 0.5in !important; }
-        .density-compact .pb-\\[0\\.9in\\] { padding-bottom: 0.56in !important; }
-        .density-compact .pb-\\[1\\.3in\\] { padding-bottom: 0.81in !important; }
-        .density-compact .pb-\\[1in\\] { padding-bottom: 0.62in !important; }
-        .density-compact .pt-\\[0\\.65in\\] { padding-top: 0.4in !important; }
-        .density-compact .pt-\\[0\\.75in\\] { padding-top: 0.46in !important; }
-        .density-compact .pt-\\[0\\.7in\\] { padding-top: 0.43in !important; }
-        .density-compact .pt-\\[0\\.85in\\] { padding-top: 0.53in !important; }
-        .density-compact .pt-\\[0\\.8in\\] { padding-top: 0.5in !important; }
-        .density-compact .pt-\\[0\\.9in\\] { padding-top: 0.56in !important; }
-        .density-compact .pt-\\[1\\.3in\\] { padding-top: 0.81in !important; }
-        .density-compact .px-\\[0\\.65in\\] { padding-left: 0.4in; padding-right: 0.4in !important; }
-        .density-compact .px-\\[0\\.75in\\] { padding-left: 0.46in; padding-right: 0.46in !important; }
-        .density-compact .px-\\[0\\.85in\\] { padding-left: 0.53in; padding-right: 0.53in !important; }
-        .density-compact .px-\\[0\\.8in\\] { padding-left: 0.5in; padding-right: 0.5in !important; }
-        .density-compact .px-\\[0\\.9in\\] { padding-left: 0.56in; padding-right: 0.56in !important; }
-        .density-compact .px-\\[1\\.1in\\] { padding-left: 0.68in; padding-right: 0.68in !important; }
-        .density-compact .px-\\[1\\.4in\\] { padding-left: 0.87in; padding-right: 0.87in !important; }
-        .density-compact .px-\\[1in\\] { padding-left: 0.62in; padding-right: 0.62in !important; }
-        .density-compact .py-\\[0\\.55in\\] { padding-top: 0.34in; padding-bottom: 0.34in !important; }
-        .density-compact .py-\\[0\\.75in\\] { padding-top: 0.46in; padding-bottom: 0.46in !important; }
-        .density-compact .py-\\[0\\.7in\\] { padding-top: 0.43in; padding-bottom: 0.43in !important; }
-        .density-compact .py-\\[0\\.85in\\] { padding-top: 0.53in; padding-bottom: 0.53in !important; }
-        .density-compact .py-\\[0\\.8in\\] { padding-top: 0.5in; padding-bottom: 0.5in !important; }
-        .density-compact .py-\\[0\\.9in\\] { padding-top: 0.56in; padding-bottom: 0.56in !important; }
-        .density-compact .py-\\[1in\\] { padding-top: 0.62in; padding-bottom: 0.62in !important; }
+        /* Editor section headers: on desktop (lg+) the header is inert and
+           the section always expanded — the original pre-redesign look.
+           Below lg the accordion toggle works normally. Plain CSS (not
+           Tailwind responsive variants) so the production cascade can't
+           swallow it the way lg:block lost to .hidden. */
+        @media (min-width: 1024px) {
+          .section-toggle { pointer-events: none; cursor: default; }
+          .section-toggle-chevron { display: none; }
+          .section-body { display: block !important; }
+        }
 `}} />
     </main>
   );
