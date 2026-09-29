@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import { Search, Loader2, Sparkles } from "lucide-react";
-import { runJdMatch, MatchResult, ApiError } from "@/lib/recruiter-api";
+import { Search, Loader2, Sparkles, SlidersHorizontal, ChevronDown } from "lucide-react";
+import { runJdMatch, MatchResult, MatchFilters, MatchTier, ApiError } from "@/lib/recruiter-api";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 
@@ -9,11 +9,20 @@ export interface JdInput {
   jobDescription: string;
   jobTitle: string;
   location: string;
+  filters?: MatchFilters;
 }
+
+const TIER_OPTS: { id: MatchTier; label: string }[] = [
+  { id: "excellent", label: "Excellent" },
+  { id: "strong", label: "Strong" },
+  { id: "moderate", label: "Moderate" },
+];
 
 /**
  * "Paste a job description → Find candidates" — the marketplace hero action.
  * Runs POST /api/recruiter/match and hands the exact API result to onResult.
+ * The panel variant carries a collapsible "Advanced filters" section
+ * (min years, must-have skills, tier multi-select, sort).
  */
 export function JdSearchForm({
   variant = "hero",
@@ -29,12 +38,36 @@ export function JdSearchForm({
   const [location, setLocation] = useState(defaultValues?.location || "");
   const [searching, setSearching] = useState(false);
 
+  // advanced filters (panel variant only)
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [minYears, setMinYears] = useState("");
+  const [mustHaveSkills, setMustHaveSkills] = useState("");
+  const [tiers, setTiers] = useState<MatchTier[]>(["excellent", "strong", "moderate"]);
+  const [sort, setSort] = useState<"score" | "experience">("score");
+
+  const toggleTier = (t: MatchTier) => {
+    setTiers((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
+  };
+
+  const buildFilters = (): MatchFilters | undefined => {
+    const filters: MatchFilters = {};
+    const years = parseInt(minYears, 10);
+    if (!Number.isNaN(years) && years > 0) filters.minYears = years;
+    const skills = mustHaveSkills.split(",").map((s) => s.trim()).filter(Boolean);
+    if (skills.length > 0) filters.mustHaveSkills = skills;
+    if (tiers.length > 0 && tiers.length < TIER_OPTS.length) filters.tiers = tiers;
+    if (sort !== "score") filters.sort = sort;
+    return Object.keys(filters).length > 0 ? filters : undefined;
+  };
+
   const submit = async () => {
     const jd = jobDescription.trim();
     if (jd.length < 30) {
       toast.error("Paste the full job description — a few sentences at least.");
       return;
     }
+    const hero = variant === "hero";
+    const filters = hero ? undefined : buildFilters();
     setSearching(true);
     try {
       const result = await runJdMatch({
@@ -43,8 +76,9 @@ export function JdSearchForm({
         location: location.trim() || undefined,
         page: 1,
         pageSize: 30,
+        filters,
       });
-      onResult(result, { jobDescription: jd, jobTitle: jobTitle.trim(), location: location.trim() });
+      onResult(result, { jobDescription: jd, jobTitle: jobTitle.trim(), location: location.trim(), filters });
     } catch (e: any) {
       const msg = e instanceof ApiError && e.code === "auth"
         ? "Sign in as a recruiter to search."
@@ -93,6 +127,100 @@ export function JdSearchForm({
           className="border-[3px] border-[#141312] bg-white px-4 py-3 text-sm text-[#141312] placeholder:text-[#141312]/35 outline-none transition-all focus:border-[#FF4326]"
         />
       </div>
+
+      {!hero && (
+        <div className="mt-4 border-[3px] border-[#141312]">
+          <button
+            type="button"
+            onClick={() => setFiltersOpen((o) => !o)}
+            aria-expanded={filtersOpen}
+            className="flex w-full items-center justify-between bg-[#E8E7E1] px-4 py-3 fm text-[11px] font-bold uppercase tracking-[0.18em] text-[#141312] transition-colors hover:bg-[#FFE14D]"
+          >
+            <span className="flex items-center gap-2">
+              <SlidersHorizontal size={14} /> Advanced filters
+              {buildFilters() && (
+                <span className="border-2 border-[#141312] bg-[#FF4326] px-1.5 py-0.5 text-[9px] text-white">on</span>
+              )}
+            </span>
+            <ChevronDown size={15} className={cn("transition-transform", filtersOpen && "rotate-180")} />
+          </button>
+          {filtersOpen && (
+            <div className="grid gap-4 border-t-[3px] border-[#141312] bg-white p-4 sm:grid-cols-2">
+              <div>
+                <label className="fm mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-[#141312]/60">
+                  Min years of experience
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  value={minYears}
+                  onChange={(e) => setMinYears(e.target.value)}
+                  placeholder="e.g. 3"
+                  className="w-full border-[3px] border-[#141312] bg-white px-3 py-2.5 text-sm text-[#141312] placeholder:text-[#141312]/35 outline-none focus:border-[#FF4326]"
+                />
+              </div>
+              <div>
+                <label className="fm mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-[#141312]/60">
+                  Sort results
+                </label>
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value as "score" | "experience")}
+                  className="w-full border-[3px] border-[#141312] bg-white px-3 py-2.5 text-sm font-semibold text-[#141312] outline-none focus:border-[#FF4326]"
+                >
+                  <option value="score">Best match</option>
+                  <option value="experience">Most experienced</option>
+                </select>
+              </div>
+              <div className="sm:col-span-2">
+                <label className="fm mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-[#141312]/60">
+                  Must-have skills (comma separated)
+                </label>
+                <input
+                  value={mustHaveSkills}
+                  onChange={(e) => setMustHaveSkills(e.target.value)}
+                  placeholder="e.g. Node.js, PostgreSQL, AWS"
+                  className="w-full border-[3px] border-[#141312] bg-white px-3 py-2.5 text-sm text-[#141312] placeholder:text-[#141312]/35 outline-none focus:border-[#FF4326]"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <div className="fm mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-[#141312]/60">
+                  Match tiers
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {TIER_OPTS.map((t) => {
+                    const on = tiers.includes(t.id);
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => toggleTier(t.id)}
+                        aria-pressed={on}
+                        className={cn(
+                          "flex items-center gap-2 border-[3px] px-3 py-2 fm text-[11px] font-bold uppercase tracking-[0.14em] transition-all",
+                          on
+                            ? "border-[#141312] bg-[#141312] text-[#E8E7E1]"
+                            : "border-[#141312]/30 bg-white text-[#141312]/50 hover:border-[#141312] hover:text-[#141312]",
+                        )}
+                      >
+                        <span className={cn("grid h-4 w-4 place-items-center border-2", on ? "border-[#FFE14D] bg-[#FFE14D] text-[#141312]" : "border-[#141312]/40")}>
+                          {on && (
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                              <path d="M1.5 5.5L4 8L8.5 2.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </span>
+                        {t.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       <button
         onClick={submit}
         disabled={searching}
