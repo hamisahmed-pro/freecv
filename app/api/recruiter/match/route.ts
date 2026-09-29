@@ -4,16 +4,15 @@ import { checkRateLimit } from '@/lib/rate-limit';
 import { supabaseAdmin } from '@/lib/supabase';
 import { authenticateRecruiter } from '@/lib/recruiter-auth';
 import {
-  anonymizeProfile,
   buildFtsQuery,
   extractJD,
-  scoreCandidate,
-  tierFor,
+  mergeMustHaveSkills,
+  normalizeMatchFilters,
+  runMatchPipeline,
   MATCH_ELIGIBILITY,
-  MATCH_MIN_SCORE,
   type ExtractedJD,
+  type MatchFilters,
   type MatchPoolRow,
-  type ScoredMatch,
 } from '@/lib/recruiter-match';
 
 export const dynamic = 'force-dynamic';
@@ -59,14 +58,19 @@ export async function POST(req: Request) {
   const locationOverride = String(body?.location || '').trim().slice(0, 120) || null;
   const page = Math.max(1, parseInt(String(body?.page ?? '1'), 10) || 1);
   const pageSize = Math.min(50, Math.max(1, parseInt(String(body?.pageSize ?? '20'), 10) || 20));
+  // Optional advanced search filters (backwards compatible: omitted = defaults).
+  const filters: MatchFilters = normalizeMatchFilters(body?.filters);
 
   try {
     // (a) Extract structured requirements — Gemini first, keyword fallback.
+    // Recruiter-supplied must-have skills are merged into the extracted JD
+    // BEFORE FTS + scoring, so they influence ranking, scores, and reasons.
     const extracted: ExtractedJD = await extractJD(jobDescription, jobTitle);
     if (locationOverride) extracted.location = locationOverride;
+    const merged = mergeMustHaveSkills(extracted, filters);
 
     // (b) FTS rank map over the consented pool only (RPC enforces consent).
-    const ftsText = buildFtsQuery(extracted);
+    const ftsText = buildFtsQuery(merged);
     let rankMap = new Map<string, number>();
     let maxRank = 0;
     if (ftsText.trim()) {
@@ -100,32 +104,13 @@ export async function POST(req: Request) {
       pool = (data || []) as MatchPoolRow[];
     }
 
-    // (d) Score, tier, and filter.
-    const scored: ScoredMatch[] = [];
-    for (const p of pool) {
-      const ftsRatio = rankMap.has(p.id) && maxRank > 0 ? (rankMap.get(p.id) as number) / maxRank : null;
-      const { score, reasons, matchedSkills } = scoreCandidate(p, extracted, ftsRatio);
-      const tier = tierFor(score);
-      if (!tier) continue; // below MATCH_MIN_SCORE — excluded
-      scored.push({
-        profileId: p.id,
-        tier,
-        score,
-        reasons,
-        profile: anonymizeProfile(p, matchedSkills),
-      });
-    }
-    scored.sort((a, b) => b.score - a.score);
-
-    const counts = {
-      total: scored.length,
-      excellent: scored.filter((m) => m.tier === 'excellent').length,
-      strong: scored.filter((m) => m.tier === 'strong').length,
-      moderate: scored.filter((m) => m.tier === 'moderate').length,
-    };
+    // (d) Score, tier, filter, and sort. Counts reflect the FILTERED set.
+    const ftsRatioFor = (profileId: string): number | null =>
+      rankMap.has(profileId) && maxRank > 0 ? (rankMap.get(profileId) as number) / maxRank : null;
+    const { matches: filtered, counts } = runMatchPipeline(pool, merged, filters, ftsRatioFor);
 
     const offset = (page - 1) * pageSize;
-    const matches = scored.slice(offset, offset + pageSize);
+    const matches = filtered.slice(offset, offset + pageSize);
 
     // (e) Persist the search row.
     let searchId: string | null = null;
@@ -134,9 +119,9 @@ export async function POST(req: Request) {
         .from('jd_searches')
         .insert({
           recruiter_id: recruiter.id,
-          job_title: extracted.title,
+          job_title: merged.title,
           job_description: jobDescription.slice(0, 20000),
-          extracted_json: { ...extracted },
+          extracted_json: { ...merged },
           counts_json: counts,
           saved: false,
         })
@@ -165,7 +150,7 @@ export async function POST(req: Request) {
     // Searching is FREE: no credit deduction, no subscription check.
     return NextResponse.json({
       searchId,
-      extracted,
+      extracted: merged,
       counts,
       matches,
       page,
