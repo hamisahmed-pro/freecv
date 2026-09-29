@@ -4,7 +4,7 @@
  * Contracts (backend, being built in parallel — every call fails honestly when
  * the endpoint isn't there yet; NEVER fabricate candidates or counts here):
  *
- *  POST /api/recruiter/match   {jobDescription, jobTitle?, location?, page?, pageSize?}
+ *  POST /api/recruiter/match   {jobDescription, jobTitle?, location?, page?, pageSize?, filters?}
  *    → {searchId, extracted:{...}, counts:{total, excellent, strong, moderate},
  *       matches:[{profileId, tier, score, reasons[], profile:{...}}], page, pageSize}
  *  POST /api/recruiter/unlock   {profileId}
@@ -24,6 +24,17 @@ import { supabase } from "@/lib/supabase";
 /* ------------------------------ types ------------------------------ */
 
 export type MatchTier = "excellent" | "strong" | "moderate";
+
+export interface MatchFilters {
+  /** Hard minimum years of experience; candidates with unknown experience stay in. */
+  minYears?: number;
+  /** Extra must-have skills merged into the JD before FTS + scoring. */
+  mustHaveSkills?: string[];
+  /** Tier allow-list; omitted or empty = all tiers. */
+  tiers?: MatchTier[];
+  /** "score" (default) or "experience" (years desc, nulls last, tie-break score). */
+  sort?: "score" | "experience";
+}
 
 export interface ExtractedJd {
   title: string;
@@ -51,6 +62,10 @@ export interface JdMatch {
   reasons: string[];
   profile: AnonProfile;
   shortlisted?: boolean;
+  /** Must-have + nice-to-have skills the candidate's profile matched. */
+  matchedSkills: string[];
+  /** Merged must-have skills absent from matchedSkills. */
+  missingSkills: string[];
 }
 
 export interface MatchCounts {
@@ -124,7 +139,7 @@ export class ApiError extends Error {
   }
 }
 
-async function authed(path: string, init: RequestInit = {}): Promise<Response> {
+export async function authed(path: string, init: RequestInit = {}): Promise<Response> {
   const { data: { session } } = await supabase.auth.getSession();
   const headers: Record<string, string> = {
     ...(init.headers as Record<string, string> | undefined),
@@ -134,7 +149,7 @@ async function authed(path: string, init: RequestInit = {}): Promise<Response> {
   return fetch(path, { ...init, headers, credentials: "same-origin" });
 }
 
-async function parse<T>(res: Response): Promise<T> {
+export async function parse<T>(res: Response): Promise<T> {
   const json = await res.json().catch(() => ({}));
   if (!res.ok) {
     const msg: string = json?.error || json?.message || `Request failed (${res.status})`;
@@ -153,6 +168,7 @@ export async function runJdMatch(input: {
   location?: string;
   page?: number;
   pageSize?: number;
+  filters?: MatchFilters;
 }): Promise<MatchResult> {
   const res = await authed("/api/recruiter/match", {
     method: "POST",
