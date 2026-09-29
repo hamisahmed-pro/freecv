@@ -1173,7 +1173,7 @@ export default function FreeCVApp() {
             <ImportResume />
 
             {/* Desktop section tabs — the end of endless scrolling. */}
-            <div ref={tabsTopRef} className="hidden lg:block mb-8 scroll-mt-40">
+            <div ref={tabsTopRef} className="desktop-tabbar mb-8 scroll-mt-40">
               <div className="flex items-center justify-between mb-3">
                 <p className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/50">Resume Sections</p>
                 <p className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/50">
@@ -1565,7 +1565,12 @@ export default function FreeCVApp() {
            Below lg the accordion toggle works normally. Plain CSS (not
            Tailwind responsive variants) so the production cascade can't
            swallow it the way lg:block lost to .hidden. */
+        /* Desktop section tab bar: hidden below lg, shown on desktop.
+           Plain CSS (not Tailwind responsive variants) so the production
+           cascade can't swallow it the way lg:block lost to .hidden. */
+        .desktop-tabbar { display: none; }
         @media (min-width: 1024px) {
+          .desktop-tabbar { display: block; }
           .section-toggle { pointer-events: none; cursor: default; }
           .section-toggle-chevron { display: none; }
           .section-body { display: block !important; }
