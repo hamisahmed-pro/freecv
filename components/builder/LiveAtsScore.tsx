@@ -69,7 +69,7 @@ export function LiveAtsScore() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 bg-[#FFFDF8] hover:bg-white border-2 border-[#141312] px-2.5 sm:px-3 py-1.5 transition-all shadow-[2px_2px_0_#141312] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer select-none"
+        className="flex items-center gap-2 bg-[#FFFDF8] hover:bg-white border-2 border-[#141312] px-2 sm:px-3 py-1.5 transition-all shadow-[2px_2px_0_#141312] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer select-none"
         title="Click to view real-time ATS scoring breakdown & suggestions"
         aria-label="ATS Score Breakdown"
       >
@@ -79,10 +79,10 @@ export function LiveAtsScore() {
             ATS <span className={getScoreColor(score)}>{score}/100</span>
           </span>
         </div>
-        <span className={`fm text-[9px] font-black px-1.5 py-0.5 border border-[#141312] ${getGradeBadge(grade)}`}>
+        <span className={`hidden sm:inline-block fm text-[9px] font-black px-1.5 py-0.5 border border-[#141312] ${getGradeBadge(grade)}`}>
           {grade}
         </span>
-        {isOpen ? <ChevronUp size={13} className="text-[#141312]" /> : <ChevronDown size={13} className="text-[#141312]" />}
+        {isOpen ? <ChevronUp size={13} className="hidden sm:block text-[#141312]" /> : <ChevronDown size={13} className="hidden sm:block text-[#141312]" />}
       </button>
 
       {/* Centered Modal Overlay (portaled to document.body so ancestor
