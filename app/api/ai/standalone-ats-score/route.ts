@@ -17,6 +17,23 @@ const CACHE_PROMPT_TYPE = 'standalone-ats-v2';
 export const runtime = 'nodejs';
 export const maxDuration = 60; // 60 seconds
 
+// Time budgets — Vercel kills this function at 60s (maxDuration) and the
+// route below makes two sequential Gemini calls. Bound them to a shared
+// budget so a slow model surfaces as an honest 503 instead of
+// FUNCTION_INVOCATION_TIMEOUT.
+const JD_BUDGET_MS = 15_000; // rubric extraction; falls back to a standard rubric on timeout
+const HARD_STOP_MS = 50_000; // stop starting new work 10s before Vercel kills the function
+
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(label)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => {
+    if (timer) clearTimeout(timer);
+  });
+}
+
 async function hashText(text: string) {
   const msgUint8 = new TextEncoder().encode(text);
   const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
@@ -25,6 +42,7 @@ async function hashText(text: string) {
 }
 
 export async function POST(req: Request) {
+  const routeStart = Date.now();
   try {
     const rateLimitResponse = await checkRateLimit(req);
     if (rateLimitResponse) return rateLimitResponse;
@@ -103,7 +121,13 @@ export async function POST(req: Request) {
     
     let jdAnalysis = '';
     try {
-      jdAnalysis = await generateContentWithRetry(jdPrompt, jdSysInstruction, 500, false, [], 'ats_score_jd');
+      // Bound the rubric-extraction call: on slowness it falls back fast so
+      // the scoring call keeps almost the whole 60s function budget.
+      jdAnalysis = await withTimeout(
+        generateContentWithRetry(jdPrompt, jdSysInstruction, 500, false, [], 'ats_score_jd'),
+        JD_BUDGET_MS,
+        'JD_TIMEOUT'
+      );
     } catch (e) {
       jdAnalysis = "Standard rubric: require a match of core skills and relevant experience.";
     }
@@ -126,7 +150,23 @@ export async function POST(req: Request) {
       const filesArray = inlineData ? [inlineData] : [];
       const actualPrompt = inlineData ? scoringPrompt : scoringPrompt; // text part
 
-      result = await generateContentWithRetry(actualPrompt, scoringSysInstruction, 4000, true, filesArray, 'standalone_ats_score');
+      // Shared budget guard: if the rubric step already ate the budget, fail
+      // honest (503) instead of letting Vercel kill the function mid-flight.
+      const elapsedMs = Date.now() - routeStart;
+      if (elapsedMs > HARD_STOP_MS) {
+        throw new AiOverloadedError();
+      }
+      const remainingMs = Math.max(8000, HARD_STOP_MS - elapsedMs);
+      try {
+        result = await withTimeout(
+          generateContentWithRetry(actualPrompt, scoringSysInstruction, 4000, true, filesArray, 'standalone_ats_score'),
+          remainingMs,
+          'SCORING_TIMEOUT'
+        );
+      } catch (e) {
+        if (e instanceof Error && e.message === 'SCORING_TIMEOUT') throw new AiOverloadedError();
+        throw e;
+      }
 
       if (typeof result.score !== 'number' || !Array.isArray(result.strengths) || !Array.isArray(result.weaknesses)) {
         throw new Error('Malformed schema');
