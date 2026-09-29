@@ -11,7 +11,7 @@ import { temporal } from 'zundo';
 import {
   User, Briefcase, GraduationCap, Wrench, Plus, Trash2, Download, X, Eye, Layout,
   FolderOpen, Award, Users, Paintbrush, Sparkles, Loader2, GripVertical, FileText,
-  BarChart3, RefreshCw, Undo2, Redo2, ChevronDown, ZoomIn, ZoomOut, Upload, Share2, Pencil
+  BarChart3, RefreshCw, Undo2, Redo2, ChevronDown, ZoomIn, ZoomOut, Upload, Share2
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { clsx, type ClassValue } from 'clsx';
@@ -933,7 +933,7 @@ export default function FreeCVApp() {
                 </span>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
               <LiveAtsScore />
               <div className="hidden sm:flex items-center gap-1 border-l-2 border-[#141312]/20 pl-2">
                 <button onClick={() => useResumeStore.temporal.getState().undo()} className="p-2 border-2 border-[#141312] bg-white hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors text-[#141312]" title="Undo (Ctrl+Z)">
@@ -943,11 +943,11 @@ export default function FreeCVApp() {
                   <Redo2 size={16} />
                 </button>
               </div>
-              <button onClick={handleDownload} className="group flex items-center gap-2 bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-4 py-2.5 fm text-xs font-bold uppercase tracking-widest active:translate-y-[2px] active:shadow-none transition-all">
-                <Download size={15} className="group-hover:-translate-y-0.5 transition-transform" /> Download PDF
+              <button onClick={handleDownload} className="group flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-2 sm:px-4 py-2 sm:py-2.5 fm text-[10px] sm:text-xs font-bold uppercase tracking-wide sm:tracking-widest whitespace-nowrap active:translate-y-[2px] active:shadow-none transition-all">
+                <Download size={15} className="hidden sm:block group-hover:-translate-y-0.5 transition-transform" /> Download PDF
               </button>
-              <button onClick={handleDocxExport} className="flex group items-center gap-2 bg-[#2233FF] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-4 py-2.5 fm text-xs font-bold uppercase tracking-widest active:translate-y-[2px] active:shadow-none transition-all" title="Download Word Document">
-                <FileText size={15} className="group-hover:-translate-y-0.5 transition-transform" /> Download DOCX
+              <button onClick={handleDocxExport} className="flex-1 sm:flex-none flex group items-center justify-center gap-1.5 sm:gap-2 bg-[#2233FF] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-2 sm:px-4 py-2 sm:py-2.5 fm text-[10px] sm:text-xs font-bold uppercase tracking-wide sm:tracking-widest whitespace-nowrap active:translate-y-[2px] active:shadow-none transition-all" title="Download Word Document">
+                <FileText size={15} className="hidden sm:block group-hover:-translate-y-0.5 transition-transform" /> Download DOCX
               </button>
             </div>
           </header>
@@ -1117,28 +1117,20 @@ export default function FreeCVApp() {
         </div>
       </section>
 
-      {/* MOBILE EDIT/PREVIEW SWITCH — one pane at a time below lg.
-          Positioning is inline (not Tailwind utilities) so it can never be
-          dropped by the utility scanner: fixed bottom-center. */}
-      <div className="lg:hidden fixed z-40 print:hidden w-full max-w-sm px-6"
-        style={{ position: 'fixed', bottom: '1.5rem', left: '50%', transform: 'translateX(-50%)' }}>
-        <div className="grid grid-cols-2 bg-white border-[3px] border-[#141312] hs overflow-hidden" role="tablist" aria-label="Editor view">
+      {/* MOBILE PREVIEW BUTTON — single page-wide blue button below lg.
+          Shows only while the editor is open; the preview overlay carries its
+          own Edit button to return. Positioning is inline (not Tailwind
+          utilities) so it can never be dropped by the utility scanner. */}
+      {!isPreviewOpen && (
+        <div className="lg:hidden fixed z-40 print:hidden w-full max-w-sm px-6"
+          style={{ position: 'fixed', bottom: '1.5rem', left: '50%', transform: 'translateX(-50%)' }}>
           <button
-            role="tab"
-            aria-selected={!isPreviewOpen}
-            onClick={() => setIsPreviewOpen(false)}
-            className={cn("flex items-center justify-center gap-2 px-4 py-3.5 fm text-xs font-bold uppercase tracking-widest transition-colors", !isPreviewOpen ? "bg-[#141312] text-[#E8E7E1]" : "bg-white text-[#141312]/50 hover:text-[#141312]")}>
-            <Pencil size={15} /> Edit
-          </button>
-          <button
-            role="tab"
-            aria-selected={isPreviewOpen}
             onClick={() => { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }}
-            className={cn("flex items-center justify-center gap-2 px-4 py-3.5 fm text-xs font-bold uppercase tracking-widest transition-colors border-l-[3px] border-[#141312]", isPreviewOpen ? "bg-[#141312] text-[#E8E7E1]" : "bg-white text-[#141312]/50 hover:text-[#141312]")}>
+            className="w-full flex items-center justify-center gap-2 px-4 py-3.5 fm text-xs font-bold uppercase tracking-widest transition-colors bg-[#2233FF] text-[#E8E7E1] border-[3px] border-[#141312] hs active:translate-y-[2px] active:shadow-none">
             <Eye size={15} /> Preview
           </button>
         </div>
-      </div>
+      )}
 
       {/* PREVIEW PANEL — NON-STICKY, scrolls naturally with the page */}
       <section
