@@ -87,16 +87,17 @@ const Card = ({ children, className }: any) => (
   </div>
 );
 
-// Collapsible section wrapper. On desktop (lg+) it always renders expanded
-// with an inert header, so the desktop layout is unchanged. Below lg it
-// behaves as an accordion, turning the long scrolling editor into a compact
-// tappable list of sections on phones.
+// Collapsible section wrapper. Sections start expanded on desktop (lg+)
+// and collapsed on smaller screens; the header toggles on every viewport.
+// (The old approach — "lg:block" overriding "hidden" in CSS — lost the
+// cascade in production builds, leaving the Density/Theme controls
+// unreachable on desktop, so expansion is now state-driven instead.)
 const SectionAccordion = ({ id, icon: Icon, title, description, action, onRemove, tools, defaultOpen = false, children }: any) => {
   const [open, setOpen] = useState(defaultOpen);
-  const toggle = () => {
-    if (typeof window !== 'undefined' && window.innerWidth >= 1024) return;
-    setOpen((o: boolean) => !o);
-  };
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) setOpen(true);
+  }, []);
+  const toggle = () => setOpen((o: boolean) => !o);
   return (
     <div>
       <div className="flex justify-between items-center gap-3 mb-6">
@@ -105,7 +106,7 @@ const SectionAccordion = ({ id, icon: Icon, title, description, action, onRemove
           onClick={toggle}
           aria-expanded={open}
           aria-controls={`section-body-${id}`}
-          className="flex-1 min-w-0 text-left cursor-pointer lg:cursor-default lg:pointer-events-none"
+          className="flex-1 min-w-0 text-left cursor-pointer"
         >
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-4 min-w-0">
@@ -117,7 +118,7 @@ const SectionAccordion = ({ id, icon: Icon, title, description, action, onRemove
                 <p className="fm text-[10px] font-bold uppercase tracking-[0.18em] text-[#141312]/50">{description}</p>
               </div>
             </div>
-            <span className={cn("lg:hidden shrink-0 p-2 border-2 border-[#141312] bg-white text-[#141312] transition-transform", open && "rotate-180")}>
+            <span className={cn("shrink-0 p-2 border-2 border-[#141312] bg-white text-[#141312] transition-transform", open && "rotate-180")}>
               <ChevronDown size={16} />
             </span>
           </div>
@@ -138,7 +139,7 @@ const SectionAccordion = ({ id, icon: Icon, title, description, action, onRemove
           </div>
         )}
       </div>
-      <div id={`section-body-${id}`} className={cn(open ? "block" : "hidden", "lg:block")}>
+      <div id={`section-body-${id}`} className={open ? "block" : "hidden"}>
         {children}
       </div>
     </div>
@@ -1588,47 +1589,302 @@ export default function FreeCVApp() {
         }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #14131233; border-radius: 0; }
-        /* Compact density: tightens spacing + type on the resume output.
-           Applied as a class on the template stage, so it flows through the
-           on-screen preview, print/PDF (same DOM) and the DOCX capture path
-           (which inlines computed styles). */
-        .density-compact .p-\\[0\\.75in\\] { padding: 0.45in !important; }
-        .density-compact .mb-8 { margin-bottom: 1rem !important; }
-        .density-compact .mb-6 { margin-bottom: 0.75rem !important; }
-        .density-compact .mb-5 { margin-bottom: 0.65rem !important; }
-        .density-compact .mb-4 { margin-bottom: 0.55rem !important; }
-        .density-compact .mb-3 { margin-bottom: 0.45rem !important; }
-        .density-compact .mb-2 { margin-bottom: 0.35rem !important; }
-        .density-compact .mb-1 { margin-bottom: 0.2rem !important; }
-        .density-compact .mt-8 { margin-top: 1rem !important; }
-        .density-compact .mt-6 { margin-top: 0.75rem !important; }
-        .density-compact .mt-4 { margin-top: 0.55rem !important; }
-        .density-compact .pb-8 { padding-bottom: 1rem !important; }
-        .density-compact .pt-8 { padding-top: 1rem !important; }
-        .density-compact .pl-6 { padding-left: 0.85rem !important; }
-        .density-compact .space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.9rem !important; }
-        .density-compact .space-y-5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.75rem !important; }
-        .density-compact .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.6rem !important; }
-        .density-compact .space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.45rem !important; }
-        .density-compact .space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.35rem !important; }
-        .density-compact .space-y-1 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.2rem !important; }
-        .density-compact .gap-12 { gap: 1.5rem !important; }
-        .density-compact .gap-8 { gap: 1.1rem !important; }
-        .density-compact .gap-6 { gap: 0.9rem !important; }
-        .density-compact .gap-4 { gap: 0.6rem !important; }
-        .density-compact .gap-3 { gap: 0.45rem !important; }
-        .density-compact .gap-2 { gap: 0.35rem !important; }
-        .density-compact .text-5xl { font-size: 2.35rem !important; }
-        .density-compact .text-4xl { font-size: 1.85rem !important; }
-        .density-compact .text-3xl { font-size: 1.45rem !important; }
-        .density-compact .text-2xl { font-size: 1.25rem !important; }
-        .density-compact .text-xl { font-size: 1.02rem !important; }
-        .density-compact .text-lg { font-size: 0.92rem !important; }
-        .density-compact .text-base { font-size: 0.83rem !important; }
-        .density-compact .text-sm { font-size: 0.76rem !important; }
-        .density-compact .text-xs { font-size: 0.68rem !important; }
-        .density-compact .leading-relaxed { line-height: 1.4 !important; }
-      `}} />
+                /* Compact density: generated from html_templates usage — 292 rules. */
+        .density-compact .-ml-16 { margin-left: -2.48rem !important; }
+        .density-compact .-mt-4 { margin-top: -0.62rem !important; }
+        .density-compact .-mx-12 { margin-left: -1.86rem; margin-right: -1.86rem !important; }
+        .density-compact .gap-1 { gap: 0.155rem !important; }
+        .density-compact .gap-1\\.5 { gap: 0.232rem !important; }
+        .density-compact .gap-10 { gap: 1.55rem !important; }
+        .density-compact .gap-12 { gap: 1.86rem !important; }
+        .density-compact .gap-2 { gap: 0.31rem !important; }
+        .density-compact .gap-2\\.5 { gap: 0.388rem !important; }
+        .density-compact .gap-3 { gap: 0.465rem !important; }
+        .density-compact .gap-4 { gap: 0.62rem !important; }
+        .density-compact .gap-5 { gap: 0.775rem !important; }
+        .density-compact .gap-6 { gap: 0.93rem !important; }
+        .density-compact .gap-7 { gap: 1.085rem !important; }
+        .density-compact .gap-8 { gap: 1.24rem !important; }
+        .density-compact .gap-9 { gap: 1.395rem !important; }
+        .density-compact .gap-x-10 { column-gap: 1.55rem !important; }
+        .density-compact .gap-x-2 { column-gap: 0.31rem !important; }
+        .density-compact .gap-x-3 { column-gap: 0.465rem !important; }
+        .density-compact .gap-x-4 { column-gap: 0.62rem !important; }
+        .density-compact .gap-x-5 { column-gap: 0.775rem !important; }
+        .density-compact .gap-x-6 { column-gap: 0.93rem !important; }
+        .density-compact .gap-x-8 { column-gap: 1.24rem !important; }
+        .density-compact .gap-y-1 { row-gap: 0.155rem !important; }
+        .density-compact .gap-y-1\\.5 { row-gap: 0.232rem !important; }
+        .density-compact .gap-y-2 { row-gap: 0.31rem !important; }
+        .density-compact .gap-y-3 { row-gap: 0.465rem !important; }
+        .density-compact .gap-y-4 { row-gap: 0.62rem !important; }
+        .density-compact .gap-y-5 { row-gap: 0.775rem !important; }
+        .density-compact .gap-y-6 { row-gap: 0.93rem !important; }
+        .density-compact .gap-y-8 { row-gap: 1.24rem !important; }
+        .density-compact .mb-0\\.5 { margin-bottom: 0.077rem !important; }
+        .density-compact .mb-1 { margin-bottom: 0.155rem !important; }
+        .density-compact .mb-1\\.5 { margin-bottom: 0.232rem !important; }
+        .density-compact .mb-10 { margin-bottom: 1.55rem !important; }
+        .density-compact .mb-12 { margin-bottom: 1.86rem !important; }
+        .density-compact .mb-14 { margin-bottom: 2.17rem !important; }
+        .density-compact .mb-16 { margin-bottom: 2.48rem !important; }
+        .density-compact .mb-2 { margin-bottom: 0.31rem !important; }
+        .density-compact .mb-2\\.5 { margin-bottom: 0.388rem !important; }
+        .density-compact .mb-20 { margin-bottom: 3.1rem !important; }
+        .density-compact .mb-3 { margin-bottom: 0.465rem !important; }
+        .density-compact .mb-4 { margin-bottom: 0.62rem !important; }
+        .density-compact .mb-5 { margin-bottom: 0.775rem !important; }
+        .density-compact .mb-6 { margin-bottom: 0.93rem !important; }
+        .density-compact .mb-7 { margin-bottom: 1.085rem !important; }
+        .density-compact .mb-8 { margin-bottom: 1.24rem !important; }
+        .density-compact .mb-9 { margin-bottom: 1.395rem !important; }
+        .density-compact .ml-10 { margin-left: 1.55rem !important; }
+        .density-compact .ml-2 { margin-left: 0.31rem !important; }
+        .density-compact .ml-3 { margin-left: 0.465rem !important; }
+        .density-compact .ml-3\\.5 { margin-left: 0.542rem !important; }
+        .density-compact .ml-4 { margin-left: 0.62rem !important; }
+        .density-compact .ml-5 { margin-left: 0.775rem !important; }
+        .density-compact .ml-6 { margin-left: 0.93rem !important; }
+        .density-compact .ml-8 { margin-left: 1.24rem !important; }
+        .density-compact .ml-\\[154px\\] { margin-left: 95.5px !important; }
+        .density-compact .ml-\\[26px\\] { margin-left: 16.1px !important; }
+        .density-compact .mr-1\\.5 { margin-right: 0.232rem !important; }
+        .density-compact .mr-2 { margin-right: 0.31rem !important; }
+        .density-compact .mr-3 { margin-right: 0.465rem !important; }
+        .density-compact .mr-5 { margin-right: 0.775rem !important; }
+        .density-compact .mt-0\\.5 { margin-top: 0.077rem !important; }
+        .density-compact .mt-1 { margin-top: 0.155rem !important; }
+        .density-compact .mt-1\\.5 { margin-top: 0.232rem !important; }
+        .density-compact .mt-10 { margin-top: 1.55rem !important; }
+        .density-compact .mt-11 { margin-top: 1.705rem !important; }
+        .density-compact .mt-12 { margin-top: 1.86rem !important; }
+        .density-compact .mt-14 { margin-top: 2.17rem !important; }
+        .density-compact .mt-16 { margin-top: 2.48rem !important; }
+        .density-compact .mt-2 { margin-top: 0.31rem !important; }
+        .density-compact .mt-2\\.5 { margin-top: 0.388rem !important; }
+        .density-compact .mt-3 { margin-top: 0.465rem !important; }
+        .density-compact .mt-4 { margin-top: 0.62rem !important; }
+        .density-compact .mt-5 { margin-top: 0.775rem !important; }
+        .density-compact .mt-6 { margin-top: 0.93rem !important; }
+        .density-compact .mt-7 { margin-top: 1.085rem !important; }
+        .density-compact .mt-8 { margin-top: 1.24rem !important; }
+        .density-compact .mt-9 { margin-top: 1.395rem !important; }
+        .density-compact .mt-\\[2px\\] { margin-top: 1.2px !important; }
+        .density-compact .mt-\\[3px\\] { margin-top: 1.9px !important; }
+        .density-compact .mt-\\[4px\\] { margin-top: 2.5px !important; }
+        .density-compact .mt-\\[5px\\] { margin-top: 3.1px !important; }
+        .density-compact .mt-\\[7px\\] { margin-top: 4.3px !important; }
+        .density-compact .mx-2 { margin-left: 0.31rem; margin-right: 0.31rem !important; }
+        .density-compact .mx-3 { margin-left: 0.465rem; margin-right: 0.465rem !important; }
+        .density-compact .mx-5 { margin-left: 0.775rem; margin-right: 0.775rem !important; }
+        .density-compact .my-1 { margin-top: 0.155rem; margin-bottom: 0.155rem !important; }
+        .density-compact .my-10 { margin-top: 1.55rem; margin-bottom: 1.55rem !important; }
+        .density-compact .my-3 { margin-top: 0.465rem; margin-bottom: 0.465rem !important; }
+        .density-compact .my-6 { margin-top: 0.93rem; margin-bottom: 0.93rem !important; }
+        .density-compact .p-10 { padding: 1.55rem !important; }
+        .density-compact .p-12 { padding: 1.86rem !important; }
+        .density-compact .p-14 { padding: 2.17rem !important; }
+        .density-compact .p-16 { padding: 2.48rem !important; }
+        .density-compact .p-3 { padding: 0.465rem !important; }
+        .density-compact .p-4 { padding: 0.62rem !important; }
+        .density-compact .p-5 { padding: 0.775rem !important; }
+        .density-compact .p-6 { padding: 0.93rem !important; }
+        .density-compact .p-7 { padding: 1.085rem !important; }
+        .density-compact .p-8 { padding: 1.24rem !important; }
+        .density-compact .pb-1 { padding-bottom: 0.155rem !important; }
+        .density-compact .pb-1\\.5 { padding-bottom: 0.232rem !important; }
+        .density-compact .pb-10 { padding-bottom: 1.55rem !important; }
+        .density-compact .pb-12 { padding-bottom: 1.86rem !important; }
+        .density-compact .pb-14 { padding-bottom: 2.17rem !important; }
+        .density-compact .pb-2 { padding-bottom: 0.31rem !important; }
+        .density-compact .pb-2\\.5 { padding-bottom: 0.388rem !important; }
+        .density-compact .pb-3 { padding-bottom: 0.465rem !important; }
+        .density-compact .pb-4 { padding-bottom: 0.62rem !important; }
+        .density-compact .pb-5 { padding-bottom: 0.775rem !important; }
+        .density-compact .pb-6 { padding-bottom: 0.93rem !important; }
+        .density-compact .pb-7 { padding-bottom: 1.085rem !important; }
+        .density-compact .pb-8 { padding-bottom: 1.24rem !important; }
+        .density-compact .pl-10 { padding-left: 1.55rem !important; }
+        .density-compact .pl-16 { padding-left: 2.48rem !important; }
+        .density-compact .pl-2\\.5 { padding-left: 0.388rem !important; }
+        .density-compact .pl-3 { padding-left: 0.465rem !important; }
+        .density-compact .pl-4 { padding-left: 0.62rem !important; }
+        .density-compact .pl-5 { padding-left: 0.775rem !important; }
+        .density-compact .pl-6 { padding-left: 0.93rem !important; }
+        .density-compact .pl-8 { padding-left: 1.24rem !important; }
+        .density-compact .pl-\\[116px\\] { padding-left: 71.9px !important; }
+        .density-compact .pr-10 { padding-right: 1.55rem !important; }
+        .density-compact .pr-12 { padding-right: 1.86rem !important; }
+        .density-compact .pr-2 { padding-right: 0.31rem !important; }
+        .density-compact .pr-4 { padding-right: 0.62rem !important; }
+        .density-compact .pr-6 { padding-right: 0.93rem !important; }
+        .density-compact .pr-8 { padding-right: 1.24rem !important; }
+        .density-compact .pt-1 { padding-top: 0.155rem !important; }
+        .density-compact .pt-1\\.5 { padding-top: 0.232rem !important; }
+        .density-compact .pt-10 { padding-top: 1.55rem !important; }
+        .density-compact .pt-12 { padding-top: 1.86rem !important; }
+        .density-compact .pt-14 { padding-top: 2.17rem !important; }
+        .density-compact .pt-16 { padding-top: 2.48rem !important; }
+        .density-compact .pt-3 { padding-top: 0.465rem !important; }
+        .density-compact .pt-4 { padding-top: 0.62rem !important; }
+        .density-compact .pt-6 { padding-top: 0.93rem !important; }
+        .density-compact .pt-7 { padding-top: 1.085rem !important; }
+        .density-compact .pt-8 { padding-top: 1.24rem !important; }
+        .density-compact .pt-9 { padding-top: 1.395rem !important; }
+        .density-compact .px-1 { padding-left: 0.155rem; padding-right: 0.155rem !important; }
+        .density-compact .px-10 { padding-left: 1.55rem; padding-right: 1.55rem !important; }
+        .density-compact .px-11 { padding-left: 1.705rem; padding-right: 1.705rem !important; }
+        .density-compact .px-12 { padding-left: 1.86rem; padding-right: 1.86rem !important; }
+        .density-compact .px-14 { padding-left: 2.17rem; padding-right: 2.17rem !important; }
+        .density-compact .px-16 { padding-left: 2.48rem; padding-right: 2.48rem !important; }
+        .density-compact .px-2 { padding-left: 0.31rem; padding-right: 0.31rem !important; }
+        .density-compact .px-2\\.5 { padding-left: 0.388rem; padding-right: 0.388rem !important; }
+        .density-compact .px-20 { padding-left: 3.1rem; padding-right: 3.1rem !important; }
+        .density-compact .px-3 { padding-left: 0.465rem; padding-right: 0.465rem !important; }
+        .density-compact .px-3\\.5 { padding-left: 0.542rem; padding-right: 0.542rem !important; }
+        .density-compact .px-4 { padding-left: 0.62rem; padding-right: 0.62rem !important; }
+        .density-compact .px-5 { padding-left: 0.775rem; padding-right: 0.775rem !important; }
+        .density-compact .px-6 { padding-left: 0.93rem; padding-right: 0.93rem !important; }
+        .density-compact .px-7 { padding-left: 1.085rem; padding-right: 1.085rem !important; }
+        .density-compact .px-8 { padding-left: 1.24rem; padding-right: 1.24rem !important; }
+        .density-compact .px-9 { padding-left: 1.395rem; padding-right: 1.395rem !important; }
+        .density-compact .py-0\\.5 { padding-top: 0.077rem; padding-bottom: 0.077rem !important; }
+        .density-compact .py-1 { padding-top: 0.155rem; padding-bottom: 0.155rem !important; }
+        .density-compact .py-1\\.5 { padding-top: 0.232rem; padding-bottom: 0.232rem !important; }
+        .density-compact .py-10 { padding-top: 1.55rem; padding-bottom: 1.55rem !important; }
+        .density-compact .py-11 { padding-top: 1.705rem; padding-bottom: 1.705rem !important; }
+        .density-compact .py-12 { padding-top: 1.86rem; padding-bottom: 1.86rem !important; }
+        .density-compact .py-14 { padding-top: 2.17rem; padding-bottom: 2.17rem !important; }
+        .density-compact .py-16 { padding-top: 2.48rem; padding-bottom: 2.48rem !important; }
+        .density-compact .py-2 { padding-top: 0.31rem; padding-bottom: 0.31rem !important; }
+        .density-compact .py-2\\.5 { padding-top: 0.388rem; padding-bottom: 0.388rem !important; }
+        .density-compact .py-24 { padding-top: 3.72rem; padding-bottom: 3.72rem !important; }
+        .density-compact .py-3 { padding-top: 0.465rem; padding-bottom: 0.465rem !important; }
+        .density-compact .py-3\\.5 { padding-top: 0.542rem; padding-bottom: 0.542rem !important; }
+        .density-compact .py-4 { padding-top: 0.62rem; padding-bottom: 0.62rem !important; }
+        .density-compact .py-5 { padding-top: 0.775rem; padding-bottom: 0.775rem !important; }
+        .density-compact .py-6 { padding-top: 0.93rem; padding-bottom: 0.93rem !important; }
+        .density-compact .py-7 { padding-top: 1.085rem; padding-bottom: 1.085rem !important; }
+        .density-compact .py-8 { padding-top: 1.24rem; padding-bottom: 1.24rem !important; }
+        .density-compact .py-9 { padding-top: 1.395rem; padding-bottom: 1.395rem !important; }
+        .density-compact .space-y-0\\.5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.077rem !important; }
+        .density-compact .space-y-1 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.155rem !important; }
+        .density-compact .space-y-1\\.5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.232rem !important; }
+        .density-compact .space-y-10 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.55rem !important; }
+        .density-compact .space-y-12 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.86rem !important; }
+        .density-compact .space-y-14 > :not([hidden]) ~ :not([hidden]) { margin-top: 2.17rem !important; }
+        .density-compact .space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.31rem !important; }
+        .density-compact .space-y-2\\.5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.388rem !important; }
+        .density-compact .space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.465rem !important; }
+        .density-compact .space-y-3\\.5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.542rem !important; }
+        .density-compact .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.62rem !important; }
+        .density-compact .space-y-5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.775rem !important; }
+        .density-compact .space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.93rem !important; }
+        .density-compact .space-y-7 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.085rem !important; }
+        .density-compact .space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.24rem !important; }
+        .density-compact .space-y-9 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.395rem !important; }
+        .density-compact .leading-5 { line-height: 1rem !important; }
+        .density-compact .leading-6 { line-height: 1.2rem !important; }
+        .density-compact .leading-\\[0\\.85\\] { line-height: 0.72 !important; }
+        .density-compact .leading-\\[0\\.95\\] { line-height: 0.81 !important; }
+        .density-compact .leading-\\[0\\.9\\] { line-height: 0.77 !important; }
+        .density-compact .leading-\\[1\\.02\\] { line-height: 0.87 !important; }
+        .density-compact .leading-\\[1\\.05\\] { line-height: 0.89 !important; }
+        .density-compact .leading-\\[1\\.55\\] { line-height: 1.32 !important; }
+        .density-compact .leading-\\[1\\.65\\] { line-height: 1.4 !important; }
+        .density-compact .leading-\\[1\\.6\\] { line-height: 1.36 !important; }
+        .density-compact .leading-\\[1\\.75\\] { line-height: 1.49 !important; }
+        .density-compact .leading-\\[1\\.7\\] { line-height: 1.44 !important; }
+        .density-compact .leading-\\[1\\.85\\] { line-height: 1.57 !important; }
+        .density-compact .leading-\\[1\\.8\\] { line-height: 1.53 !important; }
+        .density-compact .leading-\\[1\\.95\\] { line-height: 1.66 !important; }
+        .density-compact .leading-\\[1\\.9\\] { line-height: 1.61 !important; }
+        .density-compact .leading-\\[2\\.1\\] { line-height: 1.78 !important; }
+        .density-compact .leading-\\[2\\.2\\] { line-height: 1.87 !important; }
+        .density-compact .leading-\\[2\\.4\\] { line-height: 2.04 !important; }
+        .density-compact .leading-\\[2\\] { line-height: 1.7 !important; }
+        .density-compact .text-2xl { font-size: 1.2rem; line-height: 1.6rem !important; }
+        .density-compact .text-3xl { font-size: 1.5rem; line-height: 1.8rem !important; }
+        .density-compact .text-4xl { font-size: 1.8rem; line-height: 2rem !important; }
+        .density-compact .text-5xl { font-size: 2.4rem; line-height: 0.8rem !important; }
+        .density-compact .text-\\[10px\\] { font-size: 8px !important; }
+        .density-compact .text-\\[11\\.5px\\] { font-size: 9.2px !important; }
+        .density-compact .text-\\[11px\\] { font-size: 8.8px !important; }
+        .density-compact .text-\\[12\\.5px\\] { font-size: 10px !important; }
+        .density-compact .text-\\[12px\\] { font-size: 9.6px !important; }
+        .density-compact .text-\\[13\\.5px\\] { font-size: 10.8px !important; }
+        .density-compact .text-\\[13px\\] { font-size: 10.4px !important; }
+        .density-compact .text-\\[14\\.5px\\] { font-size: 11.6px !important; }
+        .density-compact .text-\\[14px\\] { font-size: 11.2px !important; }
+        .density-compact .text-\\[15\\.5px\\] { font-size: 12.4px !important; }
+        .density-compact .text-\\[15px\\] { font-size: 12px !important; }
+        .density-compact .text-\\[16px\\] { font-size: 12.8px !important; }
+        .density-compact .text-\\[17px\\] { font-size: 13.6px !important; }
+        .density-compact .text-\\[22px\\] { font-size: 17.6px !important; }
+        .density-compact .text-\\[26px\\] { font-size: 20.8px !important; }
+        .density-compact .text-\\[28px\\] { font-size: 22.4px !important; }
+        .density-compact .text-\\[32px\\] { font-size: 25.6px !important; }
+        .density-compact .text-\\[34px\\] { font-size: 27.2px !important; }
+        .density-compact .text-\\[36px\\] { font-size: 28.8px !important; }
+        .density-compact .text-\\[38px\\] { font-size: 30.4px !important; }
+        .density-compact .text-\\[40px\\] { font-size: 32px !important; }
+        .density-compact .text-\\[42px\\] { font-size: 33.6px !important; }
+        .density-compact .text-\\[44px\\] { font-size: 35.2px !important; }
+        .density-compact .text-\\[46px\\] { font-size: 36.8px !important; }
+        .density-compact .text-\\[52px\\] { font-size: 41.6px !important; }
+        .density-compact .text-\\[56px\\] { font-size: 44.8px !important; }
+        .density-compact .text-\\[64px\\] { font-size: 51.2px !important; }
+        .density-compact .text-\\[8px\\] { font-size: 6.4px !important; }
+        .density-compact .text-\\[9px\\] { font-size: 7.2px !important; }
+        .density-compact .text-base { font-size: 0.8rem; line-height: 1.2rem !important; }
+        .density-compact .text-lg { font-size: 0.9rem; line-height: 1.4rem !important; }
+        .density-compact .text-sm { font-size: 0.7rem; line-height: 1rem !important; }
+        .density-compact .text-xl { font-size: 1rem; line-height: 1.4rem !important; }
+        .density-compact .text-xs { font-size: 0.6rem; line-height: 0.8rem !important; }
+        .density-compact .leading-loose { line-height: 1.65 !important; }
+        .density-compact .leading-none { line-height: 1 !important; }
+        .density-compact .leading-relaxed { line-height: 1.35 !important; }
+        .density-compact .leading-snug { line-height: 1.15 !important; }
+        .density-compact .leading-tight { line-height: 1.05 !important; }
+
+      
+        .density-compact .-mt-\\[0\\.75in\\] { margin-top: -0.46in !important; }
+        .density-compact .-mx-\\[0\\.75in\\] { margin-left: -0.46in; margin-right: -0.46in !important; }
+        .density-compact .-mx-\\[0\\.9in\\] { margin-left: -0.56in; margin-right: -0.56in !important; }
+        .density-compact .p-\\[0\\.75in\\] { padding: 0.46in !important; }
+        .density-compact .p-\\[0\\.85in\\] { padding: 0.53in !important; }
+        .density-compact .p-\\[0\\.9in\\] { padding: 0.56in !important; }
+        .density-compact .p-\\[1\\.25in\\] { padding: 0.78in !important; }
+        .density-compact .p-\\[1\\.2in\\] { padding: 0.74in !important; }
+        .density-compact .p-\\[1in\\] { padding: 0.62in !important; }
+        .density-compact .pb-\\[0\\.85in\\] { padding-bottom: 0.53in !important; }
+        .density-compact .pb-\\[0\\.8in\\] { padding-bottom: 0.5in !important; }
+        .density-compact .pb-\\[0\\.9in\\] { padding-bottom: 0.56in !important; }
+        .density-compact .pb-\\[1\\.3in\\] { padding-bottom: 0.81in !important; }
+        .density-compact .pb-\\[1in\\] { padding-bottom: 0.62in !important; }
+        .density-compact .pt-\\[0\\.65in\\] { padding-top: 0.4in !important; }
+        .density-compact .pt-\\[0\\.75in\\] { padding-top: 0.46in !important; }
+        .density-compact .pt-\\[0\\.7in\\] { padding-top: 0.43in !important; }
+        .density-compact .pt-\\[0\\.85in\\] { padding-top: 0.53in !important; }
+        .density-compact .pt-\\[0\\.8in\\] { padding-top: 0.5in !important; }
+        .density-compact .pt-\\[0\\.9in\\] { padding-top: 0.56in !important; }
+        .density-compact .pt-\\[1\\.3in\\] { padding-top: 0.81in !important; }
+        .density-compact .px-\\[0\\.65in\\] { padding-left: 0.4in; padding-right: 0.4in !important; }
+        .density-compact .px-\\[0\\.75in\\] { padding-left: 0.46in; padding-right: 0.46in !important; }
+        .density-compact .px-\\[0\\.85in\\] { padding-left: 0.53in; padding-right: 0.53in !important; }
+        .density-compact .px-\\[0\\.8in\\] { padding-left: 0.5in; padding-right: 0.5in !important; }
+        .density-compact .px-\\[0\\.9in\\] { padding-left: 0.56in; padding-right: 0.56in !important; }
+        .density-compact .px-\\[1\\.1in\\] { padding-left: 0.68in; padding-right: 0.68in !important; }
+        .density-compact .px-\\[1\\.4in\\] { padding-left: 0.87in; padding-right: 0.87in !important; }
+        .density-compact .px-\\[1in\\] { padding-left: 0.62in; padding-right: 0.62in !important; }
+        .density-compact .py-\\[0\\.55in\\] { padding-top: 0.34in; padding-bottom: 0.34in !important; }
+        .density-compact .py-\\[0\\.75in\\] { padding-top: 0.46in; padding-bottom: 0.46in !important; }
+        .density-compact .py-\\[0\\.7in\\] { padding-top: 0.43in; padding-bottom: 0.43in !important; }
+        .density-compact .py-\\[0\\.85in\\] { padding-top: 0.53in; padding-bottom: 0.53in !important; }
+        .density-compact .py-\\[0\\.8in\\] { padding-top: 0.5in; padding-bottom: 0.5in !important; }
+        .density-compact .py-\\[0\\.9in\\] { padding-top: 0.56in; padding-bottom: 0.56in !important; }
+        .density-compact .py-\\[1in\\] { padding-top: 0.62in; padding-bottom: 0.62in !important; }
+`}} />
     </main>
   );
 }
