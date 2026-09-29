@@ -11,7 +11,8 @@ import { temporal } from 'zundo';
 import {
   User, Briefcase, GraduationCap, Wrench, Plus, Trash2, Download, X, Eye, Layout,
   FolderOpen, Award, Users, Paintbrush, Sparkles, Loader2, GripVertical, FileText,
-  BarChart3, RefreshCw, Undo2, Redo2, ChevronDown, ZoomIn, ZoomOut, Upload, Share2
+  BarChart3, RefreshCw, Undo2, Redo2, ChevronDown, ZoomIn, ZoomOut, Upload, Share2,
+  Pipette, Check, ArrowLeft, ArrowRight
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { clsx, type ClassValue } from 'clsx';
@@ -284,6 +285,100 @@ export default function FreeCVApp() {
   const [publishedUrl, setPublishedUrl] = useState('');
 
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+
+  // ---- Desktop tabbed editor ----
+  // On lg+ the editor sections become sleek tab panes (one visible at a time)
+  // instead of one endless scroll. On mobile the same panes render stacked as
+  // accordions (CSS-gated, single DOM — no duplicate droppable IDs).
+  const [activeTab, setActiveTab] = useState<string>('personal');
+
+  const editorTabs = useMemo(() => {
+    const tabs: { id: string; icon: any; label: string }[] = [
+      { id: 'personal', icon: User, label: 'Personal' },
+      { id: 'experience', icon: Briefcase, label: 'Experience' },
+      { id: 'education', icon: GraduationCap, label: 'Education' },
+      { id: 'skills', icon: Wrench, label: 'Skills' },
+    ];
+    if (data.showProjects) tabs.push({ id: 'projects', icon: FolderOpen, label: 'Projects' });
+    if (data.showCertifications) tabs.push({ id: 'certifications', icon: Award, label: 'Certifications' });
+    if (data.showReferences) tabs.push({ id: 'references', icon: Users, label: 'References' });
+    tabs.push({ id: 'cover-letter', icon: FileText, label: 'Cover Letter' });
+    tabs.push({ id: 'design', icon: Paintbrush, label: 'Design' });
+    return tabs;
+  }, [data.showProjects, data.showCertifications, data.showReferences]);
+
+  const safeActiveTab = editorTabs.some((t) => t.id === activeTab) ? activeTab : 'personal';
+  const activeTabIndex = Math.max(0, editorTabs.findIndex((t) => t.id === safeActiveTab));
+
+  // Per-tab completion badges — a tiny "done" signal that makes the tab bar
+  // feel alive and shows progress at a glance.
+  const tabComplete: Record<string, boolean> = {
+    personal: !!(data.personalInfo.fullName?.trim() && data.personalInfo.jobTitle?.trim()),
+    experience: data.experience.length > 0,
+    education: data.education.length > 0,
+    skills: data.skills.length > 0,
+    projects: (data.projects || []).length > 0,
+    certifications: (data.certifications || []).length > 0,
+    references: (data.references || []).length > 0,
+    'cover-letter': false,
+    design: true,
+  };
+  const completedTabs = editorTabs.filter((t) => tabComplete[t.id]).length;
+
+  const goToTab = (index: number) => {
+    if (index < 0 || index >= editorTabs.length) return;
+    selectTab(editorTabs[index].id);
+  };
+
+  // Enabling an optional section also jumps straight to its tab.
+  const enableSectionAndGo = (toggle: () => void, tabId: string) => {
+    toggle();
+    selectTab(tabId);
+  };
+
+  // Smooth-scrolls the tab bar into view when switching panes on desktop,
+  // so a long pane never leaves the new section off-screen. No-op on mobile
+  // (the tab bar is display:none there) and when already visible.
+  const tabsTopRef = useRef<HTMLDivElement | null>(null);
+  const selectTab = (id: string) => {
+    setActiveTab(id);
+    requestAnimationFrame(() => {
+      const el = tabsTopRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      if (rect.top < 0 || rect.top > window.innerHeight) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  };
+
+  // Prev / Next footer rendered inside every desktop pane — glide through
+  // sections without reaching for the tab bar.
+  const renderPaneNav = (tabId: string) => {
+    const idx = editorTabs.findIndex((t) => t.id === tabId);
+    if (idx < 0) return null;
+    const prev = editorTabs[idx - 1];
+    const next = editorTabs[idx + 1];
+    return (
+      <div className="hidden lg:flex items-center justify-between mt-2 mb-10 pt-6 border-t-2 border-[#141312]/15">
+        <button
+          onClick={() => goToTab(idx - 1)}
+          disabled={!prev}
+          className="flex items-center gap-2 px-4 py-2.5 border-2 border-[#141312] bg-white fm text-[11px] font-bold uppercase tracking-[0.16em] text-[#141312] transition-all hover:bg-[#141312] hover:text-[#E8E7E1] disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-[#141312] disabled:cursor-not-allowed">
+          <ArrowLeft size={14} /> {prev ? prev.label : 'Back'}
+        </button>
+        <span className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/40">
+          {idx + 1} / {editorTabs.length}
+        </span>
+        <button
+          onClick={() => goToTab(idx + 1)}
+          disabled={!next}
+          className="flex items-center gap-2 px-4 py-2.5 border-2 border-[#141312] bg-[#141312] fm text-[11px] font-bold uppercase tracking-[0.16em] text-[#E8E7E1] transition-all hover:bg-[#FF4326] hover:text-[#141312] disabled:opacity-30 disabled:hover:bg-[#141312] disabled:hover:text-[#E8E7E1] disabled:cursor-not-allowed">
+          {next ? next.label : 'Done'} <ArrowRight size={14} />
+        </button>
+      </div>
+    );
+  };
 
   // OAuth return: finish a recruiter-discovery opt-in started (Allow → sign in)
   // before the user had a session. Explicit + timestamped via the consent API.
@@ -910,6 +1005,40 @@ export default function FreeCVApp() {
     ),
   };
 
+  // Design pane (theme accent). Rendered as the first editor pane so mobile
+  // keeps its current order (Theme, Import, sections); the desktop tab bar
+  // lists it last. The final swatch is a true color-picker affordance: a
+  // rainbow ring with a pipette icon over a native <input type="color">.
+  const PRESET_COLORS = ['#000000', '#2563eb', '#16a34a', '#dc2626', '#9333ea', '#ea580c', '#0d9488', '#475569'];
+  const isCustomColor = !PRESET_COLORS.includes(data.theme?.color || '');
+  const designBlock = (
+    <SectionAccordion id="theme" icon={Paintbrush} title="Theme Accent" description="Select a global accent color.">
+      <Card>
+        <div className="flex flex-wrap gap-3">
+          {PRESET_COLORS.map((hex) => (
+            <button key={hex} onClick={() => setThemeColor(hex)}
+              className={cn("w-10 h-10 rounded-full shadow-sm border-2 transition-transform", data.theme?.color === hex ? "border-[#141312] scale-110" : "border-transparent hover:scale-105")}
+              style={{ backgroundColor: hex }} aria-label={`Select color ${hex}`} />
+          ))}
+          <div className="relative" title="Pick any custom color">
+            <input type="color" value={data.theme?.color || '#2563eb'} onChange={(e) => setThemeColor(e.target.value)}
+              className="w-10 h-10 rounded-full cursor-pointer opacity-0 absolute inset-0 z-10" aria-label="Pick a custom color" />
+            <div
+              className={cn("w-10 h-10 rounded-full shadow-sm border-2 flex items-center justify-center transition-transform", isCustomColor ? "border-[#141312] scale-110" : "border-transparent hover:scale-105")}
+              style={{ background: 'conic-gradient(from 20deg, #ef4444, #f59e0b, #84cc16, #06b6d4, #3b82f6, #a855f7, #ef4444)' }}>
+              <Pipette size={16} className="text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]" />
+            </div>
+          </div>
+        </div>
+        {isCustomColor && (
+          <p className="fm text-[10px] font-bold uppercase tracking-[0.18em] text-[#141312]/50 mt-4">
+            Custom color <span className="text-[#141312]">{data.theme?.color}</span>
+          </p>
+        )}
+      </Card>
+    </SectionAccordion>
+  );
+
   const SelectedTemplate = templates[data.templateId] || templates.Executive;
 
   return (
@@ -920,35 +1049,71 @@ export default function FreeCVApp() {
       <section className="w-full lg:w-[45%] border-r-[3px] border-[#141312] print:hidden px-6 py-8 lg:px-10 lg:py-12 flex-shrink-0 relative bg-white">
         <div className="max-w-xl mx-auto pb-24 lg:pb-0">
 
-          <header className="sticky top-0 z-30 -mx-6 -mt-8 px-6 py-4 lg:-mx-10 lg:-mt-12 lg:px-10 lg:py-4 bg-white/95 backdrop-blur-md border-b-2 border-[#141312] shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-8 transition-all">
-            <div>
-              <Link href="/" className="flex items-center gap-2">
-                <Image src="/logo-light-no-background.png" alt="Cvyon" width={200} height={65} priority className="h-9 sm:h-10 md:h-11 w-auto object-contain transition-all" />
-              </Link>
-              <div className="flex items-center gap-2 mt-1">
-                <p className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/50">Premium & Forever Free</p>
-                <span className="text-[#141312]/30">•</span>
-                <span className="flex items-center gap-1 text-[10px] fm font-semibold text-[#10B981]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" /> Auto-saved
-                </span>
+          <header className="sticky top-0 z-30 -mx-6 -mt-8 px-6 py-4 lg:-mx-10 lg:-mt-12 lg:px-10 lg:py-5 bg-white/95 backdrop-blur-md border-b-2 border-[#141312] mb-8">
+            {/* MOBILE / TABLET HEADER — approved layout, slogan removed */}
+            <div className="lg:hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <div>
+                <Link href="/" className="flex items-center gap-2">
+                  <Image src="/logo-light-no-background.png" alt="Cvyon" width={200} height={65} priority className="h-9 sm:h-10 w-auto object-contain transition-all" />
+                </Link>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="flex items-center gap-1 text-[10px] fm font-semibold text-[#10B981]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" /> Auto-saved
+                  </span>
+                </div>
+              </div>
+              <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+                <LiveAtsScore />
+                <div className="hidden sm:flex items-center gap-1 border-l-2 border-[#141312]/20 pl-2">
+                  <button onClick={() => useResumeStore.temporal.getState().undo()} className="p-2 border-2 border-[#141312] bg-white hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors text-[#141312]" title="Undo (Ctrl+Z)">
+                    <Undo2 size={16} />
+                  </button>
+                  <button onClick={() => useResumeStore.temporal.getState().redo()} className="p-2 border-2 border-[#141312] bg-white hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors text-[#141312]" title="Redo (Ctrl+Y)">
+                    <Redo2 size={16} />
+                  </button>
+                </div>
+                <button onClick={handleDownload} className="group flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-2 sm:px-4 py-2 sm:py-2.5 fm text-[10px] sm:text-xs font-bold uppercase tracking-wide sm:tracking-widest whitespace-nowrap active:translate-y-[2px] active:shadow-none transition-all">
+                  <Download size={15} className="hidden sm:block group-hover:-translate-y-0.5 transition-transform" /> Download PDF
+                </button>
+                <button onClick={handleDocxExport} className="flex-1 sm:flex-none flex group items-center justify-center gap-1.5 sm:gap-2 bg-[#2233FF] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-2 sm:px-4 py-2 sm:py-2.5 fm text-[10px] sm:text-xs font-bold uppercase tracking-wide sm:tracking-widest whitespace-nowrap active:translate-y-[2px] active:shadow-none transition-all" title="Download Word Document">
+                  <FileText size={15} className="hidden sm:block group-hover:-translate-y-0.5 transition-transform" /> Download DOCX
+                </button>
               </div>
             </div>
-            <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
-              <LiveAtsScore />
-              <div className="hidden sm:flex items-center gap-1 border-l-2 border-[#141312]/20 pl-2">
-                <button onClick={() => useResumeStore.temporal.getState().undo()} className="p-2 border-2 border-[#141312] bg-white hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors text-[#141312]" title="Undo (Ctrl+Z)">
-                  <Undo2 size={16} />
+
+            {/* DESKTOP HEADER — logo aligned with the utility cluster; the
+                download buttons get their own full-width row so they can
+                never overflow/float over the preview panel. */}
+            <div className="hidden lg:flex flex-col gap-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  <Link href="/" className="flex items-center shrink-0" aria-label="Cvyon home">
+                    <Image src="/logo-light-no-background.png" alt="Cvyon" width={200} height={65} priority className="h-11 w-auto object-contain" />
+                  </Link>
+                  <span className="flex items-center gap-1.5 fm text-[10px] font-bold uppercase tracking-[0.18em] text-[#10B981] border-2 border-[#10B981]/40 bg-[#10B981]/10 px-2.5 py-1 whitespace-nowrap">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" /> Auto-saved
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <LiveAtsScore />
+                  <div className="flex items-center gap-1 border-l-2 border-[#141312]/20 pl-2">
+                    <button onClick={() => useResumeStore.temporal.getState().undo()} className="p-2 border-2 border-[#141312] bg-white hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors text-[#141312]" title="Undo (Ctrl+Z)">
+                      <Undo2 size={16} />
+                    </button>
+                    <button onClick={() => useResumeStore.temporal.getState().redo()} className="p-2 border-2 border-[#141312] bg-white hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors text-[#141312]" title="Redo (Ctrl+Y)">
+                      <Redo2 size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button onClick={handleDownload} className="group flex-1 flex items-center justify-center gap-2 bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-4 py-3 fm text-xs font-bold uppercase tracking-widest whitespace-nowrap active:translate-y-[2px] active:shadow-none transition-all">
+                  <Download size={16} className="group-hover:-translate-y-0.5 transition-transform" /> Download PDF
                 </button>
-                <button onClick={() => useResumeStore.temporal.getState().redo()} className="p-2 border-2 border-[#141312] bg-white hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors text-[#141312]" title="Redo (Ctrl+Y)">
-                  <Redo2 size={16} />
+                <button onClick={handleDocxExport} className="flex-1 flex group items-center justify-center gap-2 bg-[#2233FF] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-4 py-3 fm text-xs font-bold uppercase tracking-widest whitespace-nowrap active:translate-y-[2px] active:shadow-none transition-all" title="Download Word Document">
+                  <FileText size={16} className="group-hover:-translate-y-0.5 transition-transform" /> Download DOCX
                 </button>
               </div>
-              <button onClick={handleDownload} className="group flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-2 sm:px-4 py-2 sm:py-2.5 fm text-[10px] sm:text-xs font-bold uppercase tracking-wide sm:tracking-widest whitespace-nowrap active:translate-y-[2px] active:shadow-none transition-all">
-                <Download size={15} className="hidden sm:block group-hover:-translate-y-0.5 transition-transform" /> Download PDF
-              </button>
-              <button onClick={handleDocxExport} className="flex-1 sm:flex-none flex group items-center justify-center gap-1.5 sm:gap-2 bg-[#2233FF] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-2 sm:px-4 py-2 sm:py-2.5 fm text-[10px] sm:text-xs font-bold uppercase tracking-wide sm:tracking-widest whitespace-nowrap active:translate-y-[2px] active:shadow-none transition-all" title="Download Word Document">
-                <FileText size={15} className="hidden sm:block group-hover:-translate-y-0.5 transition-transform" /> Download DOCX
-              </button>
             </div>
           </header>
 
@@ -995,48 +1160,78 @@ export default function FreeCVApp() {
             </button>
           </div>
 
-          {/* Theme Color Picker */}
-          <SectionAccordion id="theme" icon={Paintbrush} title="Theme Accent" description="Select a global accent color.">
-          <Card>
-            <div className="flex flex-wrap gap-3">
-              {['#000000', '#2563eb', '#16a34a', '#dc2626', '#9333ea', '#ea580c', '#0d9488', '#475569'].map((hex) => (
-                <button key={hex} onClick={() => setThemeColor(hex)}
-                  className={cn("w-10 h-10 rounded-full shadow-sm border-2 transition-transform", data.theme?.color === hex ? "border-[#141312] scale-110" : "border-transparent hover:scale-105")}
-                  style={{ backgroundColor: hex }} aria-label={`Select color ${hex}`} />
-              ))}
-              <div className="relative">
-                <input type="color" value={data.theme?.color || '#2563eb'} onChange={(e) => setThemeColor(e.target.value)} className="w-10 h-10 rounded-full cursor-pointer opacity-0 absolute inset-0 z-10" />
-                <div className={cn("w-10 h-10 rounded-full shadow-sm border-2 flex items-center justify-center text-xl font-bold bg-[#FF4326]", !['#000000', '#2563eb', '#16a34a', '#dc2626', '#9333ea', '#ea580c', '#0d9488', '#475569'].includes(data.theme?.color || '') ? "border-[#141312] scale-110" : "border-transparent")}>
-                  <span className="text-white drop-shadow-md">+</span>
-                </div>
-              </div>
-            </div>
-          </Card>
-          </SectionAccordion>
-
           <DragDropContext onDragEnd={onDragEnd}>
+
+            {/* Design pane first in the DOM so mobile keeps its current order
+                (Theme, Import, sections). On desktop only the active tab's
+                pane is visible — see .editor-pane CSS below. */}
+            <div className={cn("editor-pane", safeActiveTab === 'design' && "editor-pane-active")}>
+              {designBlock}
+              {renderPaneNav('design')}
+            </div>
 
             <ImportResume />
 
-            {/* Editor sections — rendered in the user's chosen order. */}
+            {/* Desktop section tabs — the end of endless scrolling. */}
+            <div ref={tabsTopRef} className="desktop-tabbar mb-8 scroll-mt-40">
+              <div className="flex items-center justify-between mb-3">
+                <p className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/50">Resume Sections</p>
+                <p className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/50">
+                  <span className="text-[#0E8A4B]">{completedTabs}</span> of {editorTabs.length} complete
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2" role="tablist" aria-label="Resume sections">
+                {editorTabs.map((tab) => {
+                  const TabIcon = tab.icon;
+                  const isActive = safeActiveTab === tab.id;
+                  const done = !!tabComplete[tab.id];
+                  return (
+                    <button
+                      key={tab.id}
+                      role="tab"
+                      aria-selected={isActive}
+                      onClick={() => selectTab(tab.id)}
+                      className={cn(
+                        "flex items-center gap-2 px-4 py-2.5 border-[3px] rounded-none fm text-[11px] font-bold uppercase tracking-[0.14em] transition-all",
+                        isActive
+                          ? "bg-[#141312] text-[#E8E7E1] border-[#141312] shadow-[4px_4px_0_#FF4326] -translate-y-0.5"
+                          : "bg-white text-[#141312] border-[#141312]/25 hover:border-[#141312] hover:-translate-y-0.5"
+                      )}>
+                      <TabIcon size={14} />
+                      {tab.label}
+                      {done && (
+                        <span className="flex items-center justify-center w-4 h-4 rounded-full bg-[#0E8A4B] text-white">
+                          <Check size={10} strokeWidth={4} />
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Editor sections — tab panes on desktop, stacked accordions on mobile. */}
             {editorSectionIds.map((id) => (
-              <React.Fragment key={id}>{sectionBlocks[id]}</React.Fragment>
+              <div key={id} className={cn("editor-pane", safeActiveTab === id && "editor-pane-active")}>
+                {sectionBlocks[id]}
+                {renderPaneNav(id)}
+              </div>
             ))}
 
             {/* Add New Sections */}
             <div className="flex flex-col sm:flex-row gap-4 mt-12 pt-8 border-t-2 border-[#141312]/20 flex-wrap">
               {!data.showProjects && (
-                <button onClick={toggleProjects} className="flex-1 min-w-[200px] py-4 bg-white border-2 border-dashed border-[#141312]/50 hover:border-[#141312] hover:bg-[#141312]/5 rounded-none fm text-xs font-bold uppercase tracking-widest text-[#141312]/70 hover:text-[#141312] flex items-center justify-center gap-2 transition-all">
+                <button onClick={() => enableSectionAndGo(toggleProjects, 'projects')} className="flex-1 min-w-[200px] py-4 bg-white border-2 border-dashed border-[#141312]/50 hover:border-[#141312] hover:bg-[#141312]/5 rounded-none fm text-xs font-bold uppercase tracking-widest text-[#141312]/70 hover:text-[#141312] flex items-center justify-center gap-2 transition-all">
                   <Plus size={18} /> Add Projects
                 </button>
               )}
               {!data.showCertifications && (
-                <button onClick={toggleCertifications} className="flex-1 min-w-[200px] py-4 bg-white border-2 border-dashed border-[#141312]/50 hover:border-[#141312] hover:bg-[#141312]/5 rounded-none fm text-xs font-bold uppercase tracking-widest text-[#141312]/70 hover:text-[#141312] flex items-center justify-center gap-2 transition-all">
+                <button onClick={() => enableSectionAndGo(toggleCertifications, 'certifications')} className="flex-1 min-w-[200px] py-4 bg-white border-2 border-dashed border-[#141312]/50 hover:border-[#141312] hover:bg-[#141312]/5 rounded-none fm text-xs font-bold uppercase tracking-widest text-[#141312]/70 hover:text-[#141312] flex items-center justify-center gap-2 transition-all">
                   <Plus size={18} /> Add Certifications
                 </button>
               )}
               {!data.showReferences && (
-                <button onClick={toggleReferences} className="flex-1 min-w-[200px] py-4 bg-white border-2 border-dashed border-[#141312]/50 hover:border-[#141312] hover:bg-[#141312]/5 rounded-none fm text-xs font-bold uppercase tracking-widest text-[#141312]/70 hover:text-[#141312] flex items-center justify-center gap-2 transition-all">
+                <button onClick={() => enableSectionAndGo(toggleReferences, 'references')} className="flex-1 min-w-[200px] py-4 bg-white border-2 border-dashed border-[#141312]/50 hover:border-[#141312] hover:bg-[#141312]/5 rounded-none fm text-xs font-bold uppercase tracking-widest text-[#141312]/70 hover:text-[#141312] flex items-center justify-center gap-2 transition-all">
                   <Plus size={18} /> Add References
                 </button>
               )}
@@ -1370,10 +1565,25 @@ export default function FreeCVApp() {
            Below lg the accordion toggle works normally. Plain CSS (not
            Tailwind responsive variants) so the production cascade can't
            swallow it the way lg:block lost to .hidden. */
+        /* Desktop section tab bar: hidden below lg, shown on desktop.
+           Plain CSS (not Tailwind responsive variants) so the production
+           cascade can't swallow it the way lg:block lost to .hidden. */
+        .desktop-tabbar { display: none; }
         @media (min-width: 1024px) {
+          .desktop-tabbar { display: block; }
           .section-toggle { pointer-events: none; cursor: default; }
           .section-toggle-chevron { display: none; }
           .section-body { display: block !important; }
+          /* Desktop tabbed editor: only the active pane is visible, so the
+             editor is one screen of focused content instead of an endless
+             scroll. Below lg every pane renders (stacked accordions) — a
+             single DOM, so droppable IDs are never duplicated. */
+          .editor-pane { display: none; }
+          .editor-pane-active { display: block; animation: cvyonTabIn 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
+        }
+        @keyframes cvyonTabIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
 `}} />
     </main>
