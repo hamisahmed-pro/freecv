@@ -47,11 +47,16 @@ export interface AnonymizedProfile {
 
 export interface ScoredMatch {
   profileId: string;
-  tier: 'excellent' | 'strong' | 'moderate';
+  tier: MatchTier;
   score: number;
   reasons: string[];
   profile: AnonymizedProfile;
+  matchedSkills: string[];
+  missingSkills: string[];
 }
+
+/** Result tiers, exported as a named type for filters. */
+export type MatchTier = 'excellent' | 'strong' | 'moderate';
 
 /**
  * Eligibility guard for the match pool. The consent filter is a first-class
@@ -67,7 +72,7 @@ export const MATCH_ELIGIBILITY = {
 /** Minimum score (0-100) to be returned at all. */
 export const MATCH_MIN_SCORE = 35;
 
-export function tierFor(score: number): 'excellent' | 'strong' | 'moderate' | null {
+export function tierFor(score: number): MatchTier | null {
   if (score >= 75) return 'excellent';
   if (score >= 55) return 'strong';
   if (score >= MATCH_MIN_SCORE) return 'moderate';
@@ -339,6 +344,159 @@ export function anonymizeProfile(p: MatchPoolRow, matchedSkills: string[]): Anon
     country: p.country,
     completenessScore: p.completeness_score ?? 0,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Advanced search filters — pure, unit-tested. The route merges filters into
+// the extracted JD (so they influence FTS + scoring + reasons), then runs
+// runMatchPipeline over the consented pool. Consent/soft-delete eligibility
+// (MATCH_ELIGIBILITY) is enforced by the route and is never weakened here.
+// ---------------------------------------------------------------------------
+
+/** Sanitized server-side search filters (see MatchFilters on the client). */
+export interface MatchFilters {
+  /** Hard minimum experience filter; null = no filter. */
+  minYears: number | null;
+  /** Recruiter-supplied must-have skills, merged into the JD before FTS/scoring. */
+  mustHaveSkills: string[];
+  /** Tier allow-list; empty = all tiers. */
+  tiers: MatchTier[];
+  sort: 'score' | 'experience';
+}
+
+const MAX_FILTER_SKILLS = 40;
+
+/** Sanitize raw client filter input. Never throws. */
+export function normalizeMatchFilters(raw: any): MatchFilters {
+  const b = raw && typeof raw === 'object' ? raw : {};
+
+  // minYears: finite number >= 0, otherwise no filter.
+  let minYears: number | null = null;
+  const n = typeof b.minYears === 'number' ? b.minYears : Number(b.minYears);
+  if (Number.isFinite(n) && n >= 0) minYears = n;
+
+  // mustHaveSkills: trim, dedupe case-insensitively, cap at 40.
+  const seen = new Set<string>();
+  const mustHaveSkills: string[] = [];
+  if (Array.isArray(b.mustHaveSkills)) {
+    for (const s of b.mustHaveSkills) {
+      const t = String(s ?? '').trim();
+      if (!t) continue;
+      const k = t.toLowerCase();
+      if (seen.has(k)) continue;
+      seen.add(k);
+      mustHaveSkills.push(t);
+      if (mustHaveSkills.length >= MAX_FILTER_SKILLS) break;
+    }
+  }
+
+  // tiers: allow-list of valid tiers, deduped.
+  const tiers: MatchTier[] = [];
+  if (Array.isArray(b.tiers)) {
+    for (const t of b.tiers) {
+      if ((t === 'excellent' || t === 'strong' || t === 'moderate') && !tiers.includes(t)) {
+        tiers.push(t);
+      }
+    }
+  }
+
+  const sort: 'score' | 'experience' = b.sort === 'experience' ? 'experience' : 'score';
+  return { minYears, mustHaveSkills, tiers, sort };
+}
+
+/**
+ * Merge recruiter-supplied must-have skills into the extracted JD so they
+ * influence FTS (buildFtsQuery), scoring, and reasons. Dedupes
+ * case-insensitively against the extracted skills and caps at 40.
+ * Returns the input JD unchanged when the filters add nothing.
+ */
+export function mergeMustHaveSkills(jd: ExtractedJD, filters: MatchFilters): ExtractedJD {
+  if (filters.mustHaveSkills.length === 0) return jd;
+  const seen = new Set(jd.mustHaveSkills.map((s) => s.toLowerCase()));
+  const merged = [...jd.mustHaveSkills];
+  for (const s of filters.mustHaveSkills) {
+    if (!seen.has(s.toLowerCase())) {
+      seen.add(s.toLowerCase());
+      merged.push(s);
+    }
+  }
+  return { ...jd, mustHaveSkills: merged.slice(0, MAX_FILTER_SKILLS) };
+}
+
+/**
+ * Hard experience filter: exclude pool rows with known experience below
+ * minYears. Candidates with unknown experience (null) stay in the pool.
+ */
+export function filterPoolByMinYears(pool: MatchPoolRow[], minYears: number | null): MatchPoolRow[] {
+  if (minYears == null) return pool;
+  return pool.filter((p) => p.experience_years == null || p.experience_years >= minYears);
+}
+
+/** Merged must-have skills not present in matchedSkills (case-insensitive). */
+export function computeMissingSkills(mustHaveSkills: string[], matchedSkills: string[]): string[] {
+  const lower = matchedSkills.map((m) => m.toLowerCase().trim());
+  return mustHaveSkills.filter((s) => !lower.includes(s.toLowerCase().trim()));
+}
+
+export interface MatchPipelineResult {
+  matches: ScoredMatch[];
+  counts: { total: number; excellent: number; strong: number; moderate: number };
+}
+
+/**
+ * Full match pipeline: min-years pool filter → score → MATCH_MIN_SCORE
+ * exclusion → tier allow-list → sort → counts. Counts reflect the FILTERED
+ * set; pagination is the caller's job (slice after this returns).
+ *
+ * `jd` must already have filters merged in (mergeMustHaveSkills).
+ * `ftsRatioFor` maps a profile id to its normalized FTS rank (or null).
+ */
+export function runMatchPipeline(
+  pool: MatchPoolRow[],
+  jd: ExtractedJD,
+  filters: MatchFilters,
+  ftsRatioFor: (profileId: string) => number | null
+): MatchPipelineResult {
+  const scored: ScoredMatch[] = [];
+  for (const p of filterPoolByMinYears(pool, filters.minYears)) {
+    const { score, reasons, matchedSkills } = scoreCandidate(p, jd, ftsRatioFor(p.id));
+    const tier = tierFor(score);
+    if (!tier) continue; // below MATCH_MIN_SCORE — excluded
+    scored.push({
+      profileId: p.id,
+      tier,
+      score,
+      reasons,
+      profile: anonymizeProfile(p, matchedSkills),
+      matchedSkills,
+      missingSkills: computeMissingSkills(jd.mustHaveSkills, matchedSkills),
+    });
+  }
+
+  const tiered =
+    filters.tiers.length > 0 ? scored.filter((m) => filters.tiers.includes(m.tier)) : scored;
+
+  if (filters.sort === 'experience') {
+    tiered.sort((a, b) => {
+      const ea = a.profile.yearsExperience;
+      const eb = b.profile.yearsExperience;
+      if (ea == null && eb == null) return b.score - a.score;
+      if (ea == null) return 1; // nulls last
+      if (eb == null) return -1;
+      if (eb !== ea) return eb - ea; // years desc
+      return b.score - a.score; // tie-break: score desc
+    });
+  } else {
+    tiered.sort((a, b) => b.score - a.score);
+  }
+
+  const counts = {
+    total: tiered.length,
+    excellent: tiered.filter((m) => m.tier === 'excellent').length,
+    strong: tiered.filter((m) => m.tier === 'strong').length,
+    moderate: tiered.filter((m) => m.tier === 'moderate').length,
+  };
+  return { matches: tiered, counts };
 }
 
 // ---------------------------------------------------------------------------
