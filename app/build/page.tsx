@@ -89,58 +89,6 @@ const Card = ({ children, className }: any) => (
   </div>
 );
 
-// Section header. On desktop (lg+) this is the ORIGINAL pre-redesign look:
-// a plain non-interactive heading with the section always expanded (the
-// .section-* CSS below enforces that without relying on Tailwind's
-// responsive-variant cascade, which silently lost to .hidden in
-// production builds). Below lg it collapses into a tappable accordion —
-// the mobile tabs/panes pattern — so the long editor becomes a compact
-// list of sections on phones.
-const SectionAccordion = ({ id, icon: Icon, title, description, action, onRemove, defaultOpen = false, children }: any) => {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div>
-      <div className="flex justify-between items-center gap-3 mb-6">
-        <button
-          type="button"
-          onClick={() => setOpen((o: boolean) => !o)}
-          aria-expanded={open}
-          aria-controls={`section-body-${id}`}
-          className="section-toggle flex-1 min-w-0 text-left cursor-pointer"
-        >
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-4 min-w-0">
-              <div className="p-2.5 bg-[#151a46] text-white rounded-xl w-fit shrink-0">
-                <Icon size={20} />
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-brand font-extrabold text-[#151a46] leading-tight tracking-tight">{title}</h3>
-                <p className="font-brand text-[10px] font-bold uppercase tracking-[0.18em] text-[#151a46]/50">{description}</p>
-              </div>
-            </div>
-            <span className={cn("section-toggle-chevron shrink-0 p-2 border border-[#dddde5] rounded-lg bg-white text-[#151a46] transition-transform", open && "rotate-180")}>
-              <ChevronDown size={16} />
-            </span>
-          </div>
-        </button>
-        {(action || onRemove) && (
-          <div className="shrink-0 flex items-center gap-2" onClickCapture={() => setOpen(true)}>
-            {action}
-            {onRemove && (
-              <button onClick={onRemove} className="font-brand text-[10px] font-bold uppercase tracking-widest text-[#D8362A] border border-[#D8362A] rounded-lg px-3 py-1.5 hover:bg-[#D8362A] hover:text-white transition-colors">
-                Remove
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-      <div id={`section-body-${id}`} className={cn("section-body", open ? "block" : "hidden")}>
-        {children}
-      </div>
-    </div>
-  );
-};
-
 const HTMLThumbnail = ({ Tmpl, data }: { Tmpl: any, data: any }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.25);
@@ -239,22 +187,10 @@ export default function FreeCVApp() {
     };
   }, [data]);
 
-  // Sections currently present in the editor, in the user's chosen order.
-  // (projects/certifications/references only appear once added.)
-  const editorSectionIds = useMemo(() => {
-    const inEditor = (id: ResumeSectionId) =>
-      id === 'projects' ? data.showProjects
-      : id === 'certifications' ? data.showCertifications
-      : id === 'references' ? data.showReferences
-      : true;
-    return (data.sectionOrder || DEFAULT_SECTION_ORDER).filter(inEditor);
-  }, [data.sectionOrder, data.showProjects, data.showCertifications, data.showReferences]);
-
   const [skillInput, setSkillInput] = useState('');
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [mobileZoom, setMobileZoom] = useState(false);
   const [mobilePreviewMetrics, setMobilePreviewMetrics] = useState({ scale: 1, width: 816, height: 1056 });
-  const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
   const [isATSOpen, setIsATSOpen] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
@@ -286,99 +222,75 @@ export default function FreeCVApp() {
   const [publishedUrl, setPublishedUrl] = useState('');
 
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+  // v3 concept: live-preview zoom controls (-/+) in the preview bar.
+  const [previewZoom, setPreviewZoom] = useState(1);
+  // v3 concept: fit the 816px paper into the desktop preview column.
+  const previewCanvasRef = useRef<HTMLDivElement | null>(null);
+  const [desktopPreviewFit, setDesktopPreviewFit] = useState({ scale: 1, paperH: 1056 });
+  useEffect(() => {
+    const update = () => {
+      const canvasW = previewCanvasRef.current?.clientWidth || 0;
+      const paperH = resumePageRef.current?.scrollHeight || 1056;
+      if (canvasW > 0) setDesktopPreviewFit({ scale: Math.min(1, (canvasW - 70) / 816), paperH });
+    };
+    update();
+    window.addEventListener('resize', update);
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : null;
+    if (ro && previewCanvasRef.current) ro.observe(previewCanvasRef.current);
+    if (ro && resumePageRef.current) ro.observe(resumePageRef.current);
+    return () => { window.removeEventListener('resize', update); ro?.disconnect(); };
+  }, [isHydrated, data.templateId]);
 
   // ---- Desktop tabbed editor ----
   // On lg+ the editor sections become sleek tab panes (one visible at a time)
   // instead of one endless scroll. On mobile the same panes render stacked as
-  // accordions (CSS-gated, single DOM — no duplicate droppable IDs).
-  const [activeTab, setActiveTab] = useState<string>('personal');
+  // ---- v3 step wizard (matches the Cvyon v3 builder concept) ----
+  // Six steps in the left sidebar. On desktop the editor shows every step's
+  // cards in one scroll; on mobile one step shows at a time with a bottom
+  // tab bar (Edit / Preview / AI / Export).
+  const [activeStep, setActiveStep] = useState(0);
 
-  const editorTabs = useMemo(() => {
-    const tabs: { id: string; icon: any; label: string }[] = [
-      { id: 'personal', icon: User, label: 'Personal' },
-      { id: 'experience', icon: Briefcase, label: 'Experience' },
-      { id: 'education', icon: GraduationCap, label: 'Education' },
-      { id: 'skills', icon: Wrench, label: 'Skills' },
-    ];
-    if (data.showProjects) tabs.push({ id: 'projects', icon: FolderOpen, label: 'Projects' });
-    if (data.showCertifications) tabs.push({ id: 'certifications', icon: Award, label: 'Certifications' });
-    if (data.showReferences) tabs.push({ id: 'references', icon: Users, label: 'References' });
-    tabs.push({ id: 'cover-letter', icon: FileText, label: 'Cover Letter' });
-    tabs.push({ id: 'design', icon: Paintbrush, label: 'Design' });
-    return tabs;
-  }, [data.showProjects, data.showCertifications, data.showReferences]);
+  const WIZARD_STEPS = [
+    { id: 'basics', label: 'Basics', heading: 'Make your first impression count.', sub: 'These details appear at the top of your resume. Keep them clear and professional.' },
+    { id: 'summary', label: 'Summary', heading: 'Tell the story in a few sharp lines.', sub: '2–4 lines. Show what you do and the value you create.' },
+    { id: 'experience', label: 'Experience', heading: 'Turn experience into evidence.', sub: 'Turn responsibilities into evidence. Quantify where possible.' },
+    { id: 'education', label: 'Education', heading: 'Show the qualifications behind you.', sub: 'Add your most relevant qualifications first.' },
+    { id: 'skills', label: 'Skills', heading: 'Match your strongest skills to the role.', sub: 'Prioritize skills that match your target role.' },
+    { id: 'extras', label: 'Extras', heading: 'Add the details that make you memorable.', sub: 'Add only what strengthens the story.' },
+  ];
 
-  const safeActiveTab = editorTabs.some((t) => t.id === activeTab) ? activeTab : 'personal';
-  const activeTabIndex = Math.max(0, editorTabs.findIndex((t) => t.id === safeActiveTab));
-
-  // Per-tab completion badges — a tiny "done" signal that makes the tab bar
-  // feel alive and shows progress at a glance.
-  const tabComplete: Record<string, boolean> = {
-    personal: !!(data.personalInfo.fullName?.trim() && data.personalInfo.jobTitle?.trim()),
+  const stepComplete: Record<string, boolean> = {
+    basics: !!(data.personalInfo.fullName?.trim() && data.personalInfo.jobTitle?.trim()),
+    summary: !!(data.summary?.trim()),
     experience: data.experience.length > 0,
     education: data.education.length > 0,
     skills: data.skills.length > 0,
-    projects: (data.projects || []).length > 0,
-    certifications: (data.certifications || []).length > 0,
-    references: (data.references || []).length > 0,
-    'cover-letter': false,
-    design: true,
+    extras: ((data.projects || []).length > 0) || ((data.certifications || []).length > 0) || ((data.references || []).length > 0) || ((data.customSections || []).length > 0),
   };
-  const completedTabs = editorTabs.filter((t) => tabComplete[t.id]).length;
+  const completedSteps = WIZARD_STEPS.filter((s) => stepComplete[s.id]).length;
+  const completionPct = Math.round((completedSteps / WIZARD_STEPS.length) * 100);
 
-  const goToTab = (index: number) => {
-    if (index < 0 || index >= editorTabs.length) return;
-    selectTab(editorTabs[index].id);
-  };
-
-  // Enabling an optional section also jumps straight to its tab.
-  const enableSectionAndGo = (toggle: () => void, tabId: string) => {
-    toggle();
-    selectTab(tabId);
-  };
-
-  // Smooth-scrolls the tab bar into view when switching panes on desktop,
-  // so a long pane never leaves the new section off-screen. No-op on mobile
-  // (the tab bar is display:none there) and when already visible.
-  const tabsTopRef = useRef<HTMLDivElement | null>(null);
-  const selectTab = (id: string) => {
-    setActiveTab(id);
+  const goStep = (index: number) => {
+    const i = Math.max(0, Math.min(WIZARD_STEPS.length - 1, index));
+    setActiveStep(i);
     requestAnimationFrame(() => {
-      const el = tabsTopRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      if (rect.top < 0 || rect.top > window.innerHeight) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Scroll only the editor column (desktop) or the window (mobile) —
+      // never the whole page on desktop, which would blank the preview.
+      const editor = document.querySelector('.v3-editor');
+      const el = document.getElementById(`v3-step-${WIZARD_STEPS[i].id}`);
+      if (editor && el && window.innerWidth >= 1024) {
+        const top = el.getBoundingClientRect().top - editor.getBoundingClientRect().top + editor.scrollTop - 16;
+        editor.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     });
   };
 
-  // Prev / Next footer rendered inside every desktop pane — glide through
-  // sections without reaching for the tab bar.
-  const renderPaneNav = (tabId: string) => {
-    const idx = editorTabs.findIndex((t) => t.id === tabId);
-    if (idx < 0) return null;
-    const prev = editorTabs[idx - 1];
-    const next = editorTabs[idx + 1];
-    return (
-      <div className="hidden lg:flex items-center justify-between mt-2 mb-10 pt-6 border-t border-[#dddde5]">
-        <button
-          onClick={() => goToTab(idx - 1)}
-          disabled={!prev}
-          className="flex items-center gap-2 px-4 py-2.5 border border-[#dddde5] rounded-full bg-white font-brand text-[11px] font-bold uppercase tracking-[0.16em] text-[#151a46] transition-all hover:border-[#151a46] disabled:opacity-30 disabled:cursor-not-allowed">
-          <ArrowLeft size={14} /> {prev ? prev.label : 'Back'}
-        </button>
-        <span className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] text-[#73778c]">
-          {idx + 1} / {editorTabs.length}
-        </span>
-        <button
-          onClick={() => goToTab(idx + 1)}
-          disabled={!next}
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#5548f5] text-white rounded-full font-brand text-[11px] font-bold uppercase tracking-[0.16em] transition-all shadow-[3px_3px_0_#151a46] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] disabled:opacity-30 disabled:shadow-none disabled:translate-x-0 disabled:translate-y-0 disabled:cursor-not-allowed">
-          {next ? next.label : 'Done'} <ArrowRight size={14} />
-        </button>
-      </div>
-    );
+  // Enabling an optional section also jumps straight to the Extras step.
+  const enableSectionAndGo = (toggle: () => void) => {
+    toggle();
+    goStep(5);
   };
 
   // OAuth return: finish a recruiter-discovery opt-in started (Allow → sign in)
@@ -708,10 +620,18 @@ export default function FreeCVApp() {
   // ---- Editor section blocks: visibility toggles + up/down ordering ----
   // Each block keeps its own JSX (and mobile accordion state); the editor
   // renders them in sectionOrder via editorSectionIds below.
-  const sectionBlocks: Record<ResumeSectionId, React.ReactNode> = {
-    personal: (
-    <SectionAccordion id="personal" icon={User} title="Personal Identity" description="Who are you and what do you do?" defaultOpen>
+  // v3 wizard: editor blocks keyed by wizard step id ('basics'/'summary' split
+  // the old 'personal' model key for the step layout; data model untouched).
+  const sectionBlocks: Record<string, React.ReactNode> = {
+    basics: (
     <Card>
+      <div className="v3-card-head">
+        <div>
+          <h3>Personal information</h3>
+          <p className="v3-card-hint">Keep this simple. Your name and role do the heavy lifting.</p>
+        </div>
+        <span className="v3-autosaved">Autosaved</span>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input label="Full Name" value={data.personalInfo.fullName} onChange={(e: any) => updatePersonalInfo({ fullName: e.target.value })} placeholder="Jane Doe" />
         <Input label="Job Title" value={data.personalInfo.jobTitle} onChange={(e: any) => updatePersonalInfo({ jobTitle: e.target.value })} placeholder="Senior Designer" />
@@ -787,25 +707,43 @@ export default function FreeCVApp() {
           </div>
         </div>
       </div>
-      <div className="mt-4">
-        <div className="flex justify-between items-center mb-1.5">
-          <label className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] text-[#151a46]/60">Professional Summary</label>
+    </Card>
+    ),
+    summary: (
+    <Card>
+      <div className="v3-card-head">
+        <div>
+          <h3>Professional summary</h3>
+          <p className="v3-card-hint">Aim for 3–5 concise lines focused on impact.</p>
+        </div>
+        <div className="flex items-center gap-2">
           <button onClick={handleGenerateSummary} disabled={isGeneratingSummary}
-            className="flex items-center gap-1.5 font-brand text-[10px] font-bold uppercase tracking-widest text-[#ff604b] border border-[#ff604b] rounded-full hover:bg-[#ff604b] hover:text-white px-2.5 py-1 transition-colors disabled:opacity-50">
-            {isGeneratingSummary ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+            className="v3-ai-btn">
+            {isGeneratingSummary ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
             {isGeneratingSummary ? 'Writing...' : 'Generate with AI'}
           </button>
+          <button onClick={() => setIsRewriterOpen(true)} className="v3-ai-btn">
+            <Sparkles size={14} /> Improve with AI
+          </button>
         </div>
+      </div>
+      <div className="v3-field">
         <textarea
-          className="mt-1.5 w-full bg-white border border-[#d9dae5] rounded-[10px] px-4 py-3 text-sm text-[#151a46] placeholder:text-[#151a46]/35 outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)] min-h-[100px] resize-none"
-          value={data.summary} onChange={(e) => updateSummary(e.target.value)} />
+          className="v3-textarea"
+          value={data.summary} onChange={(e) => updateSummary(e.target.value)}
+          placeholder="Analytical professional with experience in..." />
       </div>
     </Card>
-    </SectionAccordion>
     ),
     experience: (
-    <SectionAccordion id="experience" icon={Briefcase} title="Professional Experience" description="Showcase your career milestones"
-      action={<button onClick={addExperience} aria-label="Add experience" className="p-2 bg-white border border-[#dddde5] rounded-lg hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors shrink-0"><Plus size={18} /></button>}>
+    <Card>
+      <div className="v3-card-head">
+        <div>
+          <h3>Experience</h3>
+          <p className="v3-card-hint">Turn responsibilities into evidence. Quantify where possible.</p>
+        </div>
+        <button onClick={addExperience} aria-label="Add experience" className="v3-icon-btn"><Plus size={18} /></button>
+      </div>
     <Droppable droppableId="experience" type="experience">
       {(provided) => (
         <div {...provided.droppableProps} ref={provided.innerRef}>
@@ -855,11 +793,17 @@ export default function FreeCVApp() {
         </div>
       )}
     </Droppable>
-    </SectionAccordion>
+    </Card>
     ),
     education: (
-    <SectionAccordion id="education" icon={GraduationCap} title="Education" description="Where did you learn your craft?"
-      action={<button onClick={addEducation} aria-label="Add education" className="p-2 bg-white border border-[#dddde5] rounded-lg hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors shrink-0"><Plus size={18} /></button>}>
+    <Card>
+      <div className="v3-card-head">
+        <div>
+          <h3>Education</h3>
+          <p className="v3-card-hint">Add your most relevant qualifications first.</p>
+        </div>
+        <button onClick={addEducation} aria-label="Add education" className="v3-icon-btn"><Plus size={18} /></button>
+      </div>
     <Droppable droppableId="education" type="education">
       {(provided) => (
         <div {...provided.droppableProps} ref={provided.innerRef}>
@@ -890,11 +834,16 @@ export default function FreeCVApp() {
         </div>
       )}
     </Droppable>
-    </SectionAccordion>
+    </Card>
     ),
     skills: (
-    <SectionAccordion id="skills" icon={Wrench} title="Skill Arsenal" description="What tools do you master?">
     <Card>
+      <div className="v3-card-head">
+        <div>
+          <h3>Skills</h3>
+          <p className="v3-card-hint">Prioritize skills that match your target role.</p>
+        </div>
+      </div>
       <form onSubmit={handleAddSkill} className="flex gap-2 mb-6">
         <input
           className="flex-1 bg-white border border-[#d9dae5] rounded-[10px] px-4 py-3 text-sm text-[#151a46] placeholder:text-[#151a46]/35 outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)]"
@@ -925,7 +874,6 @@ export default function FreeCVApp() {
           </div>
         )}
       </Droppable>
-    </Card>
 
     {/* Smart Skill Suggestions */}
     <div className="mb-6">
@@ -945,11 +893,20 @@ export default function FreeCVApp() {
         </div>
       )}
     </div>
-    </SectionAccordion>
+    </Card>
     ),
     projects: data.showProjects ? (
-      <SectionAccordion id="projects" icon={FolderOpen} title="Projects" description="Showcase your key projects" onRemove={toggleProjects}
-        action={<button onClick={addProject} aria-label="Add project" className="p-2 bg-white border border-[#dddde5] rounded-lg hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors shrink-0"><Plus size={18} /></button>}>
+      <Card>
+        <div className="v3-card-head">
+          <div>
+            <h3>Projects</h3>
+            <p className="v3-card-hint">Showcase your key projects.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={addProject} aria-label="Add project" className="v3-icon-btn"><Plus size={18} /></button>
+            <button onClick={toggleProjects} className="v3-remove-btn">Remove</button>
+          </div>
+        </div>
         {(data.projects || []).map((proj) => (
           <Card key={proj.id}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -962,11 +919,20 @@ export default function FreeCVApp() {
             </button>
           </Card>
         ))}
-      </SectionAccordion>
+      </Card>
     ) : null,
     certifications: data.showCertifications ? (
-      <SectionAccordion id="certifications" icon={Award} title="Certifications" description="Official recognitions" onRemove={toggleCertifications}
-        action={<button onClick={addCertification} aria-label="Add certification" className="p-2 bg-white border border-[#dddde5] rounded-lg hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors shrink-0"><Plus size={18} /></button>}>
+      <Card>
+        <div className="v3-card-head">
+          <div>
+            <h3>Certifications</h3>
+            <p className="v3-card-hint">Official recognitions.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={addCertification} aria-label="Add certification" className="v3-icon-btn"><Plus size={18} /></button>
+            <button onClick={toggleCertifications} className="v3-remove-btn">Remove</button>
+          </div>
+        </div>
         {(data.certifications || []).map((cert) => (
           <Card key={cert.id}>
             <div className="grid grid-cols-1 gap-4 mb-4">
@@ -979,11 +945,20 @@ export default function FreeCVApp() {
             </button>
           </Card>
         ))}
-      </SectionAccordion>
+      </Card>
     ) : null,
     references: data.showReferences ? (
-      <SectionAccordion id="references" icon={Users} title="References" description="People who vouch for you" onRemove={toggleReferences}
-        action={<button onClick={addReference} aria-label="Add reference" className="p-2 bg-white border border-[#dddde5] rounded-lg hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors shrink-0"><Plus size={18} /></button>}>
+      <Card>
+        <div className="v3-card-head">
+          <div>
+            <h3>References</h3>
+            <p className="v3-card-hint">People who vouch for you.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={addReference} aria-label="Add reference" className="v3-icon-btn"><Plus size={18} /></button>
+            <button onClick={toggleReferences} className="v3-remove-btn">Remove</button>
+          </div>
+        </div>
         {(data.references || []).map((ref) => (
           <Card key={ref.id}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -997,24 +972,37 @@ export default function FreeCVApp() {
             </button>
           </Card>
         ))}
-      </SectionAccordion>
+      </Card>
     ) : null,
     'cover-letter': (
-      <SectionAccordion id="cover-letter" icon={FileText} title="Cover Letter" description="Generate a tailored cover letter.">
+      <Card>
+        <div className="v3-card-head">
+          <div>
+            <h3>Cover Letter</h3>
+            <p className="v3-card-hint">Generate a tailored cover letter.</p>
+          </div>
+        </div>
         <CoverLetterTab />
-      </SectionAccordion>
+      </Card>
     ),
   };
 
-  // Design pane (theme accent). Rendered as the first editor pane so mobile
-  // keeps its current order (Theme, Import, sections); the desktop tab bar
-  // lists it last. The final swatch is a true color-picker affordance: a
+  // Design card (theme accent + density) — lives in the Extras step of the
+  // v3 wizard. The final swatch is a true color-picker affordance: a
   // rainbow ring with a pipette icon over a native <input type="color">.
   const PRESET_COLORS = ['#000000', '#2563eb', '#16a34a', '#dc2626', '#9333ea', '#ea580c', '#0d9488', '#475569'];
   const isCustomColor = !PRESET_COLORS.includes(data.theme?.color || '');
   const designBlock = (
-    <SectionAccordion id="theme" icon={Paintbrush} title="Theme Accent" description="Select a global accent color.">
-      <Card>
+    <Card>
+      <div className="v3-card-head">
+        <div>
+          <h3>Design</h3>
+          <p className="v3-card-hint">Accent color and resume density. Change the layout from the preview panel.</p>
+        </div>
+        <button onClick={() => setIsGalleryOpen(true)} className="v3-ai-btn">
+          <Layout size={14} /> Change template
+        </button>
+      </div>
         <div className="flex flex-wrap gap-3">
           {PRESET_COLORS.map((hex) => (
             <button key={hex} onClick={() => setThemeColor(hex)}
@@ -1037,208 +1025,130 @@ export default function FreeCVApp() {
           </p>
         )}
       </Card>
-    </SectionAccordion>
   );
 
   const SelectedTemplate = templates[data.templateId] || templates.Executive;
 
+  // v3 wizard: which section blocks render under each step.
+  const stepBlocks: Record<string, React.ReactNode[]> = {
+    basics: [sectionBlocks.basics],
+    summary: [sectionBlocks.summary],
+    experience: [sectionBlocks.experience],
+    education: [sectionBlocks.education],
+    skills: [sectionBlocks.skills],
+    extras: [
+      sectionBlocks.projects,
+      sectionBlocks.certifications,
+      sectionBlocks.references,
+      sectionBlocks['cover-letter'],
+      designBlock,
+    ].filter(Boolean),
+  };
+
+  // Sidebar completion hint + desktop "Next up" card, derived from real state.
+  const nextMissingSteps = WIZARD_STEPS.filter((s) => !stepComplete[s.id]);
+  const completionHint = nextMissingSteps.length === 0
+    ? 'Your resume is complete. Download it or check your ATS match.'
+    : `Add ${nextMissingSteps[0].label.toLowerCase()} details to strengthen your resume.`;
+  const nextUpItems = [...nextMissingSteps.slice(0, 3).map((s) => `Add your ${s.label.toLowerCase()}`), 'Check ATS match'];
+
   return (
-    <main className={cn("flex flex-col lg:flex-row min-h-screen w-full overflow-x-clip font-brand selection:bg-[#5548f5] selection:text-white print:block print:h-auto print:overflow-visible", 'bg-[#f6f5ef] text-[#151a46]')}>
+    <main className="v3-builder print:block print:h-auto print:overflow-visible">
       <h1 className="sr-only">Free Resume Builder — create, edit, and download your resume</h1>
 
-      {/* EDITOR PANEL */}
-      <section className="w-full lg:w-[45%] border-r border-[#dddde5] print:hidden px-6 py-8 lg:px-10 lg:py-12 flex-shrink-0 relative bg-white">
-        <div className="max-w-xl mx-auto pb-24 lg:pb-0">
+      {/* ===== TOP BAR (v3 concept) ===== */}
+      <header className="v3-top print:hidden">
+        <div className="v3-top-left">
+          <Link href="/" aria-label="Cvyon home">
+            <Logo size={30} wordSize={20} />
+          </Link>
+          <span className="v3-crumb">/ Build your resume</span>
+        </div>
+        <div className="v3-top-right">
+          <span className="v3-autosave-pill"><span className="v3-dot" /> Auto-saved</span>
+          <button className="v3-pill" onClick={() => toast.success('Draft saved — auto-save is on.')}>Save draft</button>
+          <button className="v3-pill" onClick={() => { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }}>Preview</button>
+          <button className="v3-pill" onClick={handleDocxExport} title="Download Word document">DOCX</button>
+          <button className="v3-primary" onClick={handleDownload}>Download PDF</button>
+        </div>
+      </header>
 
-          <header className="sticky top-0 z-30 -mx-6 -mt-8 px-6 py-4 lg:-mx-10 lg:-mt-12 lg:px-10 lg:py-5 bg-white/95 backdrop-blur-md border-b border-[#dddde5] mb-8">
-            {/* MOBILE / TABLET HEADER — approved layout, slogan removed */}
-            <div className="lg:hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <div>
-                <Link href="/" className="flex items-center gap-2">
-                  <Logo size={30} wordSize={21} />
-                </Link>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="flex items-center gap-1 text-[10px] font-brand font-semibold text-[#10B981]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" /> Auto-saved
-                  </span>
-                </div>
-              </div>
-              <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
-                <LiveAtsScore />
-                <div className="hidden sm:flex items-center gap-1 border-l border-[#dddde5] pl-2">
-                  <button onClick={() => useResumeStore.temporal.getState().undo()} className="p-2 border border-[#dddde5] rounded-lg bg-white hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors text-[#151a46]" title="Undo (Ctrl+Z)">
-                    <Undo2 size={16} />
-                  </button>
-                  <button onClick={() => useResumeStore.temporal.getState().redo()} className="p-2 border border-[#dddde5] rounded-lg bg-white hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors text-[#151a46]" title="Redo (Ctrl+Y)">
-                    <Redo2 size={16} />
-                  </button>
-                </div>
-                <button onClick={handleDownload} className="group flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 bg-[#5548f5] text-white rounded-xl shadow-[3px_3px_0_#151a46] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] px-2 sm:px-4 py-2 sm:py-2.5 font-brand text-[10px] sm:text-xs font-bold uppercase tracking-wide sm:tracking-widest whitespace-nowrap transition-all">
-                  <Download size={15} className="hidden sm:block group-hover:-translate-y-0.5 transition-transform" /> Download PDF
-                </button>
-                <button onClick={handleDocxExport} className="flex-1 sm:flex-none flex group items-center justify-center gap-1.5 sm:gap-2 bg-white text-[#151a46] border border-[#dddde5] rounded-xl shadow-[3px_3px_0_#151a46] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] px-2 sm:px-4 py-2 sm:py-2.5 font-brand text-[10px] sm:text-xs font-bold uppercase tracking-wide sm:tracking-widest whitespace-nowrap transition-all" title="Download Word Document">
-                  <FileText size={15} className="hidden sm:block group-hover:-translate-y-0.5 transition-transform" /> Download DOCX
-                </button>
-              </div>
-            </div>
-
-            {/* DESKTOP HEADER — logo aligned with the utility cluster; the
-                download buttons get their own full-width row so they can
-                never overflow/float over the preview panel. */}
-            <div className="hidden lg:flex flex-col gap-4">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 min-w-0">
-                  <Link href="/" className="flex items-center shrink-0" aria-label="Cvyon home">
-                    <Logo size={32} wordSize={22} />
-                  </Link>
-                  <span className="flex items-center gap-1.5 font-brand text-[10px] font-bold uppercase tracking-[0.18em] text-[#10B981] border border-[#10B981]/40 bg-[#10B981]/10 rounded-full px-2.5 py-1 whitespace-nowrap">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" /> Auto-saved
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <LiveAtsScore />
-                  <div className="flex items-center gap-1 border-l border-[#dddde5] pl-2">
-                    <button onClick={() => useResumeStore.temporal.getState().undo()} className="p-2 border border-[#dddde5] rounded-lg bg-white hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors text-[#151a46]" title="Undo (Ctrl+Z)">
-                      <Undo2 size={16} />
-                    </button>
-                    <button onClick={() => useResumeStore.temporal.getState().redo()} className="p-2 border border-[#dddde5] rounded-lg bg-white hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors text-[#151a46]" title="Redo (Ctrl+Y)">
-                      <Redo2 size={16} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={handleDownload} className="group flex-1 flex items-center justify-center gap-2 bg-[#5548f5] text-white rounded-xl shadow-[3px_3px_0_#151a46] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] px-4 py-3 font-brand text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all">
-                  <Download size={16} className="group-hover:-translate-y-0.5 transition-transform" /> Download PDF
-                </button>
-                <button onClick={handleDocxExport} className="flex-1 flex group items-center justify-center gap-2 bg-white text-[#151a46] border border-[#dddde5] rounded-xl shadow-[3px_3px_0_#151a46] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] px-4 py-3 font-brand text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all" title="Download Word Document">
-                  <FileText size={16} className="group-hover:-translate-y-0.5 transition-transform" /> Download DOCX
-                </button>
-              </div>
-            </div>
-          </header>
-
-
-          {publishedUrl && (
-            <div className="mb-8 p-4 bg-white border border-[#0E8A4B] rounded-2xl shadow-[0_2px_8px_rgba(21,26,70,.05)] flex items-center justify-between">
-              <div>
-                <p className="text-[#0E8A4B] font-brand font-bold text-sm">Your resume is live!</p>
-                <a href={publishedUrl} target="_blank" rel="noreferrer" className="text-[#0E8A4B] font-brand text-xs hover:underline mt-1 block">{publishedUrl}</a>
-              </div>
-              <button onClick={() => { navigator.clipboard.writeText(publishedUrl); toast.success('Copied!'); }} className="px-3 py-1.5 bg-[#0E8A4B] text-white rounded-lg font-brand text-[10px] font-bold uppercase tracking-widest hover:bg-[#151a46] transition-colors">
-                Copy link
+      <div className="v3-workspace">
+        {/* ===== SIDEBAR (v3 concept) ===== */}
+        <aside className="v3-sidebar print:hidden">
+          <p className="v3-side-title">Resume</p>
+          <nav className="v3-nav" aria-label="Resume steps">
+            {WIZARD_STEPS.map((s, i) => (
+              <button key={s.id} onClick={() => goStep(i)}
+                className={cn('v3-nav-btn', activeStep === i && 'active')}
+                aria-current={activeStep === i ? 'step' : undefined}>
+                <span className="v3-num">{stepComplete[s.id] ? <Check size={12} strokeWidth={4} /> : i + 1}</span>
+                {s.label}
               </button>
-            </div>
-          )}
-
-          {/* AI Tools Bar */}
-          <div className="flex flex-wrap gap-2 mb-8">
-            <button onClick={() => setIsATSOpen(true)} className="flex items-center gap-2 px-4 py-2.5 border border-[#dddde5] rounded-full bg-white text-[#151a46] font-brand text-[11px] font-bold uppercase tracking-[0.16em] transition-all shadow-[0_2px_6px_rgba(21,26,70,.06)] hover:border-[#0E8A4B] hover:text-[#0E8A4B]">
-              <BarChart3 size={14} /> ATS Grader
-            </button>
-            <button onClick={() => setIsRewriterOpen(true)} className="flex items-center gap-2 px-4 py-2.5 border border-[#dddde5] rounded-full bg-white text-[#151a46] font-brand text-[11px] font-bold uppercase tracking-[0.16em] transition-all shadow-[0_2px_6px_rgba(21,26,70,.06)] hover:border-[#ff604b] hover:text-[#ff604b]">
-              <RefreshCw size={14} /> AI Rewriter
-            </button>
-          </div>
-
-          {/* Template Gallery Button */}
-          <div className="mb-12">
-            <button onClick={() => setIsGalleryOpen(true)} className="w-full relative overflow-hidden bg-[#151a46] text-white rounded-2xl shadow-[5px_5px_0_#5548f5] p-4 sm:p-6 font-bold flex items-center justify-between group transition-all hover:shadow-none hover:translate-x-[5px] hover:translate-y-[5px]">
-              <div className="flex items-center gap-4 sm:gap-5 relative z-10">
-                <div className="w-10 h-10 sm:w-14 sm:h-14 bg-[#ff604b] rounded-xl flex items-center justify-center group-hover:rotate-6 transition-transform">
-                  <Layout className="text-[#151a46] w-5 h-5 sm:w-6 sm:h-6" />
-                </div>
-                <div className="flex flex-col items-start">
-                  <span className="font-brand text-lg sm:text-xl tracking-tight leading-none mb-1">Template Gallery</span>
-                  <span className="hidden sm:block font-brand text-[10px] text-[#f6f5ef]/60 font-bold tracking-[0.18em] uppercase">{Object.keys(templates).length} ATS-optimized layouts</span>
-                  <span className="sm:hidden font-brand text-[9px] text-[#f6f5ef]/60 font-bold uppercase">{Object.keys(templates).length} layouts</span>
-                </div>
-              </div>
-              <div className="relative z-10 bg-white text-[#151a46] rounded-xl px-4 py-2.5 font-brand text-[10px] sm:text-xs uppercase tracking-widest font-black group-hover:bg-[#ff604b] group-hover:text-[#151a46] transition-colors flex items-center gap-2">
-                <span className="hidden sm:inline">Change Design</span>
-                <Paintbrush size={16} className="block sm:hidden" />
-              </div>
-            </button>
-          </div>
-
-          <DragDropContext onDragEnd={onDragEnd}>
-
-            {/* Design pane first in the DOM so mobile keeps its current order
-                (Theme, Import, sections). On desktop only the active tab's
-                pane is visible — see .editor-pane CSS below. */}
-            <div className={cn("editor-pane", safeActiveTab === 'design' && "editor-pane-active")}>
-              {designBlock}
-              {renderPaneNav('design')}
-            </div>
-
-            <ImportResume />
-
-            {/* Desktop section tabs — the end of endless scrolling. */}
-            <div ref={tabsTopRef} className="desktop-tabbar mb-8 scroll-mt-40">
-              <div className="flex items-center justify-between mb-3">
-                <p className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] text-[#73778c]">Resume Sections</p>
-                <p className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] text-[#151a46]/50">
-                  <span className="text-[#5548f5]">{completedTabs}</span> of {editorTabs.length} complete
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2" role="tablist" aria-label="Resume sections">
-                {editorTabs.map((tab) => {
-                  const TabIcon = tab.icon;
-                  const isActive = safeActiveTab === tab.id;
-                  const done = !!tabComplete[tab.id];
-                  return (
-                    <button
-                      key={tab.id}
-                      role="tab"
-                      aria-selected={isActive}
-                      onClick={() => selectTab(tab.id)}
-                      className={cn(
-                        "flex items-center gap-2 px-4 py-2.5 border rounded-full font-brand text-[11px] font-bold uppercase tracking-[0.14em] transition-all",
-                        isActive
-                          ? "bg-[#eeecff] text-[#151a46] border-[#5548f5] shadow-[0_2px_8px_rgba(85,72,245,.18)]"
-                          : "bg-white text-[#73778c] border-[#dddde5] hover:border-[#151a46] hover:text-[#151a46]"
-                      )}>
-                      <TabIcon size={14} />
-                      {tab.label}
-                      {done && (
-                        <span className="flex items-center justify-center w-4 h-4 rounded-full bg-[#24c9bd] text-white">
-                          <Check size={10} strokeWidth={4} />
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Editor sections — tab panes on desktop, stacked accordions on mobile. */}
-            {editorSectionIds.map((id) => (
-              <div key={id} className={cn("editor-pane", safeActiveTab === id && "editor-pane-active")}>
-                {sectionBlocks[id]}
-                {renderPaneNav(id)}
-              </div>
             ))}
+          </nav>
+          <div className="v3-progress">
+            <small>Completion</small>
+            <strong>{completionPct}%</strong>
+            <div className="v3-bar"><i style={{ width: `${completionPct}%` }} /></div>
+            <p>{completionHint}</p>
+          </div>
+        </aside>
 
-            {/* Add New Sections */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-12 pt-8 border-t border-[#dddde5] flex-wrap">
-              {!data.showProjects && (
-                <button onClick={() => enableSectionAndGo(toggleProjects, 'projects')} className="flex-1 min-w-[200px] py-4 bg-white border border-dashed border-[#5548f5]/50 hover:border-[#5548f5] hover:bg-[#eeecff] rounded-xl font-brand text-xs font-bold uppercase tracking-widest text-[#151a46]/70 hover:text-[#151a46] flex items-center justify-center gap-2 transition-all">
-                  <Plus size={18} /> Add Projects
-                </button>
-              )}
-              {!data.showCertifications && (
-                <button onClick={() => enableSectionAndGo(toggleCertifications, 'certifications')} className="flex-1 min-w-[200px] py-4 bg-white border border-dashed border-[#5548f5]/50 hover:border-[#5548f5] hover:bg-[#eeecff] rounded-xl font-brand text-xs font-bold uppercase tracking-widest text-[#151a46]/70 hover:text-[#151a46] flex items-center justify-center gap-2 transition-all">
-                  <Plus size={18} /> Add Certifications
-                </button>
-              )}
-              {!data.showReferences && (
-                <button onClick={() => enableSectionAndGo(toggleReferences, 'references')} className="flex-1 min-w-[200px] py-4 bg-white border border-dashed border-[#5548f5]/50 hover:border-[#5548f5] hover:bg-[#eeecff] rounded-xl font-brand text-xs font-bold uppercase tracking-widest text-[#151a46]/70 hover:text-[#151a46] flex items-center justify-center gap-2 transition-all">
-                  <Plus size={18} /> Add References
-                </button>
-              )}
+        {/* ===== EDITOR (v3 concept) ===== */}
+        <section className="v3-editor print:hidden">
+          <div className="v3-editor-inner" id="builder-editor-top">
+            <div className="v3-mobilebar">
+              <div><strong>Step {activeStep + 1} of 6</strong><br /><small>{WIZARD_STEPS[activeStep].label}</small></div>
+              <button className="v3-primary" onClick={() => { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }}>Preview</button>
             </div>
 
-            {/* Custom Sections */}
+            <p className="v3-eyebrow">Step {activeStep + 1} of 6</p>
+            <h2 className="v3-heading">{WIZARD_STEPS[activeStep].heading}</h2>
+            <p className="v3-sub">{WIZARD_STEPS[activeStep].sub}</p>
+
+            {publishedUrl && (
+              <div className="v3-card" style={{ borderColor: '#0E8A4B' }}>
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[#0E8A4B] font-bold text-sm">Your resume is live!</p>
+                    <a href={publishedUrl} target="_blank" rel="noreferrer" className="text-[#0E8A4B] text-xs hover:underline mt-1 block">{publishedUrl}</a>
+                  </div>
+                  <button onClick={() => { navigator.clipboard.writeText(publishedUrl); toast.success('Copied!'); }} className="v3-ai-btn">
+                    Copy link
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <DragDropContext onDragEnd={onDragEnd}>
+              {WIZARD_STEPS.map((s, i) => (
+                <div key={s.id} id={`v3-step-${s.id}`} className={cn('v3-step', activeStep === i && 'v3-step-active')}>
+                  {(stepBlocks[s.id] || []).map((block, bi) => (
+                    <div key={bi} className="v3-block">{block}</div>
+                  ))}
+                  {s.id === 'extras' && (
+                    <>
+                      {(!data.showProjects || !data.showCertifications || !data.showReferences) && (
+                        <div className="v3-addrow">
+                          {!data.showProjects && (
+                            <button onClick={() => enableSectionAndGo(toggleProjects)} className="v3-addbtn">
+                              <Plus size={18} /> Add Projects
+                            </button>
+                          )}
+                          {!data.showCertifications && (
+                            <button onClick={() => enableSectionAndGo(toggleCertifications)} className="v3-addbtn">
+                              <Plus size={18} /> Add Certifications
+                            </button>
+                          )}
+                          {!data.showReferences && (
+                            <button onClick={() => enableSectionAndGo(toggleReferences)} className="v3-addbtn">
+                              <Plus size={18} /> Add References
+                            </button>
+                          )}
+                        </div>
+                      )}
+                                  {/* Custom Sections */}
             {data.customSections?.map((section: any, sectionIndex: number) => (
               <div key={section.id} className="mt-8">
                 <div className="flex items-center justify-between mb-4 bg-white p-4 border border-[#dddde5] rounded-xl shadow-[0_2px_8px_rgba(21,26,70,.05)]">
@@ -1287,64 +1197,169 @@ export default function FreeCVApp() {
               </div>
             ))}
 
-            <div className="mt-8">
-              <button onClick={addCustomSection} className="w-full py-4 bg-white border border-dashed border-[#5548f5] hover:bg-[#eeecff] rounded-xl font-brand text-xs font-bold uppercase tracking-widest text-[#5548f5] flex items-center justify-center gap-2 transition-all">
-                <Plus size={18} /> Create Custom Section
+                      <div className="v3-addrow">
+                        <button onClick={addCustomSection} className="v3-addbtn v3-addbtn-accent">
+                          <Plus size={18} /> Create Custom Section
+                        </button>
+                      </div>
+                      <div className="v3-import"><ImportResume /></div>
+                    </>
+                  )}
+                </div>
+              ))}
+            </DragDropContext>
+
+            {/* Target the right role — desktop only (v3 concept) */}
+            <div className="v3-card v3-desktop-only">
+              <div className="v3-card-head">
+                <div>
+                  <h3>Target the right role</h3>
+                  <p className="v3-card-hint">Cvyon uses this to guide your ATS suggestions.</p>
+                </div>
+              </div>
+              <div className="v3-target">
+                <div className="v3-field">
+                  <label>Target job title</label>
+                  <input value={atsJobDesc} onChange={(e) => setAtsJobDesc(e.target.value)} placeholder="e.g. Senior Product Engineer" />
+                </div>
+                <button className="v3-primary" onClick={() => setIsATSOpen(true)}>Analyze</button>
+              </div>
+            </div>
+
+            {/* Next up — desktop only (v3 concept) */}
+            <div className="v3-card v3-desktop-only">
+              <div className="v3-card-head">
+                <div>
+                  <h3>Next up</h3>
+                  <p className="v3-card-hint">Small actions, visible progress.</p>
+                </div>
+              </div>
+              <p className="v3-nextup">
+                {nextUpItems.map((item, i) => (
+                  <span key={item}>{i + 1}&#8419; {item}{i < nextUpItems.length - 1 ? '\u00A0\u00A0' : ''}</span>
+                ))}
+              </p>
+            </div>
+
+            {/* Mobile continue */}
+            <button
+              className="v3-primary v3-mobile-next"
+              onClick={() => {
+                if (activeStep < 5) goStep(activeStep + 1);
+                else { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }
+              }}>
+              {activeStep === 5 ? 'Review my resume \u2192' : `Continue to ${WIZARD_STEPS[activeStep + 1].label} \u2192`}
+            </button>
+
+            <div className="v3-desktop-only">
+              <div className="v3-newsletter">
+                <NewsletterCapture source="main_editor" />
+              </div>
+              <footer className="v3-footer">
+                <Link href="/blog" className="hover:text-[#5548f5] transition-colors">Career Blog</Link>
+                <span>&bull;</span>
+                <Link href="/recruiter" className="hover:text-[#5548f5] transition-colors">Recruiter Portal</Link>
+                <span>&bull;</span>
+                <Link href="/privacy" className="hover:text-[#5548f5] transition-colors">Privacy Policy & GDPR</Link>
+                <span>&bull;</span>
+                <Link href="/manage-data" className="hover:text-[#5548f5] transition-colors">Manage Data</Link>
+              </footer>
+            </div>
+          </div>
+        </section>
+
+        {/* ===== LIVE PREVIEW (v3 concept) ===== */}
+        <section className="v3-preview" id="preview-panel" ref={previewViewportRef}>
+          <div className="v3-previewbar print:hidden">
+            <strong>Live preview</strong>
+            <div className="v3-preview-actions">
+              <button className="v3-pill-sm" onClick={() => setIsGalleryOpen(true)} title="Change template">
+                <Layout size={14} /> Design
               </button>
+              <button className="v3-pill-sm" onClick={() => setIsATSOpen(true)} title="Grade against a job description">
+                <BarChart3 size={14} /> ATS
+              </button>
+              <button className="v3-pill-sm" onClick={() => setIsRewriterOpen(true)} title="Rewrite with AI">
+                <Sparkles size={14} /> AI
+              </button>
+              <div className="v3-zoom">
+                <button onClick={() => setPreviewZoom((z) => Math.max(0.6, +(z - 0.1).toFixed(2)))} aria-label="Zoom out">&minus;</button>
+                <button onClick={() => setPreviewZoom((z) => Math.min(1.3, +(z + 0.1).toFixed(2)))} aria-label="Zoom in">+</button>
+              </div>
             </div>
-
-            {/* Newsletter */}
-            <div className="mt-16 pt-8 border-t-2 border-[#151a46]/20">
-              <NewsletterCapture source="main_editor" />
+          </div>
+          <div className="v3-canvas print:hidden" ref={previewCanvasRef}>
+            <div style={{ width: 816 * desktopPreviewFit.scale * previewZoom, height: desktopPreviewFit.paperH * desktopPreviewFit.scale * previewZoom, flexShrink: 0 }}>
+            <div className="v3-paperwrap" style={{ transform: `scale(${desktopPreviewFit.scale * previewZoom})`, width: 816 }}>
+              <div
+                ref={resumePageRef}
+                className="v3-paper"
+                style={{ '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
+              >
+                <ErrorBoundary fallbackTitle="Resume Preview Error" fallbackMessage="Could not render the current template. Try selecting another template or verifying your text inputs.">
+                  <HTMLPreview Tmpl={htmlTemplates[data.templateId as keyof typeof htmlTemplates]} data={previewData} />
+                </ErrorBoundary>
+              </div>
             </div>
+            </div>
+          </div>
+          {/* Print: render the paper without the chrome */}
+          <div className="hidden print:block">
+            <HTMLPreview Tmpl={htmlTemplates[data.templateId as keyof typeof htmlTemplates]} data={previewData} />
+          </div>
+        </section>
+      </div>
 
-            {/* Footer Links */}
-            <footer className="mt-12 pt-6 border-t-2 border-[#151a46]/20 flex flex-wrap gap-4 font-brand text-xs font-bold uppercase tracking-widest justify-center pb-8 text-[#151a46]/55">
-              <Link href="/blog" className="hover:text-[#5548f5] transition-colors">Career Blog</Link>
-              <span>&bull;</span>
-              <Link href="/recruiter" className="hover:text-[#5548f5] transition-colors">Recruiter Portal</Link>
-              <span>&bull;</span>
-              <Link href="/privacy" className="hover:text-[#5548f5] transition-colors">Privacy Policy & GDPR</Link>
-              <span>&bull;</span>
-              <Link href="/manage-data" className="hover:text-[#5548f5] transition-colors">Manage Data</Link>
-            </footer>
+      {/* ATS readiness badge (v3 concept) */}
+      <div className="v3-score print:hidden">
+        <LiveAtsScore />
+      </div>
 
-          </DragDropContext>
-        </div>
-      </section>
+      {/* Mobile bottom tabs (v3 concept) */}
+      <nav className="v3-mobiletabs print:hidden" aria-label="Builder">
+        <button className={cn(!isPreviewOpen && 'active')} onClick={() => { setIsPreviewOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+          <span>&#9998;</span>Edit
+        </button>
+        <button onClick={() => { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }}>
+          <span>&#9635;</span>Preview
+        </button>
+        <button onClick={() => setIsRewriterOpen(true)}>
+          <span>&#10022;</span>AI
+        </button>
+        <button onClick={() => setIsDownloadModalOpen(true)}>
+          <span>&darr;</span>Export
+        </button>
+      </nav>
 
-      {/* MOBILE PREVIEW BUTTON — single page-wide blue button below lg.
-          Shows only while the editor is open; the preview overlay carries its
-          own Edit button to return. Positioning is inline (not Tailwind
-          utilities) so it can never be dropped by the utility scanner. */}
-      {!isPreviewOpen && (
-        <div className="lg:hidden fixed z-40 print:hidden w-full max-w-sm px-6"
-          style={{ position: 'fixed', bottom: '1.5rem', left: '50%', transform: 'translateX(-50%)' }}>
-          <button
-            onClick={() => { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3.5 font-brand text-xs font-bold uppercase tracking-widest transition-all bg-[#5548f5] text-white rounded-xl shadow-[4px_4px_0_#151a46]">
-            <Eye size={15} /> Preview
-          </button>
-        </div>
-      )}
-
-      {/* PREVIEW PANEL — NON-STICKY, scrolls naturally with the page */}
-      <section
-        ref={previewViewportRef}
-        id="preview-panel"
-        className={cn(
-          "flex-1 bg-[#e7e8ef] p-0 lg:p-12 print:p-0 print:bg-white flex lg:justify-center items-start print-safe-container",
-          isPreviewOpen && !mobileZoom ? "overflow-x-hidden justify-center" : "overflow-x-auto",
-          isPreviewOpen ? "fixed inset-0 z-50 flex-col h-screen overflow-y-auto custom-scrollbar" : "hidden lg:flex"
-        )}>
-
-        {/* Mobile Modal Actions */}
-        {isPreviewOpen && (
-          <div className="fixed bottom-0 left-0 w-full bg-white p-3 flex gap-1.5 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-50 lg:hidden print:hidden border-t border-[#dddde5]">
-            <button onClick={() => setIsPreviewOpen(false)} className="bg-white border border-[#dddde5] rounded-xl text-[#151a46] px-3 py-3 font-brand text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-1 transition-all">
+      {/* Mobile preview overlay */}
+      {isPreviewOpen && (
+        <div className="v3-preview-overlay print:hidden">
+          <div className="v3-previewbar">
+            <strong>Live preview</strong>
+            <button className="v3-pill-sm" onClick={() => setIsPreviewOpen(false)}>
+              <X size={14} /> Close
+            </button>
+          </div>
+          <div className="v3-canvas">
+            <div
+              className="preview-scale-frame shrink-0"
+              style={{ width: mobilePreviewMetrics.width, height: mobilePreviewMetrics.height }}
+            >
+              <div
+                className="w-[816px] origin-top-left shrink-0 bg-white"
+                style={{ transform: mobilePreviewMetrics.scale !== 1 ? `scale(${mobilePreviewMetrics.scale})` : undefined, '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
+              >
+                <ErrorBoundary fallbackTitle="Resume Preview Error" fallbackMessage="Could not render the current template. Try selecting another template or verifying your text inputs.">
+                  <HTMLPreview Tmpl={htmlTemplates[data.templateId as keyof typeof htmlTemplates]} data={previewData} />
+                </ErrorBoundary>
+              </div>
+            </div>
+          </div>
+          <div className="v3-overlay-actions">
+            <button onClick={() => setIsPreviewOpen(false)} className="v3-pill-sm">
               <X size={14} /> Edit
             </button>
-            <button onClick={() => setMobileZoom(!mobileZoom)} className="bg-white border border-[#dddde5] rounded-xl text-[#151a46] px-3 py-3 font-brand text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-1 transition-all">
+            <button onClick={() => setMobileZoom(!mobileZoom)} className="v3-pill-sm">
               {mobileZoom ? <ZoomOut size={14} /> : <ZoomIn size={14} />} Zoom
             </button>
             <PDFDownloadButton
@@ -1352,30 +1367,15 @@ export default function FreeCVApp() {
               data={previewData}
               themeColor={data.theme?.color || '#2563eb'}
               onDownloadComplete={() => setIsJobsModalOpen(true)}
-              className="flex-1 bg-[#5548f5] text-white rounded-xl shadow-[3px_3px_0_#151a46] py-3 font-brand text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-1 transition-all"
+              className="v3-primary"
             />
-            <button onClick={handleDocxExport} className="bg-white text-[#151a46] border border-[#dddde5] rounded-xl px-3.5 py-3 font-brand text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-1 transition-all">
+            <button onClick={handleDocxExport} className="v3-pill-sm">
               <FileText size={14} /> DOCX
             </button>
           </div>
-        )}
-
-
-        <div
-          className={cn("preview-scale-frame shrink-0 transition-all print:block", isPreviewOpen ? "mb-32 mt-8 lg:mt-4 mx-auto" : "mx-auto lg:mx-0")}
-          style={isPreviewOpen ? { width: mobilePreviewMetrics.width, height: mobilePreviewMetrics.height } : undefined}
-        >
-          <div
-            ref={resumePageRef}
-            className="w-[816px] origin-top-left shrink-0 shadow-2xl print:shadow-none bg-white transition-transform print-safe-content"
-            style={{ transform: isPreviewOpen && mobilePreviewMetrics.scale !== 1 ? `scale(${mobilePreviewMetrics.scale})` : undefined, '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
-          >
-            <ErrorBoundary fallbackTitle="Resume Preview Error" fallbackMessage="Could not render the current template. Try selecting another template or verifying your text inputs.">
-              <HTMLPreview Tmpl={htmlTemplates[data.templateId as keyof typeof htmlTemplates]} data={previewData} />
-            </ErrorBoundary>
-          </div>
         </div>
-      </section>
+      )}
+
 
       {/* TEMPLATE GALLERY MODAL */}
       {isGalleryOpen && (
@@ -1556,35 +1556,10 @@ export default function FreeCVApp() {
         @media print {
           body { background: white !important; }
           .print\\:hidden { display: none !important; }
-          .custom-scrollbar { scrollbar-width: none; }
-          .custom-scrollbar::-webkit-scrollbar { display: none; }
-        }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #151a4633; border-radius: 0; }
-        /* Editor section headers: on desktop (lg+) the header is inert and
-           the section always expanded — the original pre-redesign look.
-           Below lg the accordion toggle works normally. Plain CSS (not
-           Tailwind responsive variants) so the production cascade can't
-           swallow it the way lg:block lost to .hidden. */
-        /* Desktop section tab bar: hidden below lg, shown on desktop.
-           Plain CSS (not Tailwind responsive variants) so the production
-           cascade can't swallow it the way lg:block lost to .hidden. */
-        .desktop-tabbar { display: none; }
-        @media (min-width: 1024px) {
-          .desktop-tabbar { display: block; }
-          .section-toggle { pointer-events: none; cursor: default; }
-          .section-toggle-chevron { display: none; }
-          .section-body { display: block !important; }
-          /* Desktop tabbed editor: only the active pane is visible, so the
-             editor is one screen of focused content instead of an endless
-             scroll. Below lg every pane renders (stacked accordions) — a
-             single DOM, so droppable IDs are never duplicated. */
-          .editor-pane { display: none; }
-          .editor-pane-active { display: block; animation: cvyonTabIn 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
-        }
-        @keyframes cvyonTabIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
+          .v3-builder { display: block; height: auto; overflow: visible; }
+          .v3-workspace { display: block; overflow: visible; }
+          .v3-top, .v3-sidebar, .v3-editor, .v3-score, .v3-mobiletabs, .v3-preview-overlay { display: none !important; }
+          .v3-preview { display: block; border: 0; background: #fff; }
         }
 `}} />
     </main>
