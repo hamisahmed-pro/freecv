@@ -669,8 +669,8 @@ export default function FreeCVApp() {
             role="switch"
             aria-checked={data.consents.recruiterShare}
             aria-label="Allow recruiters to find my profile"
-            className={cn("w-12 h-6 rounded-full transition-colors relative flex-shrink-0", data.consents.recruiterShare ? 'bg-[#5548f5]' : 'bg-gray-300')}>
-            <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform", data.consents.recruiterShare ? 'translate-x-6' : 'translate-x-1')} />
+            className="v3-switch">
+            <span className="v3-switch-knob" />
           </button>
         </div>
         <div className="col-span-1 sm:col-span-2 mt-2 flex justify-center sm:justify-start">
@@ -1063,9 +1063,8 @@ export default function FreeCVApp() {
         <div className="v3-top-right">
           <span className="v3-autosave-pill"><span className="v3-dot" /> Auto-saved</span>
           <button className="v3-pill" onClick={() => setIsGalleryOpen(true)}><Layout size={14} /> Design</button>
-          <button className="v3-pill" onClick={() => { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }}>Preview</button>
-          <button className="v3-pill" onClick={handleDocxExport} title="Download Word document">DOCX</button>
-          <button className="v3-primary" onClick={handleDownload}>Download PDF</button>
+          <button className="v3-dl v3-dl-docx" onClick={handleDocxExport} title="Download Word document"><FileText size={14} /> Download DOCX</button>
+          <button className="v3-dl v3-dl-pdf" onClick={handleDownload}>Download PDF</button>
         </div>
       </header>
 
@@ -1120,30 +1119,38 @@ export default function FreeCVApp() {
             <DragDropContext onDragEnd={onDragEnd}>
               {WIZARD_STEPS.map((s, i) => (
                 <div key={s.id} id={`v3-step-${s.id}`} className={cn('v3-step', activeStep === i && 'v3-step-active')}>
+                  {s.id === 'basics' && (
+                    <div className="v3-block"><div className="v3-import"><ImportResume /></div></div>
+                  )}
+                  {s.id === 'extras' && (
+                    <div className="v3-block">
+                      <div className="v3-addrow">
+                        {!data.showProjects && (
+                          <button onClick={() => enableSectionAndGo(toggleProjects)} className="v3-addbtn">
+                            <Plus size={18} /> Add Projects
+                          </button>
+                        )}
+                        {!data.showCertifications && (
+                          <button onClick={() => enableSectionAndGo(toggleCertifications)} className="v3-addbtn">
+                            <Plus size={18} /> Add Certifications
+                          </button>
+                        )}
+                        {!data.showReferences && (
+                          <button onClick={() => enableSectionAndGo(toggleReferences)} className="v3-addbtn">
+                            <Plus size={18} /> Add References
+                          </button>
+                        )}
+                        <button onClick={addCustomSection} className="v3-addbtn v3-addbtn-accent">
+                          <Plus size={18} /> Create Custom Section
+                        </button>
+                      </div>
+                    </div>
+                  )}
                   {(stepBlocks[s.id] || []).map((block, bi) => (
                     <div key={bi} className="v3-block">{block}</div>
                   ))}
                   {s.id === 'extras' && (
                     <>
-                      {(!data.showProjects || !data.showCertifications || !data.showReferences) && (
-                        <div className="v3-addrow">
-                          {!data.showProjects && (
-                            <button onClick={() => enableSectionAndGo(toggleProjects)} className="v3-addbtn">
-                              <Plus size={18} /> Add Projects
-                            </button>
-                          )}
-                          {!data.showCertifications && (
-                            <button onClick={() => enableSectionAndGo(toggleCertifications)} className="v3-addbtn">
-                              <Plus size={18} /> Add Certifications
-                            </button>
-                          )}
-                          {!data.showReferences && (
-                            <button onClick={() => enableSectionAndGo(toggleReferences)} className="v3-addbtn">
-                              <Plus size={18} /> Add References
-                            </button>
-                          )}
-                        </div>
-                      )}
                                   {/* Custom Sections */}
             {data.customSections?.map((section: any, sectionIndex: number) => (
               <div key={section.id} className="mt-8">
@@ -1193,12 +1200,6 @@ export default function FreeCVApp() {
               </div>
             ))}
 
-                      <div className="v3-addrow">
-                        <button onClick={addCustomSection} className="v3-addbtn v3-addbtn-accent">
-                          <Plus size={18} /> Create Custom Section
-                        </button>
-                      </div>
-                      <div className="v3-import"><ImportResume /></div>
                     </>
                   )}
                 </div>
