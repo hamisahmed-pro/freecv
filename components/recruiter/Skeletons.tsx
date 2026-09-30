@@ -3,13 +3,13 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 function Block({ className }: { className?: string }) {
-  return <div className={cn("animate-pulse bg-[#E8E7E1]", className)} />;
+  return <div className={cn("animate-pulse bg-[#f6f5ef]", className)} />;
 }
 
 /** Single card skeleton — mirrors the rough shape of a MatchCard. */
 export function CardSkeleton() {
   return (
-    <div className="border-[3px] border-[#141312] bg-white hs p-5">
+    <div className="border-[3px] border-[#151a46] bg-white hs p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 space-y-3">
           <Block className="h-5 w-16" />
@@ -50,11 +50,11 @@ export function ResultListSkeleton() {
 /** Table skeleton — for the unlocks ledger. */
 export function TableSkeleton({ rows = 4 }: { rows?: number }) {
   return (
-    <div className="overflow-hidden border-[3px] border-[#141312] bg-white hs" aria-hidden>
-      <div className="border-b-[3px] border-[#141312] bg-[#E8E7E1] p-5">
+    <div className="overflow-hidden border-[3px] border-[#151a46] bg-white hs" aria-hidden>
+      <div className="border-b-[3px] border-[#151a46] bg-[#f6f5ef] p-5">
         <Block className="h-4 w-2/3 bg-white" />
       </div>
-      <div className="divide-y-2 divide-[#141312]/10">
+      <div className="divide-y-2 divide-[#151a46]/10">
         {Array.from({ length: rows }).map((_, i) => (
           <div key={i} className="flex items-center gap-5 px-5 py-4">
             <Block className="h-5 w-1/4" />

@@ -73,20 +73,20 @@ export default function RecruiterLanding() {
   return (
     <RisoPage pageName="recruiter_landing" ticker={true}>
       {/* ─── HERO: the JD-match flow ─── */}
-      <section className="dots relative grid grid-cols-1 gap-10 border-b-[3px] border-[#141312] py-14 lg:grid-cols-12 lg:py-20">
+      <section className="dots relative grid grid-cols-1 gap-10 border-b-[3px] border-[#151a46] py-14 lg:grid-cols-12 lg:py-20">
         <div className="lg:col-span-6">
           <div className="fm mb-6 flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.22em]">
-            <span className="inline-flex items-center gap-2 border-[3px] border-[#141312] bg-white px-3 py-1.5 hs">
-              <span className="blink inline-block h-2 w-2 rounded-full bg-[#FF4326]" />
+            <span className="inline-flex items-center gap-2 border-[3px] border-[#151a46] bg-white px-3 py-1.5 hs">
+              <span className="blink inline-block h-2 w-2 rounded-full bg-[#ff604b]" />
               recruiter access
             </span>
-            <span className="text-[#141312]/50">est. 2026</span>
+            <span className="text-[#151a46]/50">est. 2026</span>
           </div>
           <h1 className="fd text-[12vw] leading-[0.86] tracking-[-0.02em] sm:text-7xl lg:text-[5rem]">
             Paste the JD.<br />
-            Meet the <span className="relative inline-block"><span className="relative z-10">shortlist</span><span className="absolute inset-x-[-4px] bottom-1 z-0 h-[0.42em] bg-[#FFE14D]" /></span>.
+            Meet the <span className="relative inline-block"><span className="relative z-10">shortlist</span><span className="absolute inset-x-[-4px] bottom-1 z-0 h-[0.42em] bg-[#ffd85a]" /></span>.
           </h1>
-          <p className="mt-7 max-w-md text-lg leading-relaxed text-[#141312]/75">
+          <p className="mt-7 max-w-md text-lg leading-relaxed text-[#151a46]/75">
             Drop in a job description and Cvyon matches it against every opted-in
             candidate — ranked <strong>Excellent / Strong / Moderate</strong>, with
             counts shown <em>before</em> you spend anything. Unlock a contact for
@@ -95,30 +95,30 @@ export default function RecruiterLanding() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/recruiter/login"
-              className="group flex items-center justify-center gap-2 border-[3px] border-[#141312] bg-[#141312] px-7 py-4 fh text-sm font-extrabold uppercase tracking-wider text-[#E8E7E1] hs transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+              className="group flex items-center justify-center gap-2 border-[3px] border-[#151a46] bg-[#151a46] px-7 py-4 fh text-sm font-extrabold uppercase tracking-wider text-[#f6f5ef] hs transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
             >
               Sign in <ArrowRight size={17} className="transition-transform group-hover:translate-x-1" />
             </Link>
             <Link
               href="/recruiter/signup"
-              className="flex items-center justify-center gap-2 border-[3px] border-[#141312] bg-white px-7 py-4 fh text-sm font-extrabold uppercase tracking-wider hs transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+              className="flex items-center justify-center gap-2 border-[3px] border-[#151a46] bg-white px-7 py-4 fh text-sm font-extrabold uppercase tracking-wider hs transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
             >
               Create account
             </Link>
           </div>
           <div className="mt-9 flex flex-wrap gap-2 fm text-[10px] font-bold uppercase tracking-[0.16em]">
             {["free to search", "consent-verified", "anonymized until unlock", "₦0 to try"].map((c) => (
-              <span key={c} className="border-2 border-[#141312] bg-white px-3 py-1.5">{c}</span>
+              <span key={c} className="border-2 border-[#151a46] bg-white px-3 py-1.5">{c}</span>
             ))}
           </div>
         </div>
 
         {/* RIGHT COL — live JD search */}
         <div className="lg:col-span-6">
-          <div className="border-[3px] border-[#141312] bg-white hs p-5 sm:p-7">
-            <div className="fm mb-4 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.22em] text-[#141312]/50">
+          <div className="border-[3px] border-[#151a46] bg-white hs p-5 sm:p-7">
+            <div className="fm mb-4 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.22em] text-[#151a46]/50">
               <span>§ try it now</span>
-              <span className="text-[#FF4326]">live match</span>
+              <span className="text-[#ff604b]">live match</span>
             </div>
             <JdSearchForm variant="hero" onResult={handleHeroSearch} />
           </div>
@@ -127,7 +127,7 @@ export default function RecruiterLanding() {
 
       {/* ─── HOW IT WORKS ─── */}
       <section className="mt-16">
-        <RisoSectionLabel color="#FF4326">how it works</RisoSectionLabel>
+        <RisoSectionLabel color="#ff604b">how it works</RisoSectionLabel>
         <h2 className="fd text-4xl tracking-tight sm:text-5xl">Sell the match,<br />not the database.</h2>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {[
@@ -135,13 +135,13 @@ export default function RecruiterLanding() {
             { n: "02", icon: Search, t: "See tiered matches", d: "Every candidate is ranked Excellent, Strong, or Moderate with plain-English reasons — “8/10 required skills, 5 yrs experience”. Counts up front, free." },
             { n: "03", icon: Unlock, t: "Unlock the contact", d: "Found the one? Spend 1 credit to reveal their name, email, and phone. Nothing is ever shown before you choose to unlock." },
           ].map((s) => (
-            <div key={s.n} className="border-[3px] border-[#141312] bg-white hs p-7">
+            <div key={s.n} className="border-[3px] border-[#151a46] bg-white hs p-7">
               <div className="flex items-center justify-between">
-                <span className="fd text-3xl text-[#FF4326]">{s.n}</span>
-                <s.icon size={26} className="text-[#141312]" />
+                <span className="fd text-3xl text-[#ff604b]">{s.n}</span>
+                <s.icon size={26} className="text-[#151a46]" />
               </div>
               <h3 className="fh mt-5 text-xl font-extrabold tracking-tight">{s.t}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-[#141312]/70">{s.d}</p>
+              <p className="mt-2 text-sm leading-relaxed text-[#151a46]/70">{s.d}</p>
             </div>
           ))}
         </div>
@@ -151,7 +151,7 @@ export default function RecruiterLanding() {
       <section className="mt-20">
         <RisoSectionLabel color="#0E8A4B">pricing</RisoSectionLabel>
         <h2 className="fd text-4xl tracking-tight sm:text-5xl">Pay per hire-lead.<br />Nothing else.</h2>
-        <p className="mt-4 max-w-lg text-lg text-[#141312]/70">
+        <p className="mt-4 max-w-lg text-lg text-[#151a46]/70">
           Searching is free, forever. You only pay when you unlock a candidate&apos;s contact — 1 credit each.
         </p>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
@@ -163,22 +163,22 @@ export default function RecruiterLanding() {
             return (
             <div
               key={p.id || p.name}
-              className={`relative flex flex-col border-[3px] border-[#141312] bg-white p-8 ${hot ? "hs-v" : "hs"}`}>
+              className={`relative flex flex-col border-[3px] border-[#151a46] bg-white p-8 ${hot ? "hs-v" : "hs"}`}>
               {hot && (
-                <span className="fm absolute -top-4 left-6 border-[3px] border-[#141312] bg-[#FF4326] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white">
+                <span className="fm absolute -top-4 left-6 border-[3px] border-[#151a46] bg-[#ff604b] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white">
                   most popular
                 </span>
               )}
-              <div className="flex items-center gap-2 fm text-[11px] font-bold uppercase tracking-[0.2em] text-[#141312]/55">
-                <Coins size={14} className="text-[#FF4326]" /> {p.credits} credit{p.credits === 1 ? "" : "s"}
+              <div className="flex items-center gap-2 fm text-[11px] font-bold uppercase tracking-[0.2em] text-[#151a46]/55">
+                <Coins size={14} className="text-[#ff604b]" /> {p.credits} credit{p.credits === 1 ? "" : "s"}
               </div>
               <h3 className="fh mt-2 text-2xl font-extrabold tracking-tight">{p.name}</h3>
               <div className="fd mt-3 text-5xl tracking-tight">{sym}{fmtNum(major)}</div>
               <div className="fm mt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#0E8A4B]">{sym}{per.toFixed(2)} / contact</div>
-              <p className="mt-3 text-sm text-[#141312]/65">{PACK_NOTES[i] || ""}</p>
+              <p className="mt-3 text-sm text-[#151a46]/65">{PACK_NOTES[i] || ""}</p>
               <Link
                 href="/recruiter/signup"
-                className={`mt-6 flex items-center justify-center gap-2 border-[3px] border-[#141312] px-6 py-3.5 fh text-xs font-extrabold uppercase tracking-wider transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none ${hot ? "bg-[#FF4326] text-[#141312] hs" : "bg-[#141312] text-[#E8E7E1] hs"}`}
+                className={`mt-6 flex items-center justify-center gap-2 border-[3px] border-[#151a46] px-6 py-3.5 fh text-xs font-extrabold uppercase tracking-wider transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none ${hot ? "bg-[#ff604b] text-[#151a46] hs" : "bg-[#151a46] text-[#f6f5ef] hs"}`}
               >
                 Start free <ArrowUpRight size={15} />
               </Link>
@@ -186,13 +186,13 @@ export default function RecruiterLanding() {
             );
           })}
         </div>
-        <p className="mt-6 text-center fm text-[11px] uppercase tracking-[0.16em] text-[#141312]/50">
+        <p className="mt-6 text-center fm text-[11px] uppercase tracking-[0.16em] text-[#151a46]/50">
           credits never expire · billed securely via Paystack · receipts on every unlock
         </p>
       </section>
 
       {/* ─── TRUST / PRIVACY ─── */}
-      <section className="mt-20 border-[3px] border-[#141312] bg-white hs p-8 sm:p-10">
+      <section className="mt-20 border-[3px] border-[#151a46] bg-white hs p-8 sm:p-10">
         <RisoSectionLabel>trust & privacy</RisoSectionLabel>
         <div className="grid gap-8 md:grid-cols-3">
           {[
@@ -201,12 +201,12 @@ export default function RecruiterLanding() {
             { icon: Check, t: "Honest counts", d: "Every search shows the real number of excellent, strong, and moderate matches first. A small pool is labeled as a small, growing pool — never padded." },
           ].map((c) => (
             <div key={c.t} className="flex gap-4">
-              <span className="grid h-11 w-11 shrink-0 place-items-center border-[3px] border-[#141312] bg-[#E8E7E1] text-[#141312]">
+              <span className="grid h-11 w-11 shrink-0 place-items-center border-[3px] border-[#151a46] bg-[#f6f5ef] text-[#151a46]">
                 <c.icon size={20} />
               </span>
               <div>
                 <h3 className="fh text-lg font-extrabold">{c.t}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-[#141312]/65">{c.d}</p>
+                <p className="mt-1 text-sm leading-relaxed text-[#151a46]/65">{c.d}</p>
               </div>
             </div>
           ))}
@@ -214,22 +214,22 @@ export default function RecruiterLanding() {
       </section>
 
       {/* ─── CTA BANNER ─── */}
-      <section className="mt-16 border-[3px] border-[#141312] bg-[#141312] hs-v p-10 text-center text-[#E8E7E1] sm:p-14">
+      <section className="mt-16 border-[3px] border-[#151a46] bg-[#151a46] hs-v p-10 text-center text-[#f6f5ef] sm:p-14">
         <h2 className="fd text-4xl tracking-tight sm:text-5xl">Your next hire is one JD away.</h2>
-        <p className="mx-auto mt-4 max-w-lg text-[#E8E7E1]/70">
+        <p className="mx-auto mt-4 max-w-lg text-[#f6f5ef]/70">
           Create a free recruiter account, paste a job description, and see your
           tiered shortlist in seconds. Pay only when you unlock.
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
             href="/recruiter/signup"
-            className="group flex items-center justify-center gap-2 border-[3px] border-[#E8E7E1] bg-[#E8E7E1] px-7 py-4 fh text-sm font-extrabold uppercase tracking-wider text-[#141312] transition-all hover:bg-[#FFE14D] hover:border-[#FFE14D]"
+            className="group flex items-center justify-center gap-2 border-[3px] border-[#f6f5ef] bg-[#f6f5ef] px-7 py-4 fh text-sm font-extrabold uppercase tracking-wider text-[#151a46] transition-all hover:bg-[#ffd85a] hover:border-[#ffd85a]"
           >
             Create account <ArrowUpRight size={17} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </Link>
           <Link
             href="/recruiter/login"
-            className="flex items-center justify-center gap-2 border-[3px] border-[#E8E7E1]/40 px-7 py-4 fh text-sm font-extrabold uppercase tracking-wider text-[#E8E7E1] transition-all hover:border-[#E8E7E1]"
+            className="flex items-center justify-center gap-2 border-[3px] border-[#f6f5ef]/40 px-7 py-4 fh text-sm font-extrabold uppercase tracking-wider text-[#f6f5ef] transition-all hover:border-[#f6f5ef]"
           >
             Sign in
           </Link>

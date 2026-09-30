@@ -54,13 +54,13 @@ export default async function PublicResumePage(props: Props) {
   const resumeData = record.data;
 
   return (
-    <div className="min-h-screen bg-[#E8E7E1] flex flex-col items-center py-10 selection:bg-black selection:text-white">
+    <div className="min-h-screen bg-[#f6f5ef] flex flex-col items-center py-10 selection:bg-black selection:text-white">
       <div className="w-full max-w-4xl mx-auto px-4 h-[1000px] shadow-2xl">
         <PublicResumeClient data={resumeData} />
       </div>
 
       <footer className="mt-12 text-center text-sm font-medium text-gray-500 pb-10 uppercase tracking-widest">
-        Built free with <a href="/" className="font-bold text-[#FF4326] hover:underline">Cvyon</a>. Create yours in minutes.
+        Built free with <a href="/" className="font-bold text-[#ff604b] hover:underline">Cvyon</a>. Create yours in minutes.
       </footer>
     </div>
   );

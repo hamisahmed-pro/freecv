@@ -151,28 +151,28 @@ export function JobsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
       <div
         ref={cardRef}
         onClick={(e) => e.stopPropagation()}
-        className="relative max-h-[90vh] w-full max-w-2xl overflow-hidden border-[3px] border-[#141312] bg-[#E8E7E1] shadow-[10px_10px_0_#141312] !rounded-t-3xl sm:!rounded-none"
+        className="relative max-h-[90vh] w-full max-w-2xl overflow-hidden border-[3px] border-[#151a46] bg-[#f6f5ef] shadow-[10px_10px_0_#151a46] !rounded-t-3xl sm:!rounded-none"
       >
         {/* living top accent */}
-        <div className="relative h-[3px] w-full overflow-hidden bg-[#141312]">
-          <div className="jm-sheen absolute inset-y-0 left-0 w-1/3 bg-[#FF4326]" />
+        <div className="relative h-[3px] w-full overflow-hidden bg-[#151a46]">
+          <div className="jm-sheen absolute inset-y-0 left-0 w-1/3 bg-[#ff604b]" />
         </div>
 
         {/* header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b-[3px] border-[#141312] bg-[#141312] px-6 py-4 text-[#E8E7E1]">
+        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b-[3px] border-[#151a46] bg-[#151a46] px-6 py-4 text-[#f6f5ef]">
           <div className="min-w-0">
-            <div className="fm flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[#FFE14D]">
+            <div className="fm flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[#ffd85a]">
               <Sparkles size={12} /> resume downloaded ✓
             </div>
             <h2 className="fd mt-1 flex items-center gap-2 truncate text-xl tracking-tight sm:text-2xl">
-              <Globe2 size={18} className="shrink-0 text-[#FF4326]" />
+              <Globe2 size={18} className="shrink-0 text-[#ff604b]" />
               {loading ? "Finding roles…" : empty || errored ? "Explore roles" : `Roles in ${country}`}
             </h2>
           </div>
           <button
             aria-label="Close"
             onClick={onClose}
-            className="grid h-9 w-9 shrink-0 place-items-center border-2 border-[#E8E7E1] transition-colors hover:border-[#FF4326] hover:bg-[#FF4326]"
+            className="grid h-9 w-9 shrink-0 place-items-center border-2 border-[#f6f5ef] transition-colors hover:border-[#ff604b] hover:bg-[#ff604b]"
           >
             <X size={18} />
           </button>
@@ -189,18 +189,18 @@ export function JobsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
         />
 
         {/* search bar */}
-        <div className="border-b-2 border-[#141312] bg-white p-3 flex gap-2">
+        <div className="border-b-2 border-[#151a46] bg-white p-3 flex gap-2">
           <input
             type="text"
             placeholder={`Search roles in ${country}...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") fetchJobs(); }}
-            className="flex-1 px-3 py-1.5 border border-[#141312] text-xs fm focus:outline-none focus:ring-1 focus:ring-[#2233FF]"
+            className="flex-1 px-3 py-1.5 border border-[#151a46] text-xs fm focus:outline-none focus:ring-1 focus:ring-[#5548f5]"
           />
           <button
             onClick={() => fetchJobs()}
-            className="px-4 py-1.5 bg-[#141312] text-white fm text-xs font-bold uppercase tracking-wider hover:bg-[#2233FF] transition-colors"
+            className="px-4 py-1.5 bg-[#151a46] text-white fm text-xs font-bold uppercase tracking-wider hover:bg-[#5548f5] transition-colors"
           >
             Search
           </button>
@@ -209,17 +209,17 @@ export function JobsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
         {/* body */}
         <div className="max-h-[calc(90vh-140px)] space-y-4 overflow-y-auto p-5 sm:p-6">
           {loading && (
-            <div className="flex flex-col items-center gap-3 py-16 text-[#141312]/60">
-              <Loader2 size={30} className="animate-spin text-[#2233FF]" />
+            <div className="flex flex-col items-center gap-3 py-16 text-[#151a46]/60">
+              <Loader2 size={30} className="animate-spin text-[#5548f5]" />
               <span className="fm text-[11px] font-bold uppercase tracking-[0.2em]">matching real roles in {country}…</span>
             </div>
           )}
 
           {!loading && (empty || errored) && (
-            <div className="border-[3px] border-dashed border-[#141312]/35 bg-white/40 p-6 text-center">
-              <Briefcase size={34} className="mx-auto mb-3 text-[#141312]/25" />
+            <div className="border-[3px] border-dashed border-[#151a46]/35 bg-white/40 p-6 text-center">
+              <Briefcase size={34} className="mx-auto mb-3 text-[#151a46]/25" />
               <p className="fh text-lg font-extrabold">No exact roles for this query right now.</p>
-              <p className="mx-auto mt-2 max-w-sm text-sm text-[#141312]/60 mb-4">
+              <p className="mx-auto mt-2 max-w-sm text-sm text-[#151a46]/60 mb-4">
                 Try searching one of these popular roles in {country}:
               </p>
               {suggestions.length > 0 && (
@@ -231,7 +231,7 @@ export function JobsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                         setSearchQuery(sug);
                         fetchJobs(sug);
                       }}
-                      className="px-3 py-1.5 bg-white border border-[#141312] text-xs font-bold fm hover:bg-[#2233FF] hover:text-white transition-colors hs-sm active:translate-y-0.5"
+                      className="px-3 py-1.5 bg-white border border-[#151a46] text-xs font-bold fm hover:bg-[#5548f5] hover:text-white transition-colors hs-sm active:translate-y-0.5"
                     >
                       + {sug}
                     </button>
@@ -253,21 +253,21 @@ export function JobsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                 onClick={() => handleJobClick(job)}
                 onAuxClick={(e) => { if (e.button === 1) handleJobClick(job); }}
                 style={{ animationDelay: `${i * 70}ms` }}
-                className="jm-card group flex items-start justify-between gap-4 border-[3px] border-[#141312] bg-white p-5 shadow-[5px_5px_0_#141312] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+                className="jm-card group flex items-start justify-between gap-4 border-[3px] border-[#151a46] bg-white p-5 shadow-[5px_5px_0_#151a46] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <Briefcase size={15} className="shrink-0 text-[#2233FF]" />
+                    <Briefcase size={15} className="shrink-0 text-[#5548f5]" />
                     <h3 className="fh truncate text-base font-extrabold tracking-tight">{job.title}</h3>
                   </div>
-                  <div className="mt-1 truncate text-sm font-semibold text-[#141312]/80">{job.company}</div>
-                  <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 fm text-[11px] uppercase tracking-wider text-[#141312]/55">
+                  <div className="mt-1 truncate text-sm font-semibold text-[#151a46]/80">{job.company}</div>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 fm text-[11px] uppercase tracking-wider text-[#151a46]/55">
                     <span className="flex items-center gap-1"><MapPin size={12} /> {job.location || country}</span>
                     {job.salary ? <span>{job.salary}</span> : null}
                   </div>
                   {/* animated match bar */}
                   {match > 0 && (
-                    <div className="mt-3 h-2 w-full border-2 border-[#141312] bg-[#E8E7E1]">
+                    <div className="mt-3 h-2 w-full border-2 border-[#151a46] bg-[#f6f5ef]">
                       <div className="jm-barfill h-full bg-[#0E8A4B]" style={{ width: `${match}%` }} />
                     </div>
                   )}
@@ -276,7 +276,7 @@ export function JobsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                   {match > 0 && (
                     <span className="border-2 border-[#0E8A4B] px-2 py-1 fm text-[11px] font-bold text-[#0E8A4B]">{match}%</span>
                   )}
-                  <span className="flex items-center gap-1 fm text-[10px] font-bold uppercase tracking-widest text-[#141312]/50 transition-colors group-hover:text-[#FF4326]">
+                  <span className="flex items-center gap-1 fm text-[10px] font-bold uppercase tracking-widest text-[#151a46]/50 transition-colors group-hover:text-[#ff604b]">
                     Apply <ArrowUpRight size={13} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </span>
                 </div>
@@ -285,7 +285,7 @@ export function JobsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
           })}
 
           {!loading && !empty && !errored && jobs.length > 0 && (
-            <p className="pt-1 text-center fm text-[10px] uppercase tracking-[0.18em] text-[#141312]/40">
+            <p className="pt-1 text-center fm text-[10px] uppercase tracking-[0.18em] text-[#151a46]/40">
               live roles via CareerJet · matched to your skills & {country}
             </p>
           )}

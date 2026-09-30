@@ -20,21 +20,21 @@ export interface Tokens {
 export const T: Record<Mode, Tokens> = {
   dark: {
     mode: "dark",
-    bg: "#141312", rail: "#0e0d0c", surface: "#1b1916", surface2: "#242019", inset: "#0c0b0a",
-    border: "#322d27", borderStrong: "#E8E7E1",
+    bg: "#151a46", rail: "#0e0d0c", surface: "#1b1916", surface2: "#242019", inset: "#0c0b0a",
+    border: "#322d27", borderStrong: "#f6f5ef",
     text: "#F2ECE1", muted: "#9a9187", faint: "#6a6258",
-    verm: "#FF4326", cob: "#4F73FF", green: "#2FB877", gold: "#FFC83D", hi: "#FFE14D",
+    verm: "#ff604b", cob: "#4F73FF", green: "#2FB877", gold: "#FFC83D", hi: "#ffd85a",
     shadow: "#000000", grid: "rgba(242,236,225,0.05)", dot: "rgba(242,236,225,0.06)",
     ring: "#4F73FF", onVerm: "#F2ECE1",
   },
   light: {
     mode: "light",
-    bg: "#E8E7E1", rail: "#dedbd2", surface: "#ffffff", surface2: "#f1eee6", inset: "#f6f4ee",
-    border: "#cdc8bd", borderStrong: "#141312",
-    text: "#141312", muted: "#5d564c", faint: "#8c8478",
-    verm: "#FF4326", cob: "#2233FF", green: "#0E8A4B", gold: "#b07d18", hi: "#d8a400",
-    shadow: "#141312", grid: "rgba(20,19,18,0.05)", dot: "rgba(20,19,18,0.07)",
-    ring: "#2233FF", onVerm: "#F2ECE1",
+    bg: "#f6f5ef", rail: "#dedbd2", surface: "#ffffff", surface2: "#f1eee6", inset: "#f6f4ee",
+    border: "#cdc8bd", borderStrong: "#151a46",
+    text: "#151a46", muted: "#5d564c", faint: "#8c8478",
+    verm: "#ff604b", cob: "#5548f5", green: "#0E8A4B", gold: "#b07d18", hi: "#d8a400",
+    shadow: "#151a46", grid: "rgba(20,19,18,0.05)", dot: "rgba(20,19,18,0.07)",
+    ring: "#5548f5", onVerm: "#F2ECE1",
   },
 };
 

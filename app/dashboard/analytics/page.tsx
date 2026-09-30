@@ -30,22 +30,22 @@ export default function AnalyticsDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F3F4F6] flex flex-col items-center justify-center">
-        <Loader2 size={48} className="animate-spin text-[#2233FF] mb-4" />
-        <h2 className="text-xl font-black uppercase tracking-widest text-[#141312]">Loading Analytics...</h2>
+        <Loader2 size={48} className="animate-spin text-[#5548f5] mb-4" />
+        <h2 className="text-xl font-black uppercase tracking-widest text-[#151a46]">Loading Analytics...</h2>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F3F4F6] text-[#141312] selection:bg-[#2233FF] selection:text-white font-sans">
-      <nav className="border-b-[4px] border-[#141312] bg-white sticky top-0 z-50">
+    <div className="min-h-screen bg-[#F3F4F6] text-[#151a46] selection:bg-[#5548f5] selection:text-white font-sans">
+      <nav className="border-b-[4px] border-[#151a46] bg-white sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <Link href="/dashboard" className="text-sm font-black tracking-widest uppercase flex items-center gap-2 group text-gray-500 hover:text-black transition-colors">
             <ArrowLeft size={16} /> Back to Dashboard
           </Link>
           <div className="flex gap-4">
-            <div className="hidden sm:flex bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] px-6 py-2.5 rounded-none font-bold uppercase tracking-wider text-sm items-center gap-2">
-              <TrendingUp size={16} className="text-[#FF4326]" /> Pro Analytics
+            <div className="hidden sm:flex bg-[#151a46] text-[#f6f5ef] border-[3px] border-[#151a46] px-6 py-2.5 rounded-none font-bold uppercase tracking-wider text-sm items-center gap-2">
+              <TrendingUp size={16} className="text-[#ff604b]" /> Pro Analytics
             </div>
           </div>
         </div>
@@ -55,7 +55,7 @@ export default function AnalyticsDashboard() {
         <div className="mb-12">
           <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter leading-[0.9] mb-4">
             Link-in-Bio <br />
-            <span className="text-[#2233FF]">Analytics</span>
+            <span className="text-[#5548f5]">Analytics</span>
           </h1>
           <p className="text-lg font-medium text-gray-600 max-w-2xl">
             See exactly who is viewing and downloading your public Cvyon resume.
@@ -64,8 +64,8 @@ export default function AnalyticsDashboard() {
 
         {/* Top Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          <div className="bg-white border-[4px] border-[#141312] p-8 shadow-[8px_8px_0_#141312] flex items-center gap-6 group hover:-translate-y-1 hover:shadow-[12px_12px_0_#141312] transition-all">
-            <div className="w-16 h-16 bg-[#2233FF] flex items-center justify-center border-[3px] border-[#141312] shadow-[4px_4px_0_#141312] group-hover:scale-110 transition-transform">
+          <div className="bg-white border-[4px] border-[#151a46] p-8 shadow-[8px_8px_0_#151a46] flex items-center gap-6 group hover:-translate-y-1 hover:shadow-[12px_12px_0_#151a46] transition-all">
+            <div className="w-16 h-16 bg-[#5548f5] flex items-center justify-center border-[3px] border-[#151a46] shadow-[4px_4px_0_#151a46] group-hover:scale-110 transition-transform">
               <Eye size={32} className="text-white" />
             </div>
             <div>
@@ -74,8 +74,8 @@ export default function AnalyticsDashboard() {
             </div>
           </div>
 
-          <div className="bg-white border-[4px] border-[#141312] p-8 shadow-[8px_8px_0_#FF4326] flex items-center gap-6 group hover:-translate-y-1 hover:shadow-[12px_12px_0_#FF4326] transition-all">
-            <div className="w-16 h-16 bg-[#FF4326] flex items-center justify-center border-[3px] border-[#141312] shadow-[4px_4px_0_#141312] group-hover:scale-110 transition-transform">
+          <div className="bg-white border-[4px] border-[#151a46] p-8 shadow-[8px_8px_0_#ff604b] flex items-center gap-6 group hover:-translate-y-1 hover:shadow-[12px_12px_0_#ff604b] transition-all">
+            <div className="w-16 h-16 bg-[#ff604b] flex items-center justify-center border-[3px] border-[#151a46] shadow-[4px_4px_0_#151a46] group-hover:scale-110 transition-transform">
               <Download size={32} className="text-white" />
             </div>
             <div>
@@ -89,15 +89,15 @@ export default function AnalyticsDashboard() {
           {/* Geolocation Data */}
           <div>
             <h2 className="text-2xl font-black uppercase tracking-tight mb-6 flex items-center gap-2">
-              <MapPin size={24} className="text-[#2233FF]" /> Top Viewer Locations
+              <MapPin size={24} className="text-[#5548f5]" /> Top Viewer Locations
             </h2>
-            <div className="bg-white border-[4px] border-[#141312] p-6 shadow-[6px_6px_0_#141312]">
+            <div className="bg-white border-[4px] border-[#151a46] p-6 shadow-[6px_6px_0_#151a46]">
               {data?.topLocations?.length > 0 ? (
                 <div className="space-y-4">
                   {data.topLocations.map((loc: any, i: number) => (
                     <div key={i} className="flex items-center justify-between border-b-2 border-gray-100 pb-3 last:border-0 last:pb-0">
                       <span className="font-bold text-lg">{loc.name}</span>
-                      <span className="bg-[#141312] text-white px-3 py-1 text-xs font-black uppercase tracking-widest">{loc.count} Views</span>
+                      <span className="bg-[#151a46] text-white px-3 py-1 text-xs font-black uppercase tracking-widest">{loc.count} Views</span>
                     </div>
                   ))}
                 </div>
@@ -110,15 +110,15 @@ export default function AnalyticsDashboard() {
           {/* Activity Feed */}
           <div>
             <h2 className="text-2xl font-black uppercase tracking-tight mb-6 flex items-center gap-2">
-              <Monitor size={24} className="text-[#FF4326]" /> Recent Activity
+              <Monitor size={24} className="text-[#ff604b]" /> Recent Activity
             </h2>
-            <div className="bg-[#141312] border-[4px] border-[#141312] p-6 shadow-[6px_6px_0_#2233FF] text-white">
+            <div className="bg-[#151a46] border-[4px] border-[#151a46] p-6 shadow-[6px_6px_0_#5548f5] text-white">
               {data?.recentEvents?.length > 0 ? (
                 <div className="space-y-4">
                   {data.recentEvents.map((ev: any, i: number) => (
                     <div key={i} className="flex items-start gap-4 border-b border-gray-800 pb-4 last:border-0 last:pb-0">
                       <div className="mt-1">
-                        {ev.event_type.includes('download') ? <Download size={16} className="text-[#FF4326]" /> : <Eye size={16} className="text-[#2233FF]" />}
+                        {ev.event_type.includes('download') ? <Download size={16} className="text-[#ff604b]" /> : <Eye size={16} className="text-[#5548f5]" />}
                       </div>
                       <div>
                         <p className="font-bold">{ev.event_type.replace(/_/g, ' ').toUpperCase()}</p>

@@ -28,13 +28,13 @@ export default function PrivacyClient() {
   };
 
   return (
-    <div className={cn("cv-riso relative min-h-screen text-[#141312] bg-[#E8E7E1] overflow-x-hidden py-20 px-6", body.className)}
-      style={{ ["--ink" as any]: "#141312", ["--verm" as any]: "#FF4326", ["--cob" as any]: "#2233FF", ["--hi" as any]: "#FFE14D", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
+    <div className={cn("cv-riso relative min-h-screen text-[#151a46] bg-[#f6f5ef] overflow-x-hidden py-20 px-6", body.className)}
+      style={{ ["--ink" as any]: "#151a46", ["--verm" as any]: "#ff604b", ["--cob" as any]: "#5548f5", ["--hi" as any]: "#ffd85a", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
       <style>{`
         .cv-riso{font-family:var(--fb)} .cv-riso .fd{font-family:var(--fd)} .cv-riso .fh{font-family:var(--fh)} .cv-riso .fm{font-family:var(--fm)}
         .cv-riso .hs{box-shadow:7px 7px 0 var(--ink)} .cv-riso .hs-v{box-shadow:7px 7px 0 var(--verm)} .cv-riso .hs-c{box-shadow:6px 6px 0 var(--cob)}
         .cv-riso .hs-sm{box-shadow:5px 5px 0 var(--ink)}
-        .cv-riso .riso-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: 3px solid var(--ink); background-color: var(--ink); color: #E8E7E1; padding: 0.75rem 1.5rem; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 7px 7px 0 var(--ink); transition: all 0.2s; cursor: pointer; text-decoration: none; }
+        .cv-riso .riso-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: 3px solid var(--ink); background-color: var(--ink); color: #f6f5ef; padding: 0.75rem 1.5rem; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 7px 7px 0 var(--ink); transition: all 0.2s; cursor: pointer; text-decoration: none; }
         .cv-riso .riso-btn:hover { transform: translate(2px, 2px); box-shadow: none; }
         .cv-riso .riso-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: 7px 7px 0 var(--ink); }
         .cv-riso .riso-btn-ghost { background-color: transparent; color: var(--ink); }
@@ -44,16 +44,16 @@ export default function PrivacyClient() {
         .cv-riso .riso-label { display: block; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; color: var(--ink); }
         .cv-riso .riso-chip { display: inline-flex; align-items: center; gap: 0.25rem; border: 2px solid var(--ink); padding: 0.25rem 0.5rem; font-family: var(--fm); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold; color: var(--ink); background: #ffffff; }
         .cv-riso .legal-prose h2 { font-family: var(--fh); font-size: 1.5rem; font-weight: 800; margin: 1.75em 0 0.75em; text-transform: uppercase; letter-spacing: -0.01em; }
-        .cv-riso .legal-prose p { margin: 1em 0; color: #141312; }
-        .cv-riso .legal-prose a { color: #2233FF; text-decoration: underline; }
-        .cv-riso .legal-prose a:hover { color: #141312; }
+        .cv-riso .legal-prose p { margin: 1em 0; color: #151a46; }
+        .cv-riso .legal-prose a { color: #5548f5; text-decoration: underline; }
+        .cv-riso .legal-prose a:hover { color: #151a46; }
       `}</style>
 
       <div className="max-w-3xl mx-auto riso-card p-10">
         <h1 className="fd text-4xl tracking-tight mb-8">Privacy Policy & Consent Center</h1>
 
         <div className="legal-prose">
-          <p className="fm text-xs font-bold uppercase tracking-widest text-[#141312]/70">Last Updated: July 2026</p>
+          <p className="fm text-xs font-bold uppercase tracking-widest text-[#151a46]/70">Last Updated: July 2026</p>
 
           <h2>1. AI Data Processing Disclosure</h2>
           <p>
@@ -67,8 +67,8 @@ export default function PrivacyClient() {
             You can request an export or deletion of your data any time via support@cvyon.com.
           </p>
           <div className="flex gap-4 my-6">
-            <button className="border-[3px] border-[#FF4326] bg-white text-[#FF4326] px-4 py-2 font-bold text-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px]">Request Data Deletion</button>
-            <button className="border-[3px] border-[#2233FF] bg-white text-[#2233FF] px-4 py-2 font-bold text-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px]">Export My Data</button>
+            <button className="border-[3px] border-[#ff604b] bg-white text-[#ff604b] px-4 py-2 font-bold text-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px]">Request Data Deletion</button>
+            <button className="border-[3px] border-[#5548f5] bg-white text-[#5548f5] px-4 py-2 font-bold text-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px]">Export My Data</button>
           </div>
 
           <h2>3. California Privacy Rights (CCPA/CPRA)</h2>
@@ -76,14 +76,14 @@ export default function PrivacyClient() {
             California residents have the right to opt-out of the "sale" or "sharing" of their personal information. If you joined the Cvyon Talent Pool, your data may be shared with recruiters.
           </p>
 
-          <div className="bg-[#E8E7E1] border-[3px] border-[#141312] p-6 my-6 flex items-center justify-between">
+          <div className="bg-[#f6f5ef] border-[3px] border-[#151a46] p-6 my-6 flex items-center justify-between">
             <div>
               <h3 className="fh font-extrabold mb-1">Do Not Sell My Personal Information</h3>
-              <p className="text-sm text-[#141312]/70">Opt out of sharing your resume with recruiters.</p>
+              <p className="text-sm text-[#151a46]/70">Opt out of sharing your resume with recruiters.</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" className="sr-only peer" checked={doNotSell} onChange={handleDoNotSellChange} />
-              <div className="w-11 h-6 bg-[#141312]/20 peer-focus:outline-none border-[3px] border-[#141312] peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#141312] after:border-2 after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2233FF]"></div>
+              <div className="w-11 h-6 bg-[#151a46]/20 peer-focus:outline-none border-[3px] border-[#151a46] peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#151a46] after:border-2 after:h-5 after:w-5 after:transition-all peer-checked:bg-[#5548f5]"></div>
             </label>
           </div>
 
@@ -100,8 +100,8 @@ export default function PrivacyClient() {
             Email: <a href="mailto:support@cvyon.com">support@cvyon.com</a>
           </p>
 
-          <div className="mt-12 pt-8 border-t-[3px] border-[#141312]">
-            <Link href="/" className="fm text-sm font-bold uppercase tracking-widest text-[#2233FF] hover:text-[#141312]">← Back to Cvyon</Link>
+          <div className="mt-12 pt-8 border-t-[3px] border-[#151a46]">
+            <Link href="/" className="fm text-sm font-bold uppercase tracking-widest text-[#5548f5] hover:text-[#151a46]">← Back to Cvyon</Link>
           </div>
         </div>
       </div>

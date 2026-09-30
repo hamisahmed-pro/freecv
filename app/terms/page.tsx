@@ -15,13 +15,13 @@ export const metadata: Metadata = {
 
 export default function TermsOfService() {
   return (
-    <div className={`cv-riso relative min-h-screen text-[#141312] bg-[#E8E7E1] overflow-x-hidden py-20 px-6 ${body.className}`}
-      style={{ ["--ink" as any]: "#141312", ["--verm" as any]: "#FF4326", ["--cob" as any]: "#2233FF", ["--hi" as any]: "#FFE14D", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
+    <div className={`cv-riso relative min-h-screen text-[#151a46] bg-[#f6f5ef] overflow-x-hidden py-20 px-6 ${body.className}`}
+      style={{ ["--ink" as any]: "#151a46", ["--verm" as any]: "#ff604b", ["--cob" as any]: "#5548f5", ["--hi" as any]: "#ffd85a", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
       <style>{`
         .cv-riso{font-family:var(--fb)} .cv-riso .fd{font-family:var(--fd)} .cv-riso .fh{font-family:var(--fh)} .cv-riso .fm{font-family:var(--fm)}
         .cv-riso .hs{box-shadow:7px 7px 0 var(--ink)} .cv-riso .hs-v{box-shadow:7px 7px 0 var(--verm)} .cv-riso .hs-c{box-shadow:6px 6px 0 var(--cob)}
         .cv-riso .hs-sm{box-shadow:5px 5px 0 var(--ink)}
-        .cv-riso .riso-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: 3px solid var(--ink); background-color: var(--ink); color: #E8E7E1; padding: 0.75rem 1.5rem; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 7px 7px 0 var(--ink); transition: all 0.2s; cursor: pointer; text-decoration: none; }
+        .cv-riso .riso-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: 3px solid var(--ink); background-color: var(--ink); color: #f6f5ef; padding: 0.75rem 1.5rem; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 7px 7px 0 var(--ink); transition: all 0.2s; cursor: pointer; text-decoration: none; }
         .cv-riso .riso-btn:hover { transform: translate(2px, 2px); box-shadow: none; }
         .cv-riso .riso-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: 7px 7px 0 var(--ink); }
         .cv-riso .riso-btn-ghost { background-color: transparent; color: var(--ink); }
@@ -31,18 +31,18 @@ export default function TermsOfService() {
         .cv-riso .riso-label { display: block; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; color: var(--ink); }
         .cv-riso .riso-chip { display: inline-flex; align-items: center; gap: 0.25rem; border: 2px solid var(--ink); padding: 0.25rem 0.5rem; font-family: var(--fm); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold; color: var(--ink); background: #ffffff; }
         .cv-riso .legal-prose h2 { font-family: var(--fh); font-size: 1.5rem; font-weight: 800; margin: 1.75em 0 0.75em; text-transform: uppercase; letter-spacing: -0.01em; }
-        .cv-riso .legal-prose p { margin: 1em 0; color: #141312; }
+        .cv-riso .legal-prose p { margin: 1em 0; color: #151a46; }
         .cv-riso .legal-prose ul { list-style-type: disc; padding-left: 1.5em; margin: 1em 0; }
         .cv-riso .legal-prose li { margin: 0.25em 0; }
-        .cv-riso .legal-prose a { color: #2233FF; text-decoration: underline; }
-        .cv-riso .legal-prose a:hover { color: #141312; }
+        .cv-riso .legal-prose a { color: #5548f5; text-decoration: underline; }
+        .cv-riso .legal-prose a:hover { color: #151a46; }
       `}</style>
 
       <div className="max-w-3xl mx-auto riso-card p-10">
         <h1 className="fd text-4xl tracking-tight mb-8">Terms of Service</h1>
 
         <div className="legal-prose">
-          <p className="fm text-xs font-bold uppercase tracking-widest text-[#141312]/70">Last Updated: September 2026</p>
+          <p className="fm text-xs font-bold uppercase tracking-widest text-[#151a46]/70">Last Updated: September 2026</p>
 
           <h2>1. The Service</h2>
           <p>
@@ -142,14 +142,14 @@ export default function TermsOfService() {
             or at support@cvyon.com.
           </p>
 
-          <p className="fm text-xs text-[#141312]/70 mt-8">
+          <p className="fm text-xs text-[#151a46]/70 mt-8">
             This is a plain-language summary of our terms prepared for launch.
             If Cvyon grows to handle significant revenue or sensitive data flows,
             these terms should be reviewed by qualified legal counsel.
           </p>
 
-          <div className="mt-8 pt-8 border-t-[3px] border-[#141312]">
-            <Link href="/" className="fm text-sm font-bold uppercase tracking-widest text-[#2233FF] hover:text-[#141312]">← Back to Cvyon</Link>
+          <div className="mt-8 pt-8 border-t-[3px] border-[#151a46]">
+            <Link href="/" className="fm text-sm font-bold uppercase tracking-widest text-[#5548f5] hover:text-[#151a46]">← Back to Cvyon</Link>
           </div>
         </div>
       </div>

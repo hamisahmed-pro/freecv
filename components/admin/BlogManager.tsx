@@ -655,7 +655,7 @@ const TiptapEditor = ({ content, onChange, onReady, onFocus, isDarkMode }: { con
 
   return (
     <div className={cn("flex flex-col h-full", isDarkMode ? "bg-gray-900" : "bg-white")}>
-      <style>{`.ProseMirror img{max-width:100%;height:auto;border:3px solid #141312;margin:0.75em 0;display:block;}`}</style>
+      <style>{`.ProseMirror img{max-width:100%;height:auto;border:3px solid #151a46;margin:0.75em 0;display:block;}`}</style>
       <MenuBar editor={editor} isDarkMode={isDarkMode} />
       <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
     </div>

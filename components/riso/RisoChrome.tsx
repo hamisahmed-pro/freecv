@@ -61,14 +61,14 @@ export function RisoTicker() {
     "PDF + DOCX",
   ];
   return (
-    <div className="relative z-40 overflow-hidden border-b-[3px] border-[#141312] bg-[#141312] py-2 text-[#E8E7E1]">
+    <div className="relative z-40 overflow-hidden border-b-[3px] border-[#151a46] bg-[#151a46] py-2 text-[#f6f5ef]">
       <div className="riso-ticker fm text-[11px] font-bold uppercase tracking-[0.25em]">
         {[0, 1].map((d) => (
           <div key={d} className="flex shrink-0 items-center">
             {items.map((t, i) => (
               <span key={i} className="flex items-center">
                 <span className="px-5">{t}</span>
-                <span className="text-[#FF4326]">◆</span>
+                <span className="text-[#ff604b]">◆</span>
               </span>
             ))}
           </div>
@@ -82,7 +82,7 @@ export function RisoNav() {
   const pathname = usePathname() || "";
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-40 border-b-[3px] border-[#141312] bg-[#E8E7E1]/95">
+    <header className="sticky top-0 z-40 border-b-[3px] border-[#151a46] bg-[#f6f5ef]/95">
       <div className="mx-auto flex max-w-[1240px] items-center justify-between px-5 py-4 lg:px-8">
         <Link href="/" className="flex items-center gap-2">
           <Image
@@ -101,8 +101,8 @@ export function RisoNav() {
               key={n.href}
               href={n.href}
               className={cn(
-                "transition-colors hover:text-[#FF4326]",
-                pathname === n.href ? "text-[#FF4326]" : "text-[#141312]/70"
+                "transition-colors hover:text-[#ff604b]",
+                pathname === n.href ? "text-[#ff604b]" : "text-[#151a46]/70"
               )}
             >
               {n.label}
@@ -128,8 +128,8 @@ export function RisoNav() {
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-[70] flex flex-col bg-[#E8E7E1] md:hidden">
-          <div className="flex items-center justify-between border-b-[3px] border-[#141312] px-5 py-4">
+        <div className="fixed inset-0 z-[70] flex flex-col bg-[#f6f5ef] md:hidden">
+          <div className="flex items-center justify-between border-b-[3px] border-[#151a46] px-5 py-4">
             <Image
               src="/logo-light-no-background.png"
               alt="Cvyon"
@@ -153,8 +153,8 @@ export function RisoNav() {
                 href={n.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "fd border-b-[3px] border-[#141312] py-5 text-3xl tracking-tight",
-                  pathname === n.href ? "text-[#FF4326]" : ""
+                  "fd border-b-[3px] border-[#151a46] py-5 text-3xl tracking-tight",
+                  pathname === n.href ? "text-[#ff604b]" : ""
                 )}
               >
                 {n.label}
@@ -182,18 +182,18 @@ export function RisoFooter() {
     ["connect", [{ label: "Email us", href: "mailto:hello@cvyon.com" }, { label: "Developers", href: "/developers" }]],
   ];
   return (
-    <footer className="relative overflow-hidden border-t-[3px] border-[#141312] bg-[#E8E7E1] px-5 pb-8 pt-14 lg:px-8">
+    <footer className="relative overflow-hidden border-t-[3px] border-[#151a46] bg-[#f6f5ef] px-5 pb-8 pt-14 lg:px-8">
       <div className="mx-auto max-w-[1240px]">
-        <div className="grid grid-cols-2 gap-8 border-b-2 border-[#141312] pb-10 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-8 border-b-2 border-[#151a46] pb-10 md:grid-cols-4">
           {cols.map(([h, items]) => (
             <div key={h}>
-              <div className="fm mb-4 text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/50">
+              <div className="fm mb-4 text-[10px] font-bold uppercase tracking-[0.2em] text-[#151a46]/50">
                 {h}
               </div>
               <ul className="space-y-2 text-sm">
                 {items.map((it) => (
                   <li key={it.label}>
-                    <Link href={it.href} className="hover:text-[#FF4326]">
+                    <Link href={it.href} className="hover:text-[#ff604b]">
                       {it.label}
                     </Link>
                   </li>
@@ -203,12 +203,12 @@ export function RisoFooter() {
           ))}
         </div>
         <div className="flex flex-col items-start justify-between gap-4 pt-6 sm:flex-row sm:items-center">
-          <span className="fm text-[11px] font-bold uppercase tracking-[0.18em] text-[#141312]/50">
+          <span className="fm text-[11px] font-bold uppercase tracking-[0.18em] text-[#151a46]/50">
             © 2026 Cvyon — built in the open · free for candidates, funded by recruiters
           </span>
         </div>
       </div>
-      <div className="pointer-events-none mt-6 select-none text-center fd text-[20vw] leading-[0.8] tracking-tighter text-[#141312]/[0.05]">
+      <div className="pointer-events-none mt-6 select-none text-center fd text-[20vw] leading-[0.8] tracking-tighter text-[#151a46]/[0.05]">
         CVYON
       </div>
     </footer>
@@ -217,7 +217,7 @@ export function RisoFooter() {
 
 export function RisoSectionLabel({
   children,
-  color = "#2233FF",
+  color = "#5548f5",
 }: {
   children: React.ReactNode;
   color?: string;
@@ -253,13 +253,13 @@ export function RisoPage({
 }) {
   usePageView(pageName);
   return (
-    <div className={cn("cv-riso relative min-h-screen overflow-x-hidden text-[#141312]", body.className, display.className, head.className, mono.className)}
-      style={{ background: "#E8E7E1", ["--ink" as any]: "#141312", ["--verm" as any]: "#FF4326", ["--cob" as any]: "#2233FF", ["--hi" as any]: "#FFE14D", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
+    <div className={cn("cv-riso relative min-h-screen overflow-x-hidden text-[#151a46]", body.className, display.className, head.className, mono.className)}
+      style={{ background: "#f6f5ef", ["--ink" as any]: "#151a46", ["--verm" as any]: "#ff604b", ["--cob" as any]: "#5548f5", ["--hi" as any]: "#ffd85a", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
       <AnalyticsTracker />
       <style>{`
         .cv-riso{font-family:var(--fb)} .cv-riso .fd{font-family:var(--fd)} .cv-riso .fh{font-family:var(--fh)} .cv-riso .fm{font-family:var(--fm)}
         .cv-riso .grain{position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.06;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-        .cv-riso .dots{background-image:radial-gradient(#14131222 1.2px,transparent 1.2px);background-size:22px 22px}
+        .cv-riso .dots{background-image:radial-gradient(#151a4622 1.2px,transparent 1.2px);background-size:22px 22px}
         .cv-riso .hs{box-shadow:7px 7px 0 var(--ink)} .cv-riso .hs-v{box-shadow:7px 7px 0 var(--verm)} .cv-riso .hs-c{box-shadow:6px 6px 0 var(--cob)}
         .cv-riso [data-reveal]{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)} .cv-riso [data-reveal].in{opacity:1;transform:none}
         .cv-riso .mq{display:flex;width:max-content;animation:risomq 26s linear infinite} .cv-riso .mq2{animation-duration:34s;animation-direction:reverse}
@@ -272,7 +272,7 @@ export function RisoPage({
         .cv-riso .riso-ticker{display:flex;width:max-content;animation:risomq 26s linear infinite}
 
         /* Riso Form & UI Components */
-        .cv-riso .riso-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: 3px solid var(--ink); background-color: var(--ink); color: #E8E7E1; padding: 0.75rem 1.5rem; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 7px 7px 0 var(--ink); transition: all 0.2s; cursor: pointer; text-decoration: none; }
+        .cv-riso .riso-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: 3px solid var(--ink); background-color: var(--ink); color: #f6f5ef; padding: 0.75rem 1.5rem; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 7px 7px 0 var(--ink); transition: all 0.2s; cursor: pointer; text-decoration: none; }
         .cv-riso .riso-btn:hover { transform: translate(2px, 2px); box-shadow: none; }
         .cv-riso .riso-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: 7px 7px 0 var(--ink); }
         .cv-riso .riso-btn-ghost { background-color: transparent; color: var(--ink); }

@@ -25,13 +25,13 @@ export default async function BlogIndex() {
     .order('created_at', { ascending: false });
 
   return (
-    <div className={`cv-riso relative min-h-screen text-[#141312] bg-[#E8E7E1] overflow-x-hidden ${body.className}`}
-      style={{ ["--ink" as any]: "#141312", ["--verm" as any]: "#FF4326", ["--cob" as any]: "#2233FF", ["--hi" as any]: "#FFE14D", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
+    <div className={`cv-riso relative min-h-screen text-[#151a46] bg-[#f6f5ef] overflow-x-hidden ${body.className}`}
+      style={{ ["--ink" as any]: "#151a46", ["--verm" as any]: "#ff604b", ["--cob" as any]: "#5548f5", ["--hi" as any]: "#ffd85a", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
       <style>{`
         .cv-riso{font-family:var(--fb)} .cv-riso .fd{font-family:var(--fd)} .cv-riso .fh{font-family:var(--fh)} .cv-riso .fm{font-family:var(--fm)}
         .cv-riso .hs{box-shadow:7px 7px 0 var(--ink)} .cv-riso .hs-v{box-shadow:7px 7px 0 var(--verm)} .cv-riso .hs-c{box-shadow:6px 6px 0 var(--cob)}
         .cv-riso .hs-sm{box-shadow:5px 5px 0 var(--ink)}
-        .cv-riso .riso-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: 3px solid var(--ink); background-color: var(--ink); color: #E8E7E1; padding: 0.75rem 1.5rem; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 7px 7px 0 var(--ink); transition: all 0.2s; cursor: pointer; text-decoration: none; }
+        .cv-riso .riso-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: 3px solid var(--ink); background-color: var(--ink); color: #f6f5ef; padding: 0.75rem 1.5rem; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 7px 7px 0 var(--ink); transition: all 0.2s; cursor: pointer; text-decoration: none; }
         .cv-riso .riso-btn:hover { transform: translate(2px, 2px); box-shadow: none; }
         .cv-riso .riso-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: 7px 7px 0 var(--ink); }
         .cv-riso .riso-btn-ghost { background-color: transparent; color: var(--ink); }
@@ -44,13 +44,13 @@ export default async function BlogIndex() {
 
       <div className="pb-24">
         {/* Header */}
-        <header className="bg-[#141312] text-[#E8E7E1] pt-24 pb-16 px-6 relative overflow-hidden">
+        <header className="bg-[#151a46] text-[#f6f5ef] pt-24 pb-16 px-6 relative overflow-hidden">
           <div className="max-w-4xl mx-auto relative z-10 text-center">
-            <Link href="/" className="fm inline-block text-[#E8E7E1]/70 hover:text-[#FF4326] font-bold tracking-[0.2em] text-xs uppercase mb-8 transition-colors">
+            <Link href="/" className="fm inline-block text-[#f6f5ef]/70 hover:text-[#ff604b] font-bold tracking-[0.2em] text-xs uppercase mb-8 transition-colors">
               ← Back to Cvyon
             </Link>
             <h1 className="fd text-5xl sm:text-6xl uppercase tracking-tight mb-4">The Career Hub</h1>
-            <p className="text-[#E8E7E1]/70 text-lg sm:text-xl font-medium max-w-2xl mx-auto">
+            <p className="text-[#f6f5ef]/70 text-lg sm:text-xl font-medium max-w-2xl mx-auto">
               Expert insights on resume optimization, interview prep, and landing your dream job in 2026.
             </p>
           </div>
@@ -68,7 +68,7 @@ export default async function BlogIndex() {
                 <Link key={post.id} href={`/blog/${post.slug}`} className="group block">
                   <article className="riso-card h-full flex flex-col relative overflow-hidden transition-all group-hover:translate-x-[2px] group-hover:translate-y-[2px] group-hover:shadow-none">
                     {post.header_image && (
-                      <div className="w-full aspect-[2/1] relative overflow-hidden border-b-[3px] border-[#141312]">
+                      <div className="w-full aspect-[2/1] relative overflow-hidden border-b-[3px] border-[#151a46]">
                         <img src={post.header_image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       </div>
                     )}
@@ -77,10 +77,10 @@ export default async function BlogIndex() {
                         <Calendar size={14} />
                         {new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </div>
-                      <h2 className="fh text-2xl font-extrabold uppercase tracking-tight mb-3 group-hover:text-[#2233FF] transition-colors">
+                      <h2 className="fh text-2xl font-extrabold uppercase tracking-tight mb-3 group-hover:text-[#5548f5] transition-colors">
                         {post.title}
                       </h2>
-                      <p className="text-[#141312]/70 mb-8 flex-1 line-clamp-3">
+                      <p className="text-[#151a46]/70 mb-8 flex-1 line-clamp-3">
                         {post.meta_description || post.content?.replace(/<[^>]*>/g, '').substring(0, 150) || 'Read more about this topic...'}
                       </p>
                       <div className="fm flex items-center gap-2 font-bold uppercase tracking-widest text-xs">

@@ -89,8 +89,8 @@ export function ConsentManager() {
       <div className="bg-white/95 backdrop-blur-md text-gray-800 rounded-xl border border-gray-200 shadow-xl overflow-hidden animate-in slide-in-from-bottom-2 fade-in duration-300">
         <div className="p-3">
           <div className="flex justify-between items-center mb-2">
-            <div className="flex items-center gap-1.5 text-[#141312]">
-              <Shield size={12} className="text-[#FF4326]" />
+            <div className="flex items-center gap-1.5 text-[#151a46]">
+              <Shield size={12} className="text-[#ff604b]" />
               <h2 className="text-[11px] font-bold uppercase tracking-wider">Privacy & Data</h2>
             </div>
             {hasSeen && (
@@ -128,10 +128,10 @@ export function ConsentManager() {
                   setConsents({ ...data.consents, recruiterShare: !data.consents.recruiterShare });
                 }
               }}
-              className="flex items-center gap-2 p-1.5 rounded-lg border border-gray-100 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors focus:outline-none focus:ring-1 focus:ring-[#FF4326]"
+              className="flex items-center gap-2 p-1.5 rounded-lg border border-gray-100 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors focus:outline-none focus:ring-1 focus:ring-[#ff604b]"
               onClick={() => setConsents({ ...data.consents, recruiterShare: !data.consents.recruiterShare })}
             >
-              <div className={cn("w-3.5 h-3.5 rounded flex items-center justify-center transition-colors", data.consents.recruiterShare ? 'bg-[#FF4326] text-white' : 'border border-gray-300')}>
+              <div className={cn("w-3.5 h-3.5 rounded flex items-center justify-center transition-colors", data.consents.recruiterShare ? 'bg-[#ff604b] text-white' : 'border border-gray-300')}>
                 {data.consents.recruiterShare && <Check size={8} />}
               </div>
               <span className="font-semibold text-[10px] text-gray-700">Allow recruiters to find my profile</span>
@@ -148,10 +148,10 @@ export function ConsentManager() {
                   setConsents({ ...data.consents, emailJobs: !data.consents.emailJobs });
                 }
               }}
-              className="flex items-center gap-2 p-1.5 rounded-lg border border-gray-100 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors focus:outline-none focus:ring-1 focus:ring-[#2233FF]"
+              className="flex items-center gap-2 p-1.5 rounded-lg border border-gray-100 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors focus:outline-none focus:ring-1 focus:ring-[#5548f5]"
               onClick={() => setConsents({ ...data.consents, emailJobs: !data.consents.emailJobs })}
             >
-              <div className={cn("w-3.5 h-3.5 rounded flex items-center justify-center transition-colors", data.consents.emailJobs ? 'bg-[#2233FF] text-white' : 'border border-gray-300')}>
+              <div className={cn("w-3.5 h-3.5 rounded flex items-center justify-center transition-colors", data.consents.emailJobs ? 'bg-[#5548f5] text-white' : 'border border-gray-300')}>
                 {data.consents.emailJobs && <Check size={8} />}
               </div>
               <span className="font-semibold text-[10px] text-gray-700">Job Alerts & Matching</span>
@@ -168,10 +168,10 @@ export function ConsentManager() {
                   setConsents({ ...data.consents, analytics: !data.consents.analytics });
                 }
               }}
-              className="flex items-center gap-2 p-1.5 rounded-lg border border-gray-100 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors focus:outline-none focus:ring-1 focus:ring-[#141312]"
+              className="flex items-center gap-2 p-1.5 rounded-lg border border-gray-100 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors focus:outline-none focus:ring-1 focus:ring-[#151a46]"
               onClick={() => setConsents({ ...data.consents, analytics: !data.consents.analytics })}
             >
-              <div className={cn("w-3.5 h-3.5 rounded flex items-center justify-center transition-colors", data.consents.analytics ? 'bg-[#141312] text-white' : 'border border-gray-300')}>
+              <div className={cn("w-3.5 h-3.5 rounded flex items-center justify-center transition-colors", data.consents.analytics ? 'bg-[#151a46] text-white' : 'border border-gray-300')}>
                 {data.consents.analytics && <Check size={8} />}
               </div>
               <span className="font-semibold text-[10px] text-gray-700">Anonymous Analytics</span>
@@ -187,7 +187,7 @@ export function ConsentManager() {
             </button>
             <button
               onClick={handleAcceptAll}
-              className="flex-1 py-1.5 rounded-lg font-bold text-[9px] uppercase tracking-wider bg-[#141312] text-white hover:bg-[#FF4326] transition-colors"
+              className="flex-1 py-1.5 rounded-lg font-bold text-[9px] uppercase tracking-wider bg-[#151a46] text-white hover:bg-[#ff604b] transition-colors"
             >
               Accept All
             </button>

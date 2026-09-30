@@ -24,6 +24,7 @@ import { supabase } from '@/lib/supabase';
 import { templates, TemplateKey } from '@/components/templates';
 import { templates as htmlTemplates } from '@/components/html_templates';
 import NewsletterCapture from '@/components/NewsletterCapture';
+import { Logo } from '@/components/brand/Logo';
 import dynamic from 'next/dynamic';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { captureTemplateHtml } from '@/lib/docx/capture-template-html';
@@ -42,12 +43,12 @@ function cn(...inputs: ClassValue[]) {
 import { useResumeStore, initialData, type ResumeData, type PersonalInfo, type Experience, type Education, type Skill, type Project, type Certification, type CustomSection, type CustomSectionItem, type Reference, type ResumeSectionId, DEFAULT_SECTION_ORDER } from '@/store/useResumeStore';
 import { setRecruiterConsent } from '@/lib/recruiter-api';
 
-// --- Riso primitives ---
+// --- v3 primitives ---
 const Input = ({ label, ...props }: any) => (
   <div className="flex flex-col gap-1.5 w-full">
-    <label className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/60">{label}</label>
+    <label className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] text-[#151a46]/55">{label}</label>
     <input
-      className="w-full bg-white border-[3px] border-[#141312] rounded-none px-4 py-2.5 text-sm text-[#141312] placeholder:text-[#141312]/35 outline-none transition-all focus:border-[#FF4326]"
+      className="w-full bg-white border border-[#d9dae5] rounded-[10px] px-4 py-2.5 text-sm text-[#151a46] placeholder:text-[#151a46]/35 outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)]"
       {...props}
     />
   </div>
@@ -55,9 +56,9 @@ const Input = ({ label, ...props }: any) => (
 
 const Textarea = ({ label, ...props }: any) => (
   <div className="flex flex-col gap-1.5 w-full">
-    <label className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/60">{label}</label>
+    <label className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] text-[#151a46]/55">{label}</label>
     <textarea
-      className="w-full bg-white border-[3px] border-[#141312] rounded-none px-4 py-3 text-sm text-[#141312] placeholder:text-[#141312]/35 outline-none transition-all focus:border-[#FF4326] min-h-[100px] resize-y custom-scrollbar"
+      className="w-full bg-white border border-[#d9dae5] rounded-[10px] px-4 py-3 text-sm text-[#151a46] placeholder:text-[#151a46]/35 outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)] min-h-[100px] resize-y custom-scrollbar"
       {...props}
     />
   </div>
@@ -66,16 +67,16 @@ const Textarea = ({ label, ...props }: any) => (
 const SectionHeader = ({ icon: Icon, title, description, onRemove }: any) => (
   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6">
     <div className="flex items-center gap-4">
-      <div className="p-2.5 bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] hs-v w-fit shrink-0">
+      <div className="p-2.5 bg-[#151a46] text-white rounded-xl w-fit shrink-0">
         <Icon size={20} />
       </div>
       <div>
-        <h3 className="fh font-extrabold text-[#141312] leading-tight tracking-tight">{title}</h3>
-        <p className="fm text-[10px] font-bold uppercase tracking-[0.18em] text-[#141312]/50">{description}</p>
+        <h3 className="font-brand font-extrabold text-[#151a46] leading-tight tracking-tight">{title}</h3>
+        <p className="font-brand text-[10px] font-bold uppercase tracking-[0.18em] text-[#151a46]/50">{description}</p>
       </div>
     </div>
     {onRemove && (
-      <button onClick={onRemove} className="fm text-[10px] font-bold uppercase tracking-widest text-[#D8362A] border-2 border-[#D8362A] px-3 py-1.5 hover:bg-[#D8362A] hover:text-white transition-colors">
+      <button onClick={onRemove} className="font-brand text-[10px] font-bold uppercase tracking-widest text-[#D8362A] border border-[#D8362A] rounded-lg px-3 py-1.5 hover:bg-[#D8362A] hover:text-white transition-colors">
         Remove Section
       </button>
     )}
@@ -83,7 +84,7 @@ const SectionHeader = ({ icon: Icon, title, description, onRemove }: any) => (
 );
 
 const Card = ({ children, className }: any) => (
-  <div className={cn("bg-white border-[3px] border-[#141312] hs rounded-none p-5 sm:p-6 mb-8 text-[#141312]", className)}>
+  <div className={cn("bg-white border border-[#dddde5] rounded-2xl shadow-[0_2px_8px_rgba(21,26,70,.05)] p-5 sm:p-6 mb-8 text-[#151a46]", className)}>
     {children}
   </div>
 );
@@ -109,15 +110,15 @@ const SectionAccordion = ({ id, icon: Icon, title, description, action, onRemove
         >
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-4 min-w-0">
-              <div className="p-2.5 bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] hs-v w-fit shrink-0">
+              <div className="p-2.5 bg-[#151a46] text-white rounded-xl w-fit shrink-0">
                 <Icon size={20} />
               </div>
               <div className="min-w-0">
-                <h3 className="fh font-extrabold text-[#141312] leading-tight tracking-tight">{title}</h3>
-                <p className="fm text-[10px] font-bold uppercase tracking-[0.18em] text-[#141312]/50">{description}</p>
+                <h3 className="font-brand font-extrabold text-[#151a46] leading-tight tracking-tight">{title}</h3>
+                <p className="font-brand text-[10px] font-bold uppercase tracking-[0.18em] text-[#151a46]/50">{description}</p>
               </div>
             </div>
-            <span className={cn("section-toggle-chevron shrink-0 p-2 border-2 border-[#141312] bg-white text-[#141312] transition-transform", open && "rotate-180")}>
+            <span className={cn("section-toggle-chevron shrink-0 p-2 border border-[#dddde5] rounded-lg bg-white text-[#151a46] transition-transform", open && "rotate-180")}>
               <ChevronDown size={16} />
             </span>
           </div>
@@ -126,7 +127,7 @@ const SectionAccordion = ({ id, icon: Icon, title, description, action, onRemove
           <div className="shrink-0 flex items-center gap-2" onClickCapture={() => setOpen(true)}>
             {action}
             {onRemove && (
-              <button onClick={onRemove} className="fm text-[10px] font-bold uppercase tracking-widest text-[#D8362A] border-2 border-[#D8362A] px-3 py-1.5 hover:bg-[#D8362A] hover:text-white transition-colors">
+              <button onClick={onRemove} className="font-brand text-[10px] font-bold uppercase tracking-widest text-[#D8362A] border border-[#D8362A] rounded-lg px-3 py-1.5 hover:bg-[#D8362A] hover:text-white transition-colors">
                 Remove
               </button>
             )}
@@ -169,10 +170,10 @@ const HTMLPreview = ({ Tmpl, data }: { Tmpl: any, data: any }) => {
     return () => observer.disconnect();
   }, []);
   return (
-    <div ref={containerRef} className="w-full h-full bg-[#E8E7E1] flex justify-center overflow-auto p-4 sm:p-8 cv-riso custom-scrollbar">
+    <div ref={containerRef} className="w-full h-full bg-[#f6f5ef] flex justify-center overflow-auto p-4 sm:p-8 cv-riso custom-scrollbar">
       <div
         data-cvyon-template-stage
-        className="bg-white shadow-2xl flex-shrink-0 relative border-[3px] border-[#141312] hs-c"
+        className="bg-white shadow-[0_12px_40px_rgba(21,26,70,.14)] rounded-lg overflow-hidden flex-shrink-0 relative border border-[#dddde5]"
         style={{ width: '816px', height: '1056px', transform: `scale(${scale})`, transformOrigin: 'top center', marginBottom: `-${1056 * (1 - scale)}px`, '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
       >
         <Tmpl data={data} themeColor={data.theme?.color || '#2563eb'} />
@@ -360,20 +361,20 @@ export default function FreeCVApp() {
     const prev = editorTabs[idx - 1];
     const next = editorTabs[idx + 1];
     return (
-      <div className="hidden lg:flex items-center justify-between mt-2 mb-10 pt-6 border-t-2 border-[#141312]/15">
+      <div className="hidden lg:flex items-center justify-between mt-2 mb-10 pt-6 border-t border-[#dddde5]">
         <button
           onClick={() => goToTab(idx - 1)}
           disabled={!prev}
-          className="flex items-center gap-2 px-4 py-2.5 border-2 border-[#141312] bg-white fm text-[11px] font-bold uppercase tracking-[0.16em] text-[#141312] transition-all hover:bg-[#141312] hover:text-[#E8E7E1] disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-[#141312] disabled:cursor-not-allowed">
+          className="flex items-center gap-2 px-4 py-2.5 border border-[#dddde5] rounded-full bg-white font-brand text-[11px] font-bold uppercase tracking-[0.16em] text-[#151a46] transition-all hover:border-[#151a46] disabled:opacity-30 disabled:cursor-not-allowed">
           <ArrowLeft size={14} /> {prev ? prev.label : 'Back'}
         </button>
-        <span className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/40">
+        <span className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] text-[#73778c]">
           {idx + 1} / {editorTabs.length}
         </span>
         <button
           onClick={() => goToTab(idx + 1)}
           disabled={!next}
-          className="flex items-center gap-2 px-4 py-2.5 border-2 border-[#141312] bg-[#141312] fm text-[11px] font-bold uppercase tracking-[0.16em] text-[#E8E7E1] transition-all hover:bg-[#FF4326] hover:text-[#141312] disabled:opacity-30 disabled:hover:bg-[#141312] disabled:hover:text-[#E8E7E1] disabled:cursor-not-allowed">
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#5548f5] text-white rounded-full font-brand text-[11px] font-bold uppercase tracking-[0.16em] transition-all shadow-[3px_3px_0_#151a46] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] disabled:opacity-30 disabled:shadow-none disabled:translate-x-0 disabled:translate-y-0 disabled:cursor-not-allowed">
           {next ? next.label : 'Done'} <ArrowRight size={14} />
         </button>
       </div>
@@ -393,7 +394,7 @@ export default function FreeCVApp() {
       try {
         await setRecruiterConsent(true);
         setConsents({ ...(data.consents || {}), recruiterShare: true });
-        confetti({ particleCount: 90, spread: 70, origin: { y: 0.2 }, colors: ["#FF4326", "#FFE14D", "#2233FF"] });
+        confetti({ particleCount: 90, spread: 70, origin: { y: 0.2 }, colors: ["#ff604b", "#ffd85a", "#5548f5"] });
         toast.success("You're discoverable — recruiters can now find you.");
       } catch (e: any) {
         toast.error(e?.message || "Couldn't save your preference.");
@@ -562,7 +563,7 @@ export default function FreeCVApp() {
       }
       const resData = await res.json();
       setAtsResult(resData);
-      if (resData.score >= 85) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#0E8A4B', '#2233FF', '#FF4326'] });
+      if (resData.score >= 85) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#0E8A4B', '#5548f5', '#ff604b'] });
     } catch (err: any) { toast.error('ATS Grading failed: ' + err.message); }
     setIsATSLoading(false);
   };
@@ -732,10 +733,10 @@ export default function FreeCVApp() {
         <Input label="Phone" value={data.personalInfo.phone} onChange={(e: any) => updatePersonalInfo({ phone: e.target.value })} />
         <Input label="Location" value={data.personalInfo.location} onChange={(e: any) => updatePersonalInfo({ location: e.target.value })} />
         <Input label="Website/Portfolio" value={data.personalInfo.website} onChange={(e: any) => updatePersonalInfo({ website: e.target.value })} />
-        <div className="col-span-1 sm:col-span-2 mt-2 flex items-center justify-between p-4 border-2 border-[#141312] bg-white hs-sm">
+        <div className="col-span-1 sm:col-span-2 mt-2 flex items-center justify-between p-4 border border-[#dddde5] rounded-xl bg-white">
           <div>
-            <h4 className="fh font-bold text-sm text-[#141312]">Allow recruiters to find my profile</h4>
-            <p className="fm text-[10px] uppercase tracking-[0.14em] text-[#141312]/55">Allow recruiters to find your resume on Cvyon.</p>
+            <h4 className="font-brand font-bold text-sm text-[#151a46]">Allow recruiters to find my profile</h4>
+            <p className="font-brand text-[10px] uppercase tracking-[0.14em] text-[#151a46]/55">Allow recruiters to find your resume on Cvyon.</p>
           </div>
           <button onClick={() => {
             const newShare = !data.consents.recruiterShare;
@@ -752,7 +753,7 @@ export default function FreeCVApp() {
             role="switch"
             aria-checked={data.consents.recruiterShare}
             aria-label="Allow recruiters to find my profile"
-            className={cn("w-12 h-6 rounded-full transition-colors relative flex-shrink-0 border-2 border-[#141312]", data.consents.recruiterShare ? 'bg-[#2233FF]' : 'bg-gray-300')}>
+            className={cn("w-12 h-6 rounded-full transition-colors relative flex-shrink-0", data.consents.recruiterShare ? 'bg-[#5548f5]' : 'bg-gray-300')}>
             <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform", data.consents.recruiterShare ? 'translate-x-6' : 'translate-x-1')} />
           </button>
         </div>
@@ -767,19 +768,19 @@ export default function FreeCVApp() {
                   reader.readAsDataURL(file);
                 }
               }} />
-            <div className="w-24 h-24 rounded-full border-2 border-dashed border-[#141312]/40 hover:border-[#2233FF] bg-white flex flex-col items-center justify-center overflow-hidden transition-all">
+            <div className="w-24 h-24 rounded-full border-2 border-dashed border-[#151a46]/40 hover:border-[#5548f5] bg-white flex flex-col items-center justify-center overflow-hidden transition-all">
               {data.personalInfo.profilePicture ? (
                 <img src={data.personalInfo.profilePicture} alt="Profile" className="w-full h-full object-cover" />
               ) : (
                 <>
-                  <Upload size={24} className='text-[#141312]/40 mb-1' />
-                  <span className="fm text-[9px] font-bold uppercase tracking-wider text-center px-2 text-[#141312]/40">Add Photo</span>
+                  <Upload size={24} className='text-[#151a46]/40 mb-1' />
+                  <span className="font-brand text-[9px] font-bold uppercase tracking-wider text-center px-2 text-[#151a46]/40">Add Photo</span>
                 </>
               )}
             </div>
             {data.personalInfo.profilePicture && (
               <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); updatePersonalInfo({ profilePicture: undefined }); }}
-                className="absolute -top-2 -right-2 bg-[#D8362A] text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20 shadow-sm hover:bg-[#141312]">
+                className="absolute -top-2 -right-2 bg-[#D8362A] text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20 shadow-sm hover:bg-[#151a46]">
                 <X size={14} />
               </button>
             )}
@@ -788,15 +789,15 @@ export default function FreeCVApp() {
       </div>
       <div className="mt-4">
         <div className="flex justify-between items-center mb-1.5">
-          <label className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/60">Professional Summary</label>
+          <label className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] text-[#151a46]/60">Professional Summary</label>
           <button onClick={handleGenerateSummary} disabled={isGeneratingSummary}
-            className="flex items-center gap-1.5 fm text-[10px] font-bold uppercase tracking-widest text-[#FF4326] border-2 border-[#FF4326] hover:bg-[#FF4326] hover:text-white px-2.5 py-1 transition-colors disabled:opacity-50">
+            className="flex items-center gap-1.5 font-brand text-[10px] font-bold uppercase tracking-widest text-[#ff604b] border border-[#ff604b] rounded-full hover:bg-[#ff604b] hover:text-white px-2.5 py-1 transition-colors disabled:opacity-50">
             {isGeneratingSummary ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
             {isGeneratingSummary ? 'Writing...' : 'Generate with AI'}
           </button>
         </div>
         <textarea
-          className="mt-1.5 w-full bg-white border-2 border-[#141312] rounded-none px-4 py-3 text-sm text-[#141312] placeholder:text-[#141312]/35 outline-none transition-shadow focus:shadow-[3px_3px_0_#2233FF] min-h-[100px] resize-none"
+          className="mt-1.5 w-full bg-white border border-[#d9dae5] rounded-[10px] px-4 py-3 text-sm text-[#151a46] placeholder:text-[#151a46]/35 outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)] min-h-[100px] resize-none"
           value={data.summary} onChange={(e) => updateSummary(e.target.value)} />
       </div>
     </Card>
@@ -804,7 +805,7 @@ export default function FreeCVApp() {
     ),
     experience: (
     <SectionAccordion id="experience" icon={Briefcase} title="Professional Experience" description="Showcase your career milestones"
-      action={<button onClick={addExperience} aria-label="Add experience" className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors shrink-0"><Plus size={18} /></button>}>
+      action={<button onClick={addExperience} aria-label="Add experience" className="p-2 bg-white border border-[#dddde5] rounded-lg hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors shrink-0"><Plus size={18} /></button>}>
     <Droppable droppableId="experience" type="experience">
       {(provided) => (
         <div {...provided.droppableProps} ref={provided.innerRef}>
@@ -812,7 +813,7 @@ export default function FreeCVApp() {
             <Draggable key={exp.id} draggableId={exp.id} index={index}>
               {(provided) => (
                 <div ref={provided.innerRef} {...provided.draggableProps} className="mb-6 relative group">
-                  <div {...provided.dragHandleProps} className="absolute left-[-16px] top-1/2 -translate-y-1/2 p-2 text-[#141312]/30 hover:text-[#141312] opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing">
+                  <div {...provided.dragHandleProps} className="absolute left-[-16px] top-1/2 -translate-y-1/2 p-2 text-[#151a46]/30 hover:text-[#151a46] opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing">
                     <GripVertical size={20} />
                   </div>
                   <Card className="mb-0">
@@ -824,25 +825,25 @@ export default function FreeCVApp() {
                     </div>
                     <div className="mb-2">
                       <div className="flex justify-between items-center mb-1.5">
-                        <label className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/60">Accomplishments (New line per point)</label>
+                        <label className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] text-[#151a46]/60">Accomplishments (New line per point)</label>
                         <div className="flex gap-2">
                           <button onClick={() => handlePolishExperience(exp.id, exp.description)} disabled={polishingExpId === exp.id || !exp.description.trim()}
-                            className="flex items-center gap-1.5 fm text-[10px] font-bold uppercase tracking-widest text-[#2233FF] border-2 border-[#2233FF] hover:bg-[#2233FF] hover:text-white px-2.5 py-1 transition-colors disabled:opacity-50" title="Polish this text with AI">
+                            className="flex items-center gap-1.5 font-brand text-[10px] font-bold uppercase tracking-widest text-[#5548f5] border border-[#5548f5] rounded-full hover:bg-[#5548f5] hover:text-white px-2.5 py-1 transition-colors disabled:opacity-50" title="Polish this text with AI">
                             {polishingExpId === exp.id ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
                             {polishingExpId === exp.id ? 'Polishing...' : 'Polish'}
                           </button>
                           <button onClick={() => handleGenerateExperience(exp.id, exp.role, exp.company)} disabled={generatingExpId === exp.id}
-                            className="flex items-center gap-1.5 fm text-[10px] font-bold uppercase tracking-widest text-[#FF4326] border-2 border-[#FF4326] hover:bg-[#FF4326] hover:text-white px-2.5 py-1 transition-colors disabled:opacity-50">
+                            className="flex items-center gap-1.5 font-brand text-[10px] font-bold uppercase tracking-widest text-[#ff604b] border border-[#ff604b] rounded-full hover:bg-[#ff604b] hover:text-white px-2.5 py-1 transition-colors disabled:opacity-50">
                             {generatingExpId === exp.id ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
                             {generatingExpId === exp.id ? 'Writing...' : 'Generate with AI'}
                           </button>
                         </div>
                       </div>
                       <textarea
-                        className="w-full bg-white border-2 border-[#141312] rounded-none px-4 py-3 text-sm text-[#141312] placeholder:text-[#141312]/35 outline-none transition-shadow focus:shadow-[3px_3px_0_#2233FF] min-h-[100px] resize-none"
+                        className="w-full bg-white border border-[#d9dae5] rounded-[10px] px-4 py-3 text-sm text-[#151a46] placeholder:text-[#151a46]/35 outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)] min-h-[100px] resize-none"
                         value={exp.description} onChange={(e: any) => updateExperience(exp.id, { description: e.target.value })} />
                     </div>
-                    <button onClick={() => removeExperience(exp.id)} className="w-full mt-6 bg-white text-[#D8362A] border-2 border-[#D8362A] py-3 fm text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
+                    <button onClick={() => removeExperience(exp.id)} className="w-full mt-6 bg-white text-[#D8362A] border border-[#D8362A] rounded-xl py-3 font-brand text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
                       <Trash2 size={16} /> Delete Experience
                     </button>
                   </Card>
@@ -858,7 +859,7 @@ export default function FreeCVApp() {
     ),
     education: (
     <SectionAccordion id="education" icon={GraduationCap} title="Education" description="Where did you learn your craft?"
-      action={<button onClick={addEducation} aria-label="Add education" className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors shrink-0"><Plus size={18} /></button>}>
+      action={<button onClick={addEducation} aria-label="Add education" className="p-2 bg-white border border-[#dddde5] rounded-lg hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors shrink-0"><Plus size={18} /></button>}>
     <Droppable droppableId="education" type="education">
       {(provided) => (
         <div {...provided.droppableProps} ref={provided.innerRef}>
@@ -866,7 +867,7 @@ export default function FreeCVApp() {
             <Draggable key={edu.id} draggableId={edu.id} index={index}>
               {(provided) => (
                 <div ref={provided.innerRef} {...provided.draggableProps} className="mb-6 relative group">
-                  <div {...provided.dragHandleProps} className="absolute left-[-16px] top-1/2 -translate-y-1/2 p-2 text-[#141312]/30 hover:text-[#141312] opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing">
+                  <div {...provided.dragHandleProps} className="absolute left-[-16px] top-1/2 -translate-y-1/2 p-2 text-[#151a46]/30 hover:text-[#151a46] opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing">
                     <GripVertical size={20} />
                   </div>
                   <Card className="mb-0">
@@ -877,7 +878,7 @@ export default function FreeCVApp() {
                       <Input label="Degree" value={edu.degree} onChange={(e: any) => updateEducation(edu.id, { degree: e.target.value })} />
                       <Input label="Graduation Year" value={edu.graduationYear} onChange={(e: any) => updateEducation(edu.id, { graduationYear: e.target.value })} />
                     </div>
-                    <button onClick={() => removeEducation(edu.id)} className="w-full mt-6 bg-white text-[#D8362A] border-2 border-[#D8362A] py-3 fm text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
+                    <button onClick={() => removeEducation(edu.id)} className="w-full mt-6 bg-white text-[#D8362A] border border-[#D8362A] rounded-xl py-3 font-brand text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
                       <Trash2 size={16} /> Delete Education
                     </button>
                   </Card>
@@ -896,9 +897,9 @@ export default function FreeCVApp() {
     <Card>
       <form onSubmit={handleAddSkill} className="flex gap-2 mb-6">
         <input
-          className="flex-1 bg-white border-2 border-[#141312] rounded-none px-4 py-3 text-sm text-[#141312] placeholder:text-[#141312]/35 outline-none transition-shadow focus:shadow-[3px_3px_0_#2233FF]"
+          className="flex-1 bg-white border border-[#d9dae5] rounded-[10px] px-4 py-3 text-sm text-[#151a46] placeholder:text-[#151a46]/35 outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)]"
           placeholder="Add a skill (e.g. TypeScript, AWS)" value={skillInput} onChange={(e) => setSkillInput(e.target.value)} />
-        <button type="submit" className="bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-6 py-3 fm text-sm font-bold uppercase tracking-wider">Add</button>
+        <button type="submit" className="bg-[#5548f5] text-white rounded-xl shadow-[3px_3px_0_#151a46] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] px-6 py-3 font-brand text-sm font-bold uppercase tracking-wider transition-all">Add</button>
       </form>
       <Droppable droppableId="skills" type="skills" direction="horizontal">
         {(provided) => (
@@ -907,12 +908,12 @@ export default function FreeCVApp() {
               <Draggable key={s.id} draggableId={s.id} index={index}>
                 {(provided) => (
                   <div ref={provided.innerRef} {...provided.draggableProps} className="relative flex items-center">
-                    <div {...provided.dragHandleProps} className="absolute left-[-8px] text-[#141312]/30 hover:text-[#141312] cursor-grab active:cursor-grabbing z-10">
+                    <div {...provided.dragHandleProps} className="absolute left-[-8px] text-[#151a46]/30 hover:text-[#151a46] cursor-grab active:cursor-grabbing z-10">
                       <GripVertical size={14} />
                     </div>
-                    <span className="group flex items-center gap-2 bg-white border-2 border-[#141312] pl-6 pr-2 py-2 fm text-xs font-bold uppercase tracking-wider text-[#141312] transition-all">
+                    <span className="group flex items-center gap-2 bg-white border border-[#dddde5] rounded-full pl-6 pr-2 py-2 font-brand text-xs font-bold uppercase tracking-wider text-[#151a46] transition-all hover:border-[#5548f5]">
                       {s.name}
-                      <button onClick={() => removeSkill(s.id)} className="p-1 rounded-full text-[#141312]/40 hover:text-[#D8362A] hover:bg-[#D8362A]/10 transition-colors">
+                      <button onClick={() => removeSkill(s.id)} className="p-1 rounded-full text-[#151a46]/40 hover:text-[#D8362A] hover:bg-[#D8362A]/10 transition-colors">
                         <X size={14} />
                       </button>
                     </span>
@@ -929,7 +930,7 @@ export default function FreeCVApp() {
     {/* Smart Skill Suggestions */}
     <div className="mb-6">
       <button onClick={handleSuggestSkills} disabled={isLoadingSkills || !data.personalInfo.jobTitle}
-        className="flex items-center gap-2 fm text-[11px] font-bold uppercase tracking-widest text-[#FF4326] border-2 border-[#FF4326] hover:bg-[#FF4326] hover:text-white px-4 py-2.5 transition-colors disabled:opacity-40">
+        className="flex items-center gap-2 font-brand text-[11px] font-bold uppercase tracking-widest text-[#ff604b] border border-[#ff604b] rounded-full hover:bg-[#ff604b] hover:text-white px-4 py-2.5 transition-colors disabled:opacity-40">
         {isLoadingSkills ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
         {isLoadingSkills ? 'Finding skills...' : 'Suggest Skills with AI'}
       </button>
@@ -937,7 +938,7 @@ export default function FreeCVApp() {
         <div className="mt-3 flex flex-wrap gap-2">
           {suggestedSkills.map((skill, i) => (
             <button key={i} onClick={() => { addSkill(skill); setSuggestedSkills(prev => prev.filter(s => s !== skill)); }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] fm text-xs font-bold uppercase tracking-wider text-[#141312] transition-all">
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#dddde5] rounded-lg hover:bg-[#151a46] hover:text-white font-brand text-xs font-bold uppercase tracking-wider text-[#151a46] transition-all">
               <Plus size={12} /> {skill}
             </button>
           ))}
@@ -948,7 +949,7 @@ export default function FreeCVApp() {
     ),
     projects: data.showProjects ? (
       <SectionAccordion id="projects" icon={FolderOpen} title="Projects" description="Showcase your key projects" onRemove={toggleProjects}
-        action={<button onClick={addProject} aria-label="Add project" className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors shrink-0"><Plus size={18} /></button>}>
+        action={<button onClick={addProject} aria-label="Add project" className="p-2 bg-white border border-[#dddde5] rounded-lg hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors shrink-0"><Plus size={18} /></button>}>
         {(data.projects || []).map((proj) => (
           <Card key={proj.id}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -956,7 +957,7 @@ export default function FreeCVApp() {
               <Input label="Link / URL" value={proj.link} onChange={(e: any) => updateProject(proj.id, { link: e.target.value })} />
             </div>
             <Input label="Description" value={proj.description} onChange={(e: any) => updateProject(proj.id, { description: e.target.value })} />
-            <button onClick={() => removeProject(proj.id)} className="w-full mt-6 bg-white text-[#D8362A] border-2 border-[#D8362A] py-3 fm text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
+            <button onClick={() => removeProject(proj.id)} className="w-full mt-6 bg-white text-[#D8362A] border border-[#D8362A] rounded-xl py-3 font-brand text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
               <Trash2 size={16} /> Delete Project
             </button>
           </Card>
@@ -965,7 +966,7 @@ export default function FreeCVApp() {
     ) : null,
     certifications: data.showCertifications ? (
       <SectionAccordion id="certifications" icon={Award} title="Certifications" description="Official recognitions" onRemove={toggleCertifications}
-        action={<button onClick={addCertification} aria-label="Add certification" className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors shrink-0"><Plus size={18} /></button>}>
+        action={<button onClick={addCertification} aria-label="Add certification" className="p-2 bg-white border border-[#dddde5] rounded-lg hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors shrink-0"><Plus size={18} /></button>}>
         {(data.certifications || []).map((cert) => (
           <Card key={cert.id}>
             <div className="grid grid-cols-1 gap-4 mb-4">
@@ -973,7 +974,7 @@ export default function FreeCVApp() {
               <Input label="Issuer" value={cert.issuer} onChange={(e: any) => updateCertification(cert.id, { issuer: e.target.value })} />
               <Input label="Date Earned" value={cert.date} onChange={(e: any) => updateCertification(cert.id, { date: e.target.value })} />
             </div>
-            <button onClick={() => removeCertification(cert.id)} className="w-full mt-6 bg-white text-[#D8362A] border-2 border-[#D8362A] py-3 fm text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
+            <button onClick={() => removeCertification(cert.id)} className="w-full mt-6 bg-white text-[#D8362A] border border-[#D8362A] rounded-xl py-3 font-brand text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
               <Trash2 size={16} /> Delete Certification
             </button>
           </Card>
@@ -982,7 +983,7 @@ export default function FreeCVApp() {
     ) : null,
     references: data.showReferences ? (
       <SectionAccordion id="references" icon={Users} title="References" description="People who vouch for you" onRemove={toggleReferences}
-        action={<button onClick={addReference} aria-label="Add reference" className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors shrink-0"><Plus size={18} /></button>}>
+        action={<button onClick={addReference} aria-label="Add reference" className="p-2 bg-white border border-[#dddde5] rounded-lg hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors shrink-0"><Plus size={18} /></button>}>
         {(data.references || []).map((ref) => (
           <Card key={ref.id}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -991,7 +992,7 @@ export default function FreeCVApp() {
               <Input label="Company" value={ref.company} onChange={(e: any) => updateReference(ref.id, { company: e.target.value })} />
               <Input label="Contact (Email/Phone)" value={ref.contact} onChange={(e: any) => updateReference(ref.id, { contact: e.target.value })} />
             </div>
-            <button onClick={() => removeReference(ref.id)} className="w-full mt-6 bg-white text-[#D8362A] border-2 border-[#D8362A] py-3 fm text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
+            <button onClick={() => removeReference(ref.id)} className="w-full mt-6 bg-white text-[#D8362A] border border-[#D8362A] rounded-xl py-3 font-brand text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
               <Trash2 size={16} /> Delete Reference
             </button>
           </Card>
@@ -1017,22 +1018,22 @@ export default function FreeCVApp() {
         <div className="flex flex-wrap gap-3">
           {PRESET_COLORS.map((hex) => (
             <button key={hex} onClick={() => setThemeColor(hex)}
-              className={cn("w-10 h-10 rounded-full shadow-sm border-2 transition-transform", data.theme?.color === hex ? "border-[#141312] scale-110" : "border-transparent hover:scale-105")}
+              className={cn("w-10 h-10 rounded-full shadow-sm border-2 transition-transform", data.theme?.color === hex ? "border-[#151a46] scale-110" : "border-transparent hover:scale-105")}
               style={{ backgroundColor: hex }} aria-label={`Select color ${hex}`} />
           ))}
           <div className="relative" title="Pick any custom color">
             <input type="color" value={data.theme?.color || '#2563eb'} onChange={(e) => setThemeColor(e.target.value)}
               className="w-10 h-10 rounded-full cursor-pointer opacity-0 absolute inset-0 z-10" aria-label="Pick a custom color" />
             <div
-              className={cn("w-10 h-10 rounded-full shadow-sm border-2 flex items-center justify-center transition-transform", isCustomColor ? "border-[#141312] scale-110" : "border-transparent hover:scale-105")}
+              className={cn("w-10 h-10 rounded-full shadow-sm border-2 flex items-center justify-center transition-transform", isCustomColor ? "border-[#151a46] scale-110" : "border-transparent hover:scale-105")}
               style={{ background: 'conic-gradient(from 20deg, #ef4444, #f59e0b, #84cc16, #06b6d4, #3b82f6, #a855f7, #ef4444)' }}>
               <Pipette size={16} className="text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]" />
             </div>
           </div>
         </div>
         {isCustomColor && (
-          <p className="fm text-[10px] font-bold uppercase tracking-[0.18em] text-[#141312]/50 mt-4">
-            Custom color <span className="text-[#141312]">{data.theme?.color}</span>
+          <p className="font-brand text-[10px] font-bold uppercase tracking-[0.18em] text-[#151a46]/50 mt-4">
+            Custom color <span className="text-[#151a46]">{data.theme?.color}</span>
           </p>
         )}
       </Card>
@@ -1042,40 +1043,40 @@ export default function FreeCVApp() {
   const SelectedTemplate = templates[data.templateId] || templates.Executive;
 
   return (
-    <main className={cn("flex flex-col lg:flex-row min-h-screen w-full overflow-x-clip font-sans selection:bg-black selection:text-white print:block print:h-auto print:overflow-visible", 'bg-[#E8E7E1] text-[#141312] cv-riso')}>
+    <main className={cn("flex flex-col lg:flex-row min-h-screen w-full overflow-x-clip font-brand selection:bg-[#5548f5] selection:text-white print:block print:h-auto print:overflow-visible", 'bg-[#f6f5ef] text-[#151a46]')}>
       <h1 className="sr-only">Free Resume Builder — create, edit, and download your resume</h1>
 
       {/* EDITOR PANEL */}
-      <section className="w-full lg:w-[45%] border-r-[3px] border-[#141312] print:hidden px-6 py-8 lg:px-10 lg:py-12 flex-shrink-0 relative bg-white">
+      <section className="w-full lg:w-[45%] border-r border-[#dddde5] print:hidden px-6 py-8 lg:px-10 lg:py-12 flex-shrink-0 relative bg-white">
         <div className="max-w-xl mx-auto pb-24 lg:pb-0">
 
-          <header className="sticky top-0 z-30 -mx-6 -mt-8 px-6 py-4 lg:-mx-10 lg:-mt-12 lg:px-10 lg:py-5 bg-white/95 backdrop-blur-md border-b-2 border-[#141312] mb-8">
+          <header className="sticky top-0 z-30 -mx-6 -mt-8 px-6 py-4 lg:-mx-10 lg:-mt-12 lg:px-10 lg:py-5 bg-white/95 backdrop-blur-md border-b border-[#dddde5] mb-8">
             {/* MOBILE / TABLET HEADER — approved layout, slogan removed */}
             <div className="lg:hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <div>
                 <Link href="/" className="flex items-center gap-2">
-                  <Image src="/logo-light-no-background.png" alt="Cvyon" width={200} height={65} priority className="h-9 sm:h-10 w-auto object-contain transition-all" />
+                  <Logo size={30} wordSize={21} />
                 </Link>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="flex items-center gap-1 text-[10px] fm font-semibold text-[#10B981]">
+                  <span className="flex items-center gap-1 text-[10px] font-brand font-semibold text-[#10B981]">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" /> Auto-saved
                   </span>
                 </div>
               </div>
               <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
                 <LiveAtsScore />
-                <div className="hidden sm:flex items-center gap-1 border-l-2 border-[#141312]/20 pl-2">
-                  <button onClick={() => useResumeStore.temporal.getState().undo()} className="p-2 border-2 border-[#141312] bg-white hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors text-[#141312]" title="Undo (Ctrl+Z)">
+                <div className="hidden sm:flex items-center gap-1 border-l border-[#dddde5] pl-2">
+                  <button onClick={() => useResumeStore.temporal.getState().undo()} className="p-2 border border-[#dddde5] rounded-lg bg-white hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors text-[#151a46]" title="Undo (Ctrl+Z)">
                     <Undo2 size={16} />
                   </button>
-                  <button onClick={() => useResumeStore.temporal.getState().redo()} className="p-2 border-2 border-[#141312] bg-white hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors text-[#141312]" title="Redo (Ctrl+Y)">
+                  <button onClick={() => useResumeStore.temporal.getState().redo()} className="p-2 border border-[#dddde5] rounded-lg bg-white hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors text-[#151a46]" title="Redo (Ctrl+Y)">
                     <Redo2 size={16} />
                   </button>
                 </div>
-                <button onClick={handleDownload} className="group flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-2 sm:px-4 py-2 sm:py-2.5 fm text-[10px] sm:text-xs font-bold uppercase tracking-wide sm:tracking-widest whitespace-nowrap active:translate-y-[2px] active:shadow-none transition-all">
+                <button onClick={handleDownload} className="group flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 bg-[#5548f5] text-white rounded-xl shadow-[3px_3px_0_#151a46] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] px-2 sm:px-4 py-2 sm:py-2.5 font-brand text-[10px] sm:text-xs font-bold uppercase tracking-wide sm:tracking-widest whitespace-nowrap transition-all">
                   <Download size={15} className="hidden sm:block group-hover:-translate-y-0.5 transition-transform" /> Download PDF
                 </button>
-                <button onClick={handleDocxExport} className="flex-1 sm:flex-none flex group items-center justify-center gap-1.5 sm:gap-2 bg-[#2233FF] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-2 sm:px-4 py-2 sm:py-2.5 fm text-[10px] sm:text-xs font-bold uppercase tracking-wide sm:tracking-widest whitespace-nowrap active:translate-y-[2px] active:shadow-none transition-all" title="Download Word Document">
+                <button onClick={handleDocxExport} className="flex-1 sm:flex-none flex group items-center justify-center gap-1.5 sm:gap-2 bg-white text-[#151a46] border border-[#dddde5] rounded-xl shadow-[3px_3px_0_#151a46] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] px-2 sm:px-4 py-2 sm:py-2.5 font-brand text-[10px] sm:text-xs font-bold uppercase tracking-wide sm:tracking-widest whitespace-nowrap transition-all" title="Download Word Document">
                   <FileText size={15} className="hidden sm:block group-hover:-translate-y-0.5 transition-transform" /> Download DOCX
                 </button>
               </div>
@@ -1088,29 +1089,29 @@ export default function FreeCVApp() {
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 min-w-0">
                   <Link href="/" className="flex items-center shrink-0" aria-label="Cvyon home">
-                    <Image src="/logo-light-no-background.png" alt="Cvyon" width={200} height={65} priority className="h-11 w-auto object-contain" />
+                    <Logo size={32} wordSize={22} />
                   </Link>
-                  <span className="flex items-center gap-1.5 fm text-[10px] font-bold uppercase tracking-[0.18em] text-[#10B981] border-2 border-[#10B981]/40 bg-[#10B981]/10 px-2.5 py-1 whitespace-nowrap">
+                  <span className="flex items-center gap-1.5 font-brand text-[10px] font-bold uppercase tracking-[0.18em] text-[#10B981] border border-[#10B981]/40 bg-[#10B981]/10 rounded-full px-2.5 py-1 whitespace-nowrap">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" /> Auto-saved
                   </span>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <LiveAtsScore />
-                  <div className="flex items-center gap-1 border-l-2 border-[#141312]/20 pl-2">
-                    <button onClick={() => useResumeStore.temporal.getState().undo()} className="p-2 border-2 border-[#141312] bg-white hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors text-[#141312]" title="Undo (Ctrl+Z)">
+                  <div className="flex items-center gap-1 border-l border-[#dddde5] pl-2">
+                    <button onClick={() => useResumeStore.temporal.getState().undo()} className="p-2 border border-[#dddde5] rounded-lg bg-white hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors text-[#151a46]" title="Undo (Ctrl+Z)">
                       <Undo2 size={16} />
                     </button>
-                    <button onClick={() => useResumeStore.temporal.getState().redo()} className="p-2 border-2 border-[#141312] bg-white hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors text-[#141312]" title="Redo (Ctrl+Y)">
+                    <button onClick={() => useResumeStore.temporal.getState().redo()} className="p-2 border border-[#dddde5] rounded-lg bg-white hover:bg-[#151a46] hover:text-white hover:border-[#151a46] transition-colors text-[#151a46]" title="Redo (Ctrl+Y)">
                       <Redo2 size={16} />
                     </button>
                   </div>
                 </div>
               </div>
               <div className="flex gap-2">
-                <button onClick={handleDownload} className="group flex-1 flex items-center justify-center gap-2 bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-4 py-3 fm text-xs font-bold uppercase tracking-widest whitespace-nowrap active:translate-y-[2px] active:shadow-none transition-all">
+                <button onClick={handleDownload} className="group flex-1 flex items-center justify-center gap-2 bg-[#5548f5] text-white rounded-xl shadow-[3px_3px_0_#151a46] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] px-4 py-3 font-brand text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all">
                   <Download size={16} className="group-hover:-translate-y-0.5 transition-transform" /> Download PDF
                 </button>
-                <button onClick={handleDocxExport} className="flex-1 flex group items-center justify-center gap-2 bg-[#2233FF] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-4 py-3 fm text-xs font-bold uppercase tracking-widest whitespace-nowrap active:translate-y-[2px] active:shadow-none transition-all" title="Download Word Document">
+                <button onClick={handleDocxExport} className="flex-1 flex group items-center justify-center gap-2 bg-white text-[#151a46] border border-[#dddde5] rounded-xl shadow-[3px_3px_0_#151a46] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] px-4 py-3 font-brand text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all" title="Download Word Document">
                   <FileText size={16} className="group-hover:-translate-y-0.5 transition-transform" /> Download DOCX
                 </button>
               </div>
@@ -1119,12 +1120,12 @@ export default function FreeCVApp() {
 
 
           {publishedUrl && (
-            <div className="mb-8 p-4 bg-white border-[3px] border-[#0E8A4B] hs-sm flex items-center justify-between">
+            <div className="mb-8 p-4 bg-white border border-[#0E8A4B] rounded-2xl shadow-[0_2px_8px_rgba(21,26,70,.05)] flex items-center justify-between">
               <div>
-                <p className="text-[#0E8A4B] fh font-bold text-sm">Your resume is live!</p>
-                <a href={publishedUrl} target="_blank" rel="noreferrer" className="text-[#0E8A4B] fm text-xs hover:underline mt-1 block">{publishedUrl}</a>
+                <p className="text-[#0E8A4B] font-brand font-bold text-sm">Your resume is live!</p>
+                <a href={publishedUrl} target="_blank" rel="noreferrer" className="text-[#0E8A4B] font-brand text-xs hover:underline mt-1 block">{publishedUrl}</a>
               </div>
-              <button onClick={() => { navigator.clipboard.writeText(publishedUrl); toast.success('Copied!'); }} className="px-3 py-1.5 bg-[#0E8A4B] text-white fm text-[10px] font-bold uppercase tracking-widest hover:bg-[#141312] transition-colors">
+              <button onClick={() => { navigator.clipboard.writeText(publishedUrl); toast.success('Copied!'); }} className="px-3 py-1.5 bg-[#0E8A4B] text-white rounded-lg font-brand text-[10px] font-bold uppercase tracking-widest hover:bg-[#151a46] transition-colors">
                 Copy link
               </button>
             </div>
@@ -1132,28 +1133,28 @@ export default function FreeCVApp() {
 
           {/* AI Tools Bar */}
           <div className="flex flex-wrap gap-2 mb-8">
-            <button onClick={() => setIsATSOpen(true)} className="flex items-center gap-2 px-4 py-2.5 border-2 border-[#141312] bg-white text-[#141312] hs-sm fm text-[11px] font-bold uppercase tracking-[0.16em] transition-all hover:bg-[#0E8A4B] hover:text-white hover:border-[#0E8A4B]">
+            <button onClick={() => setIsATSOpen(true)} className="flex items-center gap-2 px-4 py-2.5 border border-[#dddde5] rounded-full bg-white text-[#151a46] font-brand text-[11px] font-bold uppercase tracking-[0.16em] transition-all shadow-[0_2px_6px_rgba(21,26,70,.06)] hover:border-[#0E8A4B] hover:text-[#0E8A4B]">
               <BarChart3 size={14} /> ATS Grader
             </button>
-            <button onClick={() => setIsRewriterOpen(true)} className="flex items-center gap-2 px-4 py-2.5 border-2 border-[#141312] bg-white text-[#141312] hs-sm fm text-[11px] font-bold uppercase tracking-[0.16em] transition-all hover:bg-[#FF4326] hover:text-[#141312] hover:border-[#FF4326]">
+            <button onClick={() => setIsRewriterOpen(true)} className="flex items-center gap-2 px-4 py-2.5 border border-[#dddde5] rounded-full bg-white text-[#151a46] font-brand text-[11px] font-bold uppercase tracking-[0.16em] transition-all shadow-[0_2px_6px_rgba(21,26,70,.06)] hover:border-[#ff604b] hover:text-[#ff604b]">
               <RefreshCw size={14} /> AI Rewriter
             </button>
           </div>
 
           {/* Template Gallery Button */}
           <div className="mb-12">
-            <button onClick={() => setIsGalleryOpen(true)} className="w-full relative overflow-hidden bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] hs p-4 sm:p-6 font-bold flex items-center justify-between group transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
+            <button onClick={() => setIsGalleryOpen(true)} className="w-full relative overflow-hidden bg-[#151a46] text-white rounded-2xl shadow-[5px_5px_0_#5548f5] p-4 sm:p-6 font-bold flex items-center justify-between group transition-all hover:shadow-none hover:translate-x-[5px] hover:translate-y-[5px]">
               <div className="flex items-center gap-4 sm:gap-5 relative z-10">
-                <div className="w-10 h-10 sm:w-14 sm:h-14 bg-[#FF4326] border-2 border-[#E8E7E1] flex items-center justify-center group-hover:rotate-6 transition-transform">
-                  <Layout className="text-[#141312] w-5 h-5 sm:w-6 sm:h-6" />
+                <div className="w-10 h-10 sm:w-14 sm:h-14 bg-[#ff604b] rounded-xl flex items-center justify-center group-hover:rotate-6 transition-transform">
+                  <Layout className="text-[#151a46] w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
                 <div className="flex flex-col items-start">
-                  <span className="fd text-lg sm:text-xl tracking-tight leading-none mb-1">Template Gallery</span>
-                  <span className="hidden sm:block fm text-[10px] text-[#E8E7E1]/60 font-bold tracking-[0.18em] uppercase">{Object.keys(templates).length} ATS-optimized layouts</span>
-                  <span className="sm:hidden fm text-[9px] text-[#E8E7E1]/60 font-bold uppercase">{Object.keys(templates).length} layouts</span>
+                  <span className="font-brand text-lg sm:text-xl tracking-tight leading-none mb-1">Template Gallery</span>
+                  <span className="hidden sm:block font-brand text-[10px] text-[#f6f5ef]/60 font-bold tracking-[0.18em] uppercase">{Object.keys(templates).length} ATS-optimized layouts</span>
+                  <span className="sm:hidden font-brand text-[9px] text-[#f6f5ef]/60 font-bold uppercase">{Object.keys(templates).length} layouts</span>
                 </div>
               </div>
-              <div className="relative z-10 bg-[#E8E7E1] text-[#141312] px-4 py-2.5 fm text-[10px] sm:text-xs uppercase tracking-widest font-black group-hover:bg-[#FF4326] group-hover:text-[#141312] transition-colors flex items-center gap-2">
+              <div className="relative z-10 bg-white text-[#151a46] rounded-xl px-4 py-2.5 font-brand text-[10px] sm:text-xs uppercase tracking-widest font-black group-hover:bg-[#ff604b] group-hover:text-[#151a46] transition-colors flex items-center gap-2">
                 <span className="hidden sm:inline">Change Design</span>
                 <Paintbrush size={16} className="block sm:hidden" />
               </div>
@@ -1175,9 +1176,9 @@ export default function FreeCVApp() {
             {/* Desktop section tabs — the end of endless scrolling. */}
             <div ref={tabsTopRef} className="desktop-tabbar mb-8 scroll-mt-40">
               <div className="flex items-center justify-between mb-3">
-                <p className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/50">Resume Sections</p>
-                <p className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/50">
-                  <span className="text-[#0E8A4B]">{completedTabs}</span> of {editorTabs.length} complete
+                <p className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] text-[#73778c]">Resume Sections</p>
+                <p className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] text-[#151a46]/50">
+                  <span className="text-[#5548f5]">{completedTabs}</span> of {editorTabs.length} complete
                 </p>
               </div>
               <div className="flex flex-wrap gap-2" role="tablist" aria-label="Resume sections">
@@ -1192,15 +1193,15 @@ export default function FreeCVApp() {
                       aria-selected={isActive}
                       onClick={() => selectTab(tab.id)}
                       className={cn(
-                        "flex items-center gap-2 px-4 py-2.5 border-[3px] rounded-none fm text-[11px] font-bold uppercase tracking-[0.14em] transition-all",
+                        "flex items-center gap-2 px-4 py-2.5 border rounded-full font-brand text-[11px] font-bold uppercase tracking-[0.14em] transition-all",
                         isActive
-                          ? "bg-[#141312] text-[#E8E7E1] border-[#141312] shadow-[4px_4px_0_#FF4326] -translate-y-0.5"
-                          : "bg-white text-[#141312] border-[#141312]/25 hover:border-[#141312] hover:-translate-y-0.5"
+                          ? "bg-[#eeecff] text-[#151a46] border-[#5548f5] shadow-[0_2px_8px_rgba(85,72,245,.18)]"
+                          : "bg-white text-[#73778c] border-[#dddde5] hover:border-[#151a46] hover:text-[#151a46]"
                       )}>
                       <TabIcon size={14} />
                       {tab.label}
                       {done && (
-                        <span className="flex items-center justify-center w-4 h-4 rounded-full bg-[#0E8A4B] text-white">
+                        <span className="flex items-center justify-center w-4 h-4 rounded-full bg-[#24c9bd] text-white">
                           <Check size={10} strokeWidth={4} />
                         </span>
                       )}
@@ -1219,19 +1220,19 @@ export default function FreeCVApp() {
             ))}
 
             {/* Add New Sections */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-12 pt-8 border-t-2 border-[#141312]/20 flex-wrap">
+            <div className="flex flex-col sm:flex-row gap-4 mt-12 pt-8 border-t border-[#dddde5] flex-wrap">
               {!data.showProjects && (
-                <button onClick={() => enableSectionAndGo(toggleProjects, 'projects')} className="flex-1 min-w-[200px] py-4 bg-white border-2 border-dashed border-[#141312]/50 hover:border-[#141312] hover:bg-[#141312]/5 rounded-none fm text-xs font-bold uppercase tracking-widest text-[#141312]/70 hover:text-[#141312] flex items-center justify-center gap-2 transition-all">
+                <button onClick={() => enableSectionAndGo(toggleProjects, 'projects')} className="flex-1 min-w-[200px] py-4 bg-white border border-dashed border-[#5548f5]/50 hover:border-[#5548f5] hover:bg-[#eeecff] rounded-xl font-brand text-xs font-bold uppercase tracking-widest text-[#151a46]/70 hover:text-[#151a46] flex items-center justify-center gap-2 transition-all">
                   <Plus size={18} /> Add Projects
                 </button>
               )}
               {!data.showCertifications && (
-                <button onClick={() => enableSectionAndGo(toggleCertifications, 'certifications')} className="flex-1 min-w-[200px] py-4 bg-white border-2 border-dashed border-[#141312]/50 hover:border-[#141312] hover:bg-[#141312]/5 rounded-none fm text-xs font-bold uppercase tracking-widest text-[#141312]/70 hover:text-[#141312] flex items-center justify-center gap-2 transition-all">
+                <button onClick={() => enableSectionAndGo(toggleCertifications, 'certifications')} className="flex-1 min-w-[200px] py-4 bg-white border border-dashed border-[#5548f5]/50 hover:border-[#5548f5] hover:bg-[#eeecff] rounded-xl font-brand text-xs font-bold uppercase tracking-widest text-[#151a46]/70 hover:text-[#151a46] flex items-center justify-center gap-2 transition-all">
                   <Plus size={18} /> Add Certifications
                 </button>
               )}
               {!data.showReferences && (
-                <button onClick={() => enableSectionAndGo(toggleReferences, 'references')} className="flex-1 min-w-[200px] py-4 bg-white border-2 border-dashed border-[#141312]/50 hover:border-[#141312] hover:bg-[#141312]/5 rounded-none fm text-xs font-bold uppercase tracking-widest text-[#141312]/70 hover:text-[#141312] flex items-center justify-center gap-2 transition-all">
+                <button onClick={() => enableSectionAndGo(toggleReferences, 'references')} className="flex-1 min-w-[200px] py-4 bg-white border border-dashed border-[#5548f5]/50 hover:border-[#5548f5] hover:bg-[#eeecff] rounded-xl font-brand text-xs font-bold uppercase tracking-widest text-[#151a46]/70 hover:text-[#151a46] flex items-center justify-center gap-2 transition-all">
                   <Plus size={18} /> Add References
                 </button>
               )}
@@ -1240,10 +1241,10 @@ export default function FreeCVApp() {
             {/* Custom Sections */}
             {data.customSections?.map((section: any, sectionIndex: number) => (
               <div key={section.id} className="mt-8">
-                <div className="flex items-center justify-between mb-4 bg-white p-4 border-[3px] border-[#141312] hs-sm">
+                <div className="flex items-center justify-between mb-4 bg-white p-4 border border-[#dddde5] rounded-xl shadow-[0_2px_8px_rgba(21,26,70,.05)]">
                   <input type="text" value={section.title} onChange={(e) => updateCustomSectionTitle(section.id, e.target.value)}
-                    className="fd uppercase tracking-tight text-lg bg-transparent border-none outline-none focus:ring-0 flex-1 text-[#141312]" />
-                  <button onClick={() => removeCustomSection(section.id)} className="text-[#141312]/40 hover:text-[#D8362A] transition-colors p-2"><Trash2 size={16} /></button>
+                    className="font-brand uppercase tracking-tight text-lg bg-transparent border-none outline-none focus:ring-0 flex-1 text-[#151a46] font-bold" />
+                  <button onClick={() => removeCustomSection(section.id)} className="text-[#151a46]/40 hover:text-[#D8362A] transition-colors p-2"><Trash2 size={16} /></button>
                 </div>
                 <Droppable droppableId={`custom-${section.id}`} type="custom-item">
                   {(provided) => (
@@ -1251,8 +1252,8 @@ export default function FreeCVApp() {
                       {section.items.map((item: any, index: number) => (
                         <Draggable key={item.id} draggableId={item.id} index={index}>
                           {(provided, snapshot) => (
-                            <div ref={provided.innerRef} {...provided.draggableProps} className={cn("bg-white border-2 border-[#141312] hs-sm rounded-none p-4 sm:p-5 relative group transition-all", snapshot.isDragging ? 'border-[#2233FF] shadow-[6px_6px_0_#2233FF] scale-[1.02] z-50' : 'hover:shadow-none')}>
-                              <div {...provided.dragHandleProps} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#141312]/30 opacity-0 group-hover:opacity-100 transition-opacity p-2 cursor-grab active:cursor-grabbing hover:text-[#141312]">
+                            <div ref={provided.innerRef} {...provided.draggableProps} className={cn("bg-white border border-[#dddde5] rounded-xl p-4 sm:p-5 relative group transition-all shadow-[0_2px_8px_rgba(21,26,70,.05)]", snapshot.isDragging ? 'border-[#5548f5] shadow-[0_8px_24px_rgba(85,72,245,.25)] scale-[1.02] z-50' : '')}>
+                              <div {...provided.dragHandleProps} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#151a46]/30 opacity-0 group-hover:opacity-100 transition-opacity p-2 cursor-grab active:cursor-grabbing hover:text-[#151a46]">
                                 <GripVertical size={16} />
                               </div>
                               <div className="pl-8">
@@ -1264,12 +1265,12 @@ export default function FreeCVApp() {
                                     </div>
                                     <Input label="Date/Info" value={item.date} onChange={(e: any) => updateCustomSectionItem(section.id, item.id, { date: e.target.value })} placeholder="2024, Fluent, etc." />
                                   </div>
-                                  <button onClick={() => removeCustomSectionItem(section.id, item.id)} className="text-[#141312]/40 hover:text-[#D8362A] transition-colors p-2 mt-6"><Trash2 size={16} /></button>
+                                  <button onClick={() => removeCustomSectionItem(section.id, item.id)} className="text-[#151a46]/40 hover:text-[#D8362A] transition-colors p-2 mt-6"><Trash2 size={16} /></button>
                                 </div>
                                 <div className="mt-3">
-                                  <label className="block fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/60 mb-2">Description</label>
+                                  <label className="block font-brand text-[10px] font-bold uppercase tracking-[0.2em] text-[#151a46]/60 mb-2">Description</label>
                                   <textarea value={item.description} onChange={(e) => updateCustomSectionItem(section.id, item.id, { description: e.target.value })}
-                                    className="w-full bg-white border-2 border-[#141312] rounded-none p-3 min-h-[80px] outline-none transition-shadow focus:shadow-[3px_3px_0_#2233FF] resize-y text-sm text-[#141312]" placeholder="Describe this item..." />
+                                    className="w-full bg-white border border-[#d9dae5] rounded-[10px] p-3 min-h-[80px] outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)] resize-y text-sm text-[#151a46]" placeholder="Describe this item..." />
                                 </div>
                               </div>
                             </div>
@@ -1277,7 +1278,7 @@ export default function FreeCVApp() {
                         </Draggable>
                       ))}
                       {provided.placeholder}
-                      <button onClick={() => addCustomSectionItem(section.id)} className="w-full py-3 bg-white border-2 border-dashed border-[#141312]/50 hover:border-[#141312] hover:bg-[#141312]/5 rounded-none fm text-xs font-bold uppercase tracking-widest text-[#141312]/70 hover:text-[#141312] flex items-center justify-center gap-2 transition-all">
+                      <button onClick={() => addCustomSectionItem(section.id)} className="w-full py-3 bg-white border border-dashed border-[#151a46]/30 hover:border-[#5548f5] hover:bg-[#eeecff] rounded-xl font-brand text-xs font-bold uppercase tracking-widest text-[#151a46]/70 hover:text-[#151a46] flex items-center justify-center gap-2 transition-all">
                         <Plus size={16} /> Add Item
                       </button>
                     </div>
@@ -1287,25 +1288,25 @@ export default function FreeCVApp() {
             ))}
 
             <div className="mt-8">
-              <button onClick={addCustomSection} className="w-full py-4 bg-white border-2 border-dashed border-[#2233FF] hover:bg-[#2233FF]/5 rounded-none fm text-xs font-bold uppercase tracking-widest text-[#2233FF] flex items-center justify-center gap-2 transition-all">
+              <button onClick={addCustomSection} className="w-full py-4 bg-white border border-dashed border-[#5548f5] hover:bg-[#eeecff] rounded-xl font-brand text-xs font-bold uppercase tracking-widest text-[#5548f5] flex items-center justify-center gap-2 transition-all">
                 <Plus size={18} /> Create Custom Section
               </button>
             </div>
 
             {/* Newsletter */}
-            <div className="mt-16 pt-8 border-t-2 border-[#141312]/20">
+            <div className="mt-16 pt-8 border-t-2 border-[#151a46]/20">
               <NewsletterCapture source="main_editor" />
             </div>
 
             {/* Footer Links */}
-            <footer className="mt-12 pt-6 border-t-2 border-[#141312]/20 flex flex-wrap gap-4 fm text-xs font-bold uppercase tracking-widest justify-center pb-8 text-[#141312]/55">
-              <Link href="/blog" className="hover:text-[#FF4326] transition-colors">Career Blog</Link>
+            <footer className="mt-12 pt-6 border-t-2 border-[#151a46]/20 flex flex-wrap gap-4 font-brand text-xs font-bold uppercase tracking-widest justify-center pb-8 text-[#151a46]/55">
+              <Link href="/blog" className="hover:text-[#5548f5] transition-colors">Career Blog</Link>
               <span>&bull;</span>
-              <Link href="/recruiter" className="hover:text-[#FF4326] transition-colors">Recruiter Portal</Link>
+              <Link href="/recruiter" className="hover:text-[#5548f5] transition-colors">Recruiter Portal</Link>
               <span>&bull;</span>
-              <Link href="/privacy" className="hover:text-[#FF4326] transition-colors">Privacy Policy & GDPR</Link>
+              <Link href="/privacy" className="hover:text-[#5548f5] transition-colors">Privacy Policy & GDPR</Link>
               <span>&bull;</span>
-              <Link href="/manage-data" className="hover:text-[#FF4326] transition-colors">Manage Data</Link>
+              <Link href="/manage-data" className="hover:text-[#5548f5] transition-colors">Manage Data</Link>
             </footer>
 
           </DragDropContext>
@@ -1321,7 +1322,7 @@ export default function FreeCVApp() {
           style={{ position: 'fixed', bottom: '1.5rem', left: '50%', transform: 'translateX(-50%)' }}>
           <button
             onClick={() => { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3.5 fm text-xs font-bold uppercase tracking-widest transition-colors bg-[#2233FF] text-[#E8E7E1] border-[3px] border-[#141312] hs active:translate-y-[2px] active:shadow-none">
+            className="w-full flex items-center justify-center gap-2 px-4 py-3.5 font-brand text-xs font-bold uppercase tracking-widest transition-all bg-[#5548f5] text-white rounded-xl shadow-[4px_4px_0_#151a46]">
             <Eye size={15} /> Preview
           </button>
         </div>
@@ -1332,18 +1333,18 @@ export default function FreeCVApp() {
         ref={previewViewportRef}
         id="preview-panel"
         className={cn(
-          "flex-1 bg-[#E8E7E1] p-0 lg:p-12 print:p-0 print:bg-white flex lg:justify-center items-start print-safe-container",
+          "flex-1 bg-[#e7e8ef] p-0 lg:p-12 print:p-0 print:bg-white flex lg:justify-center items-start print-safe-container",
           isPreviewOpen && !mobileZoom ? "overflow-x-hidden justify-center" : "overflow-x-auto",
           isPreviewOpen ? "fixed inset-0 z-50 flex-col h-screen overflow-y-auto custom-scrollbar" : "hidden lg:flex"
         )}>
 
         {/* Mobile Modal Actions */}
         {isPreviewOpen && (
-          <div className="fixed bottom-0 left-0 w-full bg-white p-3 flex gap-1.5 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-50 lg:hidden print:hidden border-t-[3px] border-[#141312]">
-            <button onClick={() => setIsPreviewOpen(false)} className="bg-white border-2 border-[#141312] hs-sm text-[#141312] px-3 py-3 fm text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-1 active:translate-y-[2px] active:shadow-none transition-all">
+          <div className="fixed bottom-0 left-0 w-full bg-white p-3 flex gap-1.5 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-50 lg:hidden print:hidden border-t border-[#dddde5]">
+            <button onClick={() => setIsPreviewOpen(false)} className="bg-white border border-[#dddde5] rounded-xl text-[#151a46] px-3 py-3 font-brand text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-1 transition-all">
               <X size={14} /> Edit
             </button>
-            <button onClick={() => setMobileZoom(!mobileZoom)} className="bg-white border-2 border-[#141312] hs-sm text-[#141312] px-3 py-3 fm text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-1 active:translate-y-[2px] active:shadow-none transition-all">
+            <button onClick={() => setMobileZoom(!mobileZoom)} className="bg-white border border-[#dddde5] rounded-xl text-[#151a46] px-3 py-3 font-brand text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-1 transition-all">
               {mobileZoom ? <ZoomOut size={14} /> : <ZoomIn size={14} />} Zoom
             </button>
             <PDFDownloadButton
@@ -1351,9 +1352,9 @@ export default function FreeCVApp() {
               data={previewData}
               themeColor={data.theme?.color || '#2563eb'}
               onDownloadComplete={() => setIsJobsModalOpen(true)}
-              className="flex-1 bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs py-3 fm text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-1 active:translate-y-[2px] active:shadow-none transition-all"
+              className="flex-1 bg-[#5548f5] text-white rounded-xl shadow-[3px_3px_0_#151a46] py-3 font-brand text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-1 transition-all"
             />
-            <button onClick={handleDocxExport} className="bg-[#2233FF] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-3.5 py-3 fm text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-1 active:translate-y-[2px] active:shadow-none transition-all">
+            <button onClick={handleDocxExport} className="bg-white text-[#151a46] border border-[#dddde5] rounded-xl px-3.5 py-3 font-brand text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-1 transition-all">
               <FileText size={14} /> DOCX
             </button>
           </div>
@@ -1378,33 +1379,33 @@ export default function FreeCVApp() {
 
       {/* TEMPLATE GALLERY MODAL */}
       {isGalleryOpen && (
-        <div className="fixed inset-0 z-[400] bg-[#E8E7E1] flex flex-col print:hidden">
-          <div className="p-6 lg:p-8 border-b-[3px] border-[#141312] flex justify-between items-center bg-[#E8E7E1] z-10 relative">
+        <div className="fixed inset-0 z-[400] bg-[#f6f5ef] font-brand flex flex-col print:hidden">
+          <div className="p-6 lg:p-8 border-b border-[#dddde5] flex justify-between items-center bg-white z-10 relative">
             <div>
-              <h2 className="fd text-3xl font-black uppercase tracking-tight leading-none text-[#141312]">Template Gallery</h2>
-              <p className="fm text-[10px] font-bold uppercase tracking-widest text-[#141312]/55 mt-2">See your exact resume in {Object.keys(templates).length} ATS-optimized styles</p>
+              <h2 className="font-brand text-3xl font-black uppercase tracking-tight leading-none text-[#151a46]">Template Gallery</h2>
+              <p className="font-brand text-[10px] font-bold uppercase tracking-widest text-[#151a46]/55 mt-2">See your exact resume in {Object.keys(templates).length} ATS-optimized styles</p>
             </div>
-            <button onClick={() => setIsGalleryOpen(false)} className="p-4 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] rounded-none transition-colors">
+            <button onClick={() => setIsGalleryOpen(false)} className="p-3 bg-white border border-[#dddde5] hover:bg-[#151a46] hover:text-white rounded-xl transition-colors">
               <X size={24} />
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-6 lg:p-12 custom-scrollbar bg-[#E8E7E1]">
+          <div className="flex-1 overflow-y-auto p-6 lg:p-12 custom-scrollbar bg-[#f6f5ef]">
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 max-w-[1600px] mx-auto">
               {(Object.keys(templates) as TemplateKey[]).map((key) => {
                 const isActive = data.templateId === key;
                 return (
                   <button key={key} onClick={() => { trackEvent('template_selected', key); setTemplateId(key); setIsGalleryOpen(false); }}
-                    className={cn("flex flex-col text-left group bg-white border-[3px] rounded-none overflow-hidden transition-all relative", isActive ? "border-[#2233FF] shadow-[8px_8px_0_#2233FF] scale-[1.02]" : "border-[#141312] hs hover:-translate-y-1")}
+                    className={cn("flex flex-col text-left group bg-white border rounded-xl overflow-hidden transition-all relative", isActive ? "border-[#5548f5] shadow-[0_8px_24px_rgba(85,72,245,.25)] scale-[1.02]" : "border-[#dddde5] hover:border-[#151a46] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(21,26,70,.1)]")}
                     style={{ contentVisibility: 'auto', containIntrinsicSize: '300px 400px' }}>
                     <HTMLThumbnail Tmpl={htmlTemplates[key as keyof typeof htmlTemplates]} data={data} />
                     {isActive && (
-                      <div className="absolute top-4 right-4 bg-[#2233FF] text-[#E8E7E1] border-2 border-[#141312] px-3 py-1.5 fm text-[9px] font-black uppercase tracking-widest rounded-none shadow-lg z-10 flex items-center gap-1">
+                      <div className="absolute top-4 right-4 bg-[#5548f5] text-white px-3 py-1.5 font-brand text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg z-10 flex items-center gap-1">
                         <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" /> Active
                       </div>
                     )}
-                    <div className="p-4 border-t-2 border-[#141312] bg-white z-10 w-full flex items-center justify-between">
+                    <div className="p-4 border-t border-[#dddde5] bg-white z-10 w-full flex items-center justify-between">
                       <div className="truncate pr-2">
-                        <h3 className="fh font-bold text-sm lg:text-base leading-tight truncate text-[#141312]">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
+                        <h3 className="font-brand font-bold text-sm lg:text-base leading-tight truncate text-[#151a46]">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
                       </div>
                     </div>
                   </button>
@@ -1419,21 +1420,21 @@ export default function FreeCVApp() {
       {isATSOpen && (
         <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm overflow-y-auto print:hidden">
           <div className="min-h-screen px-4 flex items-center justify-center py-10">
-            <div className="rounded-none border-[3px] border-[#141312] hs max-w-2xl w-full p-6 sm:p-8 flex flex-col relative bg-white text-[#141312]">
+            <div className="rounded-2xl border border-[#dddde5] shadow-[0_24px_70px_rgba(21,26,70,.22)] max-w-2xl w-full p-6 sm:p-8 flex flex-col relative bg-white text-[#151a46]">
               <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h2 className="fd text-2xl font-black leading-tight flex items-center gap-2"><BarChart3 className="text-[#0E8A4B]" /> ATS Grader</h2>
-                  <p className="fm text-[11px] uppercase tracking-widest text-[#141312]/55 mt-1">Paste the job description to see how well your resume matches.</p>
+                  <h2 className="font-brand text-2xl font-black leading-tight flex items-center gap-2"><BarChart3 className="text-[#0E8A4B]" /> ATS Grader</h2>
+                  <p className="font-brand text-[11px] uppercase tracking-widest text-[#151a46]/55 mt-1">Paste the job description to see how well your resume matches.</p>
                 </div>
-                <button onClick={() => setIsATSOpen(false)} className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] rounded-none transition-colors"><X size={20} /></button>
+                <button onClick={() => setIsATSOpen(false)} className="p-2 bg-white border border-[#dddde5] hover:bg-[#151a46] hover:text-white rounded-xl transition-colors"><X size={20} /></button>
               </div>
 
               <textarea
-                className="w-full bg-white border-2 border-[#141312] rounded-none p-4 text-sm min-h-[150px] mb-4 outline-none transition-shadow focus:shadow-[3px_3px_0_#0E8A4B] resize-none text-[#141312]"
+                className="w-full bg-white border border-[#d9dae5] rounded-[10px] p-4 text-sm min-h-[150px] mb-4 outline-none transition-all focus:border-[#0E8A4B] focus:shadow-[0_0_0_3px_rgba(14,138,75,.12)] resize-none text-[#151a46]"
                 placeholder="Paste the target job description here..." value={atsJobDesc} onChange={(e) => setAtsJobDesc(e.target.value)} />
 
               <button onClick={handleATSGrade} disabled={isATSLoading || !atsJobDesc.trim()}
-                className="w-full bg-[#141312] hover:bg-[#0E8A4B] hover:border-[#0E8A4B] disabled:opacity-50 text-[#E8E7E1] border-[3px] border-[#141312] hs py-4 fm font-bold uppercase tracking-widest text-sm transition-all flex justify-center items-center gap-2 mb-6">
+                className="w-full bg-[#0E8A4B] hover:bg-[#0b6e3e] disabled:opacity-50 text-white rounded-xl shadow-[3px_3px_0_#151a46] py-4 font-brand font-bold uppercase tracking-widest text-sm transition-all flex justify-center items-center gap-2 mb-6">
                 {isATSLoading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
                 {isATSLoading ? 'Analyzing Resume...' : 'Analyze & Grade Resume'}
               </button>
@@ -1441,38 +1442,38 @@ export default function FreeCVApp() {
               {atsResult && (
                 <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-6">
                   <div className="flex items-center gap-6">
-                    <div className="relative w-24 h-24 flex items-center justify-center rounded-full border-8 border-[#141312]/10">
+                    <div className="relative w-24 h-24 flex items-center justify-center rounded-full border-8 border-[#151a46]/10">
                       <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
                         <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="8" strokeDasharray="289.026" strokeDashoffset={289.026 * (1 - atsResult.score / 100)} className={atsResult.score >= 80 ? 'text-[#0E8A4B]' : atsResult.score >= 60 ? 'text-[#FFB800]' : 'text-[#D8362A]'} strokeLinecap="round" />
                       </svg>
-                      <span className="fd text-2xl font-black">{atsResult.score}</span>
+                      <span className="font-brand text-2xl font-black">{atsResult.score}</span>
                     </div>
                     <div>
-                      <h3 className="fh text-xl font-bold">Match Score</h3>
-                      <p className="fm text-xs uppercase tracking-wider text-[#141312]/60">
+                      <h3 className="font-brand text-xl font-bold">Match Score</h3>
+                      <p className="font-brand text-xs uppercase tracking-wider text-[#151a46]/60">
                         {atsResult.score >= 80 ? 'Excellent match! You are highly qualified.' : atsResult.score >= 60 ? 'Good match. Consider adding missing keywords.' : 'Low match. Significant tailoring recommended.'}
                       </p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-white border-2 border-[#0E8A4B]">
-                      <h4 className="fh font-bold text-[#0E8A4B] mb-2 flex items-center gap-2"><Plus size={16} /> Strengths</h4>
+                    <div className="p-4 bg-white border border-[#0E8A4B] rounded-xl">
+                      <h4 className="font-brand font-bold text-[#0E8A4B] mb-2 flex items-center gap-2"><Plus size={16} /> Strengths</h4>
                       <ul className="list-disc list-inside text-sm space-y-1">{atsResult.strengths?.map((s: string, i: number) => <li key={i}>{s}</li>)}</ul>
                     </div>
-                    <div className="p-4 bg-white border-2 border-[#D8362A]">
-                      <h4 className="fh font-bold text-[#D8362A] mb-2 flex items-center gap-2"><RefreshCw size={16} /> Missing Keywords</h4>
+                    <div className="p-4 bg-white border border-[#D8362A] rounded-xl">
+                      <h4 className="font-brand font-bold text-[#D8362A] mb-2 flex items-center gap-2"><RefreshCw size={16} /> Missing Keywords</h4>
                       <ul className="list-disc list-inside text-sm space-y-1">{atsResult.missingKeywords?.map((k: string, i: number) => <li key={i}>{k}</li>)}</ul>
                     </div>
                   </div>
 
-                  <div className="p-4 bg-white border-2 border-[#2233FF]">
-                    <h4 className="fh font-bold text-[#2233FF] mb-2 flex items-center gap-2"><Sparkles size={16} /> Actionable Tips</h4>
+                  <div className="p-4 bg-white border border-[#5548f5] rounded-xl">
+                    <h4 className="font-brand font-bold text-[#5548f5] mb-2 flex items-center gap-2"><Sparkles size={16} /> Actionable Tips</h4>
                     <ul className="list-disc list-inside text-sm space-y-1">{atsResult.tips?.map((t: string, i: number) => <li key={i}>{t}</li>)}</ul>
                   </div>
 
                   <button onClick={() => { setIsATSOpen(false); setIsRewriterOpen(true); }}
-                    className="w-full bg-[#FF4326] hover:bg-[#141312] hover:text-[#E8E7E1] text-[#141312] border-[3px] border-[#141312] hs py-3 fm font-bold uppercase tracking-widest text-xs transition-all flex justify-center items-center gap-2 mt-4">
+                    className="w-full bg-[#ff604b] hover:bg-[#e54a34] text-white rounded-xl shadow-[3px_3px_0_#151a46] py-3 font-brand font-bold uppercase tracking-widest text-xs transition-all flex justify-center items-center gap-2 mt-4">
                     <RefreshCw size={14} /> Implement Recommendations with AI Rewriter
                   </button>
 
@@ -1481,7 +1482,7 @@ export default function FreeCVApp() {
                       const text = `I just scored a ${atsResult.score}% on my resume with Cvyon! Check out this free AI ATS Grader at cvyon.com`;
                       window.open(`https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(text)}`, '_blank');
                     }}
-                      className="w-full bg-[#0A66C2] hover:bg-[#004182] text-white border-2 border-[#141312] py-3 fm font-bold uppercase tracking-widest text-xs transition-all flex justify-center items-center gap-2 mt-4">
+                      className="w-full bg-[#0A66C2] hover:bg-[#004182] text-white rounded-xl py-3 font-brand font-bold uppercase tracking-widest text-xs transition-all flex justify-center items-center gap-2 mt-4">
                       <Share2 size={14} /> Share Score to LinkedIn
                     </button>
                   )}
@@ -1499,27 +1500,27 @@ export default function FreeCVApp() {
       {isRewriterOpen && (
         <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm overflow-y-auto print:hidden">
           <div className="min-h-screen px-4 flex items-center justify-center py-10">
-            <div className="rounded-none border-[3px] border-[#141312] hs max-w-md w-full p-6 sm:p-8 relative bg-white text-[#141312]">
+            <div className="rounded-2xl border border-[#dddde5] shadow-[0_24px_70px_rgba(21,26,70,.22)] max-w-md w-full p-6 sm:p-8 relative bg-white text-[#151a46]">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="fd text-2xl font-black leading-tight flex items-center gap-2"><RefreshCw className="text-[#FF4326]" /> AI Rewriter</h2>
-                <button onClick={() => setIsRewriterOpen(false)} className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] rounded-none transition-colors"><X size={20} /></button>
+                <h2 className="font-brand text-2xl font-black leading-tight flex items-center gap-2"><RefreshCw className="text-[#ff604b]" /> AI Rewriter</h2>
+                <button onClick={() => setIsRewriterOpen(false)} className="p-2 bg-white border border-[#dddde5] hover:bg-[#151a46] hover:text-white rounded-xl transition-colors"><X size={20} /></button>
               </div>
-              <p className="text-sm mb-6 text-[#141312]/65">Instantly rewrite your Summary and Experience sections to match a specific tone or career level.</p>
+              <p className="text-sm mb-6 text-[#151a46]/65">Instantly rewrite your Summary and Experience sections to match a specific tone or career level.</p>
               <div className="mb-6">
-                <label className="fm text-[10px] font-bold uppercase tracking-[0.2em] mb-2 block text-[#141312]/60">Target Tone / Style</label>
+                <label className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] mb-2 block text-[#151a46]/60">Target Tone / Style</label>
                 <div className="relative">
                   <select value={rewriteTone} onChange={(e) => setRewriteTone(e.target.value)}
-                    className="w-full appearance-none bg-white border-2 border-[#141312] rounded-none px-4 py-3 pr-10 text-sm font-bold text-[#141312] outline-none transition-shadow focus:shadow-[3px_3px_0_#FF4326] cursor-pointer">
+                    className="w-full appearance-none bg-white border border-[#d9dae5] rounded-[10px] px-4 py-3 pr-10 text-sm font-bold text-[#151a46] outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)] cursor-pointer">
                     <option value="Executive">Executive & Strategic</option>
                     <option value="Creative">Creative & Dynamic</option>
                     <option value="Technical">Technical & Analytical</option>
                     <option value="Entry-Level">Entry-Level & Enthusiastic</option>
                   </select>
-                  <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#141312]/40" />
+                  <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#151a46]/40" />
                 </div>
               </div>
               <button onClick={handleRewrite} disabled={isRewriting}
-                className="w-full bg-[#141312] hover:bg-[#FF4326] hover:text-[#141312] disabled:opacity-50 text-[#E8E7E1] border-[3px] border-[#141312] hs py-4 fm font-bold uppercase tracking-widest text-sm transition-all flex justify-center items-center gap-2">
+                className="w-full bg-[#5548f5] hover:bg-[#4538e0] disabled:opacity-50 text-white rounded-xl shadow-[3px_3px_0_#151a46] py-4 font-brand font-bold uppercase tracking-widest text-sm transition-all flex justify-center items-center gap-2">
                 {isRewriting ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
                 {isRewriting ? 'Rewriting Resume...' : 'Rewrite Entire Resume'}
               </button>
@@ -1533,17 +1534,17 @@ export default function FreeCVApp() {
         <div className="fixed inset-0 z-[300] bg-black/60 backdrop-blur-sm flex items-end justify-center print:hidden lg:hidden">
           <div className="bg-white w-full rounded-t-3xl p-6 shadow-2xl animate-in slide-in-from-bottom-full duration-300">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="fd text-xl font-black text-[#141312]">Download Options</h2>
-              <button onClick={() => setIsDownloadModalOpen(false)} className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] rounded-none text-[#141312] transition-colors"><X size={16} /></button>
+              <h2 className="font-brand text-xl font-black text-[#151a46]">Download Options</h2>
+              <button onClick={() => setIsDownloadModalOpen(false)} className="p-2 bg-white border border-[#dddde5] hover:bg-[#151a46] hover:text-white rounded-xl text-[#151a46] transition-colors"><X size={16} /></button>
             </div>
             <div className="flex flex-col gap-4">
-              <button onClick={() => { setIsDownloadModalOpen(false); handleDownload(); }} className="w-full bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs p-4 flex items-center gap-4 active:translate-y-[2px] active:shadow-none transition-all">
-                <div className="bg-white/20 p-2.5"><Download size={20} /></div>
-                <div className="text-left flex-1"><div className="fm font-bold uppercase tracking-wider text-sm">Download PDF</div><div className="fm text-xs text-white/70">Best for printing & sharing</div></div>
+              <button onClick={() => { setIsDownloadModalOpen(false); handleDownload(); }} className="w-full bg-[#5548f5] text-white rounded-xl shadow-[3px_3px_0_#151a46] p-4 flex items-center gap-4 transition-all hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
+                <div className="bg-[#151a46]/10 p-2.5 rounded-lg text-[#151a46]"><Download size={20} /></div>
+                <div className="text-left flex-1"><div className="font-brand font-bold uppercase tracking-wider text-sm">Download PDF</div><div className="font-brand text-xs text-white/70">Best for printing & sharing</div></div>
               </button>
-              <button onClick={() => { setIsDownloadModalOpen(false); handleDocxExport(); }} className="w-full bg-[#2233FF] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs p-4 flex items-center gap-4 active:translate-y-[2px] active:shadow-none transition-all mb-6">
-                <div className="bg-white/20 p-2.5"><FileText size={20} /></div>
-                <div className="text-left flex-1"><div className="fm font-bold uppercase tracking-wider text-sm">Download Word (DOCX)</div><div className="fm text-xs text-white/70">Editable in Microsoft Word</div></div>
+              <button onClick={() => { setIsDownloadModalOpen(false); handleDocxExport(); }} className="w-full bg-white text-[#151a46] border border-[#dddde5] rounded-xl shadow-[3px_3px_0_#151a46] p-4 flex items-center gap-4 transition-all hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] mb-6">
+                <div className="bg-[#151a46]/10 p-2.5 rounded-lg text-[#151a46]"><FileText size={20} /></div>
+                <div className="text-left flex-1"><div className="font-brand font-bold uppercase tracking-wider text-sm">Download Word (DOCX)</div><div className="font-brand text-xs text-[#151a46]/60">Editable in Microsoft Word</div></div>
               </button>
             </div>
           </div>
@@ -1559,7 +1560,7 @@ export default function FreeCVApp() {
           .custom-scrollbar::-webkit-scrollbar { display: none; }
         }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #14131233; border-radius: 0; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #151a4633; border-radius: 0; }
         /* Editor section headers: on desktop (lg+) the header is inert and
            the section always expanded — the original pre-redesign look.
            Below lg the accordion toggle works normally. Plain CSS (not

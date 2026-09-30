@@ -196,19 +196,19 @@ export default function ClientAtsGrader() {
   };
 
   return (
-    <div className={cn("cv-riso relative min-h-screen text-[#141312] bg-[#E8E7E1] overflow-x-hidden", body.className)}
-      style={{ ["--ink" as any]: "#141312", ["--verm" as any]: "#FF4326", ["--cob" as any]: "#2233FF", ["--hi" as any]: "#FFE14D", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
+    <div className={cn("cv-riso relative min-h-screen text-[#151a46] bg-[#f6f5ef] overflow-x-hidden", body.className)}
+      style={{ ["--ink" as any]: "#151a46", ["--verm" as any]: "#ff604b", ["--cob" as any]: "#5548f5", ["--hi" as any]: "#ffd85a", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
       <style>{`
         .cv-riso{font-family:var(--fb)} .cv-riso .fd{font-family:var(--fd)} .cv-riso .fh{font-family:var(--fh)} .cv-riso .fm{font-family:var(--fm)}
         .cv-riso .grain{position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.06;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-        .cv-riso .dots{background-image:radial-gradient(#14131222 1.2px,transparent 1.2px);background-size:22px 22px}
+        .cv-riso .dots{background-image:radial-gradient(#151a4622 1.2px,transparent 1.2px);background-size:22px 22px}
         .cv-riso .hs{box-shadow:7px 7px 0 var(--ink)} .cv-riso .hs-v{box-shadow:7px 7px 0 var(--verm)} .cv-riso .hs-c{box-shadow:6px 6px 0 var(--cob)}
       `}</style>
       <div className="grain" />
       <div className="absolute inset-0 dots pointer-events-none opacity-50 mix-blend-multiply" />
 
       {/* NAV */}
-      <header className="sticky top-0 z-40 border-b-[3px] border-[#141312] bg-[#E8E7E1]/95 backdrop-blur-0">
+      <header className="sticky top-0 z-40 border-b-[3px] border-[#151a46] bg-[#f6f5ef]/95 backdrop-blur-0">
         <div className="mx-auto flex max-w-[1240px] items-center justify-between px-5 py-4 lg:px-8">
           <Link href="/" className="flex items-center gap-2">
             <Image
@@ -219,13 +219,13 @@ export default function ClientAtsGrader() {
               priority
               className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto object-contain transition-all"
             />
-            <span className="fm hidden text-[11px] font-bold uppercase tracking-[0.2em] text-[#FF4326] sm:inline-block border-l-2 border-[#141312]/20 pl-2">ATS Grader</span>
+            <span className="fm hidden text-[11px] font-bold uppercase tracking-[0.2em] text-[#ff604b] sm:inline-block border-l-2 border-[#151a46]/20 pl-2">ATS Grader</span>
           </Link>
           <div className="flex items-center gap-4 sm:gap-6">
-            <Link href="/" className="fm text-[11px] font-bold uppercase tracking-[0.18em] transition-colors hover:text-[#FF4326]">
+            <Link href="/" className="fm text-[11px] font-bold uppercase tracking-[0.18em] transition-colors hover:text-[#ff604b]">
               Home
             </Link>
-            <Link href="/build" className="group flex items-center gap-2 border-[3px] border-[#141312] bg-[#141312] px-4 py-2.5 fm text-[11px] font-bold uppercase tracking-[0.18em] text-[#E8E7E1] hs transition-all hover:bg-[#FF4326] hover:border-[#FF4326]">
+            <Link href="/build" className="group flex items-center gap-2 border-[3px] border-[#151a46] bg-[#151a46] px-4 py-2.5 fm text-[11px] font-bold uppercase tracking-[0.18em] text-[#f6f5ef] hs transition-all hover:bg-[#ff604b] hover:border-[#ff604b]">
               Build Free
             </Link>
           </div>
@@ -234,19 +234,19 @@ export default function ClientAtsGrader() {
 
       <main className="relative z-10 max-w-5xl mx-auto px-5 py-12 lg:py-20 lg:px-8">
         {challengeScore !== null && bannerVisible && (
-          <div className="mb-10 border-[3px] border-[#141312] bg-[#FFE14D] hs p-4 sm:p-5 flex items-start sm:items-center gap-4">
+          <div className="mb-10 border-[3px] border-[#151a46] bg-[#ffd85a] hs p-4 sm:p-5 flex items-start sm:items-center gap-4">
             <div className="flex-1">
               <p className="fh font-black text-base sm:text-lg uppercase tracking-wide leading-tight">
                 Someone scored {challengeScore}/100 on this grader
               </p>
-              <p className="fm text-xs sm:text-sm font-bold uppercase tracking-wider text-[#141312]/70 mt-1">
+              <p className="fm text-xs sm:text-sm font-bold uppercase tracking-wider text-[#151a46]/70 mt-1">
                 Can you beat it? Upload your resume to find out.
               </p>
             </div>
             <button
               onClick={() => setBannerVisible(false)}
               aria-label="Dismiss challenge"
-              className="shrink-0 border-[2px] border-[#141312] bg-[#E8E7E1] p-1.5 hover:bg-[#FF4326] hover:text-[#E8E7E1] transition-colors"
+              className="shrink-0 border-[2px] border-[#151a46] bg-[#f6f5ef] p-1.5 hover:bg-[#ff604b] hover:text-[#f6f5ef] transition-colors"
             >
               <X size={16} />
             </button>
@@ -255,10 +255,10 @@ export default function ClientAtsGrader() {
 
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h1 className="fd text-4xl sm:text-6xl uppercase tracking-tighter leading-[0.9] mb-6">
-            Pass the <span className="text-[#FF4326]">bots.</span><br />
+            Pass the <span className="text-[#ff604b]">bots.</span><br />
             Get the interview.
           </h1>
-          <p className="fm text-sm sm:text-base font-bold uppercase tracking-wider text-[#141312]/70">
+          <p className="fm text-sm sm:text-base font-bold uppercase tracking-wider text-[#151a46]/70">
             Upload your resume (PDF/DOCX) and paste a job description. Our AI analyzes your match score exactly how an ATS would.
           </p>
         </div>
@@ -266,9 +266,9 @@ export default function ClientAtsGrader() {
         <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-stretch">
           {/* LEFT: Upload & JD */}
           <div className="flex flex-col gap-8">
-            <div className="bg-[#E8E7E1] border-[3px] border-[#141312] p-6 sm:p-8 hs-c flex flex-col h-full">
+            <div className="bg-[#f6f5ef] border-[3px] border-[#151a46] p-6 sm:p-8 hs-c flex flex-col h-full">
               <h2 className="fh text-xl font-black uppercase tracking-wider mb-6 flex items-center gap-2">
-                <span className="bg-[#141312] text-[#E8E7E1] p-1.5"><FileText size={16} /></span>
+                <span className="bg-[#151a46] text-[#f6f5ef] p-1.5"><FileText size={16} /></span>
                 1. Resume
               </h2>
               
@@ -276,51 +276,51 @@ export default function ClientAtsGrader() {
               <div 
                 onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} onClick={() => fileInputRef.current?.click()}
                 className={cn(
-                  "flex-1 border-[3px] border-dashed border-[#141312]/30 flex flex-col items-center justify-center p-8 text-center cursor-pointer transition-all min-h-[200px]",
-                  isDragging ? "bg-[#141312]/5 border-[#141312]" : "hover:bg-[#141312]/5",
-                  file ? "bg-[#2233FF]/10 border-[#2233FF]" : ""
+                  "flex-1 border-[3px] border-dashed border-[#151a46]/30 flex flex-col items-center justify-center p-8 text-center cursor-pointer transition-all min-h-[200px]",
+                  isDragging ? "bg-[#151a46]/5 border-[#151a46]" : "hover:bg-[#151a46]/5",
+                  file ? "bg-[#5548f5]/10 border-[#5548f5]" : ""
                 )}
               >
                 {file ? (
                   <>
-                    <FileText size={48} className="text-[#2233FF] mb-4" />
+                    <FileText size={48} className="text-[#5548f5] mb-4" />
                     <p className="fh font-bold text-lg truncate max-w-full">{file.name}</p>
                     <p className="fm text-xs mt-2 uppercase">{(file.size / 1024 / 1024).toFixed(2)} MB • Click to replace</p>
                   </>
                 ) : (
                   <>
-                    <UploadCloud size={48} className="text-[#141312]/50 mb-4" />
+                    <UploadCloud size={48} className="text-[#151a46]/50 mb-4" />
                     <p className="fh font-bold text-lg">Drag & Drop Resume</p>
-                    <p className="fm text-xs mt-2 uppercase text-[#141312]/50">Supported: PDF, DOCX (Max 5MB)</p>
+                    <p className="fm text-xs mt-2 uppercase text-[#151a46]/50">Supported: PDF, DOCX (Max 5MB)</p>
                   </>
                 )}
               </div>
             </div>
 
-            <div className="bg-[#E8E7E1] border-[3px] border-[#141312] p-6 sm:p-8 hs flex flex-col">
+            <div className="bg-[#f6f5ef] border-[3px] border-[#151a46] p-6 sm:p-8 hs flex flex-col">
               <h2 className="fh text-xl font-black uppercase tracking-wider mb-6 flex items-center gap-2">
-                <span className="bg-[#141312] text-[#E8E7E1] p-1.5"><Target size={16} /></span>
+                <span className="bg-[#151a46] text-[#f6f5ef] p-1.5"><Target size={16} /></span>
                 2. Job Target
               </h2>
               <textarea 
                 placeholder="Paste the target job description here..."
                 value={jd}
                 onChange={e => setJd(e.target.value)}
-                className="w-full min-h-[200px] border-[3px] border-[#141312] bg-[#E8E7E1] p-4 fh text-sm resize-y outline-none focus:bg-white transition-colors"
+                className="w-full min-h-[200px] border-[3px] border-[#151a46] bg-[#f6f5ef] p-4 fh text-sm resize-y outline-none focus:bg-white transition-colors"
               />
             </div>
 
             <button 
               onClick={handleGrade}
               disabled={isLoading}
-              className="group flex items-center justify-center gap-3 w-full border-[3px] border-[#141312] bg-[#FF4326] px-8 py-5 fh text-lg font-black uppercase tracking-wider text-[#E8E7E1] hs-v transition-all hover:-translate-y-1 hover:shadow-none disabled:opacity-70 disabled:pointer-events-none"
+              className="group flex items-center justify-center gap-3 w-full border-[3px] border-[#151a46] bg-[#ff604b] px-8 py-5 fh text-lg font-black uppercase tracking-wider text-[#f6f5ef] hs-v transition-all hover:-translate-y-1 hover:shadow-none disabled:opacity-70 disabled:pointer-events-none"
             >
               {isLoading ? <><Loader2 className="animate-spin" size={24} /> Processing...</> : <><Sparkles size={24} /> Analyze Match</>}
             </button>
           </div>
 
           {/* RIGHT: Results */}
-          <div className="bg-[#141312] border-[3px] border-[#141312] p-6 sm:p-8 text-[#E8E7E1] relative flex flex-col min-h-[500px]">
+          <div className="bg-[#151a46] border-[3px] border-[#151a46] p-6 sm:p-8 text-[#f6f5ef] relative flex flex-col min-h-[500px]">
             {!result ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 opacity-50">
                 <Target size={64} className="mb-6 opacity-30" />
@@ -329,36 +329,36 @@ export default function ClientAtsGrader() {
               </div>
             ) : (
               <div className="flex flex-col h-full animate-in fade-in zoom-in-95 duration-500">
-                <div className="text-center border-b-[3px] border-[#E8E7E1]/20 pb-8 mb-8">
-                  <p className="fm text-xs font-bold uppercase tracking-widest text-[#FFE14D] mb-4">Match Score</p>
+                <div className="text-center border-b-[3px] border-[#f6f5ef]/20 pb-8 mb-8">
+                  <p className="fm text-xs font-bold uppercase tracking-widest text-[#ffd85a] mb-4">Match Score</p>
                   <div className="flex justify-center items-end gap-2 leading-none">
-                    <span className={cn("fd text-8xl tracking-tighter", result.score >= 80 ? "text-[#00FF66]" : result.score >= 60 ? "text-[#FFE14D]" : "text-[#FF4326]")}>
+                    <span className={cn("fd text-8xl tracking-tighter", result.score >= 80 ? "text-[#00FF66]" : result.score >= 60 ? "text-[#ffd85a]" : "text-[#ff604b]")}>
                       {result.score}
                     </span>
-                    <span className="fh text-3xl font-black text-[#E8E7E1]/50 pb-2">/100</span>
+                    <span className="fh text-3xl font-black text-[#f6f5ef]/50 pb-2">/100</span>
                   </div>
                 </div>
 
                 {/* SHARE YOUR SCORE */}
-                <div className="mb-8 border-[3px] border-[#FFE14D] bg-[#FFE14D]/10 p-5 sm:p-6 text-center">
-                  <p className="fm text-xs font-bold uppercase tracking-widest text-[#FFE14D] mb-3">Share your score</p>
+                <div className="mb-8 border-[3px] border-[#ffd85a] bg-[#ffd85a]/10 p-5 sm:p-6 text-center">
+                  <p className="fm text-xs font-bold uppercase tracking-widest text-[#ffd85a] mb-3">Share your score</p>
                   <p className="fh text-sm sm:text-base font-bold mb-5 leading-relaxed">
-                    I scored <span className="text-[#FFE14D]">{scoreInt}/100</span> — think you can beat it?
+                    I scored <span className="text-[#ffd85a]">{scoreInt}/100</span> — think you can beat it?
                   </p>
                   {canNativeShare ? (
                     <button
                       onClick={() => doShare('native')}
-                      className="inline-flex items-center gap-2 border-[3px] border-[#FFE14D] bg-[#FFE14D] px-6 py-3 fh text-sm font-black uppercase tracking-wider text-[#141312] transition-all hover:-translate-y-0.5"
+                      className="inline-flex items-center gap-2 border-[3px] border-[#ffd85a] bg-[#ffd85a] px-6 py-3 fh text-sm font-black uppercase tracking-wider text-[#151a46] transition-all hover:-translate-y-0.5"
                     >
                       <Share2 size={18} /> Share
                     </button>
                   ) : (
                     <div className="flex flex-wrap justify-center gap-2">
-                      <button onClick={() => doShare('x')} className="px-4 py-2 border-2 border-[#E8E7E1]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFE14D] hover:text-[#141312] hover:border-[#FFE14D] transition-colors">X</button>
-                      <button onClick={() => doShare('facebook')} className="px-4 py-2 border-2 border-[#E8E7E1]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFE14D] hover:text-[#141312] hover:border-[#FFE14D] transition-colors">Facebook</button>
-                      <button onClick={() => doShare('whatsapp')} className="px-4 py-2 border-2 border-[#E8E7E1]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFE14D] hover:text-[#141312] hover:border-[#FFE14D] transition-colors">WhatsApp</button>
-                      <button onClick={() => doShare('linkedin')} className="px-4 py-2 border-2 border-[#E8E7E1]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFE14D] hover:text-[#141312] hover:border-[#FFE14D] transition-colors">LinkedIn</button>
-                      <button onClick={() => doShare('copy')} className="px-4 py-2 border-2 border-[#E8E7E1]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFE14D] hover:text-[#141312] hover:border-[#FFE14D] transition-colors inline-flex items-center gap-1.5">
+                      <button onClick={() => doShare('x')} className="px-4 py-2 border-2 border-[#f6f5ef]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#ffd85a] hover:text-[#151a46] hover:border-[#ffd85a] transition-colors">X</button>
+                      <button onClick={() => doShare('facebook')} className="px-4 py-2 border-2 border-[#f6f5ef]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#ffd85a] hover:text-[#151a46] hover:border-[#ffd85a] transition-colors">Facebook</button>
+                      <button onClick={() => doShare('whatsapp')} className="px-4 py-2 border-2 border-[#f6f5ef]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#ffd85a] hover:text-[#151a46] hover:border-[#ffd85a] transition-colors">WhatsApp</button>
+                      <button onClick={() => doShare('linkedin')} className="px-4 py-2 border-2 border-[#f6f5ef]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#ffd85a] hover:text-[#151a46] hover:border-[#ffd85a] transition-colors">LinkedIn</button>
+                      <button onClick={() => doShare('copy')} className="px-4 py-2 border-2 border-[#f6f5ef]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#ffd85a] hover:text-[#151a46] hover:border-[#ffd85a] transition-colors inline-flex items-center gap-1.5">
                         {copied ? <><Check size={14} /> Copied</> : <><Copy size={14} /> Copy link</>}
                       </button>
                     </div>
@@ -378,24 +378,24 @@ export default function ClientAtsGrader() {
                   </div>
 
                   <div>
-                    <h3 className="flex items-center gap-2 fm text-sm font-bold uppercase tracking-wider text-[#FF4326] mb-4">
+                    <h3 className="flex items-center gap-2 fm text-sm font-bold uppercase tracking-wider text-[#ff604b] mb-4">
                       <AlertCircle size={16} /> Weaknesses
                     </h3>
                     <ul className="space-y-3">
                       {result.weaknesses.map((w, i) => (
-                        <li key={i} className="flex gap-3 text-sm fh"><span className="text-[#FF4326] opacity-50">◆</span> {w}</li>
+                        <li key={i} className="flex gap-3 text-sm fh"><span className="text-[#ff604b] opacity-50">◆</span> {w}</li>
                       ))}
                     </ul>
                   </div>
 
                   {result.missingKeywords.length > 0 && (
                     <div>
-                      <h3 className="flex items-center gap-2 fm text-sm font-bold uppercase tracking-wider text-[#FFE14D] mb-4">
+                      <h3 className="flex items-center gap-2 fm text-sm font-bold uppercase tracking-wider text-[#ffd85a] mb-4">
                         <Target size={16} /> Missing Keywords
                       </h3>
                       <div className="flex flex-wrap gap-2">
                         {result.missingKeywords.map((k, i) => (
-                          <span key={i} className="px-3 py-1.5 border-[2px] border-[#FFE14D]/30 bg-[#FFE14D]/10 text-[#FFE14D] text-xs font-bold fh">{k}</span>
+                          <span key={i} className="px-3 py-1.5 border-[2px] border-[#ffd85a]/30 bg-[#ffd85a]/10 text-[#ffd85a] text-xs font-bold fh">{k}</span>
                         ))}
                       </div>
                     </div>
@@ -403,20 +403,20 @@ export default function ClientAtsGrader() {
 
                   {result.tips.length > 0 && (
                     <div>
-                      <h3 className="flex items-center gap-2 fm text-sm font-bold uppercase tracking-wider text-[#2233FF] mb-4">
+                      <h3 className="flex items-center gap-2 fm text-sm font-bold uppercase tracking-wider text-[#5548f5] mb-4">
                         <Lightbulb size={16} /> Actionable Tips
                       </h3>
                       <ul className="space-y-3">
                         {result.tips.map((t, i) => (
-                          <li key={i} className="flex gap-3 text-sm fh"><span className="text-[#2233FF] opacity-50">◆</span> {t}</li>
+                          <li key={i} className="flex gap-3 text-sm fh"><span className="text-[#5548f5] opacity-50">◆</span> {t}</li>
                         ))}
                       </ul>
                     </div>
                   )}
                 </div>
                 
-                <div className="pt-8 mt-8 border-t-[3px] border-[#E8E7E1]/20 text-center">
-                  <button onClick={handleFixResume} className="inline-block bg-[#E8E7E1] text-[#141312] px-6 py-3 fh font-black text-sm uppercase tracking-wider border-[3px] border-[#E8E7E1] hover:bg-[#FFE14D] hover:border-[#FFE14D] transition-colors">Fix my resume in Builder</button>
+                <div className="pt-8 mt-8 border-t-[3px] border-[#f6f5ef]/20 text-center">
+                  <button onClick={handleFixResume} className="inline-block bg-[#f6f5ef] text-[#151a46] px-6 py-3 fh font-black text-sm uppercase tracking-wider border-[3px] border-[#f6f5ef] hover:bg-[#ffd85a] hover:border-[#ffd85a] transition-colors">Fix my resume in Builder</button>
                 </div>
               </div>
             )}

@@ -59,10 +59,10 @@ export default async function SharedShortlistPage({
     : null;
 
   return (
-    <main className="fd min-h-screen bg-[#FFF9F0] px-4 py-10 text-[#141312] sm:px-8">
+    <main className="fd min-h-screen bg-[#FFF9F0] px-4 py-10 text-[#151a46] sm:px-8">
       <div className="mx-auto max-w-3xl">
         {/* Header */}
-        <div className="mb-8 border-[3px] border-[#141312] bg-white p-6 hs">
+        <div className="mb-8 border-[3px] border-[#151a46] bg-white p-6 hs">
           <p className="fm mb-2 text-[11px] font-bold uppercase tracking-[0.22em]">
             Shared shortlist — via Cvyon for Recruiters
           </p>
@@ -84,7 +84,7 @@ export default async function SharedShortlistPage({
             return (
               <article
                 key={item.profileId || `item-${i}`}
-                className="border-[3px] border-[#141312] bg-white p-5 hs sm:p-6"
+                className="border-[3px] border-[#151a46] bg-white p-5 hs sm:p-6"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
@@ -94,7 +94,7 @@ export default async function SharedShortlistPage({
                     )}
                   </div>
                   <span
-                    className={`inline-block border-[3px] border-[#141312] px-3 py-1 text-xs font-black uppercase tracking-wider ${STAGE_STYLES[stage] || 'bg-white'}`}
+                    className={`inline-block border-[3px] border-[#151a46] px-3 py-1 text-xs font-black uppercase tracking-wider ${STAGE_STYLES[stage] || 'bg-white'}`}
                   >
                     {stageLabel(item.stage)}
                   </span>
@@ -112,7 +112,7 @@ export default async function SharedShortlistPage({
                     {skills.map((s, j) => (
                       <span
                         key={j}
-                        className="border-2 border-[#141312] bg-[#FFF6D6] px-2.5 py-1 text-xs font-bold"
+                        className="border-2 border-[#151a46] bg-[#FFF6D6] px-2.5 py-1 text-xs font-bold"
                       >
                         {s}
                       </span>
@@ -121,7 +121,7 @@ export default async function SharedShortlistPage({
                 )}
 
                 {item.note && (
-                  <div className="mt-4 border-l-[3px] border-[#141312] bg-[#F7F3EA] px-4 py-3 text-sm italic">
+                  <div className="mt-4 border-l-[3px] border-[#151a46] bg-[#F7F3EA] px-4 py-3 text-sm italic">
                     {item.note}
                   </div>
                 )}
@@ -129,14 +129,14 @@ export default async function SharedShortlistPage({
             );
           })}
           {items.length === 0 && (
-            <p className="border-[3px] border-[#141312] bg-white p-6 text-center hs">
+            <p className="border-[3px] border-[#151a46] bg-white p-6 text-center hs">
               This shortlist is empty.
             </p>
           )}
         </div>
 
         {/* Footer */}
-        <footer className="fm mt-10 border-[3px] border-[#141312] bg-[#141312] p-5 text-center text-sm font-bold text-white">
+        <footer className="fm mt-10 border-[3px] border-[#151a46] bg-[#151a46] p-5 text-center text-sm font-bold text-white">
           Shared via Cvyon for Recruiters · candidate identities stay private until
           the recruiter unlocks contact.
         </footer>

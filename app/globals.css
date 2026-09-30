@@ -1,8 +1,78 @@
 @import "tailwindcss";
 
+/* ===================================================================
+   CVYON V3 BRAND TOKENS (2026-09-30)
+   Navy/indigo/coral/teal on warm cream. Rounded, soft shadows with
+   hard offset accents. Inter for brand surfaces.
+   =================================================================== */
+@theme {
+  --color-navy: #151a46;
+  --color-brand: #5548f5;
+  --color-brand-deep: #4538e0;
+  --color-coral: #ff604b;
+  --color-teal: #24c9bd;
+  --color-gold: #ffd85a;
+  --color-cream: #f6f5ef;
+  --color-paper: #ffffff;
+  --color-ink: #171a2b;
+  --color-muted: #73778c;
+  --color-line: #dddde5;
+  --color-lavender: #eeecff;
+  --color-mint: #e6faf7;
+  --font-brand: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* v3 brand aliases for plain CSS */
+  --v3-navy: #151a46;
+  --v3-brand: #5548f5;
+  --v3-coral: #ff604b;
+  --v3-teal: #24c9bd;
+  --v3-gold: #ffd85a;
+  --v3-cream: #f6f5ef;
+  --v3-ink: #171a2b;
+  --v3-muted: #73778c;
+  --v3-line: #dddde5;
+}
+
+/* ---- v3 brand surface components --------------------------------- */
+.v3-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border-radius: 10px; padding: 12px 18px; font-weight: 800;
+  font-family: var(--font-brand);
+  border: 1px solid transparent; cursor: pointer; text-decoration: none;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.v3-btn-primary { background: var(--v3-brand); color: #fff; box-shadow: 4px 4px 0 var(--v3-navy); }
+.v3-btn-primary:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--v3-navy); }
+.v3-btn-dark { background: var(--v3-navy); color: #fff; }
+.v3-btn-dark:hover { background: #232a63; }
+.v3-btn-coral { background: var(--v3-coral); color: #fff; box-shadow: 5px 5px 0 #fff; }
+.v3-btn-light { background: #fff; border-color: var(--v3-line); color: var(--v3-navy); }
+.v3-btn-light:hover { border-color: var(--v3-brand); }
+.v3-card {
+  background: #fff; border: 1px solid var(--v3-line); border-radius: 16px;
+  padding: 24px; box-shadow: 0 2px 8px rgba(21, 26, 70, .04);
+}
+.v3-eyebrow {
+  font-size: 11px; font-weight: 800; color: var(--v3-brand);
+  letter-spacing: .16em; text-transform: uppercase;
+  font-family: var(--font-brand);
+}
+.v3-h-display {
+  font-family: var(--font-brand); color: var(--v3-navy);
+  letter-spacing: -.055em; line-height: .95; font-weight: 800;
+}
+.v3-field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #34374d; font-family: var(--font-brand); }
+.v3-field input, .v3-field textarea, .v3-field select {
+  width: 100%; border: 1px solid #d8d8e2; border-radius: 9px;
+  padding: 11px 12px; outline: 0; background: #fff; color: var(--v3-ink);
+  font-family: var(--font-brand); font-size: 14px;
+}
+.v3-field input:focus, .v3-field textarea:focus, .v3-field select:focus {
+  border-color: var(--v3-brand); box-shadow: 0 0 0 3px rgba(85, 72, 245, .12);
 }
 
 @theme inline {
@@ -169,6 +239,6 @@ body {
 
 /* DSN-03: visible keyboard focus everywhere */
 :focus-visible {
-  outline: 3px solid #2233FF;
+  outline: 3px solid #5548f5;
   outline-offset: 2px;
 }

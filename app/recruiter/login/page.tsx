@@ -77,40 +77,40 @@ function RecruiterLoginInner() {
     <RisoPage pageName="recruiter_login">
       <div className="mx-auto flex max-w-md flex-col py-10">
         <div className="fm mb-4 flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.22em]">
-          <span className="inline-flex items-center gap-2 border-[3px] border-[#141312] bg-white px-3 py-1.5 hs">
+          <span className="inline-flex items-center gap-2 border-[3px] border-[#151a46] bg-white px-3 py-1.5 hs">
             § recruiter sign in
           </span>
         </div>
         <h1 className="fd text-5xl leading-[0.86] tracking-[-0.02em] sm:text-6xl">
           Welcome back.
         </h1>
-        <p className="mt-4 text-lg leading-relaxed text-[#141312]/70">
+        <p className="mt-4 text-lg leading-relaxed text-[#151a46]/70">
           Sign in to search the opt-in talent pool.
         </p>
 
-        <div className="mt-8 border-[3px] border-[#141312] bg-white hs p-8">
+        <div className="mt-8 border-[3px] border-[#151a46] bg-white hs p-8">
           {!isReset && (
             <>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => handleOAuth("google")}
                   disabled={loading}
-                  className="flex items-center justify-center gap-2 border-[3px] border-[#141312] bg-white px-4 py-3.5 fh text-xs font-extrabold uppercase tracking-wider transition-all hover:bg-[#141312] hover:text-[#E8E7E1]"
+                  className="flex items-center justify-center gap-2 border-[3px] border-[#151a46] bg-white px-4 py-3.5 fh text-xs font-extrabold uppercase tracking-wider transition-all hover:bg-[#151a46] hover:text-[#f6f5ef]"
                 >
                   Google
                 </button>
                 <button
                   onClick={() => handleOAuth("linkedin_oidc")}
                   disabled={loading}
-                  className="flex items-center justify-center gap-2 border-[3px] border-[#141312] bg-white px-4 py-3.5 fh text-xs font-extrabold uppercase tracking-wider transition-all hover:bg-[#141312] hover:text-[#E8E7E1]"
+                  className="flex items-center justify-center gap-2 border-[3px] border-[#151a46] bg-white px-4 py-3.5 fh text-xs font-extrabold uppercase tracking-wider transition-all hover:bg-[#151a46] hover:text-[#f6f5ef]"
                 >
                   LinkedIn
                 </button>
               </div>
               <div className="my-6 flex items-center gap-4">
-                <span className="h-[3px] flex-1 bg-[#141312]/15" />
-                <span className="fm text-[10px] font-bold uppercase tracking-widest text-[#141312]/50">or email</span>
-                <span className="h-[3px] flex-1 bg-[#141312]/15" />
+                <span className="h-[3px] flex-1 bg-[#151a46]/15" />
+                <span className="fm text-[10px] font-bold uppercase tracking-widest text-[#151a46]/50">or email</span>
+                <span className="h-[3px] flex-1 bg-[#151a46]/15" />
               </div>
             </>
           )}
@@ -118,7 +118,7 @@ function RecruiterLoginInner() {
           {isReset ? (
             <form onSubmit={handleReset} className="space-y-5">
               <h2 className="fh text-xl font-extrabold tracking-tight">Reset Password</h2>
-              <p className="text-sm text-[#141312]/70">
+              <p className="text-sm text-[#151a46]/70">
                 Enter your email and we&apos;ll send you a link to reset your password.
               </p>
               <div>
@@ -128,14 +128,14 @@ function RecruiterLoginInner() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-2 w-full border-[3px] border-[#141312] bg-white px-4 py-3.5 fm text-sm text-[#141312] outline-none transition-all focus:border-[#FF4326] focus:translate-x-[2px] focus:translate-y-[2px]"
+                  className="mt-2 w-full border-[3px] border-[#151a46] bg-white px-4 py-3.5 fm text-sm text-[#151a46] outline-none transition-all focus:border-[#ff604b] focus:translate-x-[2px] focus:translate-y-[2px]"
                   placeholder="you@company.com"
                 />
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="group flex w-full items-center justify-center gap-2 border-[3px] border-[#141312] bg-[#141312] px-7 py-4 fh text-sm font-extrabold uppercase tracking-wider text-[#E8E7E1] hs transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-60 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[7px_7px_0_#141312]"
+                className="group flex w-full items-center justify-center gap-2 border-[3px] border-[#151a46] bg-[#151a46] px-7 py-4 fh text-sm font-extrabold uppercase tracking-wider text-[#f6f5ef] hs transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-60 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[7px_7px_0_#151a46]"
               >
                 {loading ? <Loader2 size={16} className="animate-spin" /> : "Send link"}
                 <ArrowRight size={16} />
@@ -143,7 +143,7 @@ function RecruiterLoginInner() {
               <button
                 type="button"
                 onClick={() => setIsReset(false)}
-                className="fm w-full text-center text-xs font-bold uppercase tracking-wider text-[#141312]/60 hover:text-[#FF4326]"
+                className="fm w-full text-center text-xs font-bold uppercase tracking-wider text-[#151a46]/60 hover:text-[#ff604b]"
               >
                 ← Back to sign in
               </button>
@@ -157,7 +157,7 @@ function RecruiterLoginInner() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-2 w-full border-[3px] border-[#141312] bg-white px-4 py-3.5 fm text-sm text-[#141312] outline-none transition-all focus:border-[#FF4326] focus:translate-x-[2px] focus:translate-y-[2px]"
+                  className="mt-2 w-full border-[3px] border-[#151a46] bg-white px-4 py-3.5 fm text-sm text-[#151a46] outline-none transition-all focus:border-[#ff604b] focus:translate-x-[2px] focus:translate-y-[2px]"
                   placeholder="you@company.com"
                 />
               </div>
@@ -167,7 +167,7 @@ function RecruiterLoginInner() {
                   <button
                     type="button"
                     onClick={() => setIsReset(true)}
-                    className="fm text-[10px] font-bold uppercase tracking-wider text-[#2233FF] hover:text-[#FF4326]"
+                    className="fm text-[10px] font-bold uppercase tracking-wider text-[#5548f5] hover:text-[#ff604b]"
                   >
                     Forgot?
                   </button>
@@ -177,14 +177,14 @@ function RecruiterLoginInner() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="mt-2 w-full border-[3px] border-[#141312] bg-white px-4 py-3.5 fm text-sm text-[#141312] outline-none transition-all focus:border-[#FF4326] focus:translate-x-[2px] focus:translate-y-[2px]"
+                  className="mt-2 w-full border-[3px] border-[#151a46] bg-white px-4 py-3.5 fm text-sm text-[#151a46] outline-none transition-all focus:border-[#ff604b] focus:translate-x-[2px] focus:translate-y-[2px]"
                   placeholder="••••••••"
                 />
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="group flex w-full items-center justify-center gap-2 border-[3px] border-[#141312] bg-[#141312] px-7 py-4 fh text-sm font-extrabold uppercase tracking-wider text-[#E8E7E1] hs transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-60 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[7px_7px_0_#141312]"
+                className="group flex w-full items-center justify-center gap-2 border-[3px] border-[#151a46] bg-[#151a46] px-7 py-4 fh text-sm font-extrabold uppercase tracking-wider text-[#f6f5ef] hs transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-60 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[7px_7px_0_#151a46]"
               >
                 {loading ? <Loader2 size={16} className="animate-spin" /> : "Sign in"}
                 <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
@@ -193,9 +193,9 @@ function RecruiterLoginInner() {
           )}
         </div>
 
-        <p className="mt-6 text-center text-sm text-[#141312]/60">
+        <p className="mt-6 text-center text-sm text-[#151a46]/60">
           No account?{" "}
-          <Link href="/recruiter/signup" className="fh font-extrabold text-[#FF4326] underline-offset-4 hover:underline">
+          <Link href="/recruiter/signup" className="fh font-extrabold text-[#ff604b] underline-offset-4 hover:underline">
             Create one
           </Link>
         </p>

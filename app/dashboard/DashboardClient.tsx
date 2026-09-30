@@ -119,20 +119,20 @@ export default function DashboardClient() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#E8E7E1] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2233FF]" />
+      <div className="min-h-screen bg-[#f6f5ef] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#5548f5]" />
       </div>
     );
   }
 
   return (
-    <div className={cn("cv-riso relative min-h-screen text-[#141312] bg-[#E8E7E1] overflow-x-hidden", body.className)}
-      style={{ ["--ink" as any]: "#141312", ["--verm" as any]: "#FF4326", ["--cob" as any]: "#2233FF", ["--hi" as any]: "#FFE14D", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
+    <div className={cn("cv-riso relative min-h-screen text-[#151a46] bg-[#f6f5ef] overflow-x-hidden", body.className)}
+      style={{ ["--ink" as any]: "#151a46", ["--verm" as any]: "#ff604b", ["--cob" as any]: "#5548f5", ["--hi" as any]: "#ffd85a", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
       <style>{`
         .cv-riso{font-family:var(--fb)} .cv-riso .fd{font-family:var(--fd)} .cv-riso .fh{font-family:var(--fh)} .cv-riso .fm{font-family:var(--fm)}
         .cv-riso .hs{box-shadow:7px 7px 0 var(--ink)} .cv-riso .hs-v{box-shadow:7px 7px 0 var(--verm)} .cv-riso .hs-c{box-shadow:6px 6px 0 var(--cob)}
         .cv-riso .hs-sm{box-shadow:5px 5px 0 var(--ink)}
-        .cv-riso .riso-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: 3px solid var(--ink); background-color: var(--ink); color: #E8E7E1; padding: 0.75rem 1.5rem; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 7px 7px 0 var(--ink); transition: all 0.2s; cursor: pointer; text-decoration: none; }
+        .cv-riso .riso-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: 3px solid var(--ink); background-color: var(--ink); color: #f6f5ef; padding: 0.75rem 1.5rem; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 7px 7px 0 var(--ink); transition: all 0.2s; cursor: pointer; text-decoration: none; }
         .cv-riso .riso-btn:hover { transform: translate(2px, 2px); box-shadow: none; }
         .cv-riso .riso-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: 7px 7px 0 var(--ink); }
         .cv-riso .riso-btn-ghost { background-color: transparent; color: var(--ink); }
@@ -147,11 +147,11 @@ export default function DashboardClient() {
         <div className="max-w-5xl mx-auto space-y-8">
           <div className="flex items-center justify-between">
             <div>
-              <Link href="/build" className="fm inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#141312]/70 hover:text-[#FF4326] mb-4 transition-colors">
+              <Link href="/build" className="fm inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#151a46]/70 hover:text-[#ff604b] mb-4 transition-colors">
                 <ArrowLeft size={16} /> Back to Builder
               </Link>
               <h1 className="fd text-4xl tracking-tight">My Resumes</h1>
-              <p className="text-[#141312]/70 mt-1">Manage, edit, and duplicate your resumes.</p>
+              <p className="text-[#151a46]/70 mt-1">Manage, edit, and duplicate your resumes.</p>
             </div>
             <button
               onClick={handleCreateNew}
@@ -163,8 +163,8 @@ export default function DashboardClient() {
           </div>
 
           {fetchError && (
-            <div className="flex items-center gap-3 border-[3px] border-[#FF4326] bg-white hs p-4">
-              <AlertTriangle size={20} className="text-[#FF4326] shrink-0" />
+            <div className="flex items-center gap-3 border-[3px] border-[#ff604b] bg-white hs p-4">
+              <AlertTriangle size={20} className="text-[#ff604b] shrink-0" />
               <p className="text-sm font-bold">{fetchError}</p>
             </div>
           )}
@@ -177,11 +177,11 @@ export default function DashboardClient() {
 
           {resumes.length === 0 ? (
             <div className="riso-card p-12 text-center flex flex-col items-center">
-              <div className="w-16 h-16 bg-[#E8E7E1] text-[#2233FF] border-[3px] border-[#141312] flex items-center justify-center mb-4">
+              <div className="w-16 h-16 bg-[#f6f5ef] text-[#5548f5] border-[3px] border-[#151a46] flex items-center justify-center mb-4">
                 <FileText size={32} />
               </div>
               <h3 className="fh text-xl font-extrabold mb-2">No resumes yet</h3>
-              <p className="text-[#141312]/70 max-w-sm mb-6">Create your first resume to get started building your professional profile.</p>
+              <p className="text-[#151a46]/70 max-w-sm mb-6">Create your first resume to get started building your professional profile.</p>
               <button
                 onClick={handleCreateNew}
                 className="riso-btn"
@@ -195,7 +195,7 @@ export default function DashboardClient() {
                 <div key={resume.id} className="riso-card p-6 group relative flex flex-col transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
                   <div className="flex-grow">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="w-12 h-12 bg-[#E8E7E1] flex items-center justify-center text-[#141312] border-[3px] border-[#141312]">
+                      <div className="w-12 h-12 bg-[#f6f5ef] flex items-center justify-center text-[#151a46] border-[3px] border-[#151a46]">
                         <FileText size={24} />
                       </div>
                     </div>
@@ -203,23 +203,23 @@ export default function DashboardClient() {
                     <p className="fm text-xs text-gray-600 mb-6">Last updated: {new Date(resume.updated_at).toLocaleDateString()}</p>
                   </div>
 
-                  <div className="flex items-center gap-2 pt-4 border-t-[3px] border-[#141312]/10">
+                  <div className="flex items-center gap-2 pt-4 border-t-[3px] border-[#151a46]/10">
                     <button
                       onClick={() => handleEdit(resume)}
-                      className="flex-1 flex items-center justify-center gap-2 border-[3px] border-[#141312] bg-[#E8E7E1] text-[#141312] px-3 py-2 fh text-xs font-extrabold uppercase tracking-wider transition-all hover:translate-x-[2px] hover:translate-y-[2px]"
+                      className="flex-1 flex items-center justify-center gap-2 border-[3px] border-[#151a46] bg-[#f6f5ef] text-[#151a46] px-3 py-2 fh text-xs font-extrabold uppercase tracking-wider transition-all hover:translate-x-[2px] hover:translate-y-[2px]"
                     >
                       <Edit2 size={16} /> Edit
                     </button>
                     <button
                       onClick={() => handleDuplicate(resume)}
-                      className="p-2 border-[3px] border-[#141312] bg-white text-[#141312] transition-all hover:translate-x-[2px] hover:translate-y-[2px]"
+                      className="p-2 border-[3px] border-[#151a46] bg-white text-[#151a46] transition-all hover:translate-x-[2px] hover:translate-y-[2px]"
                       title="Duplicate"
                     >
                       <Copy size={18} />
                     </button>
                     <button
                       onClick={() => handleDelete(resume.id)}
-                      className="p-2 border-[3px] border-[#141312] bg-white text-[#141312] transition-all hover:bg-[#FF4326] hover:border-[#FF4326] hover:text-white"
+                      className="p-2 border-[3px] border-[#151a46] bg-white text-[#151a46] transition-all hover:bg-[#ff604b] hover:border-[#ff604b] hover:text-white"
                       title="Delete"
                     >
                       <Trash2 size={18} />

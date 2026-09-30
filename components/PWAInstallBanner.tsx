@@ -42,7 +42,7 @@ export function PWAInstallBanner() {
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-50 border-t-2 border-[#E8E7E1]/20 bg-[#141312] text-white px-4 py-3 transition-transform duration-300 ${
+      className={`fixed bottom-0 left-0 right-0 z-50 border-t-2 border-[#f6f5ef]/20 bg-[#151a46] text-white px-4 py-3 transition-transform duration-300 ${
         visible ? "translate-y-0" : "translate-y-full pointer-events-none"
       }`}
     >
