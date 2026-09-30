@@ -12,7 +12,7 @@ import {
   User, Briefcase, GraduationCap, Wrench, Plus, Trash2, Download, X, Eye, Layout,
   FolderOpen, Award, Users, Paintbrush, Sparkles, Loader2, GripVertical, FileText,
   BarChart3, RefreshCw, Undo2, Redo2, ChevronDown, ZoomIn, ZoomOut, Upload, Share2,
-  Pipette, Check, ArrowLeft, ArrowRight
+  Pipette, Check, ArrowLeft, ArrowRight, FileDown
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { clsx, type ClassValue } from 'clsx';
@@ -30,7 +30,6 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { captureTemplateHtml } from '@/lib/docx/capture-template-html';
 
 const ImportResume = dynamic(() => import('@/components/builder/ImportResume').then(m => m.ImportResume), { ssr: false });
-const CoverLetterTab = dynamic(() => import('@/components/builder/CoverLetterTab').then(m => m.CoverLetterTab), { ssr: false });
 const JobsModal = dynamic(() => import('@/components/builder/JobsModal').then(m => m.JobsModal), { ssr: false });
 const PDFPreview = dynamic(() => import('@/components/builder/PDFPreview'), { ssr: false });
 const LiveAtsScore = dynamic(() => import('@/components/builder/LiveAtsScore').then(m => m.LiveAtsScore), { ssr: false });
@@ -959,17 +958,6 @@ export default function FreeCVApp() {
         ))}
       </Card>
     ) : null,
-    'cover-letter': (
-      <Card>
-        <div className="v3-card-head">
-          <div>
-            <h3>Cover Letter</h3>
-            <p className="v3-card-hint">Generate a tailored cover letter.</p>
-          </div>
-        </div>
-        <CoverLetterTab />
-      </Card>
-    ),
   };
 
   // v3 wizard: which section blocks render under each step.
@@ -983,7 +971,6 @@ export default function FreeCVApp() {
       sectionBlocks.projects,
       sectionBlocks.certifications,
       sectionBlocks.references,
-      sectionBlocks['cover-letter'],
     ].filter(Boolean),
   };
 
@@ -1010,9 +997,8 @@ export default function FreeCVApp() {
           <span className="v3-autosave-pill"><span className="v3-dot" /> Auto-saved</span>
           <button className="v3-iconbtn" onClick={() => useResumeStore.temporal.getState().undo()} disabled={undoDepth === 0} title="Undo (Ctrl+Z)" aria-label="Undo"><Undo2 size={15} /></button>
           <button className="v3-iconbtn" onClick={() => useResumeStore.temporal.getState().redo()} disabled={redoDepth === 0} title="Redo (Ctrl+Y)" aria-label="Redo"><Redo2 size={15} /></button>
-          <button className="v3-pill" onClick={() => setIsGalleryOpen(true)}><Layout size={14} /> Design</button>
           <button className="v3-dl v3-dl-docx" onClick={handleDocxExport} title="Download Word document"><FileText size={14} /> Download DOCX</button>
-          <button className="v3-dl v3-dl-pdf" onClick={handleDownload}>Download PDF</button>
+          <button className="v3-dl v3-dl-pdf" onClick={handleDownload}><FileDown size={14} /> Download PDF</button>
         </div>
       </header>
 
