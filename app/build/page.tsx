@@ -274,16 +274,12 @@ export default function FreeCVApp() {
     const i = Math.max(0, Math.min(WIZARD_STEPS.length - 1, index));
     setActiveStep(i);
     requestAnimationFrame(() => {
-      // Scroll only the editor column (desktop) or the window (mobile) —
-      // never the whole page on desktop, which would blank the preview.
+      // One step is visible at a time, so reset the editor column (desktop)
+      // or the window (mobile) to the top — never the whole page on desktop,
+      // which would blank the preview.
       const editor = document.querySelector('.v3-editor');
-      const el = document.getElementById(`v3-step-${WIZARD_STEPS[i].id}`);
-      if (editor && el && window.innerWidth >= 1024) {
-        const top = el.getBoundingClientRect().top - editor.getBoundingClientRect().top + editor.scrollTop - 16;
-        editor.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      if (editor) editor.scrollTo({ top: 0 });
+      else window.scrollTo({ top: 0 });
     });
   };
 
@@ -1011,7 +1007,7 @@ export default function FreeCVApp() {
           ))}
           <div className="relative" title="Pick any custom color">
             <input type="color" value={data.theme?.color || '#2563eb'} onChange={(e) => setThemeColor(e.target.value)}
-              className="w-10 h-10 rounded-full cursor-pointer opacity-0 absolute inset-0 z-10" aria-label="Pick a custom color" />
+              className="v3-color-input" aria-label="Pick a custom color" />
             <div
               className={cn("w-10 h-10 rounded-full shadow-sm border-2 flex items-center justify-center transition-transform", isCustomColor ? "border-[#151a46] scale-110" : "border-transparent hover:scale-105")}
               style={{ background: 'conic-gradient(from 20deg, #ef4444, #f59e0b, #84cc16, #06b6d4, #3b82f6, #a855f7, #ef4444)' }}>
@@ -1066,7 +1062,7 @@ export default function FreeCVApp() {
         </div>
         <div className="v3-top-right">
           <span className="v3-autosave-pill"><span className="v3-dot" /> Auto-saved</span>
-          <button className="v3-pill" onClick={() => toast.success('Draft saved — auto-save is on.')}>Save draft</button>
+          <button className="v3-pill" onClick={() => setIsGalleryOpen(true)}><Layout size={14} /> Design</button>
           <button className="v3-pill" onClick={() => { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }}>Preview</button>
           <button className="v3-pill" onClick={handleDocxExport} title="Download Word document">DOCX</button>
           <button className="v3-primary" onClick={handleDownload}>Download PDF</button>
@@ -1393,9 +1389,16 @@ export default function FreeCVApp() {
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 max-w-[1600px] mx-auto">
               {(Object.keys(templates) as TemplateKey[]).map((key) => {
                 const isActive = data.templateId === key;
+                const selectTemplate = () => { trackEvent('template_selected', key); setTemplateId(key); setIsGalleryOpen(false); };
                 return (
-                  <button key={key} onClick={() => { trackEvent('template_selected', key); setTemplateId(key); setIsGalleryOpen(false); }}
-                    className={cn("flex flex-col text-left group bg-white border rounded-xl overflow-hidden transition-all relative", isActive ? "border-[#5548f5] shadow-[0_8px_24px_rgba(85,72,245,.25)] scale-[1.02]" : "border-[#dddde5] hover:border-[#151a46] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(21,26,70,.1)]")}
+                  <div key={key} role="button" tabIndex={0}
+                    onClick={selectTemplate}
+                    onKeyDown={(e) => {
+                      const t = e.target as HTMLElement;
+                      if (t.closest('[data-colorctl]')) return;
+                      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectTemplate(); }
+                    }}
+                    className={cn("flex flex-col text-left group bg-white border rounded-xl overflow-hidden transition-all relative cursor-pointer", isActive ? "border-[#5548f5] shadow-[0_8px_24px_rgba(85,72,245,.25)] scale-[1.02]" : "border-[#dddde5] hover:border-[#151a46] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(21,26,70,.1)]")}
                     style={{ contentVisibility: 'auto', containIntrinsicSize: '300px 400px' }}>
                     <HTMLThumbnail Tmpl={htmlTemplates[key as keyof typeof htmlTemplates]} data={data} />
                     {isActive && (
@@ -1403,12 +1406,29 @@ export default function FreeCVApp() {
                         <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" /> Active
                       </div>
                     )}
-                    <div className="p-4 border-t border-[#dddde5] bg-white z-10 w-full flex items-center justify-between">
-                      <div className="truncate pr-2">
-                        <h3 className="font-brand font-bold text-sm lg:text-base leading-tight truncate text-[#151a46]">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
+                    <div className="px-5 py-4 border-t border-[#dddde5] bg-white z-10 w-full">
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1.5 shrink-0" data-colorctl onClick={(e) => e.stopPropagation()} title="Pick this template's color">
+                          {['#000000', '#2563eb', '#16a34a', '#dc2626', '#9333ea', '#ea580c'].map((hex) => (
+                            <button key={hex} type="button" onClick={() => setThemeColor(hex)} aria-label={`Use color ${hex}`}
+                              className={cn("w-6 h-6 rounded-full border-2 transition-transform hover:scale-110", (data.theme?.color || '').toLowerCase() === hex ? "border-[#151a46] scale-110" : "border-black/10")}
+                              style={{ backgroundColor: hex }} />
+                          ))}
+                          <div className="relative w-6 h-6" title="Pick any custom color">
+                            <input type="color" value={data.theme?.color || '#2563eb'} onChange={(e) => setThemeColor(e.target.value)}
+                              className="v3-color-input" aria-label="Pick a custom color" />
+                            <div className="w-6 h-6 rounded-full border-2 border-black/10 flex items-center justify-center pointer-events-none"
+                              style={{ background: 'conic-gradient(from 20deg, #ef4444, #f59e0b, #84cc16, #06b6d4, #3b82f6, #a855f7, #ef4444)' }}>
+                              <Pipette size={11} className="text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]" />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-brand font-bold text-sm lg:text-base leading-tight truncate text-[#151a46]">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
+                        </div>
                       </div>
                     </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>
