@@ -1074,7 +1074,7 @@ export default function FreeCVApp() {
           <div className="v3-editor-inner" id="builder-editor-top">
             <div className="v3-mobilebar">
               <div><strong>Step {activeStep + 1} of 6</strong><br /><small>{WIZARD_STEPS[activeStep].label}</small></div>
-              <button className="v3-primary" onClick={() => { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }}>Preview</button>
+              <button className="v3-primary" onClick={() => setIsGalleryOpen(true)}>Templates</button>
             </div>
 
             <p className="v3-eyebrow">Step {activeStep + 1} of 6</p>
@@ -1245,7 +1245,7 @@ export default function FreeCVApp() {
             <strong>Live preview</strong>
             <div className="v3-preview-actions">
               <button className="v3-pill-sm" onClick={() => setIsGalleryOpen(true)} title="Change template">
-                <Layout size={14} /> Design
+                <Layout size={14} /> Templates
               </button>
               <button className="v3-pill-sm" onClick={() => setIsATSOpen(true)} title="Grade against a job description">
                 <BarChart3 size={14} /> ATS
