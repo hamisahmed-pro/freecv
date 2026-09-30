@@ -200,26 +200,30 @@ function isVisibleTextColor(v: string): boolean {
  * --theme-color custom property (set by HTMLPreview).
  */
 export function findTemplateRoot(): HTMLElement | null {
-  const panel = document.getElementById('preview-panel');
-  if (!panel) return null;
   // Preferred: explicit stage marker (added in HTMLPreview).
-  let stage = panel.querySelector<HTMLElement>('[data-cvyon-template-stage]');
-  if (!stage) {
-    // Fallback: the 816px wrapper carrying --theme-color in its style.
-    const cands = panel.querySelectorAll<HTMLElement>('div[style*="--theme-color"]');
-    for (const c of cands) {
-      if (c.firstElementChild instanceof HTMLElement) {
-        stage = c;
-        break;
-      }
-    }
+  // NOTE: several stage markers can exist in the DOM at once (desktop
+  // preview, mobile preview overlay). The old code searched only inside
+  // #preview-panel and took the first marker in DOM order — the desktop
+  // preview stage, which is display:none on mobile — so mobile DOCX exports
+  // silently fell back to the generic builder even with the preview overlay
+  // open. Search the whole document and pick the first stage that is
+  // actually visible/measurable instead.
+  const stages = document.querySelectorAll<HTMLElement>('[data-cvyon-template-stage]');
+  for (const stage of stages) {
+    const root = stage.firstElementChild;
+    if (root instanceof HTMLElement && root.offsetWidth > 0) return root;
   }
-  const root = stage?.firstElementChild;
-  if (!(root instanceof HTMLElement)) return null;
-  // If the preview is display:none (e.g. mobile with preview closed),
+  // Fallback: the 816px wrapper carrying --theme-color in its style.
+  const panel = document.getElementById('preview-panel');
+  const scope = panel || document.documentElement;
+  const cands = scope.querySelectorAll<HTMLElement>('div[style*="--theme-color"]');
+  for (const c of cands) {
+    const root = c.firstElementChild;
+    if (root instanceof HTMLElement && root.offsetWidth > 0) return root;
+  }
+  // If no preview is visible (e.g. mobile with preview closed),
   // computed geometry is 0 and capture would be garbage.
-  if (root.offsetWidth === 0) return null;
-  return root;
+  return null;
 }
 
 interface WalkPair {

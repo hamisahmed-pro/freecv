@@ -33,7 +33,6 @@ const ImportResume = dynamic(() => import('@/components/builder/ImportResume').t
 const CoverLetterTab = dynamic(() => import('@/components/builder/CoverLetterTab').then(m => m.CoverLetterTab), { ssr: false });
 const JobsModal = dynamic(() => import('@/components/builder/JobsModal').then(m => m.JobsModal), { ssr: false });
 const PDFPreview = dynamic(() => import('@/components/builder/PDFPreview'), { ssr: false });
-const PDFDownloadButton = dynamic(() => import('@/components/builder/PDFDownloadButton'), { ssr: false });
 const LiveAtsScore = dynamic(() => import('@/components/builder/LiveAtsScore').then(m => m.LiveAtsScore), { ssr: false });
 
 function cn(...inputs: ClassValue[]) {
@@ -196,7 +195,6 @@ export default function FreeCVApp() {
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [generatingExpId, setGeneratingExpId] = useState<string | null>(null);
   const [polishingExpId, setPolishingExpId] = useState<string | null>(null);
-  const [isImporting, setIsImporting] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isJobsModalOpen, setIsJobsModalOpen] = useState(false);
 
@@ -218,8 +216,19 @@ export default function FreeCVApp() {
 
   const [suggestedSkills, setSuggestedSkills] = useState<string[]>([]);
   const [isLoadingSkills, setIsLoadingSkills] = useState(false);
-  const [isPublishing, setIsPublishing] = useState(false);
-  const [publishedUrl, setPublishedUrl] = useState('');
+
+  // Undo/redo availability from the zundo temporal store (drives the
+  // header buttons' disabled state; keyboard shortcuts work regardless).
+  const undoDepth = React.useSyncExternalStore(
+    useResumeStore.temporal.subscribe,
+    () => useResumeStore.temporal.getState().pastStates.length,
+    () => 0
+  );
+  const redoDepth = React.useSyncExternalStore(
+    useResumeStore.temporal.subscribe,
+    () => useResumeStore.temporal.getState().futureStates.length,
+    () => 0
+  );
 
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   // v3 concept: live-preview zoom controls (-/+) in the preview bar.
@@ -277,8 +286,10 @@ export default function FreeCVApp() {
       // One step is visible at a time, so reset the editor column (desktop)
       // or the window (mobile) to the top — never the whole page on desktop,
       // which would blank the preview.
-      const editor = document.querySelector('.v3-editor');
-      if (editor) editor.scrollTo({ top: 0 });
+      const editor = document.querySelector('.v3-editor') as HTMLElement | null;
+      // On mobile .v3-editor has overflow:visible, so editor.scrollTo() is a
+      // no-op there — fall back to the window scroll in that case.
+      if (editor && getComputedStyle(editor).overflowY !== 'visible') editor.scrollTo({ top: 0 });
       else window.scrollTo({ top: 0 });
     });
   };
@@ -322,6 +333,11 @@ export default function FreeCVApp() {
     if (type === 'experience') reorderExperience(source.index, destination.index);
     else if (type === 'education') reorderEducation(source.index, destination.index);
     else if (type === 'skills') reorderSkills(source.index, destination.index);
+    else if (type === 'custom-item') {
+      // droppableId is `custom-${section.id}`
+      const sectionId = String(result.droppableId || '').replace(/^custom-/, '');
+      if (sectionId) reorderCustomSectionItems(sectionId, source.index, destination.index);
+    }
   };
 
   const handlePolishExperience = async (id: string, currentText: string) => {
@@ -339,22 +355,6 @@ export default function FreeCVApp() {
       else if (json.error) toast.error(json.error);
     } catch (err) { console.error(err); toast.error("Failed to polish text. Please try again."); }
     finally { setPolishingExpId(null); }
-  };
-
-  const handleLinkedInImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setIsImporting(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await fetch('/api/ai/parse-linkedin', { method: 'POST', body: formData });
-      const resData = await res.json();
-      if (res.ok) setAllData(resData);
-      else throw new Error(resData.error || 'Failed to parse LinkedIn PDF');
-    } catch (err: any) { toast.error("LinkedIn Import failed: " + err.message); }
-    setIsImporting(false);
-    e.target.value = '';
   };
 
   const handleGenerateSummary = async () => {
@@ -449,9 +449,9 @@ export default function FreeCVApp() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) { e.preventDefault(); useResumeStore.temporal.getState().undo(); }
       if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); useResumeStore.temporal.getState().redo(); }
-      // Escape dismisses the ATS grader / AI rewriter overlays
-      // (the jobs modal handles its own Escape via its portal).
-      if (e.key === 'Escape') { setIsATSOpen(false); setIsRewriterOpen(false); }
+      // Escape dismisses the ATS grader / AI rewriter / template gallery /
+      // download overlays (the jobs modal handles its own Escape via its portal).
+      if (e.key === 'Escape') { setIsATSOpen(false); setIsRewriterOpen(false); setIsGalleryOpen(false); setIsDownloadModalOpen(false); }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -491,9 +491,11 @@ export default function FreeCVApp() {
         updateSummary(json.summary);
         if (json.experience) json.experience.forEach((exp: any) => { if (exp.id && exp.description) updateExperience(exp.id, { description: exp.description }); });
       }
+      // Only close on success — a failed rewrite keeps the modal open so the
+      // user can retry without losing their tone selection.
+      setIsRewriterOpen(false);
     } catch (err: any) { toast.error('Rewrite failed: ' + err.message); }
     setIsRewriting(false);
-    setIsRewriterOpen(false);
   };
 
   const handleSuggestSkills = async () => {
@@ -513,19 +515,6 @@ export default function FreeCVApp() {
       }
     } catch (err) { console.error('Skill suggestion failed', err); }
     setIsLoadingSkills(false);
-  };
-
-  const handlePublish = async () => {
-    setIsPublishing(true);
-    setPublishedUrl('');
-    try {
-      const res = await fetch('/api/resume/publish', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.error || 'Failed to publish');
-      setPublishedUrl(result.url);
-      trackEvent('milestone_published_web', data.templateId);
-    } catch (err: any) { toast.error('Publish failed: ' + err.message); }
-    finally { setIsPublishing(false); }
   };
 
   const getTelemetryMetadata = (format: 'pdf' | 'docx') => {
@@ -983,48 +972,6 @@ export default function FreeCVApp() {
     ),
   };
 
-  // Design card (theme accent + density) — lives in the Extras step of the
-  // v3 wizard. The final swatch is a true color-picker affordance: a
-  // rainbow ring with a pipette icon over a native <input type="color">.
-  const PRESET_COLORS = ['#000000', '#2563eb', '#16a34a', '#dc2626', '#9333ea', '#ea580c', '#0d9488', '#475569'];
-  const isCustomColor = !PRESET_COLORS.includes(data.theme?.color || '');
-  const designBlock = (
-    <Card>
-      <div className="v3-card-head">
-        <div>
-          <h3>Design</h3>
-          <p className="v3-card-hint">Accent color and resume density. Change the layout from the preview panel.</p>
-        </div>
-        <button onClick={() => setIsGalleryOpen(true)} className="v3-ai-btn">
-          <Layout size={14} /> Change template
-        </button>
-      </div>
-        <div className="flex flex-wrap gap-3">
-          {PRESET_COLORS.map((hex) => (
-            <button key={hex} onClick={() => setThemeColor(hex)}
-              className={cn("w-10 h-10 rounded-full shadow-sm border-2 transition-transform", data.theme?.color === hex ? "border-[#151a46] scale-110" : "border-transparent hover:scale-105")}
-              style={{ backgroundColor: hex }} aria-label={`Select color ${hex}`} />
-          ))}
-          <div className="relative" title="Pick any custom color">
-            <input type="color" value={data.theme?.color || '#2563eb'} onChange={(e) => setThemeColor(e.target.value)}
-              className="v3-color-input" aria-label="Pick a custom color" />
-            <div
-              className={cn("w-10 h-10 rounded-full shadow-sm border-2 flex items-center justify-center transition-transform", isCustomColor ? "border-[#151a46] scale-110" : "border-transparent hover:scale-105")}
-              style={{ background: 'conic-gradient(from 20deg, #ef4444, #f59e0b, #84cc16, #06b6d4, #3b82f6, #a855f7, #ef4444)' }}>
-              <Pipette size={16} className="text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]" />
-            </div>
-          </div>
-        </div>
-        {isCustomColor && (
-          <p className="font-brand text-[10px] font-bold uppercase tracking-[0.18em] text-[#151a46]/50 mt-4">
-            Custom color <span className="text-[#151a46]">{data.theme?.color}</span>
-          </p>
-        )}
-      </Card>
-  );
-
-  const SelectedTemplate = templates[data.templateId] || templates.Executive;
-
   // v3 wizard: which section blocks render under each step.
   const stepBlocks: Record<string, React.ReactNode[]> = {
     basics: [sectionBlocks.basics],
@@ -1037,7 +984,6 @@ export default function FreeCVApp() {
       sectionBlocks.certifications,
       sectionBlocks.references,
       sectionBlocks['cover-letter'],
-      designBlock,
     ].filter(Boolean),
   };
 
@@ -1062,6 +1008,8 @@ export default function FreeCVApp() {
         </div>
         <div className="v3-top-right">
           <span className="v3-autosave-pill"><span className="v3-dot" /> Auto-saved</span>
+          <button className="v3-iconbtn" onClick={() => useResumeStore.temporal.getState().undo()} disabled={undoDepth === 0} title="Undo (Ctrl+Z)" aria-label="Undo"><Undo2 size={15} /></button>
+          <button className="v3-iconbtn" onClick={() => useResumeStore.temporal.getState().redo()} disabled={redoDepth === 0} title="Redo (Ctrl+Y)" aria-label="Redo"><Redo2 size={15} /></button>
           <button className="v3-pill" onClick={() => setIsGalleryOpen(true)}><Layout size={14} /> Design</button>
           <button className="v3-dl v3-dl-docx" onClick={handleDocxExport} title="Download Word document"><FileText size={14} /> Download DOCX</button>
           <button className="v3-dl v3-dl-pdf" onClick={handleDownload}>Download PDF</button>
@@ -1101,20 +1049,6 @@ export default function FreeCVApp() {
             <p className="v3-eyebrow">Step {activeStep + 1} of 6</p>
             <h2 className="v3-heading">{WIZARD_STEPS[activeStep].heading}</h2>
             <p className="v3-sub">{WIZARD_STEPS[activeStep].sub}</p>
-
-            {publishedUrl && (
-              <div className="v3-card" style={{ borderColor: '#0E8A4B' }}>
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-[#0E8A4B] font-bold text-sm">Your resume is live!</p>
-                    <a href={publishedUrl} target="_blank" rel="noreferrer" className="text-[#0E8A4B] text-xs hover:underline mt-1 block">{publishedUrl}</a>
-                  </div>
-                  <button onClick={() => { navigator.clipboard.writeText(publishedUrl); toast.success('Copied!'); }} className="v3-ai-btn">
-                    Copy link
-                  </button>
-                </div>
-              </div>
-            )}
 
             <DragDropContext onDragEnd={onDragEnd}>
               {WIZARD_STEPS.map((s, i) => (
@@ -1238,15 +1172,24 @@ export default function FreeCVApp() {
               </p>
             </div>
 
-            {/* Mobile continue */}
-            <button
-              className="v3-primary v3-mobile-next"
-              onClick={() => {
-                if (activeStep < 5) goStep(activeStep + 1);
-                else { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }
-              }}>
-              {activeStep === 5 ? 'Review my resume \u2192' : `Continue to ${WIZARD_STEPS[activeStep + 1].label} \u2192`}
-            </button>
+            {/* Mobile step navigation: Back + Continue */}
+            <div className="v3-mobile-nav">
+              {activeStep > 0 && (
+                <button
+                  className="v3-pill v3-mobile-back"
+                  onClick={() => goStep(activeStep - 1)}>
+                  ← Back
+                </button>
+              )}
+              <button
+                className="v3-primary v3-mobile-next"
+                onClick={() => {
+                  if (activeStep < 5) goStep(activeStep + 1);
+                  else { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }
+                }}>
+                {activeStep === 5 ? 'Review my resume \u2192' : `Continue to ${WIZARD_STEPS[activeStep + 1].label} \u2192`}
+              </button>
+            </div>
 
             <div className="v3-desktop-only">
               <div className="v3-newsletter">
@@ -1300,9 +1243,20 @@ export default function FreeCVApp() {
             </div>
             </div>
           </div>
-          {/* Print: render the paper without the chrome */}
-          <div className="hidden print:block">
-            <HTMLPreview Tmpl={htmlTemplates[data.templateId as keyof typeof htmlTemplates]} data={previewData} />
+          {/* Print: render the template directly, without the screen preview
+              chrome (HTMLPreview's cream background, padding, scale transform,
+              and fixed 1056px height would otherwise clip multi-page resumes
+              and print the preview frame into the PDF). The --theme-color
+              variable is set here so the printed PDF matches the on-screen
+              preview accents. */}
+          <div
+            className="hidden print:block print-resume"
+            style={{ '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
+          >
+            {(() => {
+              const PrintTmpl = htmlTemplates[data.templateId as keyof typeof htmlTemplates];
+              return <PrintTmpl data={previewData} />;
+            })()}
           </div>
         </section>
       </div>
@@ -1359,13 +1313,12 @@ export default function FreeCVApp() {
             <button onClick={() => setMobileZoom(!mobileZoom)} className="v3-pill-sm">
               {mobileZoom ? <ZoomOut size={14} /> : <ZoomIn size={14} />} Zoom
             </button>
-            <PDFDownloadButton
-              TemplateComponent={SelectedTemplate}
-              data={previewData}
-              themeColor={data.theme?.color || '#2563eb'}
-              onDownloadComplete={() => setIsJobsModalOpen(true)}
-              className="v3-primary"
-            />
+            {/* Unified PDF path: the browser-print render of the exact HTML
+                template the user sees (US Letter, theme color applied) —
+                the same engine as the desktop "Download PDF" button. */}
+            <button onClick={handleDownload} className="v3-primary">
+              <Download size={14} /> PDF
+            </button>
             <button onClick={handleDocxExport} className="v3-pill-sm">
               <FileText size={14} /> DOCX
             </button>

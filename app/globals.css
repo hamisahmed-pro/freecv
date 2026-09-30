@@ -160,23 +160,18 @@ body {
     z-index: auto !important;
   }
 
-  /* --- Layer 5: The resume wrapper <div> (.print-safe-content) ---
-     Has: shrink-0, shadow-2xl, transform: scale(...), margin/padding
-     The transform is the WORST offender — it creates a containing block
-     that prevents page breaks entirely */
-  .print-safe-content {
-    transform: none !important;
-    zoom: 1 !important;
-    position: static !important;
-    margin: 0 !important;
+  /* --- Layer 5: The print-only resume wrapper (.print-resume) ---
+     Renders the selected template directly, without the screen preview
+     chrome (no scale transform, no fixed height, no cream background).
+     Keeps the 8.5in page width and lets content flow across pages. */
+  .print-resume {
+    display: block !important;
+    width: 8.5in !important;
+    max-width: 8.5in !important;
+    margin: 0 auto !important;
     padding: 0 !important;
-    width: auto !important;
-    height: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
+    background: white !important;
     overflow: visible !important;
-    box-shadow: none !important;
-    flex-shrink: 1 !important;
   }
 
   .preview-scale-frame {
@@ -195,7 +190,7 @@ body {
   /* --- Layer 6: The actual template root div ---
      Has: w-[8.5in], min-w-[8.5in], min-h-[11in], shadow-*
      Must keep width but allow height to grow and pages to break */
-  .print-safe-content > div {
+  .print-resume > div {
     width: 8.5in !important;
     min-width: 0 !important;
     height: auto !important;
@@ -203,11 +198,12 @@ body {
     max-height: none !important;
     overflow: visible !important;
     box-shadow: none !important;
+    border-radius: 0 !important;
     margin: 0 auto !important;
   }
 
   /* --- Layer 7: Allow page breaks everywhere inside the template --- */
-  .print-safe-content * {
+  .print-resume * {
     overflow: visible !important;
   }
 
@@ -220,18 +216,18 @@ body {
 
   /* --- Layer 9: Multi-page Smart Pagination ---
      Prevent page breaks inside critical elements like headings, paragraphs, and list items. */
-  .print-safe-content h1, 
-  .print-safe-content h2, 
-  .print-safe-content h3, 
-  .print-safe-content p,
-  .print-safe-content li {
+  .print-resume h1, 
+  .print-resume h2, 
+  .print-resume h3, 
+  .print-resume p,
+  .print-resume li {
     page-break-inside: avoid;
     break-inside: avoid;
   }
 
   /* Keep only explicitly atomic rows together; large layout wrappers must break naturally. */
-  .print-safe-content article,
-  .print-safe-content .break-inside-avoid {
+  .print-resume article,
+  .print-resume .break-inside-avoid {
     page-break-inside: avoid;
     break-inside: avoid;
   }
@@ -258,6 +254,10 @@ body {
 @keyframes v3Pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
 .v3-pill { border: 1px solid #dddde5; background: #fff; color: #151a46; border-radius: 9px; padding: 9px 14px; font-weight: 700; font-size: 13px; cursor: pointer; transition: border-color .15s, background .15s; white-space: nowrap; display: inline-flex; align-items: center; gap: 7px; }
 .v3-pill:hover { border-color: #151a46; }
+/* Header undo/redo icon buttons */
+.v3-iconbtn { border: 1px solid #dddde5; background: #fff; color: #151a46; border-radius: 9px; padding: 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: border-color .15s, opacity .15s; }
+.v3-iconbtn:hover:not(:disabled) { border-color: #151a46; }
+.v3-iconbtn:disabled { opacity: .35; cursor: default; }
 .v3-primary { border: 0; background: #5548f5; color: #fff; border-radius: 9px; padding: 10px 16px; font-weight: 800; font-size: 13px; cursor: pointer; box-shadow: 4px 4px 0 #151a46; transition: box-shadow .15s, transform .15s; white-space: nowrap; }
 .v3-primary:hover { box-shadow: 0 0 0 #151a46; transform: translate(4px, 4px); }
 .v3-primary:active { transform: translate(4px, 4px) scale(.98); }
@@ -360,14 +360,14 @@ body {
 .v3-score { position: fixed; right: 24px; bottom: 20px; z-index: 30; background: #151a46; color: #fff; border-radius: 12px; padding: 8px 12px; box-shadow: 0 8px 30px rgba(21,26,70,.3); }
 
 /* Mobile-only chrome */
-.v3-mobilebar, .v3-mobiletabs, .v3-mobile-next { display: none; }
+.v3-mobilebar, .v3-mobiletabs, .v3-mobile-next, .v3-mobile-nav, .v3-mobile-back { display: none; }
 .v3-preview-overlay { display: none; }
 
 @media (max-width: 1023.98px) {
   .v3-workspace { display: block; }
   .v3-sidebar { display: none; }
   .v3-top { height: 58px; padding: 0 14px; }
-  .v3-crumb, .v3-top-right .v3-pill, .v3-autosave-pill { display: none; }
+  .v3-crumb, .v3-top-right .v3-pill, .v3-top-right .v3-iconbtn, .v3-autosave-pill { display: none; }
   .v3-top .v3-dl { display: none; }
   .v3-editor { padding: 20px 14px 130px; overflow: visible; }
   .v3-editor-inner { max-width: none; }
@@ -378,6 +378,9 @@ body {
   .v3-mobilebar strong { font-size: 14px; }
   .v3-mobilebar small { opacity: .7; font-size: 12px; }
   .v3-mobile-next { display: block; width: 100%; margin-top: 12px; padding: 14px 16px; font-size: 14px; }
+  .v3-mobile-nav { display: flex; gap: 10px; margin-top: 12px; }
+  .v3-mobile-nav .v3-mobile-next { margin-top: 0; }
+  .v3-mobile-back { display: block; padding: 14px 18px; font-size: 14px; white-space: nowrap; }
   .v3-eyebrow { display: none; }
   .v3-mobiletabs { display: grid; position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #dddde5; grid-template-columns: repeat(4, 1fr); z-index: 40; padding-bottom: env(safe-area-inset-bottom); }
   .v3-mobiletabs button { border: 0; background: #fff; font-size: 11px; color: #777b91; padding: 10px 4px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; font-weight: 600; }
