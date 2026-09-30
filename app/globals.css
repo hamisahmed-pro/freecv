@@ -261,6 +261,12 @@ body {
 .v3-primary { border: 0; background: #5548f5; color: #fff; border-radius: 9px; padding: 10px 16px; font-weight: 800; font-size: 13px; cursor: pointer; box-shadow: 4px 4px 0 #151a46; transition: box-shadow .15s, transform .15s; white-space: nowrap; }
 .v3-primary:hover { box-shadow: 0 0 0 #151a46; transform: translate(4px, 4px); }
 .v3-primary:active { transform: translate(4px, 4px) scale(.98); }
+/* Colored download buttons: PDF = coral orange, DOCX = indigo blue */
+.v3-dl { border: 0; color: #fff; border-radius: 9px; padding: 10px 16px; font-weight: 800; font-size: 13px; cursor: pointer; box-shadow: 4px 4px 0 #151a46; transition: box-shadow .15s, transform .15s; white-space: nowrap; display: inline-flex; align-items: center; gap: 7px; }
+.v3-dl:hover { box-shadow: 0 0 0 #151a46; transform: translate(4px, 4px); }
+.v3-dl:active { transform: translate(4px, 4px) scale(.98); }
+.v3-dl-pdf { background: #ff604b; }
+.v3-dl-docx { background: #5548f5; }
 
 /* Workspace grid */
 .v3-workspace { flex: 1; min-height: 0; display: grid; grid-template-columns: 220px minmax(0,1fr) minmax(0,43%); }
@@ -296,6 +302,12 @@ body {
 /* Plain CSS: Tailwind v4 silently skips emitting .opacity-0 in this build,
    which would leave native color inputs visibly stacked over their swatches. */
 .v3-color-input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+/* Sliding consent toggle — plain CSS because Tailwind v4 also drops the
+   translate-x-* utilities this toggle relied on (knob never moved). */
+.v3-switch { width: 48px; height: 26px; border-radius: 999px; background: #d1d5db; border: 0; padding: 0; position: relative; flex-shrink: 0; cursor: pointer; transition: background .25s ease; }
+.v3-switch[aria-checked="true"] { background: #5548f5; }
+.v3-switch-knob { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .25s ease; }
+.v3-switch[aria-checked="true"] .v3-switch-knob { transform: translateX(22px); }
 @keyframes v3StepIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 .v3-block { margin-bottom: 15px; }
 
@@ -356,7 +368,7 @@ body {
   .v3-sidebar { display: none; }
   .v3-top { height: 58px; padding: 0 14px; }
   .v3-crumb, .v3-top-right .v3-pill, .v3-autosave-pill { display: none; }
-  .v3-top .v3-primary { padding: 9px 12px; font-size: 12px; }
+  .v3-top .v3-dl { display: none; }
   .v3-editor { padding: 20px 14px 130px; overflow: visible; }
   .v3-editor-inner { max-width: none; }
   .v3-heading { font-size: 27px; }
