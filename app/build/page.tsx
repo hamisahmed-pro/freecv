@@ -1391,8 +1391,11 @@ export default function FreeCVApp() {
                         <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" /> Active
                       </div>
                     )}
-                    <div className="px-5 py-4 border-t border-[#dddde5] bg-white z-10 w-full">
-                      <div className="flex items-center gap-3">
+                    <div className="px-4 py-3 border-t border-[#dddde5] bg-white z-10 w-full">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-brand font-bold text-sm lg:text-base leading-tight truncate text-[#151a46]">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
+                        </div>
                         <div className="flex items-center gap-1.5 shrink-0" data-colorctl onClick={(e) => e.stopPropagation()} title="Pick this template's color">
                           {['#000000', '#2563eb', '#16a34a', '#dc2626', '#9333ea', '#ea580c'].map((hex) => (
                             <button key={hex} type="button" onClick={() => setThemeColor(hex)} aria-label={`Use color ${hex}`}
@@ -1407,9 +1410,6 @@ export default function FreeCVApp() {
                               <Pipette size={11} className="text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]" />
                             </div>
                           </div>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <h3 className="font-brand font-bold text-sm lg:text-base leading-tight truncate text-[#151a46]">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
                         </div>
                       </div>
                     </div>

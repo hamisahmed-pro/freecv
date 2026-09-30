@@ -390,9 +390,10 @@ body {
   .v3-mobile-nav .v3-mobile-next { margin-top: 0; }
   .v3-mobile-back { display: block; padding: 14px 18px; font-size: 14px; white-space: nowrap; }
   .v3-eyebrow { display: none; }
-  .v3-mobiletabs { display: grid; position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #dddde5; grid-template-columns: repeat(4, 1fr); z-index: 40; padding-bottom: env(safe-area-inset-bottom); }
-  .v3-mobiletabs button { border: 0; background: #fff; font-size: 11px; color: #777b91; padding: 10px 4px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; font-weight: 600; }
-  .v3-mobiletabs button.active { color: #151a46; font-weight: 900; }
+  .v3-mobiletabs { display: grid; position: fixed; bottom: 0; left: 0; right: 0; background: #151a46; border-top: 1px solid rgba(255,255,255,.14); grid-template-columns: repeat(4, 1fr); z-index: 40; padding-bottom: env(safe-area-inset-bottom); }
+  .v3-mobiletabs button { border: 0; background: transparent; font-size: 11px; color: rgba(255,255,255,.62); padding: 10px 4px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; font-weight: 600; }
+  .v3-mobiletabs button.active { color: #fff; font-weight: 900; }
+  .v3-mobiletabs button.active span { color: #ff604b; }
   .v3-mobiletabs span { font-size: 18px; line-height: 1; }
   .v3-score { right: 14px; bottom: 78px; }
   .v3-preview-overlay { position: fixed; inset: 0; z-index: 60; background: #e7e8ef; display: flex; flex-direction: column; }
