@@ -103,8 +103,8 @@ export default function LandingV3() {
         @media (prefers-reduced-motion:reduce){.floaty{animation:none!important}}
       `}</style>
 
-      {/* TOPLINE */}
-      <div className="flex min-h-[32px] items-center justify-center gap-7 bg-navy px-4 py-2 text-center text-[10px] font-extrabold uppercase tracking-[0.12em] text-white">
+      {/* TOPLINE — hidden on mobile to keep the hero immediately visible */}
+      <div className="hidden md:flex min-h-[32px] items-center justify-center gap-7 bg-navy px-4 py-2 text-center text-[10px] font-extrabold uppercase tracking-[0.12em] text-white">
         {TOPLINE.map((t, i) => (<span key={t} className={i === 1 ? "text-teal" : ""}>{t}</span>))}
       </div>
 
