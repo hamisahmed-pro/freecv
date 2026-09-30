@@ -553,15 +553,30 @@ export default function FreeCVApp() {
       }
       const res = await fetch('/api/export/docx', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       if (!res.ok) throw new Error('Failed to generate DOCX');
+      // Guard: never save an error payload (HTML/JSON) with a .docx extension —
+      // Word reports those as corrupt files. The server only returns 200 with
+      // the DOCX content type.
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('officedocument.wordprocessingml')) {
+        const text = await res.text();
+        throw new Error('Server returned an unexpected response (' + contentType + '): ' + text.slice(0, 120));
+      }
       const blob = await res.blob();
+      if (blob.size < 1000) throw new Error('Generated file is unexpectedly small (' + blob.size + ' bytes)');
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       const safeName = data.personalInfo.fullName.replace(/[^\w\s-]/g, '').trim() || 'My';
       const safeRole = data.personalInfo.jobTitle.replace(/[^\w\s-]/g, '').trim() || 'Resume';
       a.download = `${safeName}_${safeRole}_Resume.docx`.replace(/\s+/g, '_');
+      // The anchor must be in the DOM for the download to start reliably,
+      // and the object URL must stay alive until the browser has picked it
+      // up — revoking synchronously after click() races the download and can
+      // produce a truncated (unopenable) file.
+      document.body.appendChild(a);
       a.click();
-      URL.revokeObjectURL(url);
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
       trackEvent('milestone_downloaded', data.templateId, getTelemetryMetadata('docx'));
       setIsJobsModalOpen(true);
     } catch (err: any) { toast.error('DOCX export failed: ' + err.message); }
@@ -586,6 +601,8 @@ export default function FreeCVApp() {
     setTimeout(() => { window.print(); document.body.classList.remove('printing'); document.title = originalTitle; onAfterPrint?.(); }, 150);
   };
 
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+
   const handleDownload = async () => {
     trackEvent('milestone_downloaded', data.templateId, getTelemetryMetadata('pdf'));
     if (isRealUserEmail(data.personalInfo.email)) {
@@ -595,7 +612,35 @@ export default function FreeCVApp() {
           .catch(err => console.error('[CRM opt-in] Network error:', err));
       } catch (err) { console.error('[CRM opt-in] Sync error:', err); }
     }
-    triggerPrint(() => setIsJobsModalOpen(true));
+    // Generate the PDF programmatically with React-PDF (client-side) so the
+    // file contains ONLY the resume — no browser print headers/footers (date,
+    // title, URL, page numbers) and no PWA install banner. window.print()
+    // cannot suppress those; they are browser chrome, not page content.
+    setIsGeneratingPdf(true);
+    try {
+      const { pdf } = await import('@react-pdf/renderer');
+      const PdfTemplate = templates[data.templateId as TemplateKey];
+      if (!PdfTemplate) throw new Error('PDF template not available for ' + data.templateId);
+      const blob = await pdf(<PdfTemplate data={previewData} />).toBlob();
+      if (!blob || blob.size < 1000) throw new Error('Generated PDF is unexpectedly small');
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const safeName = data.personalInfo.fullName.replace(/[^\w\s-]/g, '').trim() || 'My';
+      const safeRole = data.personalInfo.jobTitle.replace(/[^\w\s-]/g, '').trim() || 'Resume';
+      a.download = `${safeName}_${safeRole}_Resume.pdf`.replace(/\s+/g, '_');
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    } catch (err: any) {
+      console.error('[PDF] React-PDF generation failed, falling back to print:', err);
+      toast.error('PDF generation failed, opening print dialog instead: ' + err.message);
+      triggerPrint();
+    } finally {
+      setIsGeneratingPdf(false);
+      setIsJobsModalOpen(true);
+    }
   };
 
   if (!isHydrated) return null;
@@ -998,7 +1043,7 @@ export default function FreeCVApp() {
           <button className="v3-iconbtn" onClick={() => useResumeStore.temporal.getState().undo()} disabled={undoDepth === 0} title="Undo (Ctrl+Z)" aria-label="Undo"><Undo2 size={15} /></button>
           <button className="v3-iconbtn" onClick={() => useResumeStore.temporal.getState().redo()} disabled={redoDepth === 0} title="Redo (Ctrl+Y)" aria-label="Redo"><Redo2 size={15} /></button>
           <button className="v3-dl v3-dl-docx" onClick={handleDocxExport} title="Download Word document"><FileText size={14} /> Download DOCX</button>
-          <button className="v3-dl v3-dl-pdf" onClick={handleDownload}><FileDown size={14} /> Download PDF</button>
+          <button className="v3-dl v3-dl-pdf" onClick={handleDownload} disabled={isGeneratingPdf}><FileDown size={14} /> {isGeneratingPdf ? 'Generating…' : 'Download PDF'}</button>
         </div>
       </header>
 
@@ -1299,11 +1344,11 @@ export default function FreeCVApp() {
             <button onClick={() => setMobileZoom(!mobileZoom)} className="v3-pill-sm">
               {mobileZoom ? <ZoomOut size={14} /> : <ZoomIn size={14} />} Zoom
             </button>
-            {/* Unified PDF path: the browser-print render of the exact HTML
-                template the user sees (US Letter, theme color applied) —
+            {/* Unified PDF path: React-PDF renders the matching React-PDF template
+                to a real file (no browser print headers/footers) —
                 the same engine as the desktop "Download PDF" button. */}
-            <button onClick={handleDownload} className="v3-primary">
-              <Download size={14} /> PDF
+            <button onClick={handleDownload} className="v3-primary" disabled={isGeneratingPdf}>
+              <Download size={14} /> {isGeneratingPdf ? 'Generating…' : 'PDF'}
             </button>
             <button onClick={handleDocxExport} className="v3-pill-sm">
               <FileText size={14} /> DOCX
@@ -1498,9 +1543,9 @@ export default function FreeCVApp() {
               <button onClick={() => setIsDownloadModalOpen(false)} className="p-2 bg-white border border-[#dddde5] hover:bg-[#151a46] hover:text-white rounded-xl text-[#151a46] transition-colors"><X size={16} /></button>
             </div>
             <div className="flex flex-col gap-4">
-              <button onClick={() => { setIsDownloadModalOpen(false); handleDownload(); }} className="w-full bg-[#5548f5] text-white rounded-xl shadow-[3px_3px_0_#151a46] p-4 flex items-center gap-4 transition-all hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
+              <button onClick={() => { setIsDownloadModalOpen(false); handleDownload(); }} disabled={isGeneratingPdf} className="w-full bg-[#5548f5] text-white rounded-xl shadow-[3px_3px_0_#151a46] p-4 flex items-center gap-4 transition-all hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] disabled:opacity-60">
                 <div className="bg-[#151a46]/10 p-2.5 rounded-lg text-[#151a46]"><Download size={20} /></div>
-                <div className="text-left flex-1"><div className="font-brand font-bold uppercase tracking-wider text-sm">Download PDF</div><div className="font-brand text-xs text-white/70">Best for printing & sharing</div></div>
+                <div className="text-left flex-1"><div className="font-brand font-bold uppercase tracking-wider text-sm">{isGeneratingPdf ? 'Generating PDF…' : 'Download PDF'}</div><div className="font-brand text-xs text-white/70">Best for printing & sharing</div></div>
               </button>
               <button onClick={() => { setIsDownloadModalOpen(false); handleDocxExport(); }} className="w-full bg-white text-[#151a46] border border-[#dddde5] rounded-xl shadow-[3px_3px_0_#151a46] p-4 flex items-center gap-4 transition-all hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] mb-6">
                 <div className="bg-[#151a46]/10 p-2.5 rounded-lg text-[#151a46]"><FileText size={20} /></div>

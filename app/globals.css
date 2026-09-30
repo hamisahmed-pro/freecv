@@ -140,6 +140,14 @@ body {
     display: none !important;
   }
 
+  /* --- Layer 3b: Never print the PWA install banner or other fixed overlays.
+     Fixed elements repeat on every printed page. The banner must not appear
+     in the exported PDF. Scoped by attribute so the resume itself is untouched. */
+  [data-pwa-banner],
+  [data-print-hide] {
+    display: none !important;
+  }
+
   /* --- Layer 4: The preview <section> (#preview-panel) ---
      Has: flex-1, h-full, overflow-y-auto, overflow-x-auto
      On mobile also has: fixed, inset-0
