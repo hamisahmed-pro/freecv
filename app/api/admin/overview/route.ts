@@ -27,6 +27,8 @@ export async function GET() {
   const aiCost = (ai.data || []).reduce((s: number, l: any) => s + (Number(l.cost_estimate) || 0), 0);
   const expThisMonth = (exp.data || []).reduce((s: number, e: any) => s + (Number(e.amount_minor) || 0) * (Number(e.fx_to_usd) || 1) / 100, 0);
   const affThisMonth = (clicks.data || []).reduce((s: number, c: any) => s + (Number(c.cpc_value) || 0), 0);
+  // Job-referral telemetry: click counts are real, CPC dollar values are estimates —
+  // never presented as revenue. No run-rate projection (removed 2026-10-01).
 
   const stages: Record<string, number> = {};
   (pipe.data || []).forEach((p: any) => { stages[p.stage] = (stages[p.stage] || 0) + 1; });
@@ -39,7 +41,8 @@ export async function GET() {
     openTickets,
     aiCostThisMonth: +aiCost.toFixed(2),
     expensesThisMonth: +expThisMonth.toFixed(2),
-    affiliateThisMonth: +affThisMonth.toFixed(2),
+    referralClicksMonth: (clicks.data || []).length,
+    referralCpcEstMonth: +affThisMonth.toFixed(2),
     pipelineStages: stages,
     pipelineOpen: (pipe.data || []).filter((p: any) => p.stage !== 'customer' && p.stage !== 'lost').length,
   });

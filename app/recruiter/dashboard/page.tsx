@@ -8,6 +8,7 @@ import { MatchCard } from "@/components/recruiter/MatchCard";
 import { OverviewTab } from "@/components/recruiter/OverviewTab";
 import { CompareTab } from "@/components/recruiter/CompareTab";
 import { PipelineTab } from "@/components/recruiter/PipelineTab";
+import { ProfileTab } from "@/components/recruiter/ProfileTab";
 import { ResultListSkeleton, TableSkeleton } from "@/components/recruiter/Skeletons";
 import {
   MatchResult, MatchTier, JdMatch, CreditPack, SavedSearch, UnlockRecord,
@@ -670,6 +671,13 @@ export default function RecruiterDashboard() {
               </table>
             </div>
           )}
+        </div>
+      )}
+
+      {/* ═══════════ TAB: PROFILE & SECURITY ═══════════ */}
+      {tab === "profile" && (
+        <div className="py-8">
+          <ProfileTab signInEmail={user?.email || ""} />
         </div>
       )}
 

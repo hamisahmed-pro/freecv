@@ -30,7 +30,7 @@ export function JsonLd({
       '@type': 'Organization',
       name: 'Cvyon',
       url: 'https://cvyon.com',
-      logo: 'https://cvyon.com/logo.png',
+      logo: 'https://cvyon.com/logo-dark-no-background.png',
     },
   };
 

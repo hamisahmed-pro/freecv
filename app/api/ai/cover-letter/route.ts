@@ -38,7 +38,7 @@ Do NOT include generic placeholders like [Company Name] if it's in the text.`;
     let result: any = await generateContentWithRetry(userPrompt, systemPrompt, 1500, true, [], 'cover_letter');
 
     // 5. Analytics
-    trackEvent('cover_letter_generated', undefined, { tone, source: 'server' });
+    trackEvent('cover_letter_generated', tone);
 
     return NextResponse.json({ coverLetter: result.coverLetter || result.text || result });
   } catch (error: any) {

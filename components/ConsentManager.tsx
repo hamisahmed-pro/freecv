@@ -116,7 +116,7 @@ export function ConsentManager() {
               <span className="font-semibold text-[10px] text-gray-700">Essential & AI Processing (Required)</span>
             </div>
 
-            {/* Talent Pool — benefit-framed so it isn't skipped as "checkbox #2" */}
+            {/* Talent Pool */}
             <div
               role="checkbox"
               aria-checked={data.consents.recruiterShare}
@@ -133,7 +133,7 @@ export function ConsentManager() {
               <div className={cn("w-3.5 h-3.5 rounded flex items-center justify-center transition-colors", data.consents.recruiterShare ? 'bg-[#ff604b] text-white' : 'border border-gray-300')}>
                 {data.consents.recruiterShare && <Check size={8} />}
               </div>
-              <span className="font-semibold text-[10px] text-gray-700">Get discovered by recruiters <span className="font-normal text-gray-500">— anonymized profile, one tap to stop</span></span>
+              <span className="font-semibold text-[10px] text-gray-700">Allow recruiters to find my profile</span>
             </div>
 
             {/* Job Alerts & Matches */}

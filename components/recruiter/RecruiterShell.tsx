@@ -4,12 +4,12 @@ import Link from "next/link";
 import {
   LayoutDashboard, Search, GitCompare, KanbanSquare, Unlock,
   Bookmark, History, Coins, Plus, LogOut, Menu, X, ChevronRight,
-  Briefcase,
+  Briefcase, UserCog,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/brand/Logo";
+import { LogoMark } from "@/components/brand/Logo";
 
-export type RecruiterTab = "overview" | "search" | "compare" | "pipeline" | "saved" | "history" | "unlocks";
+export type RecruiterTab = "overview" | "search" | "compare" | "pipeline" | "saved" | "history" | "unlocks" | "profile";
 
 export const RECRUITER_TAB_META: Record<RecruiterTab, { label: string; group: string; blurb: string }> = {
   overview: { label: "Dashboard", group: "Workspace", blurb: "Your hiring activity at a glance." },
@@ -19,6 +19,7 @@ export const RECRUITER_TAB_META: Record<RecruiterTab, { label: string; group: st
   unlocks: { label: "Unlocks", group: "Candidates", blurb: "Contacts you've unlocked, with receipts." },
   saved: { label: "Saved searches", group: "Library", blurb: "Pinned searches you run often." },
   history: { label: "Search history", group: "Library", blurb: "Every JD search you've run." },
+  profile: { label: "Profile & security", group: "Account", blurb: "Your company profile, sign-in email and password." },
 };
 
 const NAV_GROUPS: { name: string; items: { id: RecruiterTab; icon: any }[] }[] = [
@@ -42,6 +43,12 @@ const NAV_GROUPS: { name: string; items: { id: RecruiterTab; icon: any }[] }[] =
     items: [
       { id: "saved", icon: Bookmark },
       { id: "history", icon: History },
+    ],
+  },
+  {
+    name: "Account",
+    items: [
+      { id: "profile", icon: UserCog },
     ],
   },
 ];
@@ -98,7 +105,7 @@ function SidebarBody(props: ShellProps & { collapsed: boolean; onNavigateDone?: 
       {/* brand */}
       <div className={cn("flex items-center gap-2.5 px-4 pb-5 pt-5", collapsed && "justify-center px-0")}>
         <Link href="/" className="flex items-center gap-2.5" aria-label="Cvyon home">
-          <Logo className="h-9 w-9 shrink-0" />
+          <LogoMark size={36} className="shrink-0" />
           {!collapsed && (
             <span className="leading-none">
               <span className="block text-lg font-black tracking-tight text-navy">Cvyon</span>
@@ -302,7 +309,7 @@ export function RecruiterSimpleShell({ children }: { children: React.ReactNode }
     <div className="flex min-h-screen flex-col bg-white">
       <div className="flex items-center gap-2.5 border-b border-line/70 px-4 py-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2.5" aria-label="Cvyon home">
-          <Logo className="h-8 w-8" />
+          <LogoMark size={32} />
           <span className="text-lg font-black tracking-tight text-navy">Cvyon</span>
           <span className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-coral">Recruiter</span>
         </Link>

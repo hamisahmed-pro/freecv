@@ -28,21 +28,21 @@ export const T: Record<Mode, Tokens> = {
   },
   light: {
     mode: "light",
-    bg: "#ffffff", rail: "#f7f7fc", surface: "#ffffff", surface2: "#f4f5fb", inset: "#f0f1f8",
-    border: "#e4e5ef", borderStrong: "#151a46",
-    text: "#151a46", muted: "#5f6379", faint: "#a8abc0",
-    verm: "#ff604b", cob: "#5548f5", green: "#0ea5a0", gold: "#d9a021", hi: "#ffd85a",
-    shadow: "rgba(23,27,75,0.08)", grid: "rgba(21,26,70,0.04)", dot: "rgba(21,26,70,0.06)",
+    bg: "#f6f5ef", rail: "#e9e9f1", surface: "#ffffff", surface2: "#f1f2f9", inset: "#eef0f7",
+    border: "#dddde5", borderStrong: "#151a46",
+    text: "#151a46", muted: "#73778c", faint: "#a8abc0",
+    verm: "#ff604b", cob: "#5548f5", green: "#24c9bd", gold: "#b07d18", hi: "#ffd85a",
+    shadow: "rgba(23,27,75,0.10)", grid: "rgba(21,26,70,0.05)", dot: "rgba(21,26,70,0.07)",
     ring: "#5548f5", onVerm: "#ffffff",
   },
 };
 
 interface Ctx { mode: Mode; setMode: (m: Mode) => void; t: Tokens; }
 const AdminThemeContext = createContext<Ctx | null>(null);
-const KEY = "cvyon-admin-theme-v2";
+const KEY = "cvyon-admin-theme";
 
 export function AdminThemeProvider({ children }: { children: React.ReactNode }) {
-  const [mode, setModeState] = useState<Mode>("light");
+  const [mode, setModeState] = useState<Mode>("dark");
   useEffect(() => {
     const saved = typeof window !== "undefined" ? localStorage.getItem(KEY) : null;
     if (saved === "light" || saved === "dark") setModeState(saved);

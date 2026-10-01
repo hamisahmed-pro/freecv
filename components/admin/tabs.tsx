@@ -80,7 +80,7 @@ export function OverviewTab({ candidates, analytics, aiLogs }: { candidates: any
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Reveal><Kpi label="Talent pool" value={<CountUp to={candidates.length} />} sub={`${candidates.filter(c => c.consent_recruiter_share).length} recruiter-ready`} accent={t.cob} icon={<Users size={16} />} spark={optSpark} /></Reveal>
         <Reveal delay={60}><Kpi label="MRR (seats)" value={<CountUp to={o?.mrr || 0} prefix="$" decimals={0} />} sub="subscriptions" accent={t.green} icon={<DollarSign size={16} />} delta={o?.mrr ? 12 : 0} /></Reveal>
-        <Reveal delay={120}><Kpi label="Job CPC run-rate" value={<CountUp to={o?.affiliateRun || 0} prefix="$" decimals={0} />} sub={`${usd(o?.affiliateMonth || 0)} MTD`} accent={t.gold} icon={<MousePointerClick size={16} />} /></Reveal>
+        <Reveal delay={120}><Kpi label="Job referrals" value={<CountUp to={o?.referralClicksMonth || 0} decimals={0} />} sub={`est. ${usd(o?.referralCpcEstMonth || 0)} CPC · telemetry`} accent={t.gold} icon={<MousePointerClick size={16} />} /></Reveal>
         <Reveal delay={180}><Kpi label="Total visits (30d)" value={<CountUp to={funnel.sessions} />} sub={`${human.length.toLocaleString()} events · ${quality.botSessionCount} bot-like sessions excluded`} accent={t.verm} icon={<Activity size={16} />} /></Reveal>
       </div>
 
@@ -756,9 +756,10 @@ export function RevenueTab() {
   useEffect(() => { api("/api/admin/revenue").then(setR).catch(() => {}); }, []);
   if (!r) return <Spinner />;
 
+  // Realized-cash mix only — CPC estimates are telemetry and never mixed with revenue.
   const mix = [
     { label: "Subscriptions (MRR)", value: Math.round(r.mrr), color: t.green },
-    { label: "CareerJet CPC (run-rate)", value: Math.round(r.affiliateRun), color: t.gold }
+    ...(r.ledgerSettledMonth > 0 ? [{ label: "Settled cash (MTD)", value: Math.round(r.ledgerSettledMonth), color: t.gold }] : []),
   ];
 
   return (
@@ -767,14 +768,14 @@ export function RevenueTab() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Reveal><Kpi label="MRR" value={<CountUp to={r.mrr} prefix="$" decimals={0} />} sub="recurring seats" accent={t.green} icon={<DollarSign size={16} />} /></Reveal>
         <Reveal delay={60}><Kpi label="ARR" value={<CountUp to={r.arr} prefix="$" decimals={0} />} sub="MRR × 12" accent={t.cob} icon={<TrendingUp size={16} />} /></Reveal>
-        <Reveal delay={120}><Kpi label="CareerJet CPC Run-rate" value={<CountUp to={r.affiliateRun} prefix="$" decimals={0} />} sub={`${usd(r.affiliateMonth)} MTD`} accent={t.gold} icon={<MousePointerClick size={16} />} /></Reveal>
-        <Reveal delay={180}><Kpi label="Net MTD" value={<CountUp to={r.netMonth} prefix="$" decimals={0} />} sub={`blended ${usd(r.blendedMonthly)}`} accent={r.netMonth >= 0 ? t.green : t.verm} icon={<Wallet size={16} />} delta={r.netMonth >= 0 ? 8 : -8} /></Reveal>
+        <Reveal delay={120}><Kpi label="Job referrals" value={<CountUp to={r.referralClicksMonth || 0} decimals={0} />} sub={`est. ${usd(r.referralCpcEstMonth)} CPC · telemetry`} accent={t.gold} icon={<MousePointerClick size={16} />} /></Reveal>
+        <Reveal delay={180}><Kpi label="Net MTD" value={<CountUp to={r.netMonth} prefix="$" decimals={0} />} sub="MRR − expenses" accent={r.netMonth >= 0 ? t.green : t.verm} icon={<Wallet size={16} />} delta={r.netMonth >= 0 ? 8 : -8} /></Reveal>
       </div>
 
       <Reveal>
         <Card className="p-4" style={{ borderColor: t.gold }}>
           <p className="text-sm" style={{ color: t.muted }}>
-            <b style={{ color: t.gold }}>Reconciliation Policy:</b> {r.fxNote || "Affiliate income is a CPC run-rate from CareerJet job clicks — shown alongside subscription MRR, never folded into it."}
+            <b style={{ color: t.gold }}>Reconciliation Policy:</b> {r.fxNote || "Affiliate income is recognized only when settled in the ledger below. Job-click CPC values are estimates for telemetry — never revenue."}
           </p>
         </Card>
       </Reveal>
@@ -805,18 +806,19 @@ export function RevenueTab() {
         </Reveal>
       </div>
 
-      {/* CareerJet CPC Monetization Card */}
+      {/* Job-referral telemetry — estimates, never revenue */}
       <Reveal delay={100}>
         <Card className="p-5">
           <div className="flex justify-between items-center mb-3">
-            <SectionLabel color={t.gold}>careerjet job clicks cpc by country (mtd)</SectionLabel>
-            <Pill color={t.gold}>{r.affiliateClicksMonth ?? 0} clicks MTD</Pill>
+            <SectionLabel color={t.gold}>job referrals by country (mtd) · telemetry</SectionLabel>
+            <Pill color={t.gold}>{r.referralClicksMonth ?? 0} clicks MTD</Pill>
           </div>
-          {(!r.affByCountry || r.affByCountry.length === 0) ? (
-            <p className="text-sm" style={{ color: t.faint }}>No job clicks recorded yet this month.</p>
+          {(!r.referralsByCountry || r.referralsByCountry.length === 0) ? (
+            <p className="text-sm" style={{ color: t.faint }}>No job referrals recorded yet this month.</p>
           ) : (
             <div className="space-y-3">
-              <Bars data={r.affByCountry.slice(0, 8).map((c: any) => ({ label: `${c.country} · ${c.clicks} clicks`, value: Math.round(c.usd * 100) }))} color={t.gold} />
+              <Bars data={r.referralsByCountry.slice(0, 8).map((c: any) => ({ label: `${c.country} · ${c.clicks} clicks`, value: Math.round(c.cpcEst * 100) }))} color={t.gold} />
+              <p className="text-[10px]" style={{ color: t.faint }}>CPC values are estimates for telemetry — not revenue.</p>
             </div>
           )}
         </Card>

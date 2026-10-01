@@ -48,7 +48,7 @@ export function Card({ children, className = "", hover = false, style, accent }:
 
 export function SectionLabel({ children, color }: { children: React.ReactNode; color?: string }) {
   const { t } = useAdminTheme();
-  return <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.25em]" style={{ color: color || t.cob }}>§ {children}</div>;
+  return <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: color || t.cob }}>{children}</div>;
 }
 
 /* ----------------------------- KPI ----------------------------- */
@@ -252,5 +252,5 @@ export function EmptyState({ icon, title, hint }: { icon?: React.ReactNode; titl
 
 export function Spinner({ size = 24 }: { size?: number }) {
   const { t } = useAdminTheme();
-  return <span className="inline-block animate-spin" style={{ width: size, height: size, border: `3px solid ${t.cob}`, borderTopColor: "transparent" }} />;
+  return <span className="inline-block animate-spin rounded-full" style={{ width: size, height: size, border: `3px solid ${t.cob}`, borderTopColor: "transparent" }} />;
 }

@@ -210,6 +210,40 @@ export async function checkoutCredits(packId: string): Promise<{ authorization_u
   return parse(res);
 }
 
+export interface RecruiterProfile {
+  company_name: string;
+  contact_email: string;
+  status: string | null;
+  created_at: string | null;
+  sign_in_email: string;
+}
+
+export async function getRecruiterProfile(): Promise<RecruiterProfile> {
+  const res = await authed("/api/recruiter/profile");
+  return parse(res);
+}
+
+export async function updateRecruiterProfile(patch: {
+  company_name?: string;
+  contact_email?: string;
+}): Promise<RecruiterProfile> {
+  const res = await authed("/api/recruiter/profile", {
+    method: "PATCH",
+    body: JSON.stringify(patch),
+  });
+  const json = await parse<any>(res);
+  return getRecruiterProfile().catch(
+    () =>
+      ({
+        company_name: json.company_name ?? "",
+        contact_email: json.contact_email ?? "",
+        status: null,
+        created_at: null,
+        sign_in_email: "",
+      } as RecruiterProfile)
+  );
+}
+
 export async function getSearches(): Promise<{ searches: SavedSearch[] }> {
   const res = await authed("/api/recruiter/searches");
   const json = await parse<any>(res);

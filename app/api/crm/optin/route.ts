@@ -332,20 +332,6 @@ export async function POST(request: Request) {
       logger.warn('optin', '[CRM opt-in] consent_logs insert failed (non-fatal)', e);
     }
 
-    // ---- 3b. UNIFY consent signal: stamp consent_given_at when recruiter
-    // share was explicitly granted here (mirrors /api/user/consent). This is
-    // the single explicit opt-in flag on the candidates row.
-    if (consent_recruiter_share === true && candidateId) {
-      try {
-        await supabaseAdmin
-          .from('candidates')
-          .update({ consent_given_at: now, opted_in_at: now, updated_at: now })
-          .eq('id', candidateId);
-      } catch (e) {
-        logger.warn('optin', '[CRM opt-in] consent_given_at stamp failed (non-fatal)', e);
-      }
-    }
-
     // ---- 4. BACKGROUND AI ENRICHMENT (Strict 2.5s non-blocking timeout) ----
     // Uses the shared Gemini key/model pool; skipped silently when every
     // combo is at its daily cap (non-fatal background task).
