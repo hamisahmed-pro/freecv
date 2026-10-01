@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { supabaseAdmin } from '@/lib/supabase';
-import { ArrowRight, ArrowLeft, Calendar, Clock, Tag } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { V3Page, V3Eyebrow } from '@/components/v3/V3Chrome';
 
 export const revalidate = 60;
@@ -59,7 +59,7 @@ export default async function BlogIndex({
 
   const { data: posts } = await supabaseAdmin
     .from('blog_posts')
-    .select('id, slug, title, meta_description, header_image, content, created_at, category')
+    .select('id, slug, title, meta_description, header_image, content, created_at')
     .eq('is_published', true)
     .order('created_at', { ascending: false });
 
@@ -119,12 +119,6 @@ export default async function BlogIndex({
                           <Clock size={14} />
                           {readingTime(featured.content)} min read
                         </span>
-                        {featured.category && (
-                          <span className="inline-flex items-center gap-1.5 text-brand">
-                            <Tag size={14} />
-                            {featured.category}
-                          </span>
-                        )}
                       </div>
                       <h2 className="text-3xl font-black tracking-tight text-navy transition-colors group-hover:text-brand md:text-4xl">
                         {featured.title}
@@ -154,11 +148,6 @@ export default async function BlogIndex({
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
                       />
-                      {post.category && (
-                        <span className="absolute left-4 top-4 rounded-full bg-navy/90 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-white backdrop-blur">
-                          {post.category}
-                        </span>
-                      )}
                     </div>
                     <div className="flex flex-1 flex-col p-6">
                       <div className="mb-3 flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.12em] text-muted">
