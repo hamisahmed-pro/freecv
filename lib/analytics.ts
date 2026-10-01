@@ -24,12 +24,20 @@ function getDeviceType(): string {
 function getBrowser(): string {
   if (typeof window === 'undefined') return 'unknown';
   const ua = navigator.userAgent;
+  // Bots / crawlers / non-browser agents get their own bucket so they don't
+  // pollute the "Other" browser bucket in analytics.
+  if (/bot|crawler|spider|crawling|slurp|mediapartners|baidu|yandex|sogou|exabot|facebot|ia_archiver|semrush|ahrefs|mj12|dotbot|petal|bytespider|gptbot|ccbot|claudebot|perplexity|googleother|google-inspectiontool|lighthouse|headlesschrome|phantomjs|selenium|playwright|puppeteer/i.test(ua)) return 'Bot';
+  if (/curl|wget|python-requests|python-urllib|go-http-client|java\/|okhttp|axios/i.test(ua)) return 'Bot';
   if (ua.includes('Firefox/')) return 'Firefox';
   if (ua.includes('Edg/')) return 'Edge';
   if (ua.includes('OPR/') || ua.includes('Opera/')) return 'Opera';
+  if (ua.includes('SamsungBrowser/')) return 'Samsung Internet';
+  if (ua.includes('YaBrowser/')) return 'Yandex';
   if (ua.includes('Chrome/') && !ua.includes('Edg/')) return 'Chrome';
   if (ua.includes('Safari/') && !ua.includes('Chrome/')) return 'Safari';
   if (ua.includes('MSIE') || ua.includes('Trident/')) return 'IE';
+  // In-app webviews (Instagram, Facebook, TikTok, etc.)
+  if (/FBAN|FBAV|Instagram|TikTok|Line\/|MicroMessenger|WeChat/i.test(ua)) return 'In-App WebView';
   return 'Other';
 }
 
