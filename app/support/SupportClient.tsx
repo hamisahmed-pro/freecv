@@ -2,17 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Send, MessageSquare, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Send, MessageSquare, HelpCircle, ChevronDown, ChevronUp, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
-import { cn } from '@/lib/utils';
-import { Archivo, Archivo_Black, DM_Sans, Space_Mono } from '@/lib/fonts';
-
-const display = Archivo_Black({ subsets: ["latin"], weight: "400", display: "swap" });
-const head = Archivo({ subsets: ["latin"], weight: ["600", "800", "900"], display: "swap" });
-const body = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"], display: "swap" });
-const mono = Space_Mono({ subsets: ["latin"], weight: ["400", "700"], display: "swap" });
+import { V3Page, V3Eyebrow } from '@/components/v3/V3Chrome';
 
 const FAQS = [
   {
@@ -120,127 +113,92 @@ export default function SupportClient() {
   };
 
   return (
-    <div className={cn("cv-riso relative min-h-screen text-[#151a46] bg-[#f6f5ef] overflow-x-hidden flex flex-col", body.className)}
-      style={{ ["--ink" as any]: "#151a46", ["--verm" as any]: "#ff604b", ["--cob" as any]: "#5548f5", ["--hi" as any]: "#ffd85a", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
-      <style>{`
-        .cv-riso{font-family:var(--fb)} .cv-riso .fd{font-family:var(--fd)} .cv-riso .fh{font-family:var(--fh)} .cv-riso .fm{font-family:var(--fm)}
-        .cv-riso .hs{box-shadow:7px 7px 0 var(--ink)} .cv-riso .hs-v{box-shadow:7px 7px 0 var(--verm)} .cv-riso .hs-c{box-shadow:6px 6px 0 var(--cob)}
-        .cv-riso .hs-sm{box-shadow:5px 5px 0 var(--ink)}
-        .cv-riso .riso-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: 3px solid var(--ink); background-color: var(--ink); color: #f6f5ef; padding: 0.75rem 1.5rem; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 7px 7px 0 var(--ink); transition: all 0.2s; cursor: pointer; text-decoration: none; }
-        .cv-riso .riso-btn:hover { transform: translate(2px, 2px); box-shadow: none; }
-        .cv-riso .riso-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: 7px 7px 0 var(--ink); }
-        .cv-riso .riso-btn-ghost { background-color: transparent; color: var(--ink); }
-        .cv-riso .riso-card { border: 3px solid var(--ink); background-color: #ffffff; box-shadow: 7px 7px 0 var(--ink); }
-        .cv-riso .riso-input { width: 100%; border: 3px solid var(--ink); background-color: #ffffff; padding: 0.75rem 1rem; font-family: var(--fm); font-size: 0.875rem; color: var(--ink); box-shadow: 4px 4px 0 var(--ink); transition: all 0.2s; outline: none; }
-        .cv-riso .riso-input:focus { box-shadow: none; transform: translate(2px, 2px); border-color: var(--verm); }
-        .cv-riso .riso-label { display: block; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; color: var(--ink); }
-        .cv-riso .riso-chip { display: inline-flex; align-items: center; gap: 0.25rem; border: 2px solid var(--ink); padding: 0.25rem 0.5rem; font-family: var(--fm); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold; color: var(--ink); background: #ffffff; }
-      `}</style>
+    <V3Page pageName="support" logoSub="BUILD • GET HIRED" cta={{ label: "Build free →", href: "/build" }}>
+      {/* Hero */}
+      <div className="pb-[34px]">
+        <V3Eyebrow>Support centre</V3Eyebrow>
+        <h1 className="text-[clamp(42px,6vw,72px)] font-extrabold leading-[1.04] tracking-[-0.045em]">
+          How can we help?
+        </h1>
+        <p className="mt-4 max-w-[650px] text-[17px] text-muted">
+          Browse frequently asked questions or send us a message if you need further assistance.
+        </p>
+      </div>
 
-      {/* Header */}
-      <header className="bg-[#f6f5ef] border-b-[3px] border-[#151a46] sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/logo-light-no-background.png"
-              alt="Cvyon"
-              width={200}
-              height={60}
-              priority
-              className="h-9 sm:h-10 md:h-11 w-auto object-contain transition-all"
-            />
-            <span className="riso-chip">Support</span>
-          </Link>
-          <nav className="fm flex items-center gap-6 text-[11px] font-bold uppercase tracking-[0.18em]">
-            <Link href="/" className="hover:text-[#ff604b] transition-colors">Home</Link>
-            <Link href="/blog" className="hover:text-[#ff604b] transition-colors">Blog</Link>
-            <Link href="/developers" className="hover:text-[#ff604b] transition-colors">API Docs</Link>
-          </nav>
-        </div>
-      </header>
-
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-12 grid grid-cols-1 md:grid-cols-2 gap-12">
-        {/* Left Column: FAQ */}
-        <div className="space-y-8">
-          <div>
-            <h1 className="fd text-4xl tracking-tight mb-4">How can we help?</h1>
-            <p className="text-lg text-[#151a46]/70">
-              Browse our frequently asked questions or send us a message if you need further assistance.
-            </p>
+      {/* FAQ + contact grid */}
+      <div className="grid grid-cols-1 gap-7 md:grid-cols-2">
+        {/* Left: FAQ */}
+        <section>
+          <h2 className="mb-5 flex items-center gap-2 text-[28px] font-extrabold tracking-[-0.045em]">
+            <HelpCircle className="text-brand" size={26} />
+            Frequently asked questions
+          </h2>
+          <div className="overflow-hidden rounded-[18px] border border-line bg-paper shadow-[0_16px_38px_rgba(23,27,75,0.09)]">
+            {FAQS.map((faq, idx) => (
+              <div key={idx} className="border-b border-line last:border-0">
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                  className="flex w-full items-center justify-between gap-4 px-[22px] py-5 text-left font-extrabold text-navy transition-colors hover:bg-cream"
+                >
+                  <span>{faq.q}</span>
+                  {openFaq === idx
+                    ? <ChevronUp size={20} className="shrink-0 text-muted" />
+                    : <ChevronDown size={20} className="shrink-0 text-muted" />}
+                </button>
+                {openFaq === idx && (
+                  <p className="px-[22px] pb-5 text-[13px] leading-relaxed text-muted">{faq.a}</p>
+                )}
+              </div>
+            ))}
           </div>
+        </section>
 
-          <div className="space-y-4">
-            <h2 className="fh text-2xl font-extrabold flex items-center gap-2">
-              <HelpCircle className="text-[#5548f5]" />
-              Frequently Asked Questions
-            </h2>
-            <div className="riso-card overflow-hidden">
-              {FAQS.map((faq, idx) => (
-                <div key={idx} className={`border-b-[3px] border-[#151a46] last:border-0`}>
-                  <button
-                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                    className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-[#f6f5ef] transition-colors"
-                  >
-                    <span className="fh font-extrabold">{faq.q}</span>
-                    {openFaq === idx ? <ChevronUp size={20} className="text-[#151a46]/70" /> : <ChevronDown size={20} className="text-[#151a46]/70" />}
-                  </button>
-                  {openFaq === idx && (
-                    <div className="px-6 pb-4 text-[#151a46]/70 animate-in slide-in-from-top-2 duration-200">
-                      {faq.a}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column: Ticket Form */}
-        <div>
-          <div className="riso-card p-8 relative overflow-hidden">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-[#f6f5ef] border-[3px] border-[#151a46]">
-                <MessageSquare className="text-[#5548f5]" size={24} />
+        {/* Right: contact form */}
+        <section>
+          <div className="rounded-[18px] border border-line bg-paper p-7 shadow-[0_16px_38px_rgba(23,27,75,0.09)]">
+            <div className="mb-[22px] flex items-center gap-3">
+              <div className="grid h-11 w-11 place-items-center rounded-[12px] bg-lavender text-brand">
+                <MessageSquare size={22} />
               </div>
               <div>
-                <h2 className="fh text-2xl font-extrabold">Contact Support</h2>
-                <p className="fm text-xs text-[#151a46]/70 font-bold uppercase tracking-widest">We typically reply within 24 hours.</p>
+                <h3 className="text-[20px] font-extrabold tracking-[-0.045em]">Contact support</h3>
+                <p className="text-[12px] text-muted">We typically reply within 24 hours.</p>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="riso-label mb-2">Email Address</label>
+            <form onSubmit={handleSubmit} className="grid gap-4">
+              <div className="grid gap-[7px]">
+                <label className="text-[10px] font-black uppercase tracking-[0.08em] text-muted">Email address</label>
                 <input
                   type="email"
                   required
                   value={formData.user_email}
-                  onChange={(e) => setFormData({...formData, user_email: e.target.value})}
-                  className="riso-input"
+                  onChange={(e) => setFormData({ ...formData, user_email: e.target.value })}
+                  className="w-full rounded-[10px] border border-line bg-paper px-[13px] py-3 text-navy outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
                   placeholder="you@example.com"
                 />
               </div>
 
-              <div>
-                <label className="riso-label mb-2">Subject</label>
+              <div className="grid gap-[7px]">
+                <label className="text-[10px] font-black uppercase tracking-[0.08em] text-muted">Subject</label>
                 <input
                   type="text"
                   required
                   value={formData.subject}
-                  onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                  className="riso-input"
+                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                  className="w-full rounded-[10px] border border-line bg-paper px-[13px] py-3 text-navy outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
                   placeholder="What do you need help with?"
                 />
               </div>
 
-              <div>
-                <label className="riso-label mb-2">Message</label>
+              <div className="grid gap-[7px]">
+                <label className="text-[10px] font-black uppercase tracking-[0.08em] text-muted">Message</label>
                 <textarea
                   required
-                  rows={5}
                   value={formData.message}
-                  onChange={(e) => setFormData({...formData, message: e.target.value})}
-                  className="riso-input resize-none"
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  className="min-h-[130px] w-full resize-y rounded-[10px] border border-line bg-paper px-[13px] py-3 text-navy outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
                   placeholder="Please describe your issue in detail..."
                 />
               </div>
@@ -248,36 +206,36 @@ export default function SupportClient() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="riso-btn w-full"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-brand px-[18px] py-3 text-[12px] font-extrabold text-white shadow-[0_8px_18px_rgba(85,72,245,0.22)] transition hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0"
               >
                 {isSubmitting ? (
                   <span className="animate-spin text-xl leading-none">⟳</span>
                 ) : (
                   <>
-                    <Send size={18} />
-                    Send Message
+                    <Send size={16} />
+                    Send message →
                   </>
                 )}
               </button>
             </form>
 
-            {/* My Tickets */}
+            {/* My Recent Tickets */}
             {tickets.length > 0 && (
-              <div className="mt-8 pt-8 border-t-[3px] border-[#151a46]">
-                <h3 className="fh font-extrabold text-lg mb-4">My Recent Tickets</h3>
+              <div className="mt-8 border-t border-line pt-8">
+                <h3 className="mb-4 text-lg font-extrabold">My Recent Tickets</h3>
                 <div className="space-y-4">
                   {tickets.map(ticket => (
-                    <div key={ticket.id} className="bg-[#f6f5ef] border-[3px] border-[#151a46] p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-semibold text-sm">{ticket.subject}</h4>
-                        <span className={`fm text-[10px] font-bold uppercase tracking-widest px-2 py-1 border-2 border-[#151a46] ${ticket.status === 'open' ? 'bg-[#ffd85a]' : 'bg-white'}`}>
+                    <div key={ticket.id} className="rounded-[12px] border border-line bg-cream p-4">
+                      <div className="mb-2 flex items-start justify-between gap-2">
+                        <h4 className="text-sm font-semibold">{ticket.subject}</h4>
+                        <span className={`shrink-0 rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-widest ${ticket.status === 'open' ? 'bg-gold text-navy' : 'border border-line bg-paper text-muted'}`}>
                           {ticket.status}
                         </span>
                       </div>
-                      <p className="text-xs text-[#151a46]/70 mb-3">{ticket.message}</p>
+                      <p className="mb-3 text-xs text-muted">{ticket.message}</p>
                       {ticket.admin_reply && (
-                        <div className="bg-white border-l-[3px] border-[#5548f5] p-3 text-sm">
-                          <span className="fm text-[10px] font-bold text-[#5548f5] uppercase tracking-widest block mb-1">Admin Reply</span>
+                        <div className="rounded-r-[8px] border-l-[3px] border-brand bg-paper p-3 text-sm">
+                          <span className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-brand">Admin Reply</span>
                           {ticket.admin_reply}
                         </div>
                       )}
@@ -286,10 +244,26 @@ export default function SupportClient() {
                 </div>
               </div>
             )}
-
           </div>
+        </section>
+      </div>
+
+      {/* Privacy band */}
+      <section className="mt-[72px] rounded-[18px] bg-navy px-6 py-[72px] text-center text-white">
+        <div className="mx-auto mb-[18px] grid h-11 w-11 place-items-center rounded-[12px] bg-white/10 text-teal">
+          <ShieldCheck size={22} />
         </div>
-      </main>
-    </div>
+        <h2 className="text-[38px] font-extrabold tracking-[-0.045em]">Your privacy matters.</h2>
+        <p className="mx-auto mt-[14px] max-w-[650px] text-[17px] text-[#bfc2d5]">
+          You remain in control of your data. Export it, request deletion, or review your sharing choices.
+        </p>
+        <Link
+          href="/manage-data"
+          className="mt-6 inline-flex items-center justify-center gap-2 rounded-[10px] bg-lavender px-[18px] py-3 text-[12px] font-extrabold text-brand transition hover:-translate-y-px"
+        >
+          Manage my data →
+        </Link>
+      </section>
+    </V3Page>
   );
 }

@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { RisoPage, RisoSectionLabel } from "@/components/riso/RisoChrome";
+import { V3Page, V3Eyebrow } from "@/components/v3/V3Chrome";
 import { JdSearchForm, JdInput } from "@/components/recruiter/JdSearchForm";
 import { MatchCard } from "@/components/recruiter/MatchCard";
 import { OverviewTab } from "@/components/recruiter/OverviewTab";
@@ -412,7 +412,18 @@ export default function RecruiterDashboard() {
   /* ------------------------------ shells ----------------------------- */
 
   const shell = (children: React.ReactNode) => (
-    <RisoPage pageName="recruiter_dashboard" ticker={false}>{children}</RisoPage>
+    <V3Page
+      pageName="recruiter_dashboard"
+      logoSub="RECRUITER"
+      links={[
+        { href: "/", label: "Home" },
+        { href: "/recruiter", label: "For recruiters" },
+        { href: "/support", label: "Support" },
+      ]}
+      cta={{ label: "Create account", href: "/recruiter/signup" }}
+    >
+      {children}
+    </V3Page>
   );
 
   if (loading) {
@@ -448,23 +459,23 @@ export default function RecruiterDashboard() {
   return shell(
     <>
       {/* ─── header: title + credit balance ─── */}
-      <div className="flex flex-col justify-between gap-5 py-6 sm:flex-row sm:items-end">
+      <div className="flex flex-col justify-between gap-5 py-2 sm:flex-row sm:items-end">
         <div>
-          <RisoSectionLabel color="#5548f5">recruiter dashboard</RisoSectionLabel>
-          <h1 className="fd text-4xl tracking-tight sm:text-5xl">Find your next hire.</h1>
-          <p className="mt-2 text-[#151a46]/60">Signed in as <span className="font-bold text-[#151a46]">{user.email}</span></p>
+          <V3Eyebrow>Recruiter dashboard</V3Eyebrow>
+          <h1 className="text-[44px] font-extrabold leading-[1.04] tracking-[-0.045em] text-navy sm:text-5xl">Find your next hire.</h1>
+          <p className="mt-2 text-muted">Signed in as <span className="font-bold text-navy">{user.email}</span></p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="border-[3px] border-[#151a46] bg-white hs px-5 py-3 text-center">
-            <div className="fd flex items-center justify-center gap-1.5 text-2xl">
-              <Coins size={20} className="text-[#ff604b]" />
-              {creditsReady ? (balance ?? "—") : <Loader2 size={20} className="animate-spin text-[#151a46]/40" />}
+        <div className="flex items-center gap-2.5">
+          <div className="rounded-2xl border border-line bg-paper px-5 py-3 text-center shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
+            <div className="flex items-center justify-center gap-1.5 text-2xl font-extrabold tracking-tight text-navy">
+              <Coins size={20} className="text-coral" />
+              {creditsReady ? (balance ?? "—") : <Loader2 size={20} className="animate-spin text-navy/40" />}
             </div>
-            <div className="fm text-[9px] font-bold uppercase tracking-widest text-[#151a46]/70">credits</div>
+            <div className="text-[9px] font-bold uppercase tracking-widest text-navy/70">credits</div>
           </div>
           <button
             onClick={() => setBuyOpen(true)}
-            className="border-[3px] border-[#151a46] bg-[#ffd85a] px-6 py-4 fh text-sm font-extrabold uppercase tracking-wider hs transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+            className="rounded-[10px] bg-gold px-6 py-4 text-sm font-extrabold uppercase tracking-wider text-navy shadow-[0_8px_18px_rgba(255,216,90,0.35)] transition-transform hover:-translate-y-px"
           >
             Buy credits
           </button>
@@ -472,22 +483,22 @@ export default function RecruiterDashboard() {
       </div>
 
       {/* ─── tabs ─── */}
-      <div className="mt-4 flex gap-2 overflow-x-auto border-b-[3px] border-[#151a46] pb-0">
+      <div className="mt-6 flex gap-1.5 overflow-x-auto rounded-2xl border border-line bg-paper p-2 shadow-[0_8px_22px_rgba(23,27,75,0.06)]">
         {tabs.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
             className={cn(
-              "flex shrink-0 items-center gap-2 border-[3px] border-b-0 px-4 py-3 fh text-xs font-extrabold uppercase tracking-wider transition-colors",
+              "flex shrink-0 items-center gap-2 rounded-[10px] px-4 py-3 text-xs font-extrabold uppercase tracking-wider transition-colors",
               tab === t.id
-                ? "-mb-[3px] border-[#151a46] bg-[#151a46] text-[#f6f5ef]"
-                : "border-transparent text-[#151a46]/55 hover:text-[#151a46]",
+                ? "bg-navy text-white"
+                : "border border-line bg-white text-navy/60 hover:text-navy",
             )}
           >
             <t.icon size={15} />
             {t.label}
             {t.count != null && t.count > 0 && (
-              <span className={cn("px-1.5 py-0.5 fm text-[10px] font-bold", tab === t.id ? "bg-[#ffd85a] text-[#151a46]" : "bg-[#151a46]/10 text-[#151a46]/70")}>
+              <span className={cn("rounded-full px-1.5 py-0.5 text-[10px] font-bold", tab === t.id ? "bg-gold text-navy" : "bg-navy/10 text-navy/70")}>
                 {t.count}
               </span>
             )}

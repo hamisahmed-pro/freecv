@@ -3,12 +3,11 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { RisoPage, RisoSectionLabel } from "@/components/riso/RisoChrome";
+import { V3Page, V3Eyebrow, V3Pill } from "@/components/v3/V3Chrome";
 import { JdSearchForm, JdInput } from "@/components/recruiter/JdSearchForm";
 import { MatchResult } from "@/lib/recruiter-api";
 import {
-  ArrowRight, ArrowUpRight, ShieldCheck, Search, Unlock, FileText,
-  Check, EyeOff, Coins,
+  ArrowRight, ArrowUpRight, Coins, FileText, Search, Unlock,
 } from "lucide-react";
 
 // Fallback if the packs API is unreachable — mirrors the admin-set defaults.
@@ -20,6 +19,48 @@ const FALLBACK_PACKS = [
 const PACK_NOTES = ["One perfect candidate, one price.", "For an active hiring sprint.", "For teams hiring at volume."];
 const CUR_SYM: Record<string, string> = { USD: "$", NGN: "₦", GHS: "₵", KES: "KSh ", ZAR: "R" };
 const fmtNum = (n: number) => new Intl.NumberFormat("en-US").format(n);
+
+const LINKS = [
+  { href: "/", label: "Home" },
+  { href: "/recruiter", label: "For recruiters" },
+  { href: "/support", label: "Support" },
+];
+
+const STEPS = [
+  {
+    n: "01",
+    icon: FileText,
+    t: "Paste the job description",
+    d: "The JD is matched against candidate profiles so the search starts with role relevance.",
+  },
+  {
+    n: "02",
+    icon: Search,
+    t: "See tiered matches",
+    d: "Every candidate is ranked by relevance, with profile signals surfaced before you spend a credit.",
+  },
+  {
+    n: "03",
+    icon: Unlock,
+    t: "Unlock the contact",
+    d: "Unlock contact details only when you have found a candidate you want to reach.",
+  },
+];
+
+const TRUST = [
+  {
+    t: "100% opted in",
+    d: "Every profile in the pool is explicitly available for recruiter discovery.",
+  },
+  {
+    t: "Anonymized until unlock",
+    d: "Names, locations and contact details remain protected until a recruiter unlocks them.",
+  },
+  {
+    t: "Honest counts",
+    d: "Every search shows the number of relevant matches and the available pool.",
+  },
+];
 
 export default function RecruiterLanding() {
   const router = useRouter();
@@ -71,170 +112,177 @@ export default function RecruiterLanding() {
   };
 
   return (
-    <RisoPage pageName="recruiter_landing" ticker={true}>
-      {/* ─── HERO: the JD-match flow ─── */}
-      <section className="dots relative grid grid-cols-1 gap-10 border-b-[3px] border-[#151a46] py-14 lg:grid-cols-12 lg:py-20">
-        <div className="lg:col-span-6">
-          <div className="fm mb-6 flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.22em]">
-            <span className="inline-flex items-center gap-2 border-[3px] border-[#151a46] bg-white px-3 py-1.5 hs">
-              <span className="blink inline-block h-2 w-2 rounded-full bg-[#ff604b]" />
-              recruiter access
-            </span>
-            <span className="text-[#151a46]/50">est. 2026</span>
-          </div>
-          <h1 className="fd text-[12vw] leading-[0.86] tracking-[-0.02em] sm:text-7xl lg:text-[5rem]">
+    <V3Page
+      pageName="recruiter_landing"
+      logoSub="RECRUITER"
+      links={LINKS}
+      cta={{ label: "Create account", href: "/recruiter/signup" }}
+    >
+      {/* ─── HERO ─── */}
+      <section className="grid grid-cols-1 items-center gap-10 py-10 md:grid-cols-2 md:gap-[60px] md:py-[70px]">
+        <div>
+          <V3Pill>Recruiter platform</V3Pill>
+          <h1 className="mt-[18px] text-[44px] leading-[1.04] tracking-[-0.045em] sm:text-6xl lg:text-7xl">
             Paste the JD.<br />
-            Meet the <span className="relative inline-block"><span className="relative z-10">shortlist</span><span className="absolute inset-x-[-4px] bottom-1 z-0 h-[0.42em] bg-[#ffd85a]" /></span>.
+            Meet the <span className="text-brand">shortlist.</span>
           </h1>
-          <p className="mt-7 max-w-md text-lg leading-relaxed text-[#151a46]/75">
-            Drop in a job description and Cvyon matches it against every opted-in
-            candidate — ranked <strong>Excellent / Strong / Moderate</strong>, with
-            counts shown <em>before</em> you spend anything. Unlock a contact for
-            1 credit. No database to trawl. No scraping.
+          <p className="mt-5 max-w-[650px] text-[17px] leading-relaxed text-muted">
+            Drop in a job description and Cvyon matches it against verified
+            candidate profiles — ranked by relevance, with contact details
+            available when you need them.
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/recruiter/login"
-              className="group flex items-center justify-center gap-2 border-[3px] border-[#151a46] bg-[#151a46] px-7 py-4 fh text-sm font-extrabold uppercase tracking-wider text-[#f6f5ef] hs transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
-            >
-              Sign in <ArrowRight size={17} className="transition-transform group-hover:translate-x-1" />
-            </Link>
+          <div className="mt-6 flex flex-wrap gap-[10px]">
             <Link
               href="/recruiter/signup"
-              className="flex items-center justify-center gap-2 border-[3px] border-[#151a46] bg-white px-7 py-4 fh text-sm font-extrabold uppercase tracking-wider hs transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+              className="inline-flex items-center justify-center gap-2 rounded-[10px] bg-navy px-[18px] py-3 text-[12px] font-extrabold text-white transition-transform hover:-translate-y-px"
             >
-              Create account
+              Create account <ArrowRight size={16} />
+            </Link>
+            <Link
+              href="/recruiter/login"
+              className="inline-flex items-center justify-center gap-2 rounded-[10px] border border-line bg-paper px-[18px] py-3 text-[12px] font-extrabold text-navy transition-transform hover:-translate-y-px"
+            >
+              Sign in
             </Link>
           </div>
-          <div className="mt-9 flex flex-wrap gap-2 fm text-[10px] font-bold uppercase tracking-[0.16em]">
-            {["free to search", "consent-verified", "anonymized until unlock", "₦0 to try"].map((c) => (
-              <span key={c} className="border-2 border-[#151a46] bg-white px-3 py-1.5">{c}</span>
-            ))}
+          <div className="mt-[18px] flex flex-wrap gap-2">
+            <V3Pill>Free to search</V3Pill>
+            <V3Pill>Consent-verified</V3Pill>
+            <V3Pill>Candidate opt-in</V3Pill>
           </div>
         </div>
 
-        {/* RIGHT COL — live JD search */}
-        <div className="lg:col-span-6">
-          <div className="border-[3px] border-[#151a46] bg-white hs p-5 sm:p-7">
-            <div className="fm mb-4 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.22em] text-[#151a46]/50">
-              <span>§ try it now</span>
-              <span className="text-[#ff604b]">live match</span>
-            </div>
-            <JdSearchForm variant="hero" onResult={handleHeroSearch} />
-          </div>
+        {/* RIGHT — live JD search */}
+        <div className="rounded-[18px] border border-line bg-paper p-7 shadow-[0_16px_38px_rgba(23,27,75,0.09)]">
+          <V3Eyebrow>Paste JD</V3Eyebrow>
+          <JdSearchForm variant="hero" onResult={handleHeroSearch} />
         </div>
       </section>
 
       {/* ─── HOW IT WORKS ─── */}
-      <section className="mt-16">
-        <RisoSectionLabel color="#ff604b">how it works</RisoSectionLabel>
-        <h2 className="fd text-4xl tracking-tight sm:text-5xl">Sell the match,<br />not the database.</h2>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {[
-            { n: "01", icon: FileText, t: "Paste the job description", d: "The full JD — not keywords. Cvyon extracts the title, must-have and nice-to-have skills, years, and location automatically." },
-            { n: "02", icon: Search, t: "See tiered matches", d: "Every candidate is ranked Excellent, Strong, or Moderate with plain-English reasons — “8/10 required skills, 5 yrs experience”. Counts up front, free." },
-            { n: "03", icon: Unlock, t: "Unlock the contact", d: "Found the one? Spend 1 credit to reveal their name, email, and phone. Nothing is ever shown before you choose to unlock." },
-          ].map((s) => (
-            <div key={s.n} className="border-[3px] border-[#151a46] bg-white hs p-7">
-              <div className="flex items-center justify-between">
-                <span className="fd text-3xl text-[#ff604b]">{s.n}</span>
-                <s.icon size={26} className="text-[#151a46]" />
+      <section className="py-[50px] md:py-[72px]">
+        <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-[30px]">
+          <div>
+            <V3Eyebrow>How it works</V3Eyebrow>
+            <h2 className="text-[30px] leading-[1.04] tracking-[-0.045em] sm:text-[46px]">
+              Sell the match,<br />not the database.
+            </h2>
+          </div>
+          <p className="max-w-[500px] text-muted">
+            Search first. Pay only when you unlock a candidate&rsquo;s contact — one clear credit at a time.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-[18px] md:grid-cols-3">
+          {STEPS.map((s) => (
+            <article
+              key={s.n}
+              className="rounded-[18px] border border-line bg-paper p-7 shadow-[0_16px_38px_rgba(23,27,75,0.09)]"
+            >
+              <div className="grid h-11 w-11 place-items-center rounded-xl bg-lavender text-[13px] font-black text-brand">
+                {s.n}
               </div>
-              <h3 className="fh mt-5 text-xl font-extrabold tracking-tight">{s.t}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-[#151a46]/70">{s.d}</p>
-            </div>
+              <h3 className="mt-[18px] text-xl font-extrabold tracking-tight">
+                <s.icon size={18} className="mb-2 block text-brand" />{s.t}
+              </h3>
+              <p className="mt-2 text-[13px] leading-relaxed text-muted">{s.d}</p>
+            </article>
           ))}
         </div>
       </section>
 
       {/* ─── PRICING ─── */}
-      <section className="mt-20">
-        <RisoSectionLabel color="#0E8A4B">pricing</RisoSectionLabel>
-        <h2 className="fd text-4xl tracking-tight sm:text-5xl">Pay per hire-lead.<br />Nothing else.</h2>
-        <p className="mt-4 max-w-lg text-lg text-[#151a46]/70">
-          Searching is free, forever. You only pay when you unlock a candidate&apos;s contact — 1 credit each.
-        </p>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+      <section className="py-[30px] md:py-[50px]">
+        <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-[30px]">
+          <div>
+            <V3Eyebrow>Transparent pricing</V3Eyebrow>
+            <h2 className="text-[30px] leading-[1.04] tracking-[-0.045em] sm:text-[46px]">
+              Pay per hire-lead.
+            </h2>
+          </div>
+          <p className="max-w-[500px] text-muted">
+            Searching is free. Unlocking a contact uses one credit.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-[18px] md:grid-cols-3">
           {packs.map((p, i) => {
             const sym = CUR_SYM[p.currency] || `${p.currency} `;
             const major = Math.round(p.price_kobo / 100);
             const per = p.credits > 0 ? Math.round(p.price_kobo / p.credits) / 100 : 0;
             const hot = i === 1;
             return (
-            <div
-              key={p.id || p.name}
-              className={`relative flex flex-col border-[3px] border-[#151a46] bg-white p-8 ${hot ? "hs-v" : "hs"}`}>
-              {hot && (
-                <span className="fm absolute -top-4 left-6 border-[3px] border-[#151a46] bg-[#ff604b] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white">
-                  most popular
-                </span>
-              )}
-              <div className="flex items-center gap-2 fm text-[11px] font-bold uppercase tracking-[0.2em] text-[#151a46]/55">
-                <Coins size={14} className="text-[#ff604b]" /> {p.credits} credit{p.credits === 1 ? "" : "s"}
-              </div>
-              <h3 className="fh mt-2 text-2xl font-extrabold tracking-tight">{p.name}</h3>
-              <div className="fd mt-3 text-5xl tracking-tight">{sym}{fmtNum(major)}</div>
-              <div className="fm mt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#0E8A4B]">{sym}{per.toFixed(2)} / contact</div>
-              <p className="mt-3 text-sm text-[#151a46]/65">{PACK_NOTES[i] || ""}</p>
-              <Link
-                href="/recruiter/signup"
-                className={`mt-6 flex items-center justify-center gap-2 border-[3px] border-[#151a46] px-6 py-3.5 fh text-xs font-extrabold uppercase tracking-wider transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none ${hot ? "bg-[#ff604b] text-[#151a46] hs" : "bg-[#151a46] text-[#f6f5ef] hs"}`}
+              <div
+                key={p.id || p.name}
+                className={`relative flex flex-col rounded-[18px] bg-paper p-7 shadow-[0_16px_38px_rgba(23,27,75,0.09)] ${
+                  hot ? "border-2 border-coral" : "border border-line"
+                }`}
               >
-                Start free <ArrowUpRight size={15} />
-              </Link>
-            </div>
+                {hot ? (
+                  <span className="mb-4 inline-flex w-fit items-center gap-[7px] rounded-full bg-[#ffe8e4] px-[11px] py-[7px] text-[10px] font-black uppercase tracking-[0.1em] text-[#e54c40]">
+                    Best for teams
+                  </span>
+                ) : (
+                  <span className="mb-4 inline-flex w-fit items-center gap-[7px] rounded-full bg-lavender px-[11px] py-[7px] text-[10px] font-black uppercase tracking-[0.1em] text-brand">
+                    <Coins size={12} /> {p.credits} credit{p.credits === 1 ? "" : "s"}
+                  </span>
+                )}
+                <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-muted">
+                  {p.credits} credit{p.credits === 1 ? "" : "s"} · {p.name}
+                </p>
+                <h3 className="text-[32px] font-extrabold leading-none tracking-tight">
+                  {sym}{fmtNum(major)}
+                </h3>
+                <p className="mt-2 text-[11px] font-extrabold uppercase tracking-[0.12em] text-teal">
+                  {sym}{per.toFixed(2)} / contact
+                </p>
+                <p className="mt-2 text-[13px] text-muted">{PACK_NOTES[i] || p.name}</p>
+                <Link
+                  href="/recruiter/signup"
+                  className={`mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[10px] px-[18px] py-3 text-[12px] font-extrabold text-white transition-transform hover:-translate-y-px ${
+                    hot ? "bg-coral" : "bg-navy"
+                  }`}
+                >
+                  Start free <ArrowUpRight size={15} />
+                </Link>
+              </div>
             );
           })}
         </div>
-        <p className="mt-6 text-center fm text-[11px] uppercase tracking-[0.16em] text-[#151a46]/50">
+        <p className="mt-6 text-center text-[11px] font-bold uppercase tracking-[0.16em] text-muted">
           credits never expire · billed securely via Paystack · receipts on every unlock
         </p>
       </section>
 
-      {/* ─── TRUST / PRIVACY ─── */}
-      <section className="mt-20 border-[3px] border-[#151a46] bg-white hs p-8 sm:p-10">
-        <RisoSectionLabel>trust & privacy</RisoSectionLabel>
-        <div className="grid gap-8 md:grid-cols-3">
-          {[
-            { icon: ShieldCheck, t: "100% opted in", d: "Every profile in the pool explicitly allowed recruiters to find them. Consent is timestamped and revocable — the moment someone opts out, they vanish from search." },
-            { icon: EyeOff, t: "Anonymized until unlock", d: "You see headlines, skills, experience, and match reasons — never names, photos, or contact details — until you spend a credit to unlock." },
-            { icon: Check, t: "Honest counts", d: "Every search shows the real number of excellent, strong, and moderate matches first. A small pool is labeled as a small, growing pool — never padded." },
-          ].map((c) => (
-            <div key={c.t} className="flex gap-4">
-              <span className="grid h-11 w-11 shrink-0 place-items-center border-[3px] border-[#151a46] bg-[#f6f5ef] text-[#151a46]">
-                <c.icon size={20} />
-              </span>
-              <div>
-                <h3 className="fh text-lg font-extrabold">{c.t}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-[#151a46]/65">{c.d}</p>
+      {/* ─── TRUST BAND ─── */}
+      <section className="py-[50px] md:py-[72px]">
+        <div className="rounded-[18px] bg-navy p-7 text-white shadow-[0_16px_38px_rgba(23,27,75,0.09)] md:p-10">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            {TRUST.map((c) => (
+              <div key={c.t}>
+                <strong className="text-[15px] font-extrabold">{c.t}</strong>
+                <p className="mt-2 text-[12px] leading-relaxed text-[#bfc2d5]">{c.d}</p>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ─── CTA BANNER ─── */}
-      <section className="mt-16 border-[3px] border-[#151a46] bg-[#151a46] hs-v p-10 text-center text-[#f6f5ef] sm:p-14">
-        <h2 className="fd text-4xl tracking-tight sm:text-5xl">Your next hire is one JD away.</h2>
-        <p className="mx-auto mt-4 max-w-lg text-[#f6f5ef]/70">
-          Create a free recruiter account, paste a job description, and see your
-          tiered shortlist in seconds. Pay only when you unlock.
-        </p>
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+      <section className="pb-[50px] md:pb-[72px]">
+        <div className="rounded-[18px] bg-navy px-7 py-12 text-center text-white shadow-[0_16px_38px_rgba(23,27,75,0.09)] md:py-16">
+          <h2 className="text-[30px] leading-[1.04] tracking-[-0.045em] sm:text-[40px]">
+            Your next hire is one JD away.
+          </h2>
+          <p className="mx-auto mt-[14px] max-w-[650px] text-[17px] leading-relaxed text-[#bfc2d5]">
+            Create a free recruiter account, paste a job description, and search verified candidates.
+          </p>
           <Link
             href="/recruiter/signup"
-            className="group flex items-center justify-center gap-2 border-[3px] border-[#f6f5ef] bg-[#f6f5ef] px-7 py-4 fh text-sm font-extrabold uppercase tracking-wider text-[#151a46] transition-all hover:bg-[#ffd85a] hover:border-[#ffd85a]"
+            className="mt-7 inline-flex items-center justify-center gap-2 rounded-[10px] bg-coral px-[18px] py-3 text-[12px] font-extrabold text-white transition-transform hover:-translate-y-px"
           >
-            Create account <ArrowUpRight size={17} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </Link>
-          <Link
-            href="/recruiter/login"
-            className="flex items-center justify-center gap-2 border-[3px] border-[#f6f5ef]/40 px-7 py-4 fh text-sm font-extrabold uppercase tracking-wider text-[#f6f5ef] transition-all hover:border-[#f6f5ef]"
-          >
-            Sign in
+            Create account <ArrowRight size={16} />
           </Link>
         </div>
       </section>
-    </RisoPage>
+    </V3Page>
   );
 }
