@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { V3Page, V3Eyebrow } from "@/components/v3/V3Chrome";
+import { GoogleIcon, LinkedInIcon, oauthErrorMessage } from "@/components/auth/ProviderIcons";
 import { ArrowRight, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -51,7 +52,7 @@ function RecruiterLoginInner() {
       options: { redirectTo: "https://cvyon.com/recruiter/dashboard" },
     });
     if (error) {
-      toast.error(error.message);
+      toast.error(oauthErrorMessage(provider, error.message));
       setLoading(false);
     }
   };
@@ -95,6 +96,7 @@ function RecruiterLoginInner() {
                   disabled={loading}
                   className="inline-flex items-center justify-center gap-2 rounded-[10px] border border-line bg-paper px-4 py-3 text-[12px] font-extrabold text-navy transition-all hover:border-brand hover:text-brand disabled:opacity-60"
                 >
+                  <GoogleIcon size={16} />
                   Google
                 </button>
                 <button
@@ -102,6 +104,7 @@ function RecruiterLoginInner() {
                   disabled={loading}
                   className="inline-flex items-center justify-center gap-2 rounded-[10px] border border-line bg-paper px-4 py-3 text-[12px] font-extrabold text-navy transition-all hover:border-brand hover:text-brand disabled:opacity-60"
                 >
+                  <LinkedInIcon size={16} />
                   LinkedIn
                 </button>
               </div>

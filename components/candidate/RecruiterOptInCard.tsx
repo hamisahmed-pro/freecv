@@ -1,6 +1,7 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import { Users, ShieldCheck, Loader2, Check, X, EyeOff } from "lucide-react";
+import { GoogleIcon, oauthErrorMessage } from "@/components/auth/ProviderIcons";
 import { supabase } from "@/lib/supabase";
 import { getRecruiterConsent, setRecruiterConsent, ApiError } from "@/lib/recruiter-api";
 import { cn } from "@/lib/utils";
@@ -64,7 +65,7 @@ export function RecruiterOptInCard({
         provider: "google",
         options: { redirectTo: `${window.location.origin}/build?optin=pending` },
       });
-      if (error) toast.error(error.message || "Sign-in failed");
+      if (error) toast.error(oauthErrorMessage("google", error.message || "Sign-in failed"));
       return;
     }
     setBusy(true);
@@ -194,7 +195,7 @@ export function RecruiterOptInCard({
           disabled={busy}
           className="flex flex-1 items-center justify-center gap-2 rounded-[10px] bg-navy px-6 py-3.5 text-sm font-extrabold uppercase tracking-wider text-white transition-all hover:bg-coral disabled:opacity-60"
         >
-          {busy ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+          {busy ? <Loader2 size={16} className="animate-spin" /> : status === "no-session" ? <GoogleIcon size={16} /> : <Check size={16} />}
           {status === "no-session" ? "Allow — sign in (free)" : "Allow recruiters to find me"}
         </button>
         <button
