@@ -10,8 +10,8 @@ import toast from "react-hot-toast";
 
 const TIER_STYLE: Record<MatchTier, { label: string; ring: string; border: string; text: string; bg: string }> = {
   excellent: { label: "Excellent", ring: "#0E8A4B", border: "border-[#0E8A4B]", text: "text-[#0E8A4B]", bg: "bg-[#0E8A4B]/10" },
-  strong: { label: "Strong", ring: "#5548f5", border: "border-[#5548f5]", text: "text-[#5548f5]", bg: "bg-[#5548f5]/10" },
-  moderate: { label: "Moderate", ring: "#151a46", border: "border-[#151a46]/40", text: "text-[#151a46]/70", bg: "bg-[#f6f5ef]" },
+  strong: { label: "Strong", ring: "#5548f5", border: "border-brand", text: "text-brand", bg: "bg-brand/10" },
+  moderate: { label: "Moderate", ring: "#151a46", border: "border-navy/40", text: "text-navy/70", bg: "bg-cream" },
 };
 
 export function ScoreRing({ score, ring, size = 68 }: { score: number; ring: string; size?: number }) {  const r = 26;
@@ -26,7 +26,7 @@ export function ScoreRing({ score, ring, size = 68 }: { score: number; ring: str
         strokeDasharray={`${fill} ${c.toFixed(1)}`} transform="rotate(-90 34 34)"
       />
       <text x="34" y="34" textAnchor="middle" dominantBaseline="central"
-        className="fh" fontSize="17" fontWeight="900" fill="#151a46">{pct}</text>
+        fontSize="17" fontWeight="900" fill="#151a46">{pct}</text>
     </svg>
   );
 }
@@ -100,25 +100,25 @@ export function MatchCard({
   };
 
   return (
-    <article className="flex flex-col border-[3px] border-[#151a46] bg-white hs">
+    <article className="flex flex-col rounded-2xl border border-line bg-paper shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
       {/* ── header: score ring + tier + identity ── */}
-      <div className="flex items-start gap-4 border-b-[3px] border-[#151a46] bg-[#f6f5ef]/60 p-5">
+      <div className="flex items-start gap-4 rounded-t-2xl border-b border-line bg-cream/60 p-5">
         <ScoreRing score={match.score} ring={tier.ring} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className={cn("border-2 px-2 py-0.5 fm text-[10px] font-bold uppercase tracking-[0.16em]", tier.border, tier.text, tier.bg)}>
+            <span className={cn("rounded-full border px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em]", tier.border, tier.text, tier.bg)}>
               {tier.label}
             </span>
-            <span className="border-2 border-[#151a46] bg-[#f6f5ef] px-2 py-0.5 fm text-[10px] font-bold uppercase tracking-[0.16em] text-[#151a46]/70">
+            <span className="rounded-full border border-line bg-cream px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-navy/70">
               {p.completenessScore}% profile
             </span>
           </div>
-          <h3 className="fh mt-2 text-lg font-extrabold leading-tight tracking-tight text-[#151a46]">{p.headline || "Candidate"}</h3>
-          <div className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-[#151a46]/75">
-            <Briefcase size={13} className="shrink-0 text-[#5548f5]" />
+          <h3 className="mt-2 text-lg font-extrabold leading-tight tracking-tight text-navy">{p.headline || "Candidate"}</h3>
+          <div className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-navy/75">
+            <Briefcase size={13} className="shrink-0 text-brand" />
             <span className="truncate">{p.currentTitle || "—"}</span>
           </div>
-          <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 fm text-[11px] uppercase tracking-wider text-[#151a46]/70">
+          <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-bold uppercase tracking-wider text-navy/70">
             {(p.location || p.country) && (
               <span className="flex items-center gap-1"><MapPin size={12} /> {[p.location, p.country].filter(Boolean).join(", ")}</span>
             )}
@@ -131,30 +131,30 @@ export function MatchCard({
         {/* ── skill-match bars ── */}
         {matched.length > 0 && (
           <div>
-            <div className="fm mb-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#0E8A4B]">
+            <div className="mb-1.5 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#0E8A4B]">
               Matched ({matched.length})
             </div>
             <div className="flex flex-wrap gap-1.5">
               {matched.slice(0, 8).map((s) => (
-                <span key={s} className="border-2 border-[#0E8A4B] bg-[#0E8A4B]/10 px-2 py-0.5 fm text-[9px] font-bold uppercase tracking-[0.14em] text-[#0E8A4B]">{s}</span>
+                <span key={s} className="rounded-full border border-[#0E8A4B] bg-[#0E8A4B]/10 px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.14em] text-[#0E8A4B]">{s}</span>
               ))}
               {matched.length > 8 && (
-                <span className="px-1 py-0.5 fm text-[9px] font-bold uppercase tracking-[0.14em] text-[#0E8A4B]/70">+{matched.length - 8} more</span>
+                <span className="px-1 py-1 text-[9px] font-extrabold uppercase tracking-[0.14em] text-[#0E8A4B]/70">+{matched.length - 8} more</span>
               )}
             </div>
           </div>
         )}
         {missing.length > 0 && (
           <div className="mt-3">
-            <div className="fm mb-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#151a46]/50">
+            <div className="mb-1.5 text-[10px] font-extrabold uppercase tracking-[0.18em] text-navy/50">
               Missing ({missing.length})
             </div>
             <div className="flex flex-wrap gap-1.5">
               {missing.slice(0, 8).map((s) => (
-                <span key={s} className="border-2 border-dashed border-[#151a46]/35 px-2 py-0.5 fm text-[9px] font-bold uppercase tracking-[0.14em] text-[#151a46]/50">{s}</span>
+                <span key={s} className="rounded-full border border-dashed border-navy/25 px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.14em] text-navy/50">{s}</span>
               ))}
               {missing.length > 8 && (
-                <span className="px-1 py-0.5 fm text-[9px] font-bold uppercase tracking-[0.14em] text-[#151a46]/40">+{missing.length - 8} more</span>
+                <span className="px-1 py-1 text-[9px] font-extrabold uppercase tracking-[0.14em] text-navy/40">+{missing.length - 8} more</span>
               )}
             </div>
           </div>
@@ -164,7 +164,7 @@ export function MatchCard({
         {match.reasons.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-1.5">
             {match.reasons.map((r, i) => (
-              <span key={i} className="flex items-center gap-1.5 border-2 border-[#151a46] bg-white px-2 py-1 text-[11px] font-medium text-[#151a46]/80">
+              <span key={i} className="flex items-center gap-1.5 rounded-full border border-line bg-paper px-2.5 py-1.5 text-[11px] font-medium text-navy/80">
                 <Check size={12} className="shrink-0 text-[#0E8A4B]" /> {r}
               </span>
             ))}
@@ -179,10 +179,10 @@ export function MatchCard({
             aria-label={shortlisted ? "Remove from shortlist" : "Shortlist candidate"}
             title={shortlisted ? "Remove from shortlist" : "Shortlist candidate"}
             className={cn(
-              "grid h-[46px] w-[46px] shrink-0 place-items-center border-[3px] transition-all",
+              "grid h-[46px] w-[46px] shrink-0 place-items-center rounded-[10px] border transition-transform hover:-translate-y-px",
               shortlisted
-                ? "border-[#151a46] bg-[#ffd85a] text-[#151a46]"
-                : "border-[#151a46]/30 bg-white text-[#151a46]/40 hover:border-[#151a46] hover:text-[#151a46]",
+                ? "border-navy bg-gold text-navy"
+                : "border-line bg-paper text-navy/40 hover:border-navy hover:text-navy",
             )}
           >
             {shortlistBusy ? <Loader2 size={16} className="animate-spin" /> : <Bookmark size={16} fill={shortlisted ? "currentColor" : "none"} />}
@@ -193,13 +193,13 @@ export function MatchCard({
               disabled={compareDisabled}
               aria-pressed={compareSelected}
               className={cn(
-                "flex flex-1 items-center justify-center gap-2 border-[3px] px-3 fh text-[11px] font-extrabold uppercase tracking-wider transition-all disabled:opacity-40",
+                "flex flex-1 items-center justify-center gap-2 rounded-[10px] border px-3 text-[11px] font-extrabold uppercase tracking-wider transition-transform hover:-translate-y-px disabled:opacity-40",
                 compareSelected
-                  ? "border-[#151a46] bg-[#5548f5] text-white"
-                  : "border-[#151a46]/30 bg-white text-[#151a46]/60 hover:border-[#151a46] hover:text-[#151a46]",
+                  ? "border-brand bg-brand text-white shadow-[0_8px_18px_rgba(85,72,245,0.22)]"
+                  : "border-line bg-paper text-navy/60 hover:border-navy hover:text-navy",
               )}
             >
-              <span className={cn("grid h-4 w-4 place-items-center border-2", compareSelected ? "border-white bg-white text-[#5548f5]" : "border-current")}>
+              <span className={cn("grid h-4 w-4 place-items-center rounded-[4px] border", compareSelected ? "border-white bg-white text-brand" : "border-current")}>
                 {compareSelected && <Check size={12} strokeWidth={3} />}
               </span>
               Compare
@@ -210,7 +210,7 @@ export function MatchCard({
               onClick={handleUnlock}
               disabled={unlocking}
               className={cn(
-                "flex flex-1 items-center justify-center gap-2 border-[3px] border-[#151a46] bg-[#151a46] px-3 fh text-[11px] font-extrabold uppercase tracking-wider text-[#f6f5ef] transition-all hover:bg-[#ff604b] hover:border-[#ff604b] disabled:opacity-60",
+                "flex flex-1 items-center justify-center gap-2 rounded-[10px] bg-navy px-3 text-[11px] font-extrabold uppercase tracking-wider text-white transition-transform hover:-translate-y-px hover:bg-coral disabled:opacity-60",
                 onToggleCompare ? "" : "flex-[2]",
               )}
             >
@@ -222,24 +222,24 @@ export function MatchCard({
 
         {/* ── inline contact reveal ── */}
         {contact ? (
-          <div className="mt-3 border-[3px] border-[#0E8A4B] bg-[#0E8A4B]/10 p-4">
-            <div className="fm mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#0E8A4B]">
+          <div className="mt-3 rounded-2xl border border-[#0E8A4B]/40 bg-[#0E8A4B]/10 p-4">
+            <div className="mb-2 flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#0E8A4B]">
               <Unlock size={12} /> contact unlocked
             </div>
             <div className="space-y-1.5 text-sm">
-              <div className="flex items-center gap-2 font-bold text-[#151a46]"><User size={14} className="text-[#151a46]/50" /> {contact.fullName}</div>
-              <a href={`mailto:${contact.email}`} className="flex items-center gap-2 font-semibold text-[#5548f5] hover:underline">
-                <Mail size={14} className="text-[#151a46]/50" /> {contact.email}
+              <div className="flex items-center gap-2 font-bold text-navy"><User size={14} className="text-navy/50" /> {contact.fullName}</div>
+              <a href={`mailto:${contact.email}`} className="flex items-center gap-2 font-semibold text-brand hover:underline">
+                <Mail size={14} className="text-navy/50" /> {contact.email}
               </a>
               {contact.phone && (
-                <a href={`tel:${contact.phone}`} className="flex items-center gap-2 font-semibold text-[#5548f5] hover:underline">
-                  <Phone size={14} className="text-[#151a46]/50" /> {contact.phone}
+                <a href={`tel:${contact.phone}`} className="flex items-center gap-2 font-semibold text-brand hover:underline">
+                  <Phone size={14} className="text-navy/50" /> {contact.phone}
                 </a>
               )}
             </div>
           </div>
         ) : (
-          <p className="mt-2 text-center fm text-[10px] uppercase tracking-[0.14em] text-[#151a46]/45">
+          <p className="mt-2 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-navy/45">
             name & contact stay hidden until unlock
           </p>
         )}

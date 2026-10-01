@@ -7,29 +7,29 @@ import { cn } from "@/lib/utils";
 
 const TIER_META: Record<MatchTier, { label: string; ring: string; badge: string }> = {
   excellent: { label: "Excellent", ring: "#0E8A4B", badge: "border-[#0E8A4B] text-[#0E8A4B] bg-[#0E8A4B]/10" },
-  strong: { label: "Strong", ring: "#5548f5", badge: "border-[#5548f5] text-[#5548f5] bg-[#5548f5]/10" },
-  moderate: { label: "Moderate", ring: "#151a46", badge: "border-[#151a46]/40 text-[#151a46]/70 bg-[#f6f5ef]" },
+  strong: { label: "Strong", ring: "#5548f5", badge: "border-brand text-brand bg-brand/10" },
+  moderate: { label: "Moderate", ring: "#151a46", badge: "border-navy/40 text-navy/70 bg-cream" },
 };
 
 function chips(list: string[], kind: "matched" | "missing") {
   return (
     <div className="flex flex-wrap gap-1.5">
-      {list.length === 0 && <span className="text-xs text-[#151a46]/40">—</span>}
+      {list.length === 0 && <span className="text-xs text-navy/40">—</span>}
       {list.slice(0, 10).map((s) => (
         <span
           key={s}
           className={cn(
-            "border-2 px-2 py-0.5 fm text-[9px] font-bold uppercase tracking-[0.14em]",
+            "rounded-full border px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.14em]",
             kind === "matched"
               ? "border-[#0E8A4B] bg-[#0E8A4B]/10 text-[#0E8A4B]"
-              : "border-dashed border-[#151a46]/35 text-[#151a46]/50",
+              : "border-dashed border-navy/25 text-navy/50",
           )}
         >
           {s}
         </span>
       ))}
       {list.length > 10 && (
-        <span className="px-1 py-0.5 fm text-[9px] font-bold text-[#151a46]/45">+{list.length - 10} more</span>
+        <span className="px-1 py-1 text-[9px] font-extrabold text-navy/45">+{list.length - 10} more</span>
       )}
     </div>
   );
@@ -62,16 +62,16 @@ export function CompareTab({
   if (candidates.length === 0) {
     return (
       <div className="py-8">
-        <div className="border-[3px] border-[#151a46] bg-white hs py-20 text-center">
-          <GitCompare size={40} className="mx-auto mb-3 text-[#151a46]/30" />
-          <p className="fh text-lg font-extrabold">Nothing to compare yet.</p>
-          <p className="mx-auto mt-1 max-w-sm text-sm text-[#151a46]/60">
+        <div className="rounded-2xl border border-line bg-paper py-20 text-center shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
+          <GitCompare size={40} className="mx-auto mb-3 text-navy/30" />
+          <p className="text-lg font-extrabold tracking-tight">Nothing to compare yet.</p>
+          <p className="mx-auto mt-1 max-w-sm text-sm text-navy/60">
             Select up to 3 candidates from your search results to compare them side by side.
           </p>
           {onBack && (
             <button
               onClick={onBack}
-              className="mt-6 inline-flex items-center gap-2 border-[3px] border-[#151a46] bg-[#151a46] px-6 py-3 fh text-xs font-extrabold uppercase tracking-wider text-[#f6f5ef] hover:bg-[#ff604b] hover:border-[#ff604b]"
+              className="mt-6 inline-flex items-center gap-2 rounded-[10px] bg-navy px-6 py-3 text-xs font-extrabold uppercase tracking-wider text-white transition-transform hover:-translate-y-px hover:bg-coral"
             >
               <ArrowLeft size={14} /> Back to search
             </button>
@@ -91,7 +91,7 @@ export function CompareTab({
         return <ScoreRing score={m.score} ring={tier.ring} size={52} />;
       case "tier":
         return (
-          <span className={cn("border-2 px-2 py-0.5 fm text-[10px] font-bold uppercase tracking-[0.16em]", tier.badge)}>
+          <span className={cn("rounded-full border px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em]", tier.badge)}>
             {tier.label}
           </span>
         );
@@ -100,7 +100,7 @@ export function CompareTab({
       case "location":
         return (
           <span className="flex items-center gap-1 text-sm">
-            <MapPin size={13} className="shrink-0 text-[#151a46]/50" />
+            <MapPin size={13} className="shrink-0 text-navy/50" />
             {[p.location, p.country].filter(Boolean).join(", ") || "—"}
           </span>
         );
@@ -113,9 +113,9 @@ export function CompareTab({
       case "reasons":
         return (
           <ul className="space-y-1.5">
-            {m.reasons.length === 0 && <li className="text-xs text-[#151a46]/40">—</li>}
+            {m.reasons.length === 0 && <li className="text-xs text-navy/40">—</li>}
             {m.reasons.map((r, i) => (
-              <li key={i} className="flex items-start gap-1.5 text-xs text-[#151a46]/80">
+              <li key={i} className="flex items-start gap-1.5 text-xs text-navy/80">
                 <Check size={12} className="mt-0.5 shrink-0 text-[#0E8A4B]" /> {r}
               </li>
             ))}
@@ -128,24 +128,24 @@ export function CompareTab({
 
   return (
     <div className="py-8">
-      <div className="overflow-x-auto border-[3px] border-[#151a46] bg-white hs">
+      <div className="overflow-x-auto rounded-2xl border border-line bg-paper shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
         <table className="w-full min-w-[640px] border-collapse text-left">
           <thead>
-            <tr className="border-b-[3px] border-[#151a46]">
-              <th className="sticky left-0 z-10 w-36 border-r-[3px] border-[#151a46] bg-[#f6f5ef] px-4 py-4 fm text-[10px] font-bold uppercase tracking-[0.18em] text-[#151a46]/60">
+            <tr className="border-b border-line">
+              <th className="sticky left-0 z-10 w-36 border-r border-line bg-cream px-4 py-4 text-[10px] font-extrabold uppercase tracking-[0.18em] text-navy/60">
                 &nbsp;
               </th>
               {shown.map((m) => (
-                <th key={m.profileId} className="min-w-[220px] bg-[#151a46] px-4 py-4 align-top text-[#f6f5ef]">
+                <th key={m.profileId} className="min-w-[220px] bg-navy px-4 py-4 align-top text-white">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <div className="fh truncate text-base font-extrabold tracking-tight">{m.profile.headline || "Candidate"}</div>
-                      <div className="fm mt-1 text-[10px] uppercase tracking-[0.14em] text-[#f6f5ef]/60">anonymized</div>
+                      <div className="truncate text-base font-extrabold tracking-tight">{m.profile.headline || "Candidate"}</div>
+                      <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white/60">anonymized</div>
                     </div>
                     <button
                       onClick={() => onRemove(m.profileId)}
                       aria-label="Remove from comparison"
-                      className="grid h-8 w-8 shrink-0 place-items-center border-2 border-[#f6f5ef]/40 text-[#f6f5ef]/70 transition-colors hover:border-[#ff604b] hover:bg-[#ff604b] hover:text-white"
+                      className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] border border-white/40 text-white/70 transition-colors hover:border-coral hover:bg-coral hover:text-white"
                     >
                       <X size={14} />
                     </button>
@@ -156,8 +156,8 @@ export function CompareTab({
           </thead>
           <tbody>
             {ROWS.map((row, ri) => (
-              <tr key={row.key} className={cn("border-b-2 border-[#151a46]/10 last:border-0", ri % 2 === 1 && "bg-[#f6f5ef]/40")}>
-                <th className="sticky left-0 z-10 border-r-[3px] border-[#151a46] bg-[#f6f5ef] px-4 py-4 fm text-[10px] font-bold uppercase tracking-[0.16em] text-[#151a46]/70">
+              <tr key={row.key} className={cn("border-b border-navy/10 last:border-0", ri % 2 === 1 && "bg-cream/40")}>
+                <th className="sticky left-0 z-10 border-r border-line bg-cream px-4 py-4 text-[10px] font-extrabold uppercase tracking-[0.16em] text-navy/70">
                   {row.label}
                 </th>
                 {shown.map((m) => (
@@ -170,7 +170,7 @@ export function CompareTab({
           </tbody>
         </table>
       </div>
-      <p className="mt-3 fm text-[10px] uppercase tracking-[0.16em] text-[#151a46]/50">
+      <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.16em] text-navy/50">
         anonymized · unlock from a search to reveal contact details
       </p>
     </div>

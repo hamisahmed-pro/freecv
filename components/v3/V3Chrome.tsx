@@ -65,13 +65,8 @@ export function V3Nav({
       />
       <header className="sticky top-0 z-40 border-b border-line bg-cream/95 backdrop-blur-md">
         <div className="mx-auto flex h-[72px] max-w-[1120px] items-center justify-between gap-6 px-5">
-          <Link href="/" className="flex items-center gap-2.5" aria-label="Cvyon home">
-            <Logo size={30} wordSize={22} />
-            {logoSub && (
-              <span className="mt-3 text-[9px] font-extrabold uppercase tracking-[0.14em] text-muted">
-                {logoSub}
-              </span>
-            )}
+          <Link href="/" className="flex items-center" aria-label="Cvyon home">
+            <Logo size={30} wordSize={22} sub={logoSub} />
           </Link>
           <nav className="hidden items-center gap-7 md:flex">
             {links.map((l) => (

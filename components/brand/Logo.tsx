@@ -12,19 +12,21 @@ export function LogoMark({ size = 30, className }: { size?: number; className?: 
   );
 }
 
-/** Full v3 lockup: mark + "cvyon" wordmark. */
+/** Full v3 lockup: mark + "cvyon" wordmark, with optional small tagline underneath (mockup style). */
 export function Logo({
   size = 30,
   wordSize = 22,
   dark = false,
   className,
   wordClassName,
+  sub,
 }: {
   size?: number;
   wordSize?: number;
   dark?: boolean;
   className?: string;
   wordClassName?: string;
+  sub?: string;
 }) {
   return (
     <span className={cn("inline-flex items-center gap-2", className)} aria-label="Cvyon">
@@ -41,6 +43,20 @@ export function Logo({
         }}
       >
         cvyon
+        {sub && (
+          <small
+            style={{
+              display: "block",
+              fontSize: 9,
+              letterSpacing: ".14em",
+              color: "#73778c",
+              fontWeight: 800,
+              marginTop: -3,
+            }}
+          >
+            {sub}
+          </small>
+        )}
       </span>
     </span>
   );

@@ -107,14 +107,14 @@ function SearchRow({
     }
   };
 
-  const iconBtn = "grid h-10 w-10 place-items-center border-[3px] transition-all disabled:opacity-50";
+  const iconBtn = "grid h-10 w-10 place-items-center rounded-[10px] border border-line bg-paper transition-all disabled:opacity-50";
 
   return (
-    <div className="border-[3px] border-[#151a46] bg-white hs p-5 sm:p-6">
+    <div className="rounded-2xl border border-line bg-paper p-5 shadow-[0_8px_22px_rgba(23,27,75,0.08)] sm:p-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <FileText size={16} className="shrink-0 text-[#5548f5]" />
+            <FileText size={16} className="shrink-0 text-brand" />
             {renaming ? (
               <div className="flex flex-1 items-center gap-2">
                 <input
@@ -122,56 +122,56 @@ function SearchRow({
                   onChange={(e) => setTitleDraft(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") handleRename(); if (e.key === "Escape") setRenaming(false); }}
                   autoFocus
-                  className="min-w-0 flex-1 border-[3px] border-[#151a46] bg-white px-3 py-1.5 fh text-base font-extrabold text-[#151a46] outline-none focus:border-[#ff604b]"
+                  className="min-w-0 flex-1 rounded-[10px] border border-line bg-paper px-3 py-1.5 text-base font-extrabold tracking-tight text-navy outline-none focus:border-coral"
                 />
                 <button onClick={handleRename} disabled={busy !== null} aria-label="Save title"
-                  className={cn(iconBtn, "border-[#151a46] bg-[#0E8A4B] text-white hover:bg-[#151a46]")}>
+                  className={cn(iconBtn, "bg-teal text-white hover:bg-navy")}>
                   {busy === "rename" ? <Loader2 size={15} className="animate-spin" /> : <Check size={15} />}
                 </button>
                 <button onClick={() => setRenaming(false)} aria-label="Cancel rename"
-                  className={cn(iconBtn, "border-[#151a46]/30 text-[#151a46]/60 hover:border-[#151a46] hover:text-[#151a46]")}>
+                  className={cn(iconBtn, "text-navy/60 hover:text-navy")}>
                   <X size={15} />
                 </button>
               </div>
             ) : (
-              <h3 className="fh truncate text-lg font-extrabold tracking-tight">{s.jobTitle || "Untitled search"}</h3>
+              <h3 className="truncate text-lg font-extrabold tracking-tight text-navy">{s.jobTitle || "Untitled search"}</h3>
             )}
           </div>
-          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 fm text-[11px] uppercase tracking-wider text-[#151a46]/60">
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-semibold uppercase tracking-wider text-navy/60">
             {s.location && <span className="flex items-center gap-1"><MapPin size={11} /> {s.location}</span>}
             {s.createdAt && <span className="flex items-center gap-1"><CalendarDays size={11} /> {new Date(s.createdAt).toLocaleDateString()}</span>}
             {s.counts?.total != null && <span>{fmtN(s.counts.total)} matches</span>}
           </div>
-          {s.jobDescription && <p className="mt-3 line-clamp-2 text-sm text-[#151a46]/65">{s.jobDescription}</p>}
+          {s.jobDescription && <p className="mt-3 line-clamp-2 text-sm text-navy/65">{s.jobDescription}</p>}
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">
           <button
             onClick={() => onRerun(s)}
-            className="flex items-center gap-2 border-[3px] border-[#151a46] bg-[#151a46] px-4 py-2.5 fh text-[11px] font-extrabold uppercase tracking-wider text-[#f6f5ef] transition-all hover:bg-[#ff604b] hover:border-[#ff604b]"
+            className="flex items-center gap-2 rounded-[10px] bg-navy px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-wider text-white transition-all hover:bg-coral"
           >
             <Play size={13} /> Run
           </button>
           <button
             onClick={handleToggleSaved}
             className={cn(
-              "flex items-center gap-2 border-[3px] px-4 py-2.5 fh text-[11px] font-extrabold uppercase tracking-wider transition-all",
+              "flex items-center gap-2 rounded-[10px] border px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-wider transition-all",
               s.saved
-                ? "border-[#151a46] bg-[#ffd85a] text-[#151a46]"
-                : "border-[#151a46]/30 bg-white text-[#151a46]/60 hover:border-[#151a46] hover:text-[#151a46]",
+                ? "border-navy bg-gold text-navy"
+                : "border-line bg-paper text-navy/60 hover:border-navy hover:text-navy",
             )}
           >
             <Bookmark size={13} fill={s.saved ? "currentColor" : "none"} /> {s.saved ? "Saved" : "Save"}
           </button>
           <button onClick={() => { setTitleDraft(s.jobTitle || ""); setRenaming(true); }} aria-label="Rename search" title="Rename"
-            className={cn(iconBtn, "border-[#151a46]/30 text-[#151a46]/60 hover:border-[#151a46] hover:text-[#151a46]")}>
+            className={cn(iconBtn, "text-navy/60 hover:text-navy")}>
             <Pencil size={15} />
           </button>
           <button onClick={handleDuplicate} disabled={busy !== null} aria-label="Duplicate search" title="Duplicate"
-            className={cn(iconBtn, "border-[#151a46]/30 text-[#151a46]/60 hover:border-[#151a46] hover:text-[#151a46]")}>
+            className={cn(iconBtn, "text-navy/60 hover:text-navy")}>
             {busy === "duplicate" ? <Loader2 size={15} className="animate-spin" /> : <Copy size={15} />}
           </button>
           <button onClick={handleDelete} disabled={busy !== null} aria-label="Delete search" title="Delete"
-            className={cn(iconBtn, "border-[#151a46]/30 text-[#151a46]/60 hover:border-[#ff604b] hover:bg-[#ff604b] hover:text-white")}>
+            className={cn(iconBtn, "text-navy/60 hover:border-coral hover:bg-coral hover:text-white")}>
             {busy === "delete" ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
           </button>
         </div>
@@ -428,9 +428,9 @@ export default function RecruiterDashboard() {
 
   if (loading) {
     return shell(
-      <div className="flex flex-col items-center gap-3 py-32 text-[#151a46]/60">
-        <Loader2 size={30} className="animate-spin text-[#5548f5]" />
-        <span className="fm text-[11px] font-bold uppercase tracking-[0.2em]">loading…</span>
+      <div className="flex flex-col items-center gap-3 py-32 text-navy/60">
+        <Loader2 size={30} className="animate-spin text-brand" />
+        <span className="text-[11px] font-bold uppercase tracking-[0.2em]">loading…</span>
       </div>
     );
   }
@@ -439,9 +439,9 @@ export default function RecruiterDashboard() {
     // The redirect is handled by the effect above; this shell only covers the
     // brief moment between the session resolving to null and the navigation.
     return shell(
-      <div className="flex flex-col items-center gap-3 py-32 text-[#151a46]/60">
-        <Loader2 size={30} className="animate-spin text-[#5548f5]" />
-        <span className="fm text-[11px] font-bold uppercase tracking-[0.2em]">redirecting…</span>
+      <div className="flex flex-col items-center gap-3 py-32 text-navy/60">
+        <Loader2 size={30} className="animate-spin text-brand" />
+        <span className="text-[11px] font-bold uppercase tracking-[0.2em]">redirecting…</span>
       </div>
     );
   }
@@ -538,34 +538,34 @@ export default function RecruiterDashboard() {
           {result && !bootSearching && (
             <div id="jd-results" className="mt-10 scroll-mt-24">
               {/* extracted JD summary */}
-              <div className="border-[3px] border-[#151a46] bg-[#151a46] p-5 text-[#f6f5ef] sm:p-6">
-                <div className="fm mb-3 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.22em] text-[#ffd85a]">
+              <div className="rounded-2xl bg-navy p-5 text-white shadow-[0_16px_38px_rgba(23,27,75,0.25)] sm:p-6">
+                <div className="mb-3 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.22em] text-gold">
                   <span>§ what we read in your JD</span>
-                  <button onClick={handleSaveSearch} className="flex items-center gap-1.5 border-2 border-[#ffd85a] px-2.5 py-1 text-[#ffd85a] transition-colors hover:bg-[#ffd85a] hover:text-[#151a46]">
+                  <button onClick={handleSaveSearch} className="flex items-center gap-1.5 rounded-full border border-gold/60 px-2.5 py-1 text-gold transition-colors hover:bg-gold hover:text-navy">
                     <Bookmark size={12} /> Save search
                   </button>
                 </div>
-                <div className="fh text-xl font-extrabold tracking-tight">{result.extracted.title || input?.jobTitle || "Your role"}</div>
-                <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 fm text-[11px] uppercase tracking-wider text-[#f6f5ef]/70">
+                <div className="text-xl font-extrabold tracking-tight">{result.extracted.title || input?.jobTitle || "Your role"}</div>
+                <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[11px] font-semibold uppercase tracking-wider text-white/70">
                   {result.extracted.location && <span className="flex items-center gap-1"><MapPin size={12} /> {result.extracted.location}</span>}
                   {result.extracted.minYears != null && <span>{result.extracted.minYears}{result.extracted.maxYears ? `–${result.extracted.maxYears}` : "+"} yrs</span>}
                 </div>
                 {result.extracted.mustHaveSkills.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-2">
                     {result.extracted.mustHaveSkills.map((s) => (
-                      <span key={s} className="border-2 border-[#ffd85a] px-2 py-1 fm text-[9px] font-bold uppercase tracking-[0.16em] text-[#ffd85a]">{s}</span>
+                      <span key={s} className="rounded-full border border-gold/60 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.16em] text-gold">{s}</span>
                     ))}
                   </div>
                 )}
               </div>
 
               {/* honest counts */}
-              <div className="mt-6 border-[3px] border-[#151a46] bg-white hs p-6">
-                <div className="fd text-3xl tracking-tight sm:text-4xl">
+              <div className="mt-6 rounded-2xl border border-line bg-paper p-6 shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
+                <div className="text-3xl font-black tracking-tight text-navy sm:text-4xl">
                   {fmtN(result.counts.total)} candidate{result.counts.total === 1 ? "" : "s"}
-                  <span className="text-[#151a46]/50"> — {fmtN(result.counts.excellent)} excellent, {fmtN(result.counts.strong)} strong, {fmtN(result.counts.moderate)} moderate</span>
+                  <span className="text-navy/50"> — {fmtN(result.counts.excellent)} excellent, {fmtN(result.counts.strong)} strong, {fmtN(result.counts.moderate)} moderate</span>
                 </div>
-                <p className="mt-2 text-sm text-[#151a46]/60">
+                <p className="mt-2 text-sm text-navy/60">
                   {result.counts.total === 0
                     ? "No candidates match this JD yet. Try broadening the description — the pool grows daily as job seekers join."
                     : "Counts from this exact search — the pool grows daily as job seekers join."}
@@ -574,18 +574,18 @@ export default function RecruiterDashboard() {
 
               {/* tiered groups */}
               {grouped.length === 0 ? (
-                <div className="mt-8 border-[3px] border-[#151a46] bg-white hs py-20 text-center">
-                  <Users size={40} className="mx-auto mb-3 text-[#151a46]/30" />
-                  <p className="fh text-lg font-extrabold">No matching candidates yet.</p>
-                  <p className="mt-1 text-sm text-[#151a46]/60">Try a broader description or a different location.</p>
+                <div className="mt-8 rounded-2xl border border-line bg-paper py-20 text-center shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
+                  <Users size={40} className="mx-auto mb-3 text-navy/30" />
+                  <p className="text-lg font-extrabold tracking-tight text-navy">No matching candidates yet.</p>
+                  <p className="mt-1 text-sm text-navy/60">Try a broader description or a different location.</p>
                 </div>
               ) : (
                 grouped.map((g) => (
                   <div key={g.tier} className="mt-10">
                     <div className="mb-4 flex items-center gap-3">
-                      <h2 className="fd text-2xl tracking-tight sm:text-3xl">{TIER_LABEL[g.tier]}</h2>
-                      <span className="border-2 border-[#151a46] bg-white px-2.5 py-1 fm text-[11px] font-bold">{g.items.length}</span>
-                      <span className="h-[3px] flex-1 bg-[#151a46]/15" />
+                      <h2 className="text-2xl font-black tracking-tight text-navy sm:text-3xl">{TIER_LABEL[g.tier]}</h2>
+                      <span className="rounded-full border border-line bg-paper px-2.5 py-1 text-[11px] font-bold text-navy">{g.items.length}</span>
+                      <span className="h-px flex-1 bg-navy/15" />
                     </div>
                     <div className="grid gap-6 md:grid-cols-2">
                       {g.items.map((m) => (
@@ -610,7 +610,7 @@ export default function RecruiterDashboard() {
                   <button
                     onClick={handleLoadMore}
                     disabled={loadingMore}
-                    className="inline-flex items-center gap-2 border-[3px] border-[#151a46] bg-white px-8 py-4 fh text-sm font-extrabold uppercase tracking-wider hs transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-[10px] border border-line bg-paper px-8 py-4 text-sm font-extrabold uppercase tracking-wider text-navy shadow-[0_8px_22px_rgba(23,27,75,0.08)] transition-all hover:-translate-y-px disabled:opacity-60"
                   >
                     {loadingMore ? <Loader2 size={16} className="animate-spin" /> : null}
                     Show more ({fmtN(result.counts.total - result.matches.length)} remaining)
@@ -621,10 +621,10 @@ export default function RecruiterDashboard() {
           )}
 
           {!result && !bootSearching && (
-            <div className="mt-8 border-[3px] border-dashed border-[#151a46]/35 bg-white/50 p-10 text-center">
-              <Search size={36} className="mx-auto mb-3 text-[#151a46]/25" />
-              <p className="fh text-lg font-extrabold">Paste a job description to begin.</p>
-              <p className="mx-auto mt-1 max-w-sm text-sm text-[#151a46]/60">
+            <div className="mt-8 rounded-2xl border border-dashed border-navy/35 bg-paper/50 p-10 text-center">
+              <Search size={36} className="mx-auto mb-3 text-navy/25" />
+              <p className="text-lg font-extrabold tracking-tight text-navy">Paste a job description to begin.</p>
+              <p className="mx-auto mt-1 max-w-sm text-sm text-navy/60">
                 Searching is free. You&apos;ll see real tiered counts before spending a single credit.
               </p>
             </div>
@@ -660,13 +660,13 @@ export default function RecruiterDashboard() {
           {listsLoading ? (
             <ResultListSkeleton />
           ) : (tab === "saved" ? savedSearches : historySearches).length === 0 ? (
-            <div className="border-[3px] border-[#151a46] bg-white hs py-20 text-center">
-              {tab === "saved" ? <Bookmark size={40} className="mx-auto mb-3 text-[#151a46]/30" /> : <History size={40} className="mx-auto mb-3 text-[#151a46]/30" />}
-              <p className="fh text-lg font-extrabold">{tab === "saved" ? "No saved searches yet." : "No search history yet."}</p>
-              <p className="mt-1 text-sm text-[#151a46]/60">
+            <div className="rounded-2xl border border-line bg-paper py-20 text-center shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
+              {tab === "saved" ? <Bookmark size={40} className="mx-auto mb-3 text-navy/30" /> : <History size={40} className="mx-auto mb-3 text-navy/30" />}
+              <p className="text-lg font-extrabold tracking-tight text-navy">{tab === "saved" ? "No saved searches yet." : "No search history yet."}</p>
+              <p className="mt-1 text-sm text-navy/60">
                 {tab === "saved" ? "Run a JD search, then hit “Save search” to pin it here." : "Your past JD searches will appear here."}
               </p>
-              <button onClick={() => setTab("search")} className="mt-6 inline-flex items-center gap-2 border-[3px] border-[#151a46] bg-[#151a46] px-6 py-3 fh text-xs font-extrabold uppercase tracking-wider text-[#f6f5ef] hover:bg-[#ff604b] hover:border-[#ff604b]">
+              <button onClick={() => setTab("search")} className="mt-6 inline-flex items-center gap-2 rounded-[10px] bg-navy px-6 py-3 text-xs font-extrabold uppercase tracking-wider text-white transition-all hover:-translate-y-px hover:bg-coral">
                 New search <ArrowRight size={14} />
               </button>
             </div>
@@ -686,16 +686,16 @@ export default function RecruiterDashboard() {
           {listsLoading ? (
             <TableSkeleton />
           ) : unlocks.length === 0 ? (
-            <div className="border-[3px] border-[#151a46] bg-white hs py-20 text-center">
-              <Unlock size={40} className="mx-auto mb-3 text-[#151a46]/30" />
-              <p className="fh text-lg font-extrabold">No unlocks yet.</p>
-              <p className="mt-1 text-sm text-[#151a46]/60">Unlocked contacts appear here with receipts.</p>
+            <div className="rounded-2xl border border-line bg-paper py-20 text-center shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
+              <Unlock size={40} className="mx-auto mb-3 text-navy/30" />
+              <p className="text-lg font-extrabold tracking-tight text-navy">No unlocks yet.</p>
+              <p className="mt-1 text-sm text-navy/60">Unlocked contacts appear here with receipts.</p>
             </div>
           ) : (
-            <div className="overflow-x-auto border-[3px] border-[#151a46] bg-white hs">
+            <div className="overflow-x-auto rounded-2xl border border-line bg-paper shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
               <table className="w-full min-w-[560px] text-left text-sm">
                 <thead>
-                  <tr className="border-b-[3px] border-[#151a46] bg-[#f6f5ef] fm text-[10px] font-bold uppercase tracking-[0.18em] text-[#151a46]/60">
+                  <tr className="border-b border-line bg-cream text-[10px] font-bold uppercase tracking-[0.18em] text-navy/60">
                     <th className="px-5 py-3">Candidate</th>
                     <th className="px-5 py-3">Contact</th>
                     <th className="px-5 py-3">Unlocked</th>
@@ -704,15 +704,15 @@ export default function RecruiterDashboard() {
                 </thead>
                 <tbody>
                   {unlocks.map((u, i) => (
-                    <tr key={`${u.profileId}-${i}`} className="border-b-2 border-[#151a46]/10 last:border-0">
-                      <td className="px-5 py-4 font-bold">{u.contact?.fullName || "Candidate"}</td>
-                      <td className="px-5 py-4 text-[#151a46]/70">
+                    <tr key={`${u.profileId}-${i}`} className="border-b border-line/60 last:border-0">
+                      <td className="px-5 py-4 font-bold text-navy">{u.contact?.fullName || "Candidate"}</td>
+                      <td className="px-5 py-4 text-navy/70">
                         {u.contact?.email && <div>{u.contact.email}</div>}
-                        {u.contact?.phone && <div className="text-[#151a46]/55">{u.contact.phone}</div>}
-                        {!u.contact?.email && !u.contact?.phone && <span className="text-[#151a46]/40">—</span>}
+                        {u.contact?.phone && <div className="text-navy/55">{u.contact.phone}</div>}
+                        {!u.contact?.email && !u.contact?.phone && <span className="text-navy/40">—</span>}
                       </td>
-                      <td className="px-5 py-4 text-[#151a46]/60">{u.unlockedAt ? new Date(u.unlockedAt).toLocaleString() : "—"}</td>
-                      <td className="px-5 py-4 text-right font-bold">{u.creditsSpent ?? 1} credit{(u.creditsSpent ?? 1) === 1 ? "" : "s"}</td>
+                      <td className="px-5 py-4 text-navy/60">{u.unlockedAt ? new Date(u.unlockedAt).toLocaleString() : "—"}</td>
+                      <td className="px-5 py-4 text-right font-bold text-navy">{u.creditsSpent ?? 1} credit{(u.creditsSpent ?? 1) === 1 ? "" : "s"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -725,38 +725,38 @@ export default function RecruiterDashboard() {
       {/* ─── BUY CREDITS MODAL ─── */}
       {buyOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm print:hidden" onClick={() => setBuyOpen(false)}>
-          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-2xl border-[3px] border-[#151a46] bg-[#f6f5ef] hs">
-            <div className="flex items-center justify-between border-b-[3px] border-[#151a46] bg-[#151a46] px-6 py-4 text-[#f6f5ef]">
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-2xl overflow-hidden rounded-3xl bg-cream shadow-[0_24px_60px_rgba(23,27,75,0.25)]">
+            <div className="flex items-center justify-between bg-navy px-6 py-4 text-white">
               <div>
-                <div className="fm text-[10px] font-bold uppercase tracking-[0.25em] text-[#ffd85a]">top up</div>
-                <h2 className="fd mt-1 text-2xl tracking-tight">Buy credits</h2>
+                <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-gold">top up</div>
+                <h2 className="mt-1 text-2xl font-black tracking-tight">Buy credits</h2>
               </div>
-              <button aria-label="Close" onClick={() => setBuyOpen(false)} className="grid h-10 w-10 place-items-center border-[3px] border-[#f6f5ef] transition-colors hover:border-[#ff604b] hover:bg-[#ff604b]">
+              <button aria-label="Close" onClick={() => setBuyOpen(false)} className="grid h-10 w-10 place-items-center rounded-full border border-white/40 transition-colors hover:border-coral hover:bg-coral">
                 <X size={18} />
               </button>
             </div>
             <div className="p-6">
               {!creditsReady ? (
-                <div className="flex items-center justify-center gap-3 py-10 text-[#151a46]/60">
-                  <Loader2 size={22} className="animate-spin text-[#5548f5]" /> Loading packs…
+                <div className="flex items-center justify-center gap-3 py-10 text-navy/60">
+                  <Loader2 size={22} className="animate-spin text-brand" /> Loading packs…
                 </div>
               ) : packs.length === 0 ? (
                 <div className="py-10 text-center">
-                  <p className="fh text-lg font-extrabold">Credit packs aren&apos;t available yet.</p>
-                  <p className="mt-1 text-sm text-[#151a46]/60">Our billing is still being wired up — check back shortly.</p>
+                  <p className="text-lg font-extrabold tracking-tight text-navy">Credit packs aren&apos;t available yet.</p>
+                  <p className="mt-1 text-sm text-navy/60">Our billing is still being wired up — check back shortly.</p>
                 </div>
               ) : (
                 <div className="grid gap-4 sm:grid-cols-3">
                   {packs.map((pack) => (
-                    <div key={pack.id} className="flex flex-col border-[3px] border-[#151a46] bg-white p-5">
-                      <div className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#151a46]/55">{pack.name}</div>
-                      <div className="fd mt-2 text-3xl tracking-tight">{pack.credits} <span className="text-lg text-[#151a46]/50">credits</span></div>
-                      <div className="fh mt-1 text-xl font-extrabold">{fmtPrice(pack.priceKobo, pack.currency)}</div>
-                      <div className="fm mt-1 text-[10px] uppercase tracking-[0.14em] text-[#0E8A4B]">{fmtPrice(Math.round(pack.priceKobo / pack.credits), pack.currency)} / unlock</div>
+                    <div key={pack.id} className="flex flex-col rounded-2xl border border-line bg-paper p-5 shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-navy/55">{pack.name}</div>
+                      <div className="mt-2 text-3xl font-black tracking-tight text-navy">{pack.credits} <span className="text-lg text-navy/50">credits</span></div>
+                      <div className="mt-1 text-xl font-extrabold text-navy">{fmtPrice(pack.priceKobo, pack.currency)}</div>
+                      <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-teal">{fmtPrice(Math.round(pack.priceKobo / pack.credits), pack.currency)} / unlock</div>
                       <button
                         onClick={() => handleCheckout(pack.id)}
                         disabled={checkingOut !== null}
-                        className="mt-4 flex items-center justify-center gap-2 border-[3px] border-[#151a46] bg-[#151a46] px-4 py-3 fh text-[11px] font-extrabold uppercase tracking-wider text-[#f6f5ef] transition-all hover:bg-[#ff604b] hover:border-[#ff604b] disabled:opacity-60"
+                        className="mt-4 flex items-center justify-center gap-2 rounded-[10px] bg-navy px-4 py-3 text-[11px] font-extrabold uppercase tracking-wider text-white transition-all hover:-translate-y-px hover:bg-coral disabled:opacity-60"
                       >
                         {checkingOut === pack.id ? <Loader2 size={14} className="animate-spin" /> : null}
                         Buy
@@ -765,7 +765,7 @@ export default function RecruiterDashboard() {
                   ))}
                 </div>
               )}
-              <p className="mt-5 text-center fm text-[10px] uppercase tracking-[0.16em] text-[#151a46]/50">
+              <p className="mt-5 text-center text-[10px] font-semibold uppercase tracking-[0.16em] text-navy/50">
                 1 credit = 1 contact unlock · credits never expire · billed via Paystack
               </p>
             </div>
