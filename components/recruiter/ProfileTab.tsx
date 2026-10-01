@@ -60,6 +60,9 @@ export function ProfileTab({ signInEmail }: { signInEmail: string }) {
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
   const [pwSaving, setPwSaving] = useState(false);
+  // null = still detecting; true = email/password identity exists (current
+  // password is mandatory); false = OAuth-only (may set a first password).
+  const [hasPassword, setHasPassword] = useState<boolean | null>(null);
 
   const [newSignInEmail, setNewSignInEmail] = useState("");
   const [emailSaving, setEmailSaving] = useState(false);
@@ -67,6 +70,20 @@ export function ProfileTab({ signInEmail }: { signInEmail: string }) {
 
   useEffect(() => {
     let cancelled = false;
+    // Detect whether the user has an email/password identity. A blank
+    // current-password must NEVER skip re-authentication for these users.
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        if (cancelled) return;
+        const ids = (data.user as any)?.identities as
+          | { provider?: string }[]
+          | undefined;
+        setHasPassword(!!ids?.some((i) => i.provider === "email"));
+      })
+      .catch(() => {
+        if (!cancelled) setHasPassword(true); // fail closed: require current password
+      });
     getRecruiterProfile()
       .then((p) => {
         if (cancelled) return;
@@ -166,11 +183,17 @@ export function ProfileTab({ signInEmail }: { signInEmail: string }) {
       toast.error("New passwords don't match.");
       return;
     }
+    // Password users must prove the current password — a blank field is
+    // rejected, never treated as "skip". OAuth-only users have no password
+    // to re-enter, so they may set their first one directly.
+    const needsCurrent = hasPassword !== false;
+    if (needsCurrent && !currentPw) {
+      toast.error("Enter your current password.");
+      return;
+    }
     setPwSaving(true);
     try {
-      // Re-authenticate with the current password first (skipped for
-      // Google/LinkedIn sign-ins, which never set one).
-      if (currentPw) {
+      if (needsCurrent) {
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email: signInEmail,
           password: currentPw,
@@ -182,6 +205,8 @@ export function ProfileTab({ signInEmail }: { signInEmail: string }) {
       setCurrentPw("");
       setNewPw("");
       setConfirmPw("");
+      // A freshly set password means the user now has a password identity.
+      setHasPassword(true);
       toast.success("Password changed.");
     } catch (err: any) {
       toast.error(err.message || "Couldn't change password.");
@@ -399,20 +424,28 @@ export function ProfileTab({ signInEmail }: { signInEmail: string }) {
         hint="Change the password you use to sign in."
       >
         <form onSubmit={changePassword} className="grid gap-4 sm:grid-cols-2">
-          <div className="sm:col-span-2">
-            <label className={labelCls}>Current password</label>
-            <input
-              className={inputCls}
-              type="password"
-              value={currentPw}
-              onChange={(e) => setCurrentPw(e.target.value)}
-              placeholder="••••••••"
-              autoComplete="current-password"
-            />
-            <p className="mt-1.5 text-[11px] text-navy/50">
-              Leave blank if you signed up with Google or LinkedIn.
-            </p>
-          </div>
+          {hasPassword === false ? (
+            <div className="sm:col-span-2">
+              <p className="text-xs text-navy/55">
+                You signed up with Google or LinkedIn, so there's no current
+                password — setting one below lets you also sign in with your
+                email address.
+              </p>
+            </div>
+          ) : (
+            <div className="sm:col-span-2">
+              <label className={labelCls}>Current password</label>
+              <input
+                className={inputCls}
+                type="password"
+                value={currentPw}
+                onChange={(e) => setCurrentPw(e.target.value)}
+                placeholder="••••••••"
+                autoComplete="current-password"
+                required
+              />
+            </div>
+          )}
           <div>
             <label className={labelCls}>New password</label>
             <input
