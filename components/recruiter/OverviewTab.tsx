@@ -78,7 +78,7 @@ export function OverviewTab({
       {allZero && (
         <div className="mb-8 rounded-[18px] bg-navy p-8 text-center text-white shadow-[0_16px_38px_rgba(23,27,75,0.09)] sm:p-12">
           <Sparkles size={40} className="mx-auto mb-4 text-gold" />
-          <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Your hiring cockpit.</h2>
+          <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Your hiring dashboard.</h2>
           <p className="mx-auto mt-3 max-w-md text-white/70">
             Run your first JD search to light up this dashboard.
           </p>
