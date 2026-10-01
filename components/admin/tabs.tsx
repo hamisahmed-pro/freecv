@@ -11,6 +11,7 @@ import { useAdminTheme } from "./admin/theme";
 import { cn, CountUp, Reveal } from "./admin/motion";
 import { Card, Kpi, Pill, Btn, Field, Input, TextArea, Select, Switch, Modal, Drawer, Table, Row, Cell, SectionLabel, EmptyState, Spinner } from "./admin/ui";
 import { LineChart, RadialGauge, Donut, Heatmap, Bars, Sparkline } from "./admin/charts";
+import { analyzeSessionQuality, computeFunnel } from "@/lib/analytics-quality";
 
 const api = (u: string, o?: RequestInit) =>
   fetch(u, { ...o, headers: { "Content-Type": "application/json", ...(o?.headers || {}) } })
@@ -35,17 +36,23 @@ export function OverviewTab({ candidates, analytics, aiLogs }: { candidates: any
   const [o, setO] = useState<any>(null);
   useEffect(() => { api("/api/admin/overview").then(setO).catch(() => {}); }, []);
 
-  const days = useMemo(() => dailySeries(analytics, 14), [analytics]);
+  // Bot filtering (2026-10-01): scripted sessions firing hundreds of back-to-back
+  // events polluted every aggregate. All overview math below runs on human events;
+  // raw events are untouched in storage and still visible in the Event Log tab.
+  const quality = useMemo(() => analyzeSessionQuality(analytics), [analytics]);
+  const human = quality.humanEvents;
+
+  const days = useMemo(() => dailySeries(human, 14), [human]);
   const visits = days.map(([, v]) => v);
   const visitLabels = days.map(([d]) => d.slice(5));
-  const funnel = useMemo(() => {
-    const sessions = new Set(analytics.map((a) => a.session_id)).size;
-    const started = analytics.filter((a) => a.event_type === "milestone_started").length;
-    const downloaded = analytics.filter((a) => a.event_type === "milestone_downloaded").length;
-    return { sessions, started, downloaded, optIns: candidates.length };
-  }, [analytics, candidates]);
-  const optConv = funnel.sessions ? Math.round((funnel.optIns / funnel.sessions) * 100) : 0;
-  const dlConv = funnel.started ? Math.round((funnel.downloaded / funnel.started) * 100) : 0;
+  // Session-based funnel (2026-10-01 fix): each stage counts UNIQUE SESSIONS, not
+  // raw events — one session can contribute at most 1 per stage. Download stage
+  // accepts both milestone_downloaded (builder docx/pdf) and resume_downloaded.
+  const funnel = useMemo(() => computeFunnel(human), [human]);
+  const optIns = candidates.length;
+  const optConv = funnel.sessions ? Math.round((optIns / funnel.sessions) * 100) : 0;
+  const dlConv = Math.round(funnel.downloadRate * 100);
+  const startConv = Math.round(funnel.startRate * 100);
 
   const optSpark = useMemo(() => {
     const m: Record<string, number> = {};
@@ -54,7 +61,7 @@ export function OverviewTab({ candidates, analytics, aiLogs }: { candidates: any
     return Object.values(m);
   }, [candidates]);
 
-  const device = useMemo(() => groupBy(analytics, "device_type"), [analytics]);
+  const device = useMemo(() => groupBy(human, "device_type"), [human]);
 
   return (
     <div className="space-y-7">
@@ -63,7 +70,7 @@ export function OverviewTab({ candidates, analytics, aiLogs }: { candidates: any
         <Reveal><Kpi label="Talent pool" value={<CountUp to={candidates.length} />} sub={`${candidates.filter(c => c.consent_recruiter_share).length} recruiter-ready`} accent={t.cob} icon={<Users size={16} />} spark={optSpark} /></Reveal>
         <Reveal delay={60}><Kpi label="MRR (seats)" value={<CountUp to={o?.mrr || 0} prefix="$" decimals={0} />} sub="subscriptions" accent={t.green} icon={<DollarSign size={16} />} delta={o?.mrr ? 12 : 0} /></Reveal>
         <Reveal delay={120}><Kpi label="Job CPC run-rate" value={<CountUp to={o?.affiliateRun || 0} prefix="$" decimals={0} />} sub={`${usd(o?.affiliateMonth || 0)} MTD`} accent={t.gold} icon={<MousePointerClick size={16} />} /></Reveal>
-        <Reveal delay={180}><Kpi label="Total visits (30d)" value={<CountUp to={analytics.length} />} sub={`${funnel.sessions} unique sessions`} accent={t.verm} icon={<Activity size={16} />} /></Reveal>
+        <Reveal delay={180}><Kpi label="Total visits (30d)" value={<CountUp to={funnel.sessions} />} sub={`${human.length.toLocaleString()} events · ${quality.botSessionCount} bot-like sessions excluded`} accent={t.verm} icon={<Activity size={16} />} /></Reveal>
       </div>
 
       {/* Traffic line + Funnel side-by-side */}
@@ -80,9 +87,9 @@ export function OverviewTab({ candidates, analytics, aiLogs }: { candidates: any
             <div className="space-y-3 pt-1">
               {[
                 { label: "Sessions", count: funnel.sessions, pct: 100, color: t.muted },
-                { label: "Started CV", count: funnel.started, pct: funnel.sessions ? Math.round((funnel.started / funnel.sessions) * 100) : 0, color: t.cob },
+                { label: "Started CV", count: funnel.started, pct: startConv, color: t.cob },
                 { label: "Downloaded CV", count: funnel.downloaded, pct: dlConv, color: t.green },
-                { label: "Talent Pool Opt-in", count: funnel.optIns, pct: optConv, color: t.gold },
+                { label: "Talent Pool Opt-in", count: optIns, pct: optConv, color: t.gold },
               ].map((step) => (
                 <div key={step.label} className="space-y-1">
                   <div className="flex justify-between fm text-[11px]">
@@ -95,6 +102,7 @@ export function OverviewTab({ candidates, analytics, aiLogs }: { candidates: any
                 </div>
               ))}
             </div>
+            <p className="pt-3 text-[10px]" style={{ color: t.faint }}>Unique sessions per stage · {quality.botSessionCount} bot-like sessions excluded</p>
           </Card>
         </Reveal>
       </div>
@@ -118,28 +126,32 @@ export function OverviewTab({ candidates, analytics, aiLogs }: { candidates: any
 /* ============================ ANALYTICS ============================ */
 export function AnalyticsTab({ analytics }: { analytics: any[] }) {
   const { t } = useAdminTheme();
-  const days = useMemo(() => dailySeries(analytics, 30), [analytics]);
+  // Same bot filter as Overview — breakdowns must describe humans, not scripts.
+  const quality = useMemo(() => analyzeSessionQuality(analytics), [analytics]);
+  const human = quality.humanEvents;
+  const days = useMemo(() => dailySeries(human, 30), [human]);
   const visits = days.map(([, v]) => v);
   const labels = days.map(([d]) => d.slice(5));
-  const countries = useMemo(() => topN(groupBy(analytics, "country"), 8), [analytics]);
-  const templates = useMemo(() => topN(groupBy(analytics, "template_id"), 7), [analytics]);
-  const browsers = useMemo(() => topN(groupBy(analytics, "browser"), 6), [analytics]);
+  const countries = useMemo(() => topN(groupBy(human, "country"), 8), [human]);
+  const templates = useMemo(() => topN(groupBy(human, "template_id"), 7), [human]);
+  const browsers = useMemo(() => topN(groupBy(human, "browser"), 6), [human]);
 
   const heat = useMemo(() => {
     const g = Array.from({ length: 7 }, () => [0, 0, 0, 0]);
-    analytics.forEach((e) => {
+    human.forEach((e) => {
       const d = new Date(e.created_at); if (isNaN(d.getTime())) return;
       const wd = (d.getDay() + 6) % 7; const dp = Math.min(3, Math.floor(d.getHours() / 6));
       g[wd][dp]++;
     });
     const flat = g.flat(); const max = Math.max(1, ...flat);
     return { grid: flat.map((v) => v / max), cols: 4 };
-  }, [analytics]);
+  }, [human]);
   const rowLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   return (
     <div className="space-y-7">
       <Reveal><SectionLabel>traffic · 30 days</SectionLabel>
+        <p className="fm pb-2 text-[11px]" style={{ color: t.faint }}>{quality.botSessionCount} bot-like sessions ({quality.botEventCount.toLocaleString()} events) excluded</p>
         <Card className="p-5"><LineChart data={visits} labels={labels} color={t.cob} height={260} /></Card></Reveal>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -164,6 +176,9 @@ export function EventLogTab({ events = [] }: { events?: any[] }) {
   const { t } = useAdminTheme();
   const [page, setPage] = useState(1);
   const pageSize = 50;
+  // Bot-like sessions stay visible here (this is the raw log) but get flagged.
+  const quality = useMemo(() => analyzeSessionQuality(events), [events]);
+  const isBot = (e: any) => quality.botSessions.has(e?.session_id || 'unknown');
   const totalPages = Math.max(1, Math.ceil(events.length / pageSize));
   const rows = useMemo(() => events.slice((page - 1) * pageSize, page * pageSize), [events, page]);
   useEffect(() => { setPage(1); }, [events.length]);
@@ -171,7 +186,7 @@ export function EventLogTab({ events = [] }: { events?: any[] }) {
     <div className="space-y-5">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <Reveal><SectionLabel color={t.cob}>event log · raw analytics events</SectionLabel>
-          <p className="fm text-[11px] uppercase tracking-widest" style={{ color: t.muted }}>{events.length.toLocaleString()} events captured</p></Reveal>
+          <p className="fm text-[11px] uppercase tracking-widest" style={{ color: t.muted }}>{events.length.toLocaleString()} events captured · {quality.botSessionCount} bot-like sessions flagged</p></Reveal>
       </div>
       {rows.length === 0 ? <Card><EmptyState icon={<Activity size={32} />} title="No events logged yet." hint="Events are captured from site traffic automatically." /></Card> :
         <>
@@ -179,7 +194,7 @@ export function EventLogTab({ events = [] }: { events?: any[] }) {
             {rows.map((e, i) => (
               <Row key={e.id || i}>
                 <Cell className="fm text-[11px]" style={{ color: t.faint }}>{(e.created_at || "").slice(0, 19).replace("T", " ")}</Cell>
-                <Cell><Pill color={t.cob}>{e.event_type || "—"}</Pill></Cell>
+                <Cell><Pill color={t.cob}>{e.event_type || "—"}</Pill>{isBot(e) && <span className="ml-1"><Pill color={t.gold}>bot</Pill></span>}</Cell>
                 <Cell className="fm text-[11px]">{e.template_id || "—"}</Cell>
                 <Cell className="fm text-[11px]">{[e.city, e.country].filter(Boolean).join(", ") || "—"}</Cell>
                 <Cell className="fm text-[11px] capitalize">{e.device_type || "—"}</Cell>
