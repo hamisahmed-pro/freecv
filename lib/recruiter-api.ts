@@ -231,6 +231,29 @@ export async function getRecruiterProfile(): Promise<RecruiterProfile> {
   return parse(res);
 }
 
+/** Create/backfill the recruiter row right after sign-in. Never throws. */
+export async function ensureRecruiter(companyName?: string): Promise<{
+  ok: boolean;
+  created: boolean;
+  backfilled: boolean;
+  company_name: string;
+}> {
+  try {
+    const headers: Record<string, string> = {};
+    if (companyName?.trim()) headers["x-company-name"] = companyName.trim();
+    const res = await authed("/api/recruiter/ensure", { method: "POST", headers });
+    const json = await parse<any>(res);
+    return {
+      ok: true,
+      created: !!json.created,
+      backfilled: !!json.backfilled,
+      company_name: String(json.company_name || "").trim(),
+    };
+  } catch {
+    return { ok: false, created: false, backfilled: false, company_name: "" };
+  }
+}
+
 export async function updateRecruiterProfile(patch: {
   company_name?: string;
   contact_name?: string;

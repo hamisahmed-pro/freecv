@@ -46,6 +46,10 @@ export default function RecruiterSignup() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!company.trim()) {
+      toast.error("Enter your company name — we need to know who we're working with.");
+      return;
+    }
     const BANNED_DOMAINS = [
       "yopmail.com", "mailinator.com", "guerrillamail.com",
       "10minutemail.com", "tempmail.com",
@@ -62,7 +66,7 @@ export default function RecruiterSignup() {
         password,
         options: {
           emailRedirectTo: "https://cvyon.com/recruiter/dashboard",
-          data: { company_name: company },
+          data: { company_name: company.trim() },
         },
       });
       if (error) throw error;
@@ -76,6 +80,15 @@ export default function RecruiterSignup() {
   };
 
   const handleOAuth = async (provider: "google" | "linkedin_oidc") => {
+    if (!company.trim()) {
+      toast.error("Enter your company name first — we need to know who we're working with.");
+      return;
+    }
+    // Supabase OAuth carries no custom metadata, so the company name rides
+    // along in sessionStorage and is written to the recruiter row on landing.
+    try {
+      sessionStorage.setItem("cvyon-recruiter-company", company.trim());
+    } catch {}
     setLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
@@ -130,10 +143,33 @@ export default function RecruiterSignup() {
             </div>
           ) : (
             <div className="rounded-[18px] border border-line bg-paper p-7 shadow-[0_16px_38px_rgba(23,27,75,0.09)]">
+              <div className="grid gap-[7px]">
+                <label className="text-[10px] font-black uppercase tracking-[0.08em] text-[#656a82]">
+                  Company name
+                </label>
+                <input
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  placeholder="Acme Talent"
+                  autoComplete="organization"
+                  className="w-full rounded-[10px] border border-line bg-paper px-[13px] py-3 text-[14px] text-navy outline-none transition-shadow placeholder:text-muted/60 focus:border-brand focus:shadow-[0_0_0_4px_rgba(85,72,245,0.1)]"
+                />
+                <p className="m-0 text-[11px] leading-relaxed text-muted">
+                  Required — whichever way you sign up, we keep a record of the company behind every account.
+                </p>
+              </div>
+
+              <div className="my-[22px] flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.1em] text-muted">
+                <span className="h-px flex-1 bg-line" />
+                continue with
+                <span className="h-px flex-1 bg-line" />
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => handleOAuth("google")}
-                  disabled={loading}
+                  disabled={loading || !company.trim()}
+                  title={!company.trim() ? "Enter your company name first" : undefined}
                   className="inline-flex items-center justify-center gap-2 rounded-[10px] border border-line bg-paper px-4 py-3 text-[12px] font-extrabold text-navy transition-all hover:border-brand hover:text-brand disabled:opacity-60"
                 >
                   <GoogleIcon size={16} />
@@ -141,7 +177,8 @@ export default function RecruiterSignup() {
                 </button>
                 <button
                   onClick={() => handleOAuth("linkedin_oidc")}
-                  disabled={loading}
+                  disabled={loading || !company.trim()}
+                  title={!company.trim() ? "Enter your company name first" : undefined}
                   className="inline-flex items-center justify-center gap-2 rounded-[10px] border border-line bg-paper px-4 py-3 text-[12px] font-extrabold text-navy transition-all hover:border-brand hover:text-brand disabled:opacity-60"
                 >
                   <LinkedInIcon size={16} />
@@ -156,18 +193,6 @@ export default function RecruiterSignup() {
               </div>
 
               <form onSubmit={handleSignup} className="grid gap-[15px]">
-                <div className="grid gap-[7px]">
-                  <label className="text-[10px] font-black uppercase tracking-[0.08em] text-[#656a82]">
-                    Company name
-                  </label>
-                  <input
-                    required
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    placeholder="Acme Talent"
-                    className="w-full rounded-[10px] border border-line bg-paper px-[13px] py-3 text-[14px] text-navy outline-none transition-shadow placeholder:text-muted/60 focus:border-brand focus:shadow-[0_0_0_4px_rgba(85,72,245,0.1)]"
-                  />
-                </div>
                 <div className="grid gap-[7px]">
                   <label className="text-[10px] font-black uppercase tracking-[0.08em] text-[#656a82]">
                     Work email

@@ -13,7 +13,7 @@ import { ResultListSkeleton, TableSkeleton } from "@/components/recruiter/Skelet
 import {
   MatchResult, MatchTier, JdMatch, CreditPack, SavedSearch, UnlockRecord,
   runJdMatch, getCredits, checkoutCredits, getSearches, setSearchSaved,
-  getUnlocks,
+  getUnlocks, ensureRecruiter, updateRecruiterProfile,
 } from "@/lib/recruiter-api";
 import {
   PortalShortlistItem, getPipelineShortlist,
@@ -187,6 +187,11 @@ export default function RecruiterDashboard() {
   const [user, setUser] = useState<any>(undefined); // undefined = auth not yet resolved
   const [loading, setLoading] = useState(true);
 
+  // company gate — nobody uses the dashboard without a real company on file
+  const [needsCompany, setNeedsCompany] = useState(false);
+  const [gateCompany, setGateCompany] = useState("");
+  const [gateSaving, setGateSaving] = useState(false);
+
   // credits
   const [balance, setBalance] = useState<number | null>(null);
   const [packs, setPacks] = useState<CreditPack[]>([]);
@@ -261,6 +266,16 @@ export default function RecruiterDashboard() {
     if (user === undefined) return; // session check hasn't resolved — stay on the loading shell
     if (!user) { setLoading(false); return; }
     (async () => {
+      // 0) guarantee the recruiter row exists and carries the real company.
+      //    OAuth signups stash the company in sessionStorage on the signup page.
+      let stashed: string | null = null;
+      try {
+        stashed = sessionStorage.getItem("cvyon-recruiter-company");
+        sessionStorage.removeItem("cvyon-recruiter-company");
+      } catch {}
+      const ensured = await ensureRecruiter(stashed || undefined);
+      if (!ensured.company_name) setNeedsCompany(true);
+
       await loadCredits();
 
       const params = new URLSearchParams(window.location.search);
@@ -415,6 +430,23 @@ export default function RecruiterDashboard() {
     try { await supabase.auth.signOut(); } finally { router.replace("/recruiter/login"); }
   };
 
+  // Company gate: the recruiter must name their company before touching the pool.
+  const handleGateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const name = gateCompany.trim();
+    if (!name) { toast.error("Enter your company name to continue."); return; }
+    setGateSaving(true);
+    try {
+      await updateRecruiterProfile({ company_name: name });
+      setNeedsCompany(false);
+      toast.success("Company saved — welcome aboard.");
+    } catch (err: any) {
+      toast.error(err?.message || "Couldn't save your company. Try again.");
+    } finally {
+      setGateSaving(false);
+    }
+  };
+
   const shellProps = {
     active: tab,
     onNavigate: setTab,
@@ -451,6 +483,43 @@ export default function RecruiterDashboard() {
         <div className="flex flex-col items-center gap-3 text-navy/60">
           <Loader2 size={30} className="animate-spin text-brand" />
           <span className="text-[11px] font-bold uppercase tracking-[0.2em]">redirecting…</span>
+        </div>
+      </RecruiterSimpleShell>
+    );
+  }
+
+  if (needsCompany) {
+    // Blocking gate: no company on file → no access to the pool.
+    return (
+      <RecruiterSimpleShell>
+        <div className="w-full max-w-[440px] rounded-[18px] border border-line bg-paper p-7 shadow-[0_16px_38px_rgba(23,27,75,0.09)]">
+          <span className="inline-block rounded-full bg-brand/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-brand">
+            One more thing
+          </span>
+          <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-navy">
+            Which company are you hiring for?
+          </h2>
+          <p className="mt-2 text-[13px] leading-relaxed text-muted">
+            We keep a record of every company buying candidate data on Cvyon.
+            Your profile stays private to us — candidates never see it.
+          </p>
+          <form onSubmit={handleGateSubmit} className="mt-5 grid gap-3">
+            <input
+              autoFocus
+              value={gateCompany}
+              onChange={(e) => setGateCompany(e.target.value)}
+              placeholder="Acme Talent"
+              autoComplete="organization"
+              className="w-full rounded-[10px] border border-line bg-paper px-[13px] py-3 text-[14px] text-navy outline-none transition-shadow placeholder:text-muted/60 focus:border-brand focus:shadow-[0_0_0_4px_rgba(85,72,245,0.1)]"
+            />
+            <button
+              type="submit"
+              disabled={gateSaving}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-brand px-[18px] py-3 text-[12px] font-extrabold text-white shadow-[0_8px_18px_rgba(85,72,245,0.22)] transition-transform hover:-translate-y-px disabled:opacity-60"
+            >
+              {gateSaving ? <Loader2 size={16} className="animate-spin" /> : "Save and continue"}
+            </button>
+          </form>
         </div>
       </RecruiterSimpleShell>
     );
