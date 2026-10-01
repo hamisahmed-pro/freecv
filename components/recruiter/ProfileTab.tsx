@@ -6,7 +6,7 @@ import {
   updateRecruiterProfile,
   type RecruiterProfile,
 } from "@/lib/recruiter-api";
-import { Building2, ShieldCheck, Loader2, Save, KeyRound } from "lucide-react";
+import { Building2, ShieldCheck, Loader2, Save, KeyRound, Mail } from "lucide-react";
 import toast from "react-hot-toast";
 
 const inputCls =
@@ -53,6 +53,10 @@ export function ProfileTab({ signInEmail }: { signInEmail: string }) {
   const [confirmPw, setConfirmPw] = useState("");
   const [pwSaving, setPwSaving] = useState(false);
 
+  const [newSignInEmail, setNewSignInEmail] = useState("");
+  const [emailSaving, setEmailSaving] = useState(false);
+  const [emailPending, setEmailPending] = useState<string | null>(null);
+
   useEffect(() => {
     let cancelled = false;
     getRecruiterProfile()
@@ -83,6 +87,48 @@ export function ProfileTab({ signInEmail }: { signInEmail: string }) {
       toast.error(err.message || "Couldn't save profile.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const changeSignInEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const next = newSignInEmail.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(next)) {
+      toast.error("Enter a valid email address.");
+      return;
+    }
+    if (next === (signInEmail || "").toLowerCase()) {
+      toast.error("That's already your sign-in email.");
+      return;
+    }
+    setEmailSaving(true);
+    try {
+      // Supabase emails a confirmation link to the NEW address; the sign-in
+      // email only switches after the user clicks it. Until then the old
+      // email keeps working.
+      const { error } = await supabase.auth.updateUser(
+        { email: next },
+        { emailRedirectTo: "https://cvyon.com/recruiter/dashboard" }
+      );
+      if (error) throw error;
+      // Keep the public contact email in sync when it was mirroring the old
+      // sign-in email (the common case).
+      if (contactEmail.trim().toLowerCase() === (signInEmail || "").toLowerCase()) {
+        try {
+          const p = await updateRecruiterProfile({ contact_email: next });
+          setProfile(p);
+          setContactEmail(next);
+        } catch {
+          /* non-fatal: contact email can be updated separately above */
+        }
+      }
+      setEmailPending(next);
+      setNewSignInEmail("");
+      toast.success("Confirmation email sent.");
+    } catch (err: any) {
+      toast.error(err.message || "Couldn't change sign-in email.");
+    } finally {
+      setEmailSaving(false);
     }
   };
 
@@ -158,6 +204,9 @@ export function ProfileTab({ signInEmail }: { signInEmail: string }) {
               maxLength={160}
               required
             />
+            <p className="mt-1.5 text-[11px] text-navy/50">
+              Public contact shown on receipts and shared shortlists — not used for sign-in.
+            </p>
           </div>
           <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-3">
             <p className="text-xs text-navy/50">
@@ -179,6 +228,61 @@ export function ProfileTab({ signInEmail }: { signInEmail: string }) {
             </button>
           </div>
         </form>
+      </Card>
+
+      <Card
+        icon={<Mail size={18} />}
+        title="Sign-in email"
+        hint="The email address you use to log in."
+      >
+        {emailPending ? (
+          <div className="rounded-[10px] border border-line bg-white p-4">
+            <p className="text-sm text-navy/70">
+              We sent a confirmation link to <b className="text-navy">{emailPending}</b>.
+              Click it to finish changing your sign-in email — until then, keep
+              signing in with <b className="text-navy">{signInEmail}</b>.
+            </p>
+            <button
+              type="button"
+              onClick={() => setEmailPending(null)}
+              className="mt-3 text-xs font-bold text-brand underline underline-offset-2"
+            >
+              Use a different email
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={changeSignInEmail} className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className={labelCls}>Current sign-in email</label>
+              <input className={inputCls} value={signInEmail} disabled />
+            </div>
+            <div>
+              <label className={labelCls}>New sign-in email</label>
+              <input
+                className={inputCls}
+                type="email"
+                value={newSignInEmail}
+                onChange={(e) => setNewSignInEmail(e.target.value)}
+                placeholder="you@newcompany.com"
+                maxLength={160}
+                required
+              />
+            </div>
+            <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs text-navy/50">
+                We'll email the new address a confirmation link before the change takes effect.
+              </p>
+              <button
+                type="submit"
+                disabled={emailSaving}
+                className="inline-flex items-center gap-2 rounded-[10px] bg-navy px-6 py-3 text-[11px] font-extrabold uppercase tracking-wider text-white transition-all hover:-translate-y-px hover:bg-coral disabled:opacity-60"
+              >
+                {emailSaving ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />}
+                Send confirmation link
+              </button>
+            </div>
+          </form>
+        )}
       </Card>
 
       <Card
