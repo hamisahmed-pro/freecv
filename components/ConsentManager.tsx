@@ -18,6 +18,12 @@ export function ConsentManager() {
     }
   }, []);
 
+  // Let floating UI (e.g. the PWA install banner) know when the privacy dialog
+  // is open so they can get out of the way instead of overlapping it.
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('cvyon:consent-visibility', { detail: { open: isOpen } }));
+  }, [isOpen]);
+
   useEffect(() => {
     const email = data.personalInfo?.email?.trim()?.toLowerCase();
     const isValidEmail = email && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
