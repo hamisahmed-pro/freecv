@@ -25,9 +25,9 @@ export async function GET() {
 
   const clicksMonth = clicks.data || [];
   const totalClicksAllTime = (allClicks.data || []).length;
-  const affMonth = clicksMonth.reduce((s: number, c: any) => s + (Number(c.cpc_value) || 0), 0);
-  const affAllTime = (allClicks.data || []).reduce((s: number, c: any) => s + (Number(c.cpc_value) || 0), 0);
-  const affRun = (affMonth / Math.max(1, new Date().getDate())) * 30; // annualized monthly run-rate
+  // Job-referral telemetry (2026-10-01 correction): click counts are real; CPC dollar
+  // values are estimates and are NEVER revenue. No run-rate projection is computed —
+  // speculative (month-to-date / day-of-month × 30) annualization was removed.
   
   const byCountry: Record<string, { clicks: number; usd: number }> = {};
   (allClicks.data || []).forEach((c: any) => {
@@ -38,33 +38,39 @@ export async function GET() {
 
   const expMonth = (exp.data || []).reduce((s: number, e: any) => s + (Number(e.amount_minor) || 0) * (Number(e.fx_to_usd) || 1) / 100, 0);
   const ledgerCash = (ledger.data || []).filter((l: any) => l.status === 'settled').reduce((s: number, l: any) => s + toUSD(l.amount_minor, l.currency, l.fx_to_usd), 0);
+  const ledgerSettledMonth = (ledger.data || [])
+    .filter((l: any) => l.status === 'settled' && (l.created_at || '') >= ms)
+    .reduce((s: number, l: any) => s + toUSD(l.amount_minor, l.currency, l.fx_to_usd), 0);
+  const cpcEstMonth = clicksMonth.reduce((s: number, c: any) => s + (Number(c.cpc_value) || 0), 0);
+  const cpcEstAllTime = (allClicks.data || []).reduce((s: number, c: any) => s + (Number(c.cpc_value) || 0), 0);
 
   return NextResponse.json({
     mrr: +mrr.toFixed(2),
     arr: +arr.toFixed(2),
     activeSubs: active.length,
-    careerjetClicksMonth: clicksMonth.length,
-    careerjetClicksAllTime: totalClicksAllTime,
-    affiliateMonth: +affMonth.toFixed(2),
-    affiliateAllTime: +affAllTime.toFixed(2),
-    affiliateRun: +affRun.toFixed(2),
-    blendedMonthly: +(mrr + affRun).toFixed(2),
+    // Referral telemetry — counts are real; CPC dollar values are estimates, NOT revenue.
+    referralClicksMonth: clicksMonth.length,
+    referralClicksAllTime: totalClicksAllTime,
+    referralCpcEstMonth: +cpcEstMonth.toFixed(2),
+    referralCpcEstAllTime: +cpcEstAllTime.toFixed(2),
     expensesMonth: +expMonth.toFixed(2),
-    netMonth: +(mrr + affMonth - expMonth).toFixed(2),
+    // Realized net only: subscriptions minus spend. Estimates never included.
+    netMonth: +(mrr - expMonth).toFixed(2),
     ledgerCashAllTime: +ledgerCash.toFixed(2),
+    ledgerSettledMonth: +ledgerSettledMonth.toFixed(2),
     subBreakdown: active.map((s: any) => ({
       company: s.recruiters?.company_name || '—',
       tier: s.tier,
       usd: +toUSD(s.amount_minor || 0, s.currency, s.fx_to_usd).toFixed(2),
       currency: s.currency
     })),
-    affByCountry: Object.entries(byCountry).map(([country, v]) => ({
+    referralsByCountry: Object.entries(byCountry).map(([country, v]) => ({
       country,
-      ...v,
-      usd: +v.usd.toFixed(2)
-    })).sort((a, b) => b.usd - a.usd),
+      clicks: v.clicks,
+      cpcEst: +v.usd.toFixed(2)
+    })).sort((a, b) => b.cpcEst - a.cpcEst),
     recentClicks: (allClicks.data || []).slice(0, 50),
     ledger: ledger.data || [],
-    fxNote: 'FX rates are approximations; reconcile MRR/cash against Paystack + bank statements.',
+    fxNote: 'FX rates are approximations; reconcile MRR/cash against Paystack + bank statements. Job-click CPC values are estimates for telemetry — affiliate income is recognized only when settled in the ledger.',
   });
 }

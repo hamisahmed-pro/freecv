@@ -76,7 +76,7 @@ export function LineChart({ data, labels, height = 240, color, unit = "", valueL
           return (
             <g key={i}>
               <line x1={padL} y1={gy} x2={W - padR} y2={gy} stroke={t.border} strokeWidth="1" strokeDasharray="2 4" />
-              {valueLabels && <text x={padL - 8} y={gy + 3} textAnchor="end" className="" fontSize="9" fill={t.faint}>{val}{unit}</text>}
+              {valueLabels && <text x={padL - 8} y={gy + 3} textAnchor="end" className="" fontSize="10" fill={t.muted}>{val}{unit}</text>}
             </g>
           );
         })}
@@ -91,7 +91,7 @@ export function LineChart({ data, labels, height = 240, color, unit = "", valueL
           <line x1={x(hover)} y1={padT} x2={x(hover)} y2={padT + innerH} stroke={color} strokeWidth="1" strokeDasharray="3 3" opacity="0.7" />
         )}
         {labels && labels.map((l, i) => (i % Math.ceil(n / 6) === 0 || i === n - 1) && (
-          <text key={i} x={x(i)} y={H - 8} textAnchor="middle" className="" fontSize="9" fill={t.faint}>{l}</text>
+          <text key={i} x={x(i)} y={H - 8} textAnchor="middle" className="" fontSize="10" fill={t.muted}>{l}</text>
         ))}
       </svg>
       {hover !== null && (
@@ -119,7 +119,7 @@ export function RadialGauge({ value, max = 100, color, label, size = 132, suffix
         <circle cx={c} cy={c} r={r} fill="none" stroke={color} strokeWidth={sw} strokeLinecap="round"
           pathLength={1} strokeDasharray={`${frac * easeOutCubic(p)} ${1 - frac * easeOutCubic(p)}`} strokeDashoffset={0} />
       </svg>
-      <div className="-mt-[calc(var(--s)/2+8px)] flex flex-col items-center" style={{ ["--s" as any]: `${size}px`, marginTop: -size / 2 - 6 }}>
+      <div className="flex flex-col items-center" style={{ marginTop: -size / 2 - 6 }}>
         <span className="text-3xl font-extrabold leading-none" style={{ color: t.text }}>{Math.round(value * easeOutCubic(p))}<span className="text-lg" style={{ color: t.muted }}>{suffix}</span></span>
       </div>
       {label && <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: t.muted }}>{label}</span>}

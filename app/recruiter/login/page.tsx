@@ -61,7 +61,7 @@ function RecruiterLoginInner() {
     setLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://cvyon.com/recruiter/dashboard",
+        redirectTo: "https://cvyon.com/recruiter/reset-password",
       });
       if (error) throw error;
       toast.success("Password reset link sent to your email.");
