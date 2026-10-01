@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { V3Page, V3Eyebrow } from "@/components/v3/V3Chrome";
+import { RecruiterShell, RecruiterSimpleShell, RecruiterTab } from "@/components/recruiter/RecruiterShell";
 import { JdSearchForm, JdInput } from "@/components/recruiter/JdSearchForm";
 import { MatchCard } from "@/components/recruiter/MatchCard";
 import { OverviewTab } from "@/components/recruiter/OverviewTab";
@@ -20,14 +20,13 @@ import {
 } from "@/lib/recruiter-portal";
 import { cn } from "@/lib/utils";
 import {
-  Search, Bookmark, History, Unlock, Coins, Loader2, X,
+  Search, Bookmark, History, Unlock, Loader2, X,
   FileText, MapPin, CalendarDays, Play, ArrowRight, Users,
-  LayoutDashboard, GitCompare, KanbanSquare,
   Pencil, Copy, Trash2, Check,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
-type Tab = "overview" | "search" | "compare" | "pipeline" | "saved" | "history" | "unlocks";
+type Tab = RecruiterTab;
 
 const TIER_ORDER: MatchTier[] = ["excellent", "strong", "moderate"];
 const TIER_LABEL: Record<MatchTier, string> = { excellent: "Excellent", strong: "Strong", moderate: "Moderate" };
@@ -411,101 +410,53 @@ export default function RecruiterDashboard() {
 
   /* ------------------------------ shells ----------------------------- */
 
-  const shell = (children: React.ReactNode) => (
-    <V3Page
-      pageName="recruiter_dashboard"
-      logoSub="RECRUITER"
-      links={[
-        { href: "/", label: "Home" },
-        { href: "/recruiter", label: "For recruiters" },
-        { href: "/support", label: "Support" },
-      ]}
-      cta={{ label: "Create account", href: "/recruiter/signup" }}
-    >
-      {children}
-    </V3Page>
-  );
+  const handleSignOut = async () => {
+    try { await supabase.auth.signOut(); } finally { router.replace("/recruiter/login"); }
+  };
+
+  const shellProps = {
+    active: tab,
+    onNavigate: setTab,
+    userEmail: user?.email || "",
+    balance,
+    creditsReady,
+    onBuyCredits: () => setBuyOpen(true),
+    onSignOut: handleSignOut,
+    counts: {
+      compare: compareIds.length,
+      pipeline: pipeline.length,
+      saved: savedSearches.length,
+      history: historySearches.length,
+      unlocks: unlocks.length,
+    },
+  };
 
   if (loading) {
-    return shell(
-      <div className="flex flex-col items-center gap-3 py-32 text-navy/60">
-        <Loader2 size={30} className="animate-spin text-brand" />
-        <span className="text-[11px] font-bold uppercase tracking-[0.2em]">loading…</span>
-      </div>
+    return (
+      <RecruiterSimpleShell>
+        <div className="flex flex-col items-center gap-3 text-navy/60">
+          <Loader2 size={30} className="animate-spin text-brand" />
+          <span className="text-[11px] font-bold uppercase tracking-[0.2em]">loading…</span>
+        </div>
+      </RecruiterSimpleShell>
     );
   }
 
   if (!user) {
     // The redirect is handled by the effect above; this shell only covers the
     // brief moment between the session resolving to null and the navigation.
-    return shell(
-      <div className="flex flex-col items-center gap-3 py-32 text-navy/60">
-        <Loader2 size={30} className="animate-spin text-brand" />
-        <span className="text-[11px] font-bold uppercase tracking-[0.2em]">redirecting…</span>
-      </div>
+    return (
+      <RecruiterSimpleShell>
+        <div className="flex flex-col items-center gap-3 text-navy/60">
+          <Loader2 size={30} className="animate-spin text-brand" />
+          <span className="text-[11px] font-bold uppercase tracking-[0.2em]">redirecting…</span>
+        </div>
+      </RecruiterSimpleShell>
     );
   }
 
-  const tabs: { id: Tab; label: string; icon: any; count?: number }[] = [
-    { id: "overview", label: "Overview", icon: LayoutDashboard },
-    { id: "search", label: "New search", icon: Search },
-    { id: "compare", label: "Compare", icon: GitCompare, count: compareIds.length },
-    { id: "pipeline", label: "Pipeline", icon: KanbanSquare, count: pipeline.length },
-    { id: "saved", label: "Saved", icon: Bookmark, count: savedSearches.length },
-    { id: "history", label: "History", icon: History, count: historySearches.length },
-    { id: "unlocks", label: "Unlocks", icon: Unlock, count: unlocks.length },
-  ];
-
-  return shell(
-    <>
-      {/* ─── header: title + credit balance ─── */}
-      <div className="flex flex-col justify-between gap-5 py-2 sm:flex-row sm:items-end">
-        <div>
-          <V3Eyebrow>Recruiter dashboard</V3Eyebrow>
-          <h1 className="text-[44px] font-extrabold leading-[1.04] tracking-[-0.045em] text-navy sm:text-5xl">Find your next hire.</h1>
-          <p className="mt-2 text-muted">Signed in as <span className="font-bold text-navy">{user.email}</span></p>
-        </div>
-        <div className="flex items-center gap-2.5">
-          <div className="rounded-2xl border border-line bg-paper px-5 py-3 text-center shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
-            <div className="flex items-center justify-center gap-1.5 text-2xl font-extrabold tracking-tight text-navy">
-              <Coins size={20} className="text-coral" />
-              {creditsReady ? (balance ?? "—") : <Loader2 size={20} className="animate-spin text-navy/40" />}
-            </div>
-            <div className="text-[9px] font-bold uppercase tracking-widest text-navy/70">credits</div>
-          </div>
-          <button
-            onClick={() => setBuyOpen(true)}
-            className="rounded-[10px] bg-gold px-6 py-4 text-sm font-extrabold uppercase tracking-wider text-navy shadow-[0_8px_18px_rgba(255,216,90,0.35)] transition-transform hover:-translate-y-px"
-          >
-            Buy credits
-          </button>
-        </div>
-      </div>
-
-      {/* ─── tabs ─── */}
-      <div className="mt-6 flex gap-1.5 overflow-x-auto rounded-2xl border border-line bg-paper p-2 shadow-[0_8px_22px_rgba(23,27,75,0.06)]">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={cn(
-              "flex shrink-0 items-center gap-2 rounded-[10px] px-4 py-3 text-xs font-extrabold uppercase tracking-wider transition-colors",
-              tab === t.id
-                ? "bg-navy text-white"
-                : "border border-line bg-white text-navy/60 hover:text-navy",
-            )}
-          >
-            <t.icon size={15} />
-            {t.label}
-            {t.count != null && t.count > 0 && (
-              <span className={cn("rounded-full px-1.5 py-0.5 text-[10px] font-bold", tab === t.id ? "bg-gold text-navy" : "bg-navy/10 text-navy/70")}>
-                {t.count}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
-
+  return (
+    <RecruiterShell {...shellProps}>
       {/* ═══════════ TAB: OVERVIEW ═══════════ */}
       {tab === "overview" && (
         listsLoading ? (
@@ -772,6 +723,6 @@ export default function RecruiterDashboard() {
           </div>
         </div>
       )}
-    </>
+    </RecruiterShell>
   );
 }
