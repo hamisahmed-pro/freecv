@@ -200,26 +200,30 @@ function isVisibleTextColor(v: string): boolean {
  * --theme-color custom property (set by HTMLPreview).
  */
 export function findTemplateRoot(): HTMLElement | null {
-  const panel = document.getElementById('preview-panel');
-  if (!panel) return null;
   // Preferred: explicit stage marker (added in HTMLPreview).
-  let stage = panel.querySelector<HTMLElement>('[data-cvyon-template-stage]');
-  if (!stage) {
-    // Fallback: the 816px wrapper carrying --theme-color in its style.
-    const cands = panel.querySelectorAll<HTMLElement>('div[style*="--theme-color"]');
-    for (const c of cands) {
-      if (c.firstElementChild instanceof HTMLElement) {
-        stage = c;
-        break;
-      }
-    }
+  // NOTE: several stage markers can exist in the DOM at once (desktop
+  // preview, mobile preview overlay). The old code searched only inside
+  // #preview-panel and took the first marker in DOM order — the desktop
+  // preview stage, which is display:none on mobile — so mobile DOCX exports
+  // silently fell back to the generic builder even with the preview overlay
+  // open. Search the whole document and pick the first stage that is
+  // actually visible/measurable instead.
+  const stages = document.querySelectorAll<HTMLElement>('[data-cvyon-template-stage]');
+  for (const stage of stages) {
+    const root = stage.firstElementChild;
+    if (root instanceof HTMLElement && root.offsetWidth > 0) return root;
   }
-  const root = stage?.firstElementChild;
-  if (!(root instanceof HTMLElement)) return null;
-  // If the preview is display:none (e.g. mobile with preview closed),
+  // Fallback: the 816px wrapper carrying --theme-color in its style.
+  const panel = document.getElementById('preview-panel');
+  const scope = panel || document.documentElement;
+  const cands = scope.querySelectorAll<HTMLElement>('div[style*="--theme-color"]');
+  for (const c of cands) {
+    const root = c.firstElementChild;
+    if (root instanceof HTMLElement && root.offsetWidth > 0) return root;
+  }
+  // If no preview is visible (e.g. mobile with preview closed),
   // computed geometry is 0 and capture would be garbage.
-  if (root.offsetWidth === 0) return null;
-  return root;
+  return null;
 }
 
 interface WalkPair {
@@ -231,6 +235,56 @@ interface WalkPair {
  * Capture the rendered template as standalone HTML with inlined styles.
  * Returns null when the template is not currently rendered/measurable.
  */
+/**
+ * Lucide icon name -> text glyph for DOCX export. Word cannot consume raw
+ * SVG, so contact icons are swapped for a glyph carrying the same meaning.
+ * Only icons in this map survive; other SVGs (decorative) are stripped.
+ */
+const ICON_GLYPHS: Record<string, string> = {
+  'mail': '\u2709',      // envelope
+  'phone': '\u260E',     // telephone
+  'map-pin': '\uD83D\uDCCD', // round pushpin
+  'globe': '\uD83C\uDF10',   // globe with meridians
+  'linkedin': 'in',
+  'github': 'gh',
+  'twitter': '\uD835\uDD4F',
+  'link': '\uD83D\uDD17',
+};
+
+/**
+ * Downscale a data-URL photo in place (synchronous canvas draw). The
+ * ORIGINAL img is rendered and fully loaded, so naturalWidth is reliable —
+ * the detached clone's is not. Caps the longest edge at 256px to keep the
+ * captured HTML (and the resulting DOCX) small.
+ */
+function downscalePhotoInPlace(cloneImg: HTMLImageElement, origImg: HTMLImageElement): void {
+  const src = cloneImg.getAttribute('src') || '';
+  if (!src.startsWith('data:image/')) {
+    cloneImg.remove(); // remote images: strip (privacy/perf)
+    return;
+  }
+  try {
+    const w = origImg.naturalWidth;
+    const h = origImg.naturalHeight;
+    if (!w || !h) return; // dimensions unknown — keep original
+    const MAX = 256;
+    const scale = Math.min(1, MAX / Math.max(w, h));
+    if (scale >= 1) return; // already small enough
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(w * scale));
+    canvas.height = Math.max(1, Math.round(h * scale));
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(origImg, 0, 0, canvas.width, canvas.height);
+    const mime = src.startsWith('data:image/jpeg') || src.startsWith('data:image/jpg') ? 'image/jpeg' : 'image/png';
+    cloneImg.setAttribute('src', canvas.toDataURL(mime, 0.85));
+    cloneImg.setAttribute('width', String(canvas.width));
+    cloneImg.setAttribute('height', String(canvas.height));
+  } catch {
+    /* keep the original src on any failure */
+  }
+}
+
 export function captureTemplateHtml(): string | null {
   const root = findTemplateRoot();
   if (!root) return null;
@@ -554,10 +608,40 @@ export function captureTemplateHtml(): string | null {
     }
   }
 
-  // --- Pass 4: cleanup --------------------------------------------------
-  // Strip images (no photo in DOCX resumes), scripts, buttons, and all
-  // class/id/data attributes (styles are inlined; classes only bloat).
-  clone.querySelectorAll('img,svg,script,style,button,canvas,video,iframe').forEach((el) => el.remove());
+  // --- Pass 4: media + cleanup --------------------------------------------
+  // Profile photos (<img> with data: URL src) are the user's uploaded photo:
+  // keep them, downscaled to cap size. SVG contact icons become text glyphs
+  // (Word cannot render raw SVG). Everything else media/script is stripped.
+  // Afterwards, class/id/data attributes are removed as before (styles are
+  // inlined; classes only bloat).
+  const origByClone = new Map<Element, Element>();
+  for (const pr of pairs) origByClone.set(pr.clone, pr.orig);
+  clone.querySelectorAll('img').forEach((img) => {
+    const orig = origByClone.get(img) as HTMLImageElement | undefined;
+    if (orig instanceof HTMLImageElement) downscalePhotoInPlace(img as HTMLImageElement, orig);
+    else img.remove();
+  });
+  clone.querySelectorAll('svg').forEach((svg) => {
+    const cls = svg.getAttribute('class') || '';
+    const m = cls.match(/lucide-([a-z-]+)/);
+    const glyph = m ? ICON_GLYPHS[m[1]] : undefined;
+    if (!glyph) {
+      svg.remove();
+      return;
+    }
+    const span = document.createElement('span');
+    span.textContent = glyph;
+    // Carry the icon's rendered size/color (Pass 2 inlined them on the svg).
+    const style = svg.getAttribute('style') || '';
+    const sizeMatch = style.match(/width\s*:\s*([\d.]+)px/);
+    const colorMatch = style.match(/color\s*:\s*([^;]+)/);
+    let spanStyle = '';
+    if (sizeMatch) spanStyle += `font-size:${sizeMatch[1]}px;`;
+    if (colorMatch) spanStyle += `color:${colorMatch[1].trim()};`;
+    if (spanStyle) span.setAttribute('style', spanStyle);
+    svg.replaceWith(span);
+  });
+  clone.querySelectorAll('script,style,button,canvas,video,iframe').forEach((el) => el.remove());
   const all = [clone, ...clone.querySelectorAll('*')];
   for (const el of all) {
     for (const attr of [...el.attributes]) {

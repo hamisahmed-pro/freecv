@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useResumeStore } from "@/store/useResumeStore";
 import { UploadCloud, FileText, CheckCircle2, AlertCircle, Sparkles, Loader2, Target, Lightbulb, ChevronLeft, X, Share2, Copy, Check } from "lucide-react";
@@ -10,12 +8,7 @@ import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { trackEvent } from "@/lib/analytics";
 import confetti from "canvas-confetti";
-import { Archivo, Archivo_Black, DM_Sans, Space_Mono } from "@/lib/fonts";
-
-const display = Archivo_Black({ subsets: ["latin"], weight: "400", display: "swap" });
-const head = Archivo({ subsets: ["latin"], weight: ["600", "800", "900"], display: "swap" });
-const body = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"], display: "swap" });
-const mono = Space_Mono({ subsets: ["latin"], weight: ["400", "700"], display: "swap" });
+import { V3Page, V3Eyebrow } from "@/components/v3/V3Chrome";
 
 interface AtsResult {
   score: number;
@@ -196,169 +189,135 @@ export default function ClientAtsGrader() {
   };
 
   return (
-    <div className={cn("cv-riso relative min-h-screen text-[#141312] bg-[#E8E7E1] overflow-x-hidden", body.className)}
-      style={{ ["--ink" as any]: "#141312", ["--verm" as any]: "#FF4326", ["--cob" as any]: "#2233FF", ["--hi" as any]: "#FFE14D", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
-      <style>{`
-        .cv-riso{font-family:var(--fb)} .cv-riso .fd{font-family:var(--fd)} .cv-riso .fh{font-family:var(--fh)} .cv-riso .fm{font-family:var(--fm)}
-        .cv-riso .grain{position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.06;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-        .cv-riso .dots{background-image:radial-gradient(#14131222 1.2px,transparent 1.2px);background-size:22px 22px}
-        .cv-riso .hs{box-shadow:7px 7px 0 var(--ink)} .cv-riso .hs-v{box-shadow:7px 7px 0 var(--verm)} .cv-riso .hs-c{box-shadow:6px 6px 0 var(--cob)}
-      `}</style>
-      <div className="grain" />
-      <div className="absolute inset-0 dots pointer-events-none opacity-50 mix-blend-multiply" />
-
-      {/* NAV */}
-      <header className="sticky top-0 z-40 border-b-[3px] border-[#141312] bg-[#E8E7E1]/95 backdrop-blur-0">
-        <div className="mx-auto flex max-w-[1240px] items-center justify-between px-5 py-4 lg:px-8">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/logo-light-no-background.png"
-              alt="Cvyon"
-              width={240}
-              height={80}
-              priority
-              className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto object-contain transition-all"
-            />
-            <span className="fm hidden text-[11px] font-bold uppercase tracking-[0.2em] text-[#FF4326] sm:inline-block border-l-2 border-[#141312]/20 pl-2">ATS Grader</span>
-          </Link>
-          <div className="flex items-center gap-4 sm:gap-6">
-            <Link href="/" className="fm text-[11px] font-bold uppercase tracking-[0.18em] transition-colors hover:text-[#FF4326]">
-              Home
-            </Link>
-            <Link href="/build" className="group flex items-center gap-2 border-[3px] border-[#141312] bg-[#141312] px-4 py-2.5 fm text-[11px] font-bold uppercase tracking-[0.18em] text-[#E8E7E1] hs transition-all hover:bg-[#FF4326] hover:border-[#FF4326]">
-              Build Free
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      <main className="relative z-10 max-w-5xl mx-auto px-5 py-12 lg:py-20 lg:px-8">
+    <V3Page pageName="ats_grader" logoSub="ATS GRADER">
+      <div className="mx-auto max-w-[960px]">
         {challengeScore !== null && bannerVisible && (
-          <div className="mb-10 border-[3px] border-[#141312] bg-[#FFE14D] hs p-4 sm:p-5 flex items-start sm:items-center gap-4">
+          <div className="mb-10 flex items-start gap-4 rounded-2xl border border-gold/60 bg-gold/15 p-4 shadow-[0_8px_22px_rgba(23,27,75,0.08)] sm:items-center sm:p-5">
             <div className="flex-1">
-              <p className="fh font-black text-base sm:text-lg uppercase tracking-wide leading-tight">
+              <p className="text-base font-extrabold uppercase tracking-wide leading-tight text-navy sm:text-lg">
                 Someone scored {challengeScore}/100 on this grader
               </p>
-              <p className="fm text-xs sm:text-sm font-bold uppercase tracking-wider text-[#141312]/70 mt-1">
+              <p className="mt-1 text-xs font-bold uppercase tracking-wider text-muted sm:text-sm">
                 Can you beat it? Upload your resume to find out.
               </p>
             </div>
             <button
               onClick={() => setBannerVisible(false)}
               aria-label="Dismiss challenge"
-              className="shrink-0 border-[2px] border-[#141312] bg-[#E8E7E1] p-1.5 hover:bg-[#FF4326] hover:text-[#E8E7E1] transition-colors"
+              className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] border border-line bg-paper text-navy transition-colors hover:border-coral hover:bg-coral hover:text-white"
             >
               <X size={16} />
             </button>
           </div>
         )}
 
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h1 className="fd text-4xl sm:text-6xl uppercase tracking-tighter leading-[0.9] mb-6">
-            Pass the <span className="text-[#FF4326]">bots.</span><br />
+        <div className="mx-auto mb-12 max-w-3xl text-center">
+          <V3Eyebrow>§ free ATS grader</V3Eyebrow>
+          <h1 className="text-4xl font-black tracking-tight text-navy sm:text-6xl">
+            Pass the <span className="text-coral">bots.</span><br />
             Get the interview.
           </h1>
-          <p className="fm text-sm sm:text-base font-bold uppercase tracking-wider text-[#141312]/70">
+          <p className="mx-auto mt-4 max-w-[650px] text-[17px] leading-relaxed text-muted">
             Upload your resume (PDF/DOCX) and paste a job description. Our AI analyzes your match score exactly how an ATS would.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-stretch">
+        <div className="grid items-stretch gap-8 md:grid-cols-2 lg:gap-10">
           {/* LEFT: Upload & JD */}
-          <div className="flex flex-col gap-8">
-            <div className="bg-[#E8E7E1] border-[3px] border-[#141312] p-6 sm:p-8 hs-c flex flex-col h-full">
-              <h2 className="fh text-xl font-black uppercase tracking-wider mb-6 flex items-center gap-2">
-                <span className="bg-[#141312] text-[#E8E7E1] p-1.5"><FileText size={16} /></span>
+          <div className="flex flex-col gap-6">
+            <div className="flex h-full flex-col rounded-2xl border border-line bg-paper p-6 shadow-[0_8px_22px_rgba(23,27,75,0.08)] sm:p-7">
+              <h2 className="mb-5 flex items-center gap-2.5 text-[15px] font-extrabold uppercase tracking-wider text-navy">
+                <span className="grid h-9 w-9 place-items-center rounded-[10px] bg-navy text-white"><FileText size={16} /></span>
                 1. Resume
               </h2>
-              
+
               <input type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
-              <div 
+              <div
                 onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} onClick={() => fileInputRef.current?.click()}
                 className={cn(
-                  "flex-1 border-[3px] border-dashed border-[#141312]/30 flex flex-col items-center justify-center p-8 text-center cursor-pointer transition-all min-h-[200px]",
-                  isDragging ? "bg-[#141312]/5 border-[#141312]" : "hover:bg-[#141312]/5",
-                  file ? "bg-[#2233FF]/10 border-[#2233FF]" : ""
+                  "flex min-h-[200px] flex-1 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-line bg-cream/60 p-8 text-center transition-all",
+                  isDragging ? "border-brand bg-lavender" : "hover:border-brand/60",
+                  file ? "border-brand bg-lavender/70" : ""
                 )}
               >
                 {file ? (
                   <>
-                    <FileText size={48} className="text-[#2233FF] mb-4" />
-                    <p className="fh font-bold text-lg truncate max-w-full">{file.name}</p>
-                    <p className="fm text-xs mt-2 uppercase">{(file.size / 1024 / 1024).toFixed(2)} MB • Click to replace</p>
+                    <FileText size={44} className="mb-4 text-brand" />
+                    <p className="max-w-full truncate text-lg font-bold text-navy">{file.name}</p>
+                    <p className="mt-2 text-xs font-bold uppercase tracking-wider text-muted">{(file.size / 1024 / 1024).toFixed(2)} MB • Click to replace</p>
                   </>
                 ) : (
                   <>
-                    <UploadCloud size={48} className="text-[#141312]/50 mb-4" />
-                    <p className="fh font-bold text-lg">Drag & Drop Resume</p>
-                    <p className="fm text-xs mt-2 uppercase text-[#141312]/50">Supported: PDF, DOCX (Max 5MB)</p>
+                    <UploadCloud size={44} className="mb-4 text-navy/40" />
+                    <p className="text-lg font-bold text-navy">Drag &amp; drop resume</p>
+                    <p className="mt-2 text-xs font-bold uppercase tracking-wider text-muted">Supported: PDF, DOCX (max 4MB)</p>
                   </>
                 )}
               </div>
             </div>
 
-            <div className="bg-[#E8E7E1] border-[3px] border-[#141312] p-6 sm:p-8 hs flex flex-col">
-              <h2 className="fh text-xl font-black uppercase tracking-wider mb-6 flex items-center gap-2">
-                <span className="bg-[#141312] text-[#E8E7E1] p-1.5"><Target size={16} /></span>
-                2. Job Target
+            <div className="flex flex-col rounded-2xl border border-line bg-paper p-6 shadow-[0_8px_22px_rgba(23,27,75,0.08)] sm:p-7">
+              <h2 className="mb-5 flex items-center gap-2.5 text-[15px] font-extrabold uppercase tracking-wider text-navy">
+                <span className="grid h-9 w-9 place-items-center rounded-[10px] bg-navy text-white"><Target size={16} /></span>
+                2. Job target
               </h2>
-              <textarea 
+              <textarea
                 placeholder="Paste the target job description here..."
                 value={jd}
                 onChange={e => setJd(e.target.value)}
-                className="w-full min-h-[200px] border-[3px] border-[#141312] bg-[#E8E7E1] p-4 fh text-sm resize-y outline-none focus:bg-white transition-colors"
+                className="min-h-[180px] w-full resize-y rounded-[10px] border border-line bg-cream/60 p-4 text-sm text-navy outline-none transition-shadow placeholder:text-muted/60 focus:border-brand focus:shadow-[0_0_0_4px_rgba(85,72,245,0.1)]"
               />
             </div>
 
-            <button 
+            <button
               onClick={handleGrade}
               disabled={isLoading}
-              className="group flex items-center justify-center gap-3 w-full border-[3px] border-[#141312] bg-[#FF4326] px-8 py-5 fh text-lg font-black uppercase tracking-wider text-[#E8E7E1] hs-v transition-all hover:-translate-y-1 hover:shadow-none disabled:opacity-70 disabled:pointer-events-none"
+              className="flex w-full items-center justify-center gap-3 rounded-[10px] bg-coral px-8 py-4 text-[15px] font-extrabold uppercase tracking-wider text-white shadow-[0_10px_24px_rgba(255,96,75,0.35)] transition-transform hover:-translate-y-px disabled:opacity-70 disabled:pointer-events-none"
             >
-              {isLoading ? <><Loader2 className="animate-spin" size={24} /> Processing...</> : <><Sparkles size={24} /> Analyze Match</>}
+              {isLoading ? <><Loader2 className="animate-spin" size={22} /> Processing...</> : <><Sparkles size={22} /> Analyze match</>}
             </button>
           </div>
 
           {/* RIGHT: Results */}
-          <div className="bg-[#141312] border-[3px] border-[#141312] p-6 sm:p-8 text-[#E8E7E1] relative flex flex-col min-h-[500px]">
+          <div className="relative flex min-h-[500px] flex-col rounded-2xl bg-navy p-6 text-white shadow-[0_16px_38px_rgba(23,27,75,0.22)] sm:p-8">
             {!result ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 opacity-50">
-                <Target size={64} className="mb-6 opacity-30" />
-                <p className="fh font-bold text-xl mb-2 uppercase">Awaiting Input</p>
-                <p className="fm text-xs uppercase tracking-widest">Your AI-generated scorecard will appear here.</p>
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center opacity-60">
+                <Target size={56} className="mb-6 opacity-30" />
+                <p className="mb-2 text-xl font-extrabold uppercase tracking-wide">Awaiting input</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-white/60">Your AI-generated scorecard will appear here.</p>
               </div>
             ) : (
-              <div className="flex flex-col h-full animate-in fade-in zoom-in-95 duration-500">
-                <div className="text-center border-b-[3px] border-[#E8E7E1]/20 pb-8 mb-8">
-                  <p className="fm text-xs font-bold uppercase tracking-widest text-[#FFE14D] mb-4">Match Score</p>
-                  <div className="flex justify-center items-end gap-2 leading-none">
-                    <span className={cn("fd text-8xl tracking-tighter", result.score >= 80 ? "text-[#00FF66]" : result.score >= 60 ? "text-[#FFE14D]" : "text-[#FF4326]")}>
+              <div className="flex h-full flex-col animate-in fade-in zoom-in-95 duration-500">
+                <div className="mb-8 border-b border-white/15 pb-8 text-center">
+                  <p className="mb-4 text-xs font-bold uppercase tracking-widest text-gold">Match score</p>
+                  <div className="flex items-end justify-center gap-2 leading-none">
+                    <span className={cn("text-8xl font-black tracking-tighter", result.score >= 80 ? "text-teal" : result.score >= 60 ? "text-gold" : "text-coral")}>
                       {result.score}
                     </span>
-                    <span className="fh text-3xl font-black text-[#E8E7E1]/50 pb-2">/100</span>
+                    <span className="pb-2 text-3xl font-black text-white/50">/100</span>
                   </div>
                 </div>
 
                 {/* SHARE YOUR SCORE */}
-                <div className="mb-8 border-[3px] border-[#FFE14D] bg-[#FFE14D]/10 p-5 sm:p-6 text-center">
-                  <p className="fm text-xs font-bold uppercase tracking-widest text-[#FFE14D] mb-3">Share your score</p>
-                  <p className="fh text-sm sm:text-base font-bold mb-5 leading-relaxed">
-                    I scored <span className="text-[#FFE14D]">{scoreInt}/100</span> — think you can beat it?
+                <div className="mb-8 rounded-xl border border-gold/40 bg-gold/10 p-5 text-center sm:p-6">
+                  <p className="mb-3 text-xs font-bold uppercase tracking-widest text-gold">Share your score</p>
+                  <p className="mb-5 text-sm font-bold leading-relaxed sm:text-base">
+                    I scored <span className="text-gold">{scoreInt}/100</span> — think you can beat it?
                   </p>
                   {canNativeShare ? (
                     <button
                       onClick={() => doShare('native')}
-                      className="inline-flex items-center gap-2 border-[3px] border-[#FFE14D] bg-[#FFE14D] px-6 py-3 fh text-sm font-black uppercase tracking-wider text-[#141312] transition-all hover:-translate-y-0.5"
+                      className="inline-flex items-center gap-2 rounded-[10px] bg-gold px-6 py-3 text-sm font-extrabold uppercase tracking-wider text-navy transition-transform hover:-translate-y-px"
                     >
                       <Share2 size={18} /> Share
                     </button>
                   ) : (
                     <div className="flex flex-wrap justify-center gap-2">
-                      <button onClick={() => doShare('x')} className="px-4 py-2 border-2 border-[#E8E7E1]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFE14D] hover:text-[#141312] hover:border-[#FFE14D] transition-colors">X</button>
-                      <button onClick={() => doShare('facebook')} className="px-4 py-2 border-2 border-[#E8E7E1]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFE14D] hover:text-[#141312] hover:border-[#FFE14D] transition-colors">Facebook</button>
-                      <button onClick={() => doShare('whatsapp')} className="px-4 py-2 border-2 border-[#E8E7E1]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFE14D] hover:text-[#141312] hover:border-[#FFE14D] transition-colors">WhatsApp</button>
-                      <button onClick={() => doShare('linkedin')} className="px-4 py-2 border-2 border-[#E8E7E1]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFE14D] hover:text-[#141312] hover:border-[#FFE14D] transition-colors">LinkedIn</button>
-                      <button onClick={() => doShare('copy')} className="px-4 py-2 border-2 border-[#E8E7E1]/40 fm text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFE14D] hover:text-[#141312] hover:border-[#FFE14D] transition-colors inline-flex items-center gap-1.5">
+                      <button onClick={() => doShare('x')} className="rounded-[10px] border border-white/30 px-4 py-2 text-[11px] font-bold uppercase tracking-widest transition-colors hover:bg-gold hover:text-navy hover:border-gold">X</button>
+                      <button onClick={() => doShare('facebook')} className="rounded-[10px] border border-white/30 px-4 py-2 text-[11px] font-bold uppercase tracking-widest transition-colors hover:bg-gold hover:text-navy hover:border-gold">Facebook</button>
+                      <button onClick={() => doShare('whatsapp')} className="rounded-[10px] border border-white/30 px-4 py-2 text-[11px] font-bold uppercase tracking-widest transition-colors hover:bg-gold hover:text-navy hover:border-gold">WhatsApp</button>
+                      <button onClick={() => doShare('linkedin')} className="rounded-[10px] border border-white/30 px-4 py-2 text-[11px] font-bold uppercase tracking-widest transition-colors hover:bg-gold hover:text-navy hover:border-gold">LinkedIn</button>
+                      <button onClick={() => doShare('copy')} className="inline-flex items-center gap-1.5 rounded-[10px] border border-white/30 px-4 py-2 text-[11px] font-bold uppercase tracking-widest transition-colors hover:bg-gold hover:text-navy hover:border-gold">
                         {copied ? <><Check size={14} /> Copied</> : <><Copy size={14} /> Copy link</>}
                       </button>
                     </div>
@@ -367,35 +326,35 @@ export default function ClientAtsGrader() {
 
                 <div className="flex-1 space-y-8 overflow-y-auto pr-2 custom-scrollbar">
                   <div>
-                    <h3 className="flex items-center gap-2 fm text-sm font-bold uppercase tracking-wider text-[#00FF66] mb-4">
+                    <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-teal">
                       <CheckCircle2 size={16} /> Strengths
                     </h3>
                     <ul className="space-y-3">
                       {result.strengths.map((s, i) => (
-                        <li key={i} className="flex gap-3 text-sm fh"><span className="text-[#00FF66] opacity-50">◆</span> {s}</li>
+                        <li key={i} className="flex gap-3 text-sm"><span className="text-teal/60">◆</span> {s}</li>
                       ))}
                     </ul>
                   </div>
 
                   <div>
-                    <h3 className="flex items-center gap-2 fm text-sm font-bold uppercase tracking-wider text-[#FF4326] mb-4">
+                    <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-coral">
                       <AlertCircle size={16} /> Weaknesses
                     </h3>
                     <ul className="space-y-3">
                       {result.weaknesses.map((w, i) => (
-                        <li key={i} className="flex gap-3 text-sm fh"><span className="text-[#FF4326] opacity-50">◆</span> {w}</li>
+                        <li key={i} className="flex gap-3 text-sm"><span className="text-coral/60">◆</span> {w}</li>
                       ))}
                     </ul>
                   </div>
 
                   {result.missingKeywords.length > 0 && (
                     <div>
-                      <h3 className="flex items-center gap-2 fm text-sm font-bold uppercase tracking-wider text-[#FFE14D] mb-4">
-                        <Target size={16} /> Missing Keywords
+                      <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-gold">
+                        <Target size={16} /> Missing keywords
                       </h3>
                       <div className="flex flex-wrap gap-2">
                         {result.missingKeywords.map((k, i) => (
-                          <span key={i} className="px-3 py-1.5 border-[2px] border-[#FFE14D]/30 bg-[#FFE14D]/10 text-[#FFE14D] text-xs font-bold fh">{k}</span>
+                          <span key={i} className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1.5 text-xs font-bold text-gold">{k}</span>
                         ))}
                       </div>
                     </div>
@@ -403,26 +362,26 @@ export default function ClientAtsGrader() {
 
                   {result.tips.length > 0 && (
                     <div>
-                      <h3 className="flex items-center gap-2 fm text-sm font-bold uppercase tracking-wider text-[#2233FF] mb-4">
-                        <Lightbulb size={16} /> Actionable Tips
+                      <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-brand">
+                        <Lightbulb size={16} /> Actionable tips
                       </h3>
                       <ul className="space-y-3">
                         {result.tips.map((t, i) => (
-                          <li key={i} className="flex gap-3 text-sm fh"><span className="text-[#2233FF] opacity-50">◆</span> {t}</li>
+                          <li key={i} className="flex gap-3 text-sm"><span className="text-brand/70">◆</span> {t}</li>
                         ))}
                       </ul>
                     </div>
                   )}
                 </div>
-                
-                <div className="pt-8 mt-8 border-t-[3px] border-[#E8E7E1]/20 text-center">
-                  <button onClick={handleFixResume} className="inline-block bg-[#E8E7E1] text-[#141312] px-6 py-3 fh font-black text-sm uppercase tracking-wider border-[3px] border-[#E8E7E1] hover:bg-[#FFE14D] hover:border-[#FFE14D] transition-colors">Fix my resume in Builder</button>
+
+                <div className="mt-8 border-t border-white/15 pt-8 text-center">
+                  <button onClick={handleFixResume} className="inline-flex items-center gap-2 rounded-[10px] bg-paper px-6 py-3 text-sm font-extrabold uppercase tracking-wider text-navy transition-transform hover:-translate-y-px">Fix my resume in builder</button>
                 </div>
               </div>
             )}
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </V3Page>
   );
 }

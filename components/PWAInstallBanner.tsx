@@ -10,6 +10,7 @@ interface BeforeInstallPromptEvent extends Event {
 export function PWAInstallBanner() {
   const deferredPrompt = useRef<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
+  const [consentOpen, setConsentOpen] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("pwa-dismissed") === "1") return;
@@ -20,8 +21,17 @@ export function PWAInstallBanner() {
       setVisible(true);
     };
 
+    // Hide while the privacy dialog is open so the two never overlap.
+    const consentHandler = (e: Event) => {
+      setConsentOpen((e as CustomEvent<{ open: boolean }>).detail?.open === true);
+    };
+
     window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    window.addEventListener("cvyon:consent-visibility", consentHandler);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("cvyon:consent-visibility", consentHandler);
+    };
   }, []);
 
   const handleInstall = async () => {
@@ -42,8 +52,9 @@ export function PWAInstallBanner() {
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-50 border-t-2 border-[#E8E7E1]/20 bg-[#141312] text-white px-4 py-3 transition-transform duration-300 ${
-        visible ? "translate-y-0" : "translate-y-full pointer-events-none"
+      data-pwa-banner
+      className={`fixed bottom-0 left-0 right-0 z-50 border-t-2 border-[#f6f5ef]/20 bg-[#151a46] text-white px-4 py-3 transition-transform duration-300 ${
+        visible && !consentOpen ? "translate-y-0" : "translate-y-full pointer-events-none"
       }`}
     >
       <div className="mx-auto flex max-w-3xl items-center justify-between gap-4">

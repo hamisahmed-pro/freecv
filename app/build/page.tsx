@@ -9,10 +9,10 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { temporal } from 'zundo';
 import {
-  User, Briefcase, GraduationCap, Wrench, Plus, Trash2, Download, X, Eye, Layout,
+  User, Briefcase, GraduationCap, Wrench, Plus, Trash2, Download, X, Eye, EyeOff, Layout,
   FolderOpen, Award, Users, Paintbrush, Sparkles, Loader2, GripVertical, FileText,
-  BarChart3, RefreshCw, Undo2, Redo2, ChevronDown, ZoomIn, ZoomOut, Upload, Share2,
-  Pipette, Check, ArrowLeft, ArrowRight
+  BarChart3, RefreshCw, Undo2, Redo2, ChevronDown, ChevronUp, ZoomIn, ZoomOut, Upload, Share2,
+  Pipette, Check, ArrowLeft, ArrowRight, FileDown, Target
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { clsx, type ClassValue } from 'clsx';
@@ -24,15 +24,14 @@ import { supabase } from '@/lib/supabase';
 import { templates, TemplateKey } from '@/components/templates';
 import { templates as htmlTemplates } from '@/components/html_templates';
 import NewsletterCapture from '@/components/NewsletterCapture';
+import { Logo } from '@/components/brand/Logo';
 import dynamic from 'next/dynamic';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { captureTemplateHtml } from '@/lib/docx/capture-template-html';
 
 const ImportResume = dynamic(() => import('@/components/builder/ImportResume').then(m => m.ImportResume), { ssr: false });
-const CoverLetterTab = dynamic(() => import('@/components/builder/CoverLetterTab').then(m => m.CoverLetterTab), { ssr: false });
 const JobsModal = dynamic(() => import('@/components/builder/JobsModal').then(m => m.JobsModal), { ssr: false });
 const PDFPreview = dynamic(() => import('@/components/builder/PDFPreview'), { ssr: false });
-const PDFDownloadButton = dynamic(() => import('@/components/builder/PDFDownloadButton'), { ssr: false });
 const LiveAtsScore = dynamic(() => import('@/components/builder/LiveAtsScore').then(m => m.LiveAtsScore), { ssr: false });
 
 function cn(...inputs: ClassValue[]) {
@@ -42,12 +41,37 @@ function cn(...inputs: ClassValue[]) {
 import { useResumeStore, initialData, type ResumeData, type PersonalInfo, type Experience, type Education, type Skill, type Project, type Certification, type CustomSection, type CustomSectionItem, type Reference, type ResumeSectionId, DEFAULT_SECTION_ORDER } from '@/store/useResumeStore';
 import { setRecruiterConsent } from '@/lib/recruiter-api';
 
-// --- Riso primitives ---
+// --- Section header tools: visibility eye + up/down ordering (v3 style) ---
+// Restored from the pre-redesign builder. The eye toggles the section in the
+// resume OUTPUT (preview/PDF/DOCX); up/down reorders via the store's
+// sectionOrder, which templates honor through orderSections().
+const SectionHeaderTools = ({ id, isHidden, isFirst, isLast, onToggle, onMove }: {
+  id: ResumeSectionId; isHidden: boolean; isFirst: boolean; isLast: boolean;
+  onToggle: (id: ResumeSectionId) => void; onMove: (id: ResumeSectionId, dir: 'up' | 'down') => void;
+}) => {
+  const btn = "p-2 rounded-lg border border-[#dddde5] bg-white text-[#151a46]/60 hover:text-[#151a46] hover:border-[#5548f5] hover:bg-[#eeecff] transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-[#dddde5] disabled:hover:bg-white disabled:hover:text-[#151a46]/60";
+  return (
+    <div className="flex items-center gap-1.5">
+      <button type="button" onClick={() => onMove(id, 'up')} disabled={isFirst} title="Move section up" aria-label="Move section up" className={btn}>
+        <ChevronUp size={14} />
+      </button>
+      <button type="button" onClick={() => onMove(id, 'down')} disabled={isLast} title="Move section down" aria-label="Move section down" className={btn}>
+        <ChevronDown size={14} />
+      </button>
+      <button type="button" onClick={() => onToggle(id)} title={isHidden ? 'Show section in resume' : 'Hide section from resume'} aria-label={isHidden ? 'Show section in resume' : 'Hide section from resume'} aria-pressed={isHidden}
+        className={cn(btn, isHidden && "bg-[#151a46]/10 border-[#151a46]/20")}>
+        {isHidden ? <EyeOff size={14} /> : <Eye size={14} />}
+      </button>
+    </div>
+  );
+};
+
+// --- v3 primitives ---
 const Input = ({ label, ...props }: any) => (
   <div className="flex flex-col gap-1.5 w-full">
-    <label className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/60">{label}</label>
+    <label className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] text-[#151a46]/55">{label}</label>
     <input
-      className="w-full bg-white border-[3px] border-[#141312] rounded-none px-4 py-2.5 text-sm text-[#141312] placeholder:text-[#141312]/35 outline-none transition-all focus:border-[#FF4326]"
+      className="w-full bg-white border border-[#d9dae5] rounded-[10px] px-4 py-2.5 text-sm text-[#151a46] placeholder:text-[#151a46]/35 outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)]"
       {...props}
     />
   </div>
@@ -55,9 +79,9 @@ const Input = ({ label, ...props }: any) => (
 
 const Textarea = ({ label, ...props }: any) => (
   <div className="flex flex-col gap-1.5 w-full">
-    <label className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/60">{label}</label>
+    <label className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] text-[#151a46]/55">{label}</label>
     <textarea
-      className="w-full bg-white border-[3px] border-[#141312] rounded-none px-4 py-3 text-sm text-[#141312] placeholder:text-[#141312]/35 outline-none transition-all focus:border-[#FF4326] min-h-[100px] resize-y custom-scrollbar"
+      className="w-full bg-white border border-[#d9dae5] rounded-[10px] px-4 py-3 text-sm text-[#151a46] placeholder:text-[#151a46]/35 outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)] min-h-[100px] resize-y custom-scrollbar"
       {...props}
     />
   </div>
@@ -66,16 +90,16 @@ const Textarea = ({ label, ...props }: any) => (
 const SectionHeader = ({ icon: Icon, title, description, onRemove }: any) => (
   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6">
     <div className="flex items-center gap-4">
-      <div className="p-2.5 bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] hs-v w-fit shrink-0">
+      <div className="p-2.5 bg-[#151a46] text-white rounded-xl w-fit shrink-0">
         <Icon size={20} />
       </div>
       <div>
-        <h3 className="fh font-extrabold text-[#141312] leading-tight tracking-tight">{title}</h3>
-        <p className="fm text-[10px] font-bold uppercase tracking-[0.18em] text-[#141312]/50">{description}</p>
+        <h3 className="font-brand font-extrabold text-[#151a46] leading-tight tracking-tight">{title}</h3>
+        <p className="font-brand text-[10px] font-bold uppercase tracking-[0.18em] text-[#151a46]/50">{description}</p>
       </div>
     </div>
     {onRemove && (
-      <button onClick={onRemove} className="fm text-[10px] font-bold uppercase tracking-widest text-[#D8362A] border-2 border-[#D8362A] px-3 py-1.5 hover:bg-[#D8362A] hover:text-white transition-colors">
+      <button onClick={onRemove} className="font-brand text-[10px] font-bold uppercase tracking-widest text-[#D8362A] border border-[#D8362A] rounded-lg px-3 py-1.5 hover:bg-[#D8362A] hover:text-white transition-colors">
         Remove Section
       </button>
     )}
@@ -83,62 +107,10 @@ const SectionHeader = ({ icon: Icon, title, description, onRemove }: any) => (
 );
 
 const Card = ({ children, className }: any) => (
-  <div className={cn("bg-white border-[3px] border-[#141312] hs rounded-none p-5 sm:p-6 mb-8 text-[#141312]", className)}>
+  <div className={cn("bg-white border border-[#dddde5] rounded-2xl shadow-[0_2px_8px_rgba(21,26,70,.05)] p-5 sm:p-6 mb-8 text-[#151a46]", className)}>
     {children}
   </div>
 );
-
-// Section header. On desktop (lg+) this is the ORIGINAL pre-redesign look:
-// a plain non-interactive heading with the section always expanded (the
-// .section-* CSS below enforces that without relying on Tailwind's
-// responsive-variant cascade, which silently lost to .hidden in
-// production builds). Below lg it collapses into a tappable accordion —
-// the mobile tabs/panes pattern — so the long editor becomes a compact
-// list of sections on phones.
-const SectionAccordion = ({ id, icon: Icon, title, description, action, onRemove, defaultOpen = false, children }: any) => {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div>
-      <div className="flex justify-between items-center gap-3 mb-6">
-        <button
-          type="button"
-          onClick={() => setOpen((o: boolean) => !o)}
-          aria-expanded={open}
-          aria-controls={`section-body-${id}`}
-          className="section-toggle flex-1 min-w-0 text-left cursor-pointer"
-        >
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-4 min-w-0">
-              <div className="p-2.5 bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] hs-v w-fit shrink-0">
-                <Icon size={20} />
-              </div>
-              <div className="min-w-0">
-                <h3 className="fh font-extrabold text-[#141312] leading-tight tracking-tight">{title}</h3>
-                <p className="fm text-[10px] font-bold uppercase tracking-[0.18em] text-[#141312]/50">{description}</p>
-              </div>
-            </div>
-            <span className={cn("section-toggle-chevron shrink-0 p-2 border-2 border-[#141312] bg-white text-[#141312] transition-transform", open && "rotate-180")}>
-              <ChevronDown size={16} />
-            </span>
-          </div>
-        </button>
-        {(action || onRemove) && (
-          <div className="shrink-0 flex items-center gap-2" onClickCapture={() => setOpen(true)}>
-            {action}
-            {onRemove && (
-              <button onClick={onRemove} className="fm text-[10px] font-bold uppercase tracking-widest text-[#D8362A] border-2 border-[#D8362A] px-3 py-1.5 hover:bg-[#D8362A] hover:text-white transition-colors">
-                Remove
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-      <div id={`section-body-${id}`} className={cn("section-body", open ? "block" : "hidden")}>
-        {children}
-      </div>
-    </div>
-  );
-};
 
 const HTMLThumbnail = ({ Tmpl, data }: { Tmpl: any, data: any }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -169,10 +141,10 @@ const HTMLPreview = ({ Tmpl, data }: { Tmpl: any, data: any }) => {
     return () => observer.disconnect();
   }, []);
   return (
-    <div ref={containerRef} className="w-full h-full bg-[#E8E7E1] flex justify-center overflow-auto p-4 sm:p-8 cv-riso custom-scrollbar">
+    <div ref={containerRef} className="w-full h-full bg-[#f6f5ef] flex justify-center overflow-auto p-4 sm:p-8 cv-riso custom-scrollbar">
       <div
         data-cvyon-template-stage
-        className="bg-white shadow-2xl flex-shrink-0 relative border-[3px] border-[#141312] hs-c"
+        className={cn("bg-white shadow-[0_12px_40px_rgba(21,26,70,.14)] rounded-lg overflow-hidden flex-shrink-0 relative border border-[#dddde5]", data.density === 'compact' && "density-compact")}
         style={{ width: '816px', height: '1056px', transform: `scale(${scale})`, transformOrigin: 'top center', marginBottom: `-${1056 * (1 - scale)}px`, '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
       >
         <Tmpl data={data} themeColor={data.theme?.color || '#2563eb'} />
@@ -200,8 +172,9 @@ export default function FreeCVApp() {
     addSkill, removeSkill,
     toggleProjects, addProject, updateProject, removeProject,
     toggleCertifications, addCertification, updateCertification, removeCertification,
-    toggleReferences, addReference, updateReference, removeReference, setConsents,
-    reorderExperience, reorderEducation, reorderSkills, setAllData, addCustomSection, updateCustomSectionTitle, removeCustomSection, addCustomSectionItem, updateCustomSectionItem, removeCustomSectionItem, reorderCustomSections, reorderCustomSectionItems
+    toggleReferences, addReference, updateReference, removeReference, setConsents, setDensity,
+    reorderExperience, reorderEducation, reorderSkills, setAllData, addCustomSection, updateCustomSectionTitle, removeCustomSection, addCustomSectionItem, updateCustomSectionItem, removeCustomSectionItem, reorderCustomSections, reorderCustomSectionItems,
+    toggleSectionVisibility, moveSection
   } = useResumeStore();
 
   const data = useMemo(() => ({
@@ -238,28 +211,15 @@ export default function FreeCVApp() {
     };
   }, [data]);
 
-  // Sections currently present in the editor, in the user's chosen order.
-  // (projects/certifications/references only appear once added.)
-  const editorSectionIds = useMemo(() => {
-    const inEditor = (id: ResumeSectionId) =>
-      id === 'projects' ? data.showProjects
-      : id === 'certifications' ? data.showCertifications
-      : id === 'references' ? data.showReferences
-      : true;
-    return (data.sectionOrder || DEFAULT_SECTION_ORDER).filter(inEditor);
-  }, [data.sectionOrder, data.showProjects, data.showCertifications, data.showReferences]);
-
   const [skillInput, setSkillInput] = useState('');
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [mobileZoom, setMobileZoom] = useState(false);
   const [mobilePreviewMetrics, setMobilePreviewMetrics] = useState({ scale: 1, width: 816, height: 1056 });
-  const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
   const [isATSOpen, setIsATSOpen] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [generatingExpId, setGeneratingExpId] = useState<string | null>(null);
   const [polishingExpId, setPolishingExpId] = useState<string | null>(null);
-  const [isImporting, setIsImporting] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isJobsModalOpen, setIsJobsModalOpen] = useState(false);
 
@@ -279,105 +239,97 @@ export default function FreeCVApp() {
   const [rewriteTone, setRewriteTone] = useState('Executive');
   const [isRewriting, setIsRewriting] = useState(false);
 
+  // Tailor to Job (restored from pre-redesign builder)
+  const [isTailorOpen, setIsTailorOpen] = useState(false);
+  const [tailorJobDesc, setTailorJobDesc] = useState('');
+  const [tailorResult, setTailorResult] = useState<any>(null);
+  const [isTailorLoading, setIsTailorLoading] = useState(false);
+  const [tailorApplied, setTailorApplied] = useState<{ summary: boolean; skills: string[]; bullets: number[] }>({ summary: false, skills: [], bullets: [] });
+
   const [suggestedSkills, setSuggestedSkills] = useState<string[]>([]);
   const [isLoadingSkills, setIsLoadingSkills] = useState(false);
-  const [isPublishing, setIsPublishing] = useState(false);
-  const [publishedUrl, setPublishedUrl] = useState('');
+
+  // Undo/redo availability from the zundo temporal store (drives the
+  // header buttons' disabled state; keyboard shortcuts work regardless).
+  const undoDepth = React.useSyncExternalStore(
+    useResumeStore.temporal.subscribe,
+    () => useResumeStore.temporal.getState().pastStates.length,
+    () => 0
+  );
+  const redoDepth = React.useSyncExternalStore(
+    useResumeStore.temporal.subscribe,
+    () => useResumeStore.temporal.getState().futureStates.length,
+    () => 0
+  );
 
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+  // v3 concept: live-preview zoom controls (-/+) in the preview bar.
+  const [previewZoom, setPreviewZoom] = useState(1);
+  // v3 concept: fit the 816px paper into the desktop preview column.
+  const previewCanvasRef = useRef<HTMLDivElement | null>(null);
+  const [desktopPreviewFit, setDesktopPreviewFit] = useState({ scale: 1, paperH: 1056 });
+  useEffect(() => {
+    const update = () => {
+      const canvasW = previewCanvasRef.current?.clientWidth || 0;
+      const paperH = resumePageRef.current?.scrollHeight || 1056;
+      if (canvasW > 0) setDesktopPreviewFit({ scale: Math.min(1, (canvasW - 70) / 816), paperH });
+    };
+    update();
+    window.addEventListener('resize', update);
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : null;
+    if (ro && previewCanvasRef.current) ro.observe(previewCanvasRef.current);
+    if (ro && resumePageRef.current) ro.observe(resumePageRef.current);
+    return () => { window.removeEventListener('resize', update); ro?.disconnect(); };
+  }, [isHydrated, data.templateId]);
 
   // ---- Desktop tabbed editor ----
   // On lg+ the editor sections become sleek tab panes (one visible at a time)
   // instead of one endless scroll. On mobile the same panes render stacked as
-  // accordions (CSS-gated, single DOM — no duplicate droppable IDs).
-  const [activeTab, setActiveTab] = useState<string>('personal');
+  // ---- v3 step wizard (matches the Cvyon v3 builder concept) ----
+  // Six steps in the left sidebar. On desktop the editor shows every step's
+  // cards in one scroll; on mobile one step shows at a time with a bottom
+  // tab bar (Edit / Preview / AI / Export).
+  const [activeStep, setActiveStep] = useState(0);
 
-  const editorTabs = useMemo(() => {
-    const tabs: { id: string; icon: any; label: string }[] = [
-      { id: 'personal', icon: User, label: 'Personal' },
-      { id: 'experience', icon: Briefcase, label: 'Experience' },
-      { id: 'education', icon: GraduationCap, label: 'Education' },
-      { id: 'skills', icon: Wrench, label: 'Skills' },
-    ];
-    if (data.showProjects) tabs.push({ id: 'projects', icon: FolderOpen, label: 'Projects' });
-    if (data.showCertifications) tabs.push({ id: 'certifications', icon: Award, label: 'Certifications' });
-    if (data.showReferences) tabs.push({ id: 'references', icon: Users, label: 'References' });
-    tabs.push({ id: 'cover-letter', icon: FileText, label: 'Cover Letter' });
-    tabs.push({ id: 'design', icon: Paintbrush, label: 'Design' });
-    return tabs;
-  }, [data.showProjects, data.showCertifications, data.showReferences]);
+  const WIZARD_STEPS = [
+    { id: 'basics', label: 'Basics', heading: 'Make your first impression count.', sub: 'These details appear at the top of your resume. Keep them clear and professional.' },
+    { id: 'summary', label: 'Summary', heading: 'Tell the story in a few sharp lines.', sub: '2–4 lines. Show what you do and the value you create.' },
+    { id: 'experience', label: 'Experience', heading: 'Turn experience into evidence.', sub: 'Turn responsibilities into evidence. Quantify where possible.' },
+    { id: 'education', label: 'Education', heading: 'Show the qualifications behind you.', sub: 'Add your most relevant qualifications first.' },
+    { id: 'skills', label: 'Skills', heading: 'Match your strongest skills to the role.', sub: 'Prioritize skills that match your target role.' },
+    { id: 'extras', label: 'Extras', heading: 'Add the details that make you memorable.', sub: 'Add only what strengthens the story.' },
+  ];
 
-  const safeActiveTab = editorTabs.some((t) => t.id === activeTab) ? activeTab : 'personal';
-  const activeTabIndex = Math.max(0, editorTabs.findIndex((t) => t.id === safeActiveTab));
-
-  // Per-tab completion badges — a tiny "done" signal that makes the tab bar
-  // feel alive and shows progress at a glance.
-  const tabComplete: Record<string, boolean> = {
-    personal: !!(data.personalInfo.fullName?.trim() && data.personalInfo.jobTitle?.trim()),
+  const stepComplete: Record<string, boolean> = {
+    basics: !!(data.personalInfo.fullName?.trim() && data.personalInfo.jobTitle?.trim()),
+    summary: !!(data.summary?.trim()),
     experience: data.experience.length > 0,
     education: data.education.length > 0,
     skills: data.skills.length > 0,
-    projects: (data.projects || []).length > 0,
-    certifications: (data.certifications || []).length > 0,
-    references: (data.references || []).length > 0,
-    'cover-letter': false,
-    design: true,
+    extras: ((data.projects || []).length > 0) || ((data.certifications || []).length > 0) || ((data.references || []).length > 0) || ((data.customSections || []).length > 0),
   };
-  const completedTabs = editorTabs.filter((t) => tabComplete[t.id]).length;
+  const completedSteps = WIZARD_STEPS.filter((s) => stepComplete[s.id]).length;
+  const completionPct = Math.round((completedSteps / WIZARD_STEPS.length) * 100);
 
-  const goToTab = (index: number) => {
-    if (index < 0 || index >= editorTabs.length) return;
-    selectTab(editorTabs[index].id);
-  };
-
-  // Enabling an optional section also jumps straight to its tab.
-  const enableSectionAndGo = (toggle: () => void, tabId: string) => {
-    toggle();
-    selectTab(tabId);
-  };
-
-  // Smooth-scrolls the tab bar into view when switching panes on desktop,
-  // so a long pane never leaves the new section off-screen. No-op on mobile
-  // (the tab bar is display:none there) and when already visible.
-  const tabsTopRef = useRef<HTMLDivElement | null>(null);
-  const selectTab = (id: string) => {
-    setActiveTab(id);
+  const goStep = (index: number) => {
+    const i = Math.max(0, Math.min(WIZARD_STEPS.length - 1, index));
+    setActiveStep(i);
     requestAnimationFrame(() => {
-      const el = tabsTopRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      if (rect.top < 0 || rect.top > window.innerHeight) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      // One step is visible at a time, so reset the editor column (desktop)
+      // or the window (mobile) to the top — never the whole page on desktop,
+      // which would blank the preview.
+      const editor = document.querySelector('.v3-editor') as HTMLElement | null;
+      // On mobile .v3-editor has overflow:visible, so editor.scrollTo() is a
+      // no-op there — fall back to the window scroll in that case.
+      if (editor && getComputedStyle(editor).overflowY !== 'visible') editor.scrollTo({ top: 0 });
+      else window.scrollTo({ top: 0 });
     });
   };
 
-  // Prev / Next footer rendered inside every desktop pane — glide through
-  // sections without reaching for the tab bar.
-  const renderPaneNav = (tabId: string) => {
-    const idx = editorTabs.findIndex((t) => t.id === tabId);
-    if (idx < 0) return null;
-    const prev = editorTabs[idx - 1];
-    const next = editorTabs[idx + 1];
-    return (
-      <div className="hidden lg:flex items-center justify-between mt-2 mb-10 pt-6 border-t-2 border-[#141312]/15">
-        <button
-          onClick={() => goToTab(idx - 1)}
-          disabled={!prev}
-          className="flex items-center gap-2 px-4 py-2.5 border-2 border-[#141312] bg-white fm text-[11px] font-bold uppercase tracking-[0.16em] text-[#141312] transition-all hover:bg-[#141312] hover:text-[#E8E7E1] disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-[#141312] disabled:cursor-not-allowed">
-          <ArrowLeft size={14} /> {prev ? prev.label : 'Back'}
-        </button>
-        <span className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/40">
-          {idx + 1} / {editorTabs.length}
-        </span>
-        <button
-          onClick={() => goToTab(idx + 1)}
-          disabled={!next}
-          className="flex items-center gap-2 px-4 py-2.5 border-2 border-[#141312] bg-[#141312] fm text-[11px] font-bold uppercase tracking-[0.16em] text-[#E8E7E1] transition-all hover:bg-[#FF4326] hover:text-[#141312] disabled:opacity-30 disabled:hover:bg-[#141312] disabled:hover:text-[#E8E7E1] disabled:cursor-not-allowed">
-          {next ? next.label : 'Done'} <ArrowRight size={14} />
-        </button>
-      </div>
-    );
+  // Enabling an optional section also jumps straight to the Extras step.
+  const enableSectionAndGo = (toggle: () => void) => {
+    toggle();
+    goStep(5);
   };
 
   // OAuth return: finish a recruiter-discovery opt-in started (Allow → sign in)
@@ -393,7 +345,7 @@ export default function FreeCVApp() {
       try {
         await setRecruiterConsent(true);
         setConsents({ ...(data.consents || {}), recruiterShare: true });
-        confetti({ particleCount: 90, spread: 70, origin: { y: 0.2 }, colors: ["#FF4326", "#FFE14D", "#2233FF"] });
+        confetti({ particleCount: 90, spread: 70, origin: { y: 0.2 }, colors: ["#ff604b", "#ffd85a", "#5548f5"] });
         toast.success("You're discoverable — recruiters can now find you.");
       } catch (e: any) {
         toast.error(e?.message || "Couldn't save your preference.");
@@ -413,6 +365,13 @@ export default function FreeCVApp() {
     if (type === 'experience') reorderExperience(source.index, destination.index);
     else if (type === 'education') reorderEducation(source.index, destination.index);
     else if (type === 'skills') reorderSkills(source.index, destination.index);
+    else if (type === 'custom-item') {
+      // droppableId is `custom-${section.id}`; items stay within their section.
+      const srcId = String(source.droppableId || '').replace(/^custom-/, '');
+      const dstId = String(destination.droppableId || '').replace(/^custom-/, '');
+      if (!srcId || srcId !== dstId) return; // reject cross-section moves
+      reorderCustomSectionItems(srcId, source.index, destination.index);
+    }
   };
 
   const handlePolishExperience = async (id: string, currentText: string) => {
@@ -430,22 +389,6 @@ export default function FreeCVApp() {
       else if (json.error) toast.error(json.error);
     } catch (err) { console.error(err); toast.error("Failed to polish text. Please try again."); }
     finally { setPolishingExpId(null); }
-  };
-
-  const handleLinkedInImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setIsImporting(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await fetch('/api/ai/parse-linkedin', { method: 'POST', body: formData });
-      const resData = await res.json();
-      if (res.ok) setAllData(resData);
-      else throw new Error(resData.error || 'Failed to parse LinkedIn PDF');
-    } catch (err: any) { toast.error("LinkedIn Import failed: " + err.message); }
-    setIsImporting(false);
-    e.target.value = '';
   };
 
   const handleGenerateSummary = async () => {
@@ -483,9 +426,31 @@ export default function FreeCVApp() {
 
   useEffect(() => {
     setIsHydrated(true);
-    trackEvent('page_view', 'build');
-    trackEvent('milestone_started');
+    trackEvent('page_view', undefined, { page: 'build' });
   }, []);
+
+  // milestone_started fires on the FIRST MEANINGFUL EDIT, not on page mount.
+  // (Mount-time firing inflated "started" with bounces and SEO landers.)
+  const startedFiredRef = useRef(false);
+  const initialDataRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!isHydrated || startedFiredRef.current) return;
+    const snapshot = JSON.stringify({
+      pi: storeData.personalInfo,
+      exp: storeData.experience,
+      edu: storeData.education,
+      skills: storeData.skills,
+      summary: storeData.summary,
+    });
+    if (initialDataRef.current === null) {
+      initialDataRef.current = snapshot;
+      return;
+    }
+    if (snapshot !== initialDataRef.current) {
+      startedFiredRef.current = true;
+      trackEvent('milestone_started', data.templateId);
+    }
+  }, [isHydrated, storeData, data.templateId]);
 
   useEffect(() => {
     if (!isHydrated || onboardingAppliedRef.current) return;
@@ -509,6 +474,11 @@ export default function FreeCVApp() {
       skills: nextSkills
     });
     onboardingAppliedRef.current = true;
+    // Close the SEO-flow tracking gap: users arriving from /templates/[slug]
+    // silently get this template applied — record it like a gallery selection.
+    if (template && templates[template]) {
+      trackEvent('template_selected', template, { source: 'seo' });
+    }
     window.history.replaceState({}, '', window.location.pathname);
   }, [isHydrated, data, setAllData]);
 
@@ -540,9 +510,9 @@ export default function FreeCVApp() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) { e.preventDefault(); useResumeStore.temporal.getState().undo(); }
       if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); useResumeStore.temporal.getState().redo(); }
-      // Escape dismisses the ATS grader / AI rewriter overlays
-      // (the jobs modal handles its own Escape via its portal).
-      if (e.key === 'Escape') { setIsATSOpen(false); setIsRewriterOpen(false); }
+      // Escape dismisses the ATS grader / AI rewriter / tailor / template gallery /
+      // download overlays (the jobs modal handles its own Escape via its portal).
+      if (e.key === 'Escape') { setIsATSOpen(false); setIsRewriterOpen(false); setIsTailorOpen(false); setIsGalleryOpen(false); setIsDownloadModalOpen(false); }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -562,7 +532,7 @@ export default function FreeCVApp() {
       }
       const resData = await res.json();
       setAtsResult(resData);
-      if (resData.score >= 85) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#0E8A4B', '#2233FF', '#FF4326'] });
+      if (resData.score >= 85) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#0E8A4B', '#5548f5', '#ff604b'] });
     } catch (err: any) { toast.error('ATS Grading failed: ' + err.message); }
     setIsATSLoading(false);
   };
@@ -582,9 +552,59 @@ export default function FreeCVApp() {
         updateSummary(json.summary);
         if (json.experience) json.experience.forEach((exp: any) => { if (exp.id && exp.description) updateExperience(exp.id, { description: exp.description }); });
       }
+      // Only close on success — a failed rewrite keeps the modal open so the
+      // user can retry without losing their tone selection.
+      setIsRewriterOpen(false);
     } catch (err: any) { toast.error('Rewrite failed: ' + err.message); }
     setIsRewriting(false);
-    setIsRewriterOpen(false);
+  };
+
+  // ---- Tailor to Job (restored from pre-redesign builder) ----
+  const handleTailor = async () => {
+    if (!tailorJobDesc.trim()) return;
+    setIsTailorLoading(true);
+    setTailorResult(null);
+    setTailorApplied({ summary: false, skills: [], bullets: [] });
+    try {
+      const resumePayload = { ...data, personalInfo: { ...data.personalInfo, profilePicture: undefined } };
+      const res = await fetch('/api/ai/tailor-resume', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ resumeData: resumePayload, jobDescription: tailorJobDesc }) });
+      if (!res.ok) {
+        const text = await res.text(); let errMsg = '';
+        try { const err = JSON.parse(text); errMsg = err.error || `API error: ${res.status}`; } catch (e) { errMsg = text.includes('An error') ? 'The AI request timed out. Please try again.' : `API error: ${res.status}`; }
+        throw new Error(errMsg);
+      }
+      const resData = await res.json();
+      setTailorResult(resData);
+    } catch (err: any) { toast.error('Tailoring failed: ' + err.message); }
+    setIsTailorLoading(false);
+  };
+
+  const applyTailorSummary = () => {
+    if (!tailorResult?.summary) return;
+    updateSummary(tailorResult.summary);
+    setTailorApplied(prev => ({ ...prev, summary: true }));
+    toast.success('Summary updated');
+  };
+
+  const applyTailorSkill = (skill: string) => {
+    addSkill(skill);
+    setTailorApplied(prev => ({ ...prev, skills: [...prev.skills, skill] }));
+    toast.success(`Skill added: ${skill}`);
+  };
+
+  const applyTailorBullet = (index: number) => {
+    const b = tailorResult?.bulletImprovements?.[index];
+    if (!b) return;
+    const exp = data.experience.find(e => e.id === b.experienceId);
+    if (!exp) { toast.error('That experience entry no longer exists.'); return; }
+    // Match the bullet line exactly; the AI was instructed to copy it verbatim.
+    const lines = (exp.description || '').split('\n');
+    const lineIdx = lines.findIndex(l => l.trim() === (b.original || '').trim());
+    if (lineIdx === -1) { toast.error('Could not find the original bullet — it may have been edited.'); return; }
+    lines[lineIdx] = b.improved;
+    updateExperience(b.experienceId, { description: lines.join('\n') });
+    setTailorApplied(prev => ({ ...prev, bullets: [...prev.bullets, index] }));
+    toast.success('Bullet updated');
   };
 
   const handleSuggestSkills = async () => {
@@ -606,19 +626,6 @@ export default function FreeCVApp() {
     setIsLoadingSkills(false);
   };
 
-  const handlePublish = async () => {
-    setIsPublishing(true);
-    setPublishedUrl('');
-    try {
-      const res = await fetch('/api/resume/publish', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.error || 'Failed to publish');
-      setPublishedUrl(result.url);
-      trackEvent('milestone_published_web', data.templateId);
-    } catch (err: any) { toast.error('Publish failed: ' + err.message); }
-    finally { setIsPublishing(false); }
-  };
-
   const getTelemetryMetadata = (format: 'pdf' | 'docx') => {
     let length = 0;
     if (data.summary) length += data.summary.length;
@@ -632,6 +639,9 @@ export default function FreeCVApp() {
   };
 
   const handleDocxExport = async () => {
+    const telemetry = getTelemetryMetadata('docx');
+    const deviceType = typeof window !== 'undefined' && window.innerWidth < 1024 ? 'mobile' : 'desktop';
+    trackEvent('download_attempted', data.templateId, { ...telemetry, device_type: deviceType, density: data.density || 'comfortable' });
     try {
       if (isRealUserEmail(data.personalInfo.email)) {
         try {
@@ -656,18 +666,37 @@ export default function FreeCVApp() {
       }
       const res = await fetch('/api/export/docx', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       if (!res.ok) throw new Error('Failed to generate DOCX');
+      // Guard: never save an error payload (HTML/JSON) with a .docx extension —
+      // Word reports those as corrupt files. The server only returns 200 with
+      // the DOCX content type.
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('officedocument.wordprocessingml')) {
+        const text = await res.text();
+        throw new Error('Server returned an unexpected response (' + contentType + '): ' + text.slice(0, 120));
+      }
       const blob = await res.blob();
+      if (blob.size < 1000) throw new Error('Generated file is unexpectedly small (' + blob.size + ' bytes)');
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       const safeName = data.personalInfo.fullName.replace(/[^\w\s-]/g, '').trim() || 'My';
       const safeRole = data.personalInfo.jobTitle.replace(/[^\w\s-]/g, '').trim() || 'Resume';
       a.download = `${safeName}_${safeRole}_Resume.docx`.replace(/\s+/g, '_');
+      // The anchor must be in the DOM for the download to start reliably,
+      // and the object URL must stay alive until the browser has picked it
+      // up — revoking synchronously after click() races the download and can
+      // produce a truncated (unopenable) file.
+      document.body.appendChild(a);
       a.click();
-      URL.revokeObjectURL(url);
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
       trackEvent('milestone_downloaded', data.templateId, getTelemetryMetadata('docx'));
+      trackEvent('download_completed', data.templateId, { ...telemetry, device_type: deviceType, density: data.density || 'comfortable' });
       setIsJobsModalOpen(true);
-    } catch (err: any) { toast.error('DOCX export failed: ' + err.message); }
+    } catch (err: any) {
+      trackEvent('download_failed', data.templateId, { ...telemetry, device_type: deviceType, density: data.density || 'comfortable', error: err.message?.slice(0, 200) || 'unknown' });
+      toast.error('DOCX export failed: ' + err.message);
+    }
   };
 
   const handleAddSkill = (e: React.FormEvent) => {
@@ -675,22 +704,12 @@ export default function FreeCVApp() {
     if (skillInput.trim()) { addSkill(skillInput.trim()); setSkillInput(''); }
   };
 
-  const triggerPrint = (onAfterPrint?: () => void) => {
-    const originalTitle = document.title;
-    const safeName = data.personalInfo.fullName.replace(/[\r\n]+/g, ' ').replace(/[^\w\s-]/g, '').trim() || 'My';
-    const safeRole = data.personalInfo.jobTitle.replace(/[\r\n]+/g, ' ').replace(/[^\w\s-]/g, '').trim() || 'Resume';
-    document.title = `${safeName} - ${safeRole} - Resume`;
-    const panel = document.getElementById('preview-panel');
-    if (panel) panel.scrollTop = 0;
-    window.scrollTo(0, 0);
-    document.body.classList.add('printing');
-    // window.print() blocks until the native print dialog is dismissed, so the
-    // jobs upsell opens after — never racing/covered by the native dialog.
-    setTimeout(() => { window.print(); document.body.classList.remove('printing'); document.title = originalTitle; onAfterPrint?.(); }, 150);
-  };
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const handleDownload = async () => {
-    trackEvent('milestone_downloaded', data.templateId, getTelemetryMetadata('pdf'));
+    const telemetry = getTelemetryMetadata('pdf');
+    const deviceType = typeof window !== 'undefined' && window.innerWidth < 1024 ? 'mobile' : 'desktop';
+    trackEvent('download_attempted', data.templateId, { ...telemetry, device_type: deviceType, density: data.density || 'comfortable' });
     if (isRealUserEmail(data.personalInfo.email)) {
       try {
         fetch('/api/crm/optin', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
@@ -698,19 +717,90 @@ export default function FreeCVApp() {
           .catch(err => console.error('[CRM opt-in] Network error:', err));
       } catch (err) { console.error('[CRM opt-in] Sync error:', err); }
     }
-    triggerPrint(() => setIsJobsModalOpen(true));
+    // Generate the PDF programmatically with React-PDF (client-side) so the
+    // file contains ONLY the resume — no browser print headers/footers (date,
+    // title, URL, page numbers) and no PWA install banner. window.print()
+    // cannot suppress those; they are browser chrome, not page content.
+    setIsGeneratingPdf(true);
+    try {
+      const { pdf } = await import('@react-pdf/renderer');
+      const PdfTemplate = templates[data.templateId as TemplateKey];
+      if (!PdfTemplate) throw new Error('PDF template not available for ' + data.templateId);
+      const blob = await pdf(<PdfTemplate data={previewData} />).toBlob();
+      if (!blob || blob.size < 1000) throw new Error('Generated PDF is unexpectedly small');
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const safeName = data.personalInfo.fullName.replace(/[^\w\s-]/g, '').trim() || 'My';
+      const safeRole = data.personalInfo.jobTitle.replace(/[^\w\s-]/g, '').trim() || 'Resume';
+      a.download = `${safeName}_${safeRole}_Resume.pdf`.replace(/\s+/g, '_');
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      // Confirmed delivery only: the file was generated and the download was
+      // triggered. Firing on click inflates the download count with failed or
+      // abandoned generations.
+      trackEvent('milestone_downloaded', data.templateId, getTelemetryMetadata('pdf'));
+      trackEvent('download_completed', data.templateId, { ...telemetry, device_type: deviceType, density: data.density || 'comfortable' });
+      setIsJobsModalOpen(true);
+    } catch (err: any) {
+      // Hard error — no silent fallback to window.print() (a dead end on
+      // mobile, and it masked failures behind a print dialog + jobs upsell).
+      console.error('[PDF] React-PDF generation failed:', err);
+      trackEvent('download_failed', data.templateId, { ...telemetry, device_type: deviceType, density: data.density || 'comfortable', error: err.message?.slice(0, 200) || 'unknown' });
+      toast.error('PDF download failed: ' + err.message + '. Please try again, or use the Word (DOCX) download instead.');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   };
 
   if (!isHydrated) return null;
 
 
+  // ---- Section visibility + ordering (restored from pre-redesign builder) --
+  // editorSectionIds: sections as they appear in the editor, in the user's
+  // sectionOrder, skipping removed optional sections. Drives the up/down
+  // disabled states; the store's moveSection does the actual reordering.
+  const editorSectionIds = useMemo(() => {
+    const order = data.sectionOrder && data.sectionOrder.length ? data.sectionOrder : DEFAULT_SECTION_ORDER;
+    return order.filter((id) =>
+      id !== 'cover-letter' &&
+      (id !== 'projects' || data.showProjects) &&
+      (id !== 'certifications' || data.showCertifications) &&
+      (id !== 'references' || data.showReferences)
+    );
+  }, [data.sectionOrder, data.showProjects, data.showCertifications, data.showReferences]);
+
+  const makeSectionTools = (id: ResumeSectionId) => (
+    <SectionHeaderTools
+      id={id}
+      isHidden={data.sectionVisibility?.[id] === false}
+      isFirst={editorSectionIds[0] === id}
+      isLast={editorSectionIds[editorSectionIds.length - 1] === id}
+      onToggle={toggleSectionVisibility}
+      onMove={moveSection}
+    />
+  );
+
   // ---- Editor section blocks: visibility toggles + up/down ordering ----
   // Each block keeps its own JSX (and mobile accordion state); the editor
   // renders them in sectionOrder via editorSectionIds below.
-  const sectionBlocks: Record<ResumeSectionId, React.ReactNode> = {
-    personal: (
-    <SectionAccordion id="personal" icon={User} title="Personal Identity" description="Who are you and what do you do?" defaultOpen>
+  // v3 wizard: editor blocks keyed by wizard step id ('basics'/'summary' split
+  // the old 'personal' model key for the step layout; data model untouched).
+  const sectionBlocks: Record<string, React.ReactNode> = {
+    basics: (
     <Card>
+      <div className="v3-card-head">
+        <div>
+          <h3>Personal information</h3>
+          <p className="v3-card-hint">Keep this simple. Your name and role do the heavy lifting.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {makeSectionTools('personal')}
+          <span className="v3-autosaved">Autosaved</span>
+        </div>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input label="Full Name" value={data.personalInfo.fullName} onChange={(e: any) => updatePersonalInfo({ fullName: e.target.value })} placeholder="Jane Doe" />
         <Input label="Job Title" value={data.personalInfo.jobTitle} onChange={(e: any) => updatePersonalInfo({ jobTitle: e.target.value })} placeholder="Senior Designer" />
@@ -732,10 +822,10 @@ export default function FreeCVApp() {
         <Input label="Phone" value={data.personalInfo.phone} onChange={(e: any) => updatePersonalInfo({ phone: e.target.value })} />
         <Input label="Location" value={data.personalInfo.location} onChange={(e: any) => updatePersonalInfo({ location: e.target.value })} />
         <Input label="Website/Portfolio" value={data.personalInfo.website} onChange={(e: any) => updatePersonalInfo({ website: e.target.value })} />
-        <div className="col-span-1 sm:col-span-2 mt-2 flex items-center justify-between p-4 border-2 border-[#141312] bg-white hs-sm">
+        <div className="col-span-1 sm:col-span-2 mt-2 flex items-center justify-between p-4 border border-[#dddde5] rounded-xl bg-white">
           <div>
-            <h4 className="fh font-bold text-sm text-[#141312]">Allow recruiters to find my profile</h4>
-            <p className="fm text-[10px] uppercase tracking-[0.14em] text-[#141312]/55">Allow recruiters to find your resume on Cvyon.</p>
+            <h4 className="font-brand font-bold text-sm text-[#151a46]">Allow recruiters to find my profile</h4>
+            <p className="font-brand text-[10px] uppercase tracking-[0.14em] text-[#151a46]/55">Allow recruiters to find your resume on Cvyon.</p>
           </div>
           <button onClick={() => {
             const newShare = !data.consents.recruiterShare;
@@ -752,8 +842,8 @@ export default function FreeCVApp() {
             role="switch"
             aria-checked={data.consents.recruiterShare}
             aria-label="Allow recruiters to find my profile"
-            className={cn("w-12 h-6 rounded-full transition-colors relative flex-shrink-0 border-2 border-[#141312]", data.consents.recruiterShare ? 'bg-[#2233FF]' : 'bg-gray-300')}>
-            <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform", data.consents.recruiterShare ? 'translate-x-6' : 'translate-x-1')} />
+            className="v3-switch">
+            <span className="v3-switch-knob" />
           </button>
         </div>
         <div className="col-span-1 sm:col-span-2 mt-2 flex justify-center sm:justify-start">
@@ -767,44 +857,65 @@ export default function FreeCVApp() {
                   reader.readAsDataURL(file);
                 }
               }} />
-            <div className="w-24 h-24 rounded-full border-2 border-dashed border-[#141312]/40 hover:border-[#2233FF] bg-white flex flex-col items-center justify-center overflow-hidden transition-all">
+            <div className="w-24 h-24 rounded-full border-2 border-dashed border-[#151a46]/40 hover:border-[#5548f5] bg-white flex flex-col items-center justify-center overflow-hidden transition-all">
               {data.personalInfo.profilePicture ? (
                 <img src={data.personalInfo.profilePicture} alt="Profile" className="w-full h-full object-cover" />
               ) : (
                 <>
-                  <Upload size={24} className='text-[#141312]/40 mb-1' />
-                  <span className="fm text-[9px] font-bold uppercase tracking-wider text-center px-2 text-[#141312]/40">Add Photo</span>
+                  <Upload size={24} className='text-[#151a46]/40 mb-1' />
+                  <span className="font-brand text-[9px] font-bold uppercase tracking-wider text-center px-2 text-[#151a46]/40">Add Photo</span>
                 </>
               )}
             </div>
             {data.personalInfo.profilePicture && (
               <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); updatePersonalInfo({ profilePicture: undefined }); }}
-                className="absolute -top-2 -right-2 bg-[#D8362A] text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20 shadow-sm hover:bg-[#141312]">
+                className="absolute -top-2 -right-2 bg-[#D8362A] text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20 shadow-sm hover:bg-[#151a46]">
                 <X size={14} />
               </button>
             )}
           </div>
         </div>
       </div>
-      <div className="mt-4">
-        <div className="flex justify-between items-center mb-1.5">
-          <label className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/60">Professional Summary</label>
+    </Card>
+    ),
+    summary: (
+    <Card>
+      <div className="v3-card-head">
+        <div>
+          <h3>Professional summary</h3>
+          <p className="v3-card-hint">Aim for 3–5 concise lines focused on impact.</p>
+        </div>
+        <div className="flex items-center gap-2">
           <button onClick={handleGenerateSummary} disabled={isGeneratingSummary}
-            className="flex items-center gap-1.5 fm text-[10px] font-bold uppercase tracking-widest text-[#FF4326] border-2 border-[#FF4326] hover:bg-[#FF4326] hover:text-white px-2.5 py-1 transition-colors disabled:opacity-50">
-            {isGeneratingSummary ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+            className="v3-ai-btn">
+            {isGeneratingSummary ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
             {isGeneratingSummary ? 'Writing...' : 'Generate with AI'}
           </button>
+          <button onClick={() => setIsRewriterOpen(true)} className="v3-ai-btn">
+            <Sparkles size={14} /> Improve with AI
+          </button>
         </div>
+      </div>
+      <div className="v3-field">
         <textarea
-          className="mt-1.5 w-full bg-white border-2 border-[#141312] rounded-none px-4 py-3 text-sm text-[#141312] placeholder:text-[#141312]/35 outline-none transition-shadow focus:shadow-[3px_3px_0_#2233FF] min-h-[100px] resize-none"
-          value={data.summary} onChange={(e) => updateSummary(e.target.value)} />
+          className="v3-textarea"
+          value={data.summary} onChange={(e) => updateSummary(e.target.value)}
+          placeholder="Analytical professional with experience in..." />
       </div>
     </Card>
-    </SectionAccordion>
     ),
     experience: (
-    <SectionAccordion id="experience" icon={Briefcase} title="Professional Experience" description="Showcase your career milestones"
-      action={<button onClick={addExperience} aria-label="Add experience" className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors shrink-0"><Plus size={18} /></button>}>
+    <Card>
+      <div className="v3-card-head">
+        <div>
+          <h3>Experience</h3>
+          <p className="v3-card-hint">Turn responsibilities into evidence. Quantify where possible.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {makeSectionTools('experience')}
+          <button onClick={addExperience} aria-label="Add experience" className="v3-icon-btn"><Plus size={18} /></button>
+        </div>
+      </div>
     <Droppable droppableId="experience" type="experience">
       {(provided) => (
         <div {...provided.droppableProps} ref={provided.innerRef}>
@@ -812,7 +923,7 @@ export default function FreeCVApp() {
             <Draggable key={exp.id} draggableId={exp.id} index={index}>
               {(provided) => (
                 <div ref={provided.innerRef} {...provided.draggableProps} className="mb-6 relative group">
-                  <div {...provided.dragHandleProps} className="absolute left-[-16px] top-1/2 -translate-y-1/2 p-2 text-[#141312]/30 hover:text-[#141312] opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing">
+                  <div {...provided.dragHandleProps} className="absolute left-[-16px] top-1/2 -translate-y-1/2 p-2 text-[#151a46]/30 hover:text-[#151a46] opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing">
                     <GripVertical size={20} />
                   </div>
                   <Card className="mb-0">
@@ -824,25 +935,25 @@ export default function FreeCVApp() {
                     </div>
                     <div className="mb-2">
                       <div className="flex justify-between items-center mb-1.5">
-                        <label className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/60">Accomplishments (New line per point)</label>
+                        <label className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] text-[#151a46]/60">Accomplishments (New line per point)</label>
                         <div className="flex gap-2">
                           <button onClick={() => handlePolishExperience(exp.id, exp.description)} disabled={polishingExpId === exp.id || !exp.description.trim()}
-                            className="flex items-center gap-1.5 fm text-[10px] font-bold uppercase tracking-widest text-[#2233FF] border-2 border-[#2233FF] hover:bg-[#2233FF] hover:text-white px-2.5 py-1 transition-colors disabled:opacity-50" title="Polish this text with AI">
+                            className="flex items-center gap-1.5 font-brand text-[10px] font-bold uppercase tracking-widest text-[#5548f5] border border-[#5548f5] rounded-full hover:bg-[#5548f5] hover:text-white px-2.5 py-1 transition-colors disabled:opacity-50" title="Polish this text with AI">
                             {polishingExpId === exp.id ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
                             {polishingExpId === exp.id ? 'Polishing...' : 'Polish'}
                           </button>
                           <button onClick={() => handleGenerateExperience(exp.id, exp.role, exp.company)} disabled={generatingExpId === exp.id}
-                            className="flex items-center gap-1.5 fm text-[10px] font-bold uppercase tracking-widest text-[#FF4326] border-2 border-[#FF4326] hover:bg-[#FF4326] hover:text-white px-2.5 py-1 transition-colors disabled:opacity-50">
+                            className="flex items-center gap-1.5 font-brand text-[10px] font-bold uppercase tracking-widest text-[#ff604b] border border-[#ff604b] rounded-full hover:bg-[#ff604b] hover:text-white px-2.5 py-1 transition-colors disabled:opacity-50">
                             {generatingExpId === exp.id ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
                             {generatingExpId === exp.id ? 'Writing...' : 'Generate with AI'}
                           </button>
                         </div>
                       </div>
                       <textarea
-                        className="w-full bg-white border-2 border-[#141312] rounded-none px-4 py-3 text-sm text-[#141312] placeholder:text-[#141312]/35 outline-none transition-shadow focus:shadow-[3px_3px_0_#2233FF] min-h-[100px] resize-none"
+                        className="w-full bg-white border border-[#d9dae5] rounded-[10px] px-4 py-3 text-sm text-[#151a46] placeholder:text-[#151a46]/35 outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)] min-h-[100px] resize-none"
                         value={exp.description} onChange={(e: any) => updateExperience(exp.id, { description: e.target.value })} />
                     </div>
-                    <button onClick={() => removeExperience(exp.id)} className="w-full mt-6 bg-white text-[#D8362A] border-2 border-[#D8362A] py-3 fm text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
+                    <button onClick={() => removeExperience(exp.id)} className="w-full mt-6 bg-white text-[#D8362A] border border-[#D8362A] rounded-xl py-3 font-brand text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
                       <Trash2 size={16} /> Delete Experience
                     </button>
                   </Card>
@@ -854,11 +965,20 @@ export default function FreeCVApp() {
         </div>
       )}
     </Droppable>
-    </SectionAccordion>
+    </Card>
     ),
     education: (
-    <SectionAccordion id="education" icon={GraduationCap} title="Education" description="Where did you learn your craft?"
-      action={<button onClick={addEducation} aria-label="Add education" className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors shrink-0"><Plus size={18} /></button>}>
+    <Card>
+      <div className="v3-card-head">
+        <div>
+          <h3>Education</h3>
+          <p className="v3-card-hint">Add your most relevant qualifications first.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {makeSectionTools('education')}
+          <button onClick={addEducation} aria-label="Add education" className="v3-icon-btn"><Plus size={18} /></button>
+        </div>
+      </div>
     <Droppable droppableId="education" type="education">
       {(provided) => (
         <div {...provided.droppableProps} ref={provided.innerRef}>
@@ -866,7 +986,7 @@ export default function FreeCVApp() {
             <Draggable key={edu.id} draggableId={edu.id} index={index}>
               {(provided) => (
                 <div ref={provided.innerRef} {...provided.draggableProps} className="mb-6 relative group">
-                  <div {...provided.dragHandleProps} className="absolute left-[-16px] top-1/2 -translate-y-1/2 p-2 text-[#141312]/30 hover:text-[#141312] opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing">
+                  <div {...provided.dragHandleProps} className="absolute left-[-16px] top-1/2 -translate-y-1/2 p-2 text-[#151a46]/30 hover:text-[#151a46] opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing">
                     <GripVertical size={20} />
                   </div>
                   <Card className="mb-0">
@@ -877,7 +997,7 @@ export default function FreeCVApp() {
                       <Input label="Degree" value={edu.degree} onChange={(e: any) => updateEducation(edu.id, { degree: e.target.value })} />
                       <Input label="Graduation Year" value={edu.graduationYear} onChange={(e: any) => updateEducation(edu.id, { graduationYear: e.target.value })} />
                     </div>
-                    <button onClick={() => removeEducation(edu.id)} className="w-full mt-6 bg-white text-[#D8362A] border-2 border-[#D8362A] py-3 fm text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
+                    <button onClick={() => removeEducation(edu.id)} className="w-full mt-6 bg-white text-[#D8362A] border border-[#D8362A] rounded-xl py-3 font-brand text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
                       <Trash2 size={16} /> Delete Education
                     </button>
                   </Card>
@@ -889,16 +1009,22 @@ export default function FreeCVApp() {
         </div>
       )}
     </Droppable>
-    </SectionAccordion>
+    </Card>
     ),
     skills: (
-    <SectionAccordion id="skills" icon={Wrench} title="Skill Arsenal" description="What tools do you master?">
     <Card>
+      <div className="v3-card-head">
+        <div>
+          <h3>Skills</h3>
+          <p className="v3-card-hint">Prioritize skills that match your target role.</p>
+        </div>
+        {makeSectionTools('skills')}
+      </div>
       <form onSubmit={handleAddSkill} className="flex gap-2 mb-6">
         <input
-          className="flex-1 bg-white border-2 border-[#141312] rounded-none px-4 py-3 text-sm text-[#141312] placeholder:text-[#141312]/35 outline-none transition-shadow focus:shadow-[3px_3px_0_#2233FF]"
+          className="flex-1 bg-white border border-[#d9dae5] rounded-[10px] px-4 py-3 text-sm text-[#151a46] placeholder:text-[#151a46]/35 outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)]"
           placeholder="Add a skill (e.g. TypeScript, AWS)" value={skillInput} onChange={(e) => setSkillInput(e.target.value)} />
-        <button type="submit" className="bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-6 py-3 fm text-sm font-bold uppercase tracking-wider">Add</button>
+        <button type="submit" className="bg-[#5548f5] text-white rounded-xl shadow-[3px_3px_0_#151a46] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] px-6 py-3 font-brand text-sm font-bold uppercase tracking-wider transition-all">Add</button>
       </form>
       <Droppable droppableId="skills" type="skills" direction="horizontal">
         {(provided) => (
@@ -907,12 +1033,12 @@ export default function FreeCVApp() {
               <Draggable key={s.id} draggableId={s.id} index={index}>
                 {(provided) => (
                   <div ref={provided.innerRef} {...provided.draggableProps} className="relative flex items-center">
-                    <div {...provided.dragHandleProps} className="absolute left-[-8px] text-[#141312]/30 hover:text-[#141312] cursor-grab active:cursor-grabbing z-10">
+                    <div {...provided.dragHandleProps} className="absolute left-[-8px] text-[#151a46]/30 hover:text-[#151a46] cursor-grab active:cursor-grabbing z-10">
                       <GripVertical size={14} />
                     </div>
-                    <span className="group flex items-center gap-2 bg-white border-2 border-[#141312] pl-6 pr-2 py-2 fm text-xs font-bold uppercase tracking-wider text-[#141312] transition-all">
+                    <span className="group flex items-center gap-2 bg-white border border-[#dddde5] rounded-full pl-6 pr-2 py-2 font-brand text-xs font-bold uppercase tracking-wider text-[#151a46] transition-all hover:border-[#5548f5]">
                       {s.name}
-                      <button onClick={() => removeSkill(s.id)} className="p-1 rounded-full text-[#141312]/40 hover:text-[#D8362A] hover:bg-[#D8362A]/10 transition-colors">
+                      <button onClick={() => removeSkill(s.id)} className="p-1 rounded-full text-[#151a46]/40 hover:text-[#D8362A] hover:bg-[#D8362A]/10 transition-colors">
                         <X size={14} />
                       </button>
                     </span>
@@ -924,12 +1050,11 @@ export default function FreeCVApp() {
           </div>
         )}
       </Droppable>
-    </Card>
 
     {/* Smart Skill Suggestions */}
     <div className="mb-6">
       <button onClick={handleSuggestSkills} disabled={isLoadingSkills || !data.personalInfo.jobTitle}
-        className="flex items-center gap-2 fm text-[11px] font-bold uppercase tracking-widest text-[#FF4326] border-2 border-[#FF4326] hover:bg-[#FF4326] hover:text-white px-4 py-2.5 transition-colors disabled:opacity-40">
+        className="flex items-center gap-2 font-brand text-[11px] font-bold uppercase tracking-widest text-[#ff604b] border border-[#ff604b] rounded-full hover:bg-[#ff604b] hover:text-white px-4 py-2.5 transition-colors disabled:opacity-40">
         {isLoadingSkills ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
         {isLoadingSkills ? 'Finding skills...' : 'Suggest Skills with AI'}
       </button>
@@ -937,18 +1062,28 @@ export default function FreeCVApp() {
         <div className="mt-3 flex flex-wrap gap-2">
           {suggestedSkills.map((skill, i) => (
             <button key={i} onClick={() => { addSkill(skill); setSuggestedSkills(prev => prev.filter(s => s !== skill)); }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] fm text-xs font-bold uppercase tracking-wider text-[#141312] transition-all">
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#dddde5] rounded-lg hover:bg-[#151a46] hover:text-white font-brand text-xs font-bold uppercase tracking-wider text-[#151a46] transition-all">
               <Plus size={12} /> {skill}
             </button>
           ))}
         </div>
       )}
     </div>
-    </SectionAccordion>
+    </Card>
     ),
     projects: data.showProjects ? (
-      <SectionAccordion id="projects" icon={FolderOpen} title="Projects" description="Showcase your key projects" onRemove={toggleProjects}
-        action={<button onClick={addProject} aria-label="Add project" className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors shrink-0"><Plus size={18} /></button>}>
+      <Card>
+        <div className="v3-card-head">
+          <div>
+            <h3>Projects</h3>
+            <p className="v3-card-hint">Showcase your key projects.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            {makeSectionTools('projects')}
+            <button onClick={addProject} aria-label="Add project" className="v3-icon-btn"><Plus size={18} /></button>
+            <button onClick={toggleProjects} className="v3-remove-btn">Remove</button>
+          </div>
+        </div>
         {(data.projects || []).map((proj) => (
           <Card key={proj.id}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -956,16 +1091,26 @@ export default function FreeCVApp() {
               <Input label="Link / URL" value={proj.link} onChange={(e: any) => updateProject(proj.id, { link: e.target.value })} />
             </div>
             <Input label="Description" value={proj.description} onChange={(e: any) => updateProject(proj.id, { description: e.target.value })} />
-            <button onClick={() => removeProject(proj.id)} className="w-full mt-6 bg-white text-[#D8362A] border-2 border-[#D8362A] py-3 fm text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
+            <button onClick={() => removeProject(proj.id)} className="w-full mt-6 bg-white text-[#D8362A] border border-[#D8362A] rounded-xl py-3 font-brand text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
               <Trash2 size={16} /> Delete Project
             </button>
           </Card>
         ))}
-      </SectionAccordion>
+      </Card>
     ) : null,
     certifications: data.showCertifications ? (
-      <SectionAccordion id="certifications" icon={Award} title="Certifications" description="Official recognitions" onRemove={toggleCertifications}
-        action={<button onClick={addCertification} aria-label="Add certification" className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors shrink-0"><Plus size={18} /></button>}>
+      <Card>
+        <div className="v3-card-head">
+          <div>
+            <h3>Certifications</h3>
+            <p className="v3-card-hint">Official recognitions.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            {makeSectionTools('certifications')}
+            <button onClick={addCertification} aria-label="Add certification" className="v3-icon-btn"><Plus size={18} /></button>
+            <button onClick={toggleCertifications} className="v3-remove-btn">Remove</button>
+          </div>
+        </div>
         {(data.certifications || []).map((cert) => (
           <Card key={cert.id}>
             <div className="grid grid-cols-1 gap-4 mb-4">
@@ -973,16 +1118,26 @@ export default function FreeCVApp() {
               <Input label="Issuer" value={cert.issuer} onChange={(e: any) => updateCertification(cert.id, { issuer: e.target.value })} />
               <Input label="Date Earned" value={cert.date} onChange={(e: any) => updateCertification(cert.id, { date: e.target.value })} />
             </div>
-            <button onClick={() => removeCertification(cert.id)} className="w-full mt-6 bg-white text-[#D8362A] border-2 border-[#D8362A] py-3 fm text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
+            <button onClick={() => removeCertification(cert.id)} className="w-full mt-6 bg-white text-[#D8362A] border border-[#D8362A] rounded-xl py-3 font-brand text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
               <Trash2 size={16} /> Delete Certification
             </button>
           </Card>
         ))}
-      </SectionAccordion>
+      </Card>
     ) : null,
     references: data.showReferences ? (
-      <SectionAccordion id="references" icon={Users} title="References" description="People who vouch for you" onRemove={toggleReferences}
-        action={<button onClick={addReference} aria-label="Add reference" className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors shrink-0"><Plus size={18} /></button>}>
+      <Card>
+        <div className="v3-card-head">
+          <div>
+            <h3>References</h3>
+            <p className="v3-card-hint">People who vouch for you.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            {makeSectionTools('references')}
+            <button onClick={addReference} aria-label="Add reference" className="v3-icon-btn"><Plus size={18} /></button>
+            <button onClick={toggleReferences} className="v3-remove-btn">Remove</button>
+          </div>
+        </div>
         {(data.references || []).map((ref) => (
           <Card key={ref.id}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -991,259 +1146,143 @@ export default function FreeCVApp() {
               <Input label="Company" value={ref.company} onChange={(e: any) => updateReference(ref.id, { company: e.target.value })} />
               <Input label="Contact (Email/Phone)" value={ref.contact} onChange={(e: any) => updateReference(ref.id, { contact: e.target.value })} />
             </div>
-            <button onClick={() => removeReference(ref.id)} className="w-full mt-6 bg-white text-[#D8362A] border-2 border-[#D8362A] py-3 fm text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
+            <button onClick={() => removeReference(ref.id)} className="w-full mt-6 bg-white text-[#D8362A] border border-[#D8362A] rounded-xl py-3 font-brand text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#D8362A] hover:text-white transition-colors">
               <Trash2 size={16} /> Delete Reference
             </button>
           </Card>
         ))}
-      </SectionAccordion>
+      </Card>
     ) : null,
-    'cover-letter': (
-      <SectionAccordion id="cover-letter" icon={FileText} title="Cover Letter" description="Generate a tailored cover letter.">
-        <CoverLetterTab />
-      </SectionAccordion>
-    ),
   };
 
-  // Design pane (theme accent). Rendered as the first editor pane so mobile
-  // keeps its current order (Theme, Import, sections); the desktop tab bar
-  // lists it last. The final swatch is a true color-picker affordance: a
-  // rainbow ring with a pipette icon over a native <input type="color">.
-  const PRESET_COLORS = ['#000000', '#2563eb', '#16a34a', '#dc2626', '#9333ea', '#ea580c', '#0d9488', '#475569'];
-  const isCustomColor = !PRESET_COLORS.includes(data.theme?.color || '');
-  const designBlock = (
-    <SectionAccordion id="theme" icon={Paintbrush} title="Theme Accent" description="Select a global accent color.">
-      <Card>
-        <div className="flex flex-wrap gap-3">
-          {PRESET_COLORS.map((hex) => (
-            <button key={hex} onClick={() => setThemeColor(hex)}
-              className={cn("w-10 h-10 rounded-full shadow-sm border-2 transition-transform", data.theme?.color === hex ? "border-[#141312] scale-110" : "border-transparent hover:scale-105")}
-              style={{ backgroundColor: hex }} aria-label={`Select color ${hex}`} />
-          ))}
-          <div className="relative" title="Pick any custom color">
-            <input type="color" value={data.theme?.color || '#2563eb'} onChange={(e) => setThemeColor(e.target.value)}
-              className="w-10 h-10 rounded-full cursor-pointer opacity-0 absolute inset-0 z-10" aria-label="Pick a custom color" />
-            <div
-              className={cn("w-10 h-10 rounded-full shadow-sm border-2 flex items-center justify-center transition-transform", isCustomColor ? "border-[#141312] scale-110" : "border-transparent hover:scale-105")}
-              style={{ background: 'conic-gradient(from 20deg, #ef4444, #f59e0b, #84cc16, #06b6d4, #3b82f6, #a855f7, #ef4444)' }}>
-              <Pipette size={16} className="text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]" />
-            </div>
-          </div>
-        </div>
-        {isCustomColor && (
-          <p className="fm text-[10px] font-bold uppercase tracking-[0.18em] text-[#141312]/50 mt-4">
-            Custom color <span className="text-[#141312]">{data.theme?.color}</span>
-          </p>
-        )}
-      </Card>
-    </SectionAccordion>
-  );
+  // v3 wizard: which section blocks render under each step.
+  const stepBlocks: Record<string, React.ReactNode[]> = {
+    basics: [sectionBlocks.basics],
+    summary: [sectionBlocks.summary],
+    experience: [sectionBlocks.experience],
+    education: [sectionBlocks.education],
+    skills: [sectionBlocks.skills],
+    extras: [
+      sectionBlocks.projects,
+      sectionBlocks.certifications,
+      sectionBlocks.references,
+    ].filter(Boolean),
+  };
 
-  const SelectedTemplate = templates[data.templateId] || templates.Executive;
+  // Sidebar completion hint + desktop "Next up" card, derived from real state.
+  const nextMissingSteps = WIZARD_STEPS.filter((s) => !stepComplete[s.id]);
+  const completionHint = nextMissingSteps.length === 0
+    ? 'Your resume is complete. Download it or check your ATS match.'
+    : `Add ${nextMissingSteps[0].label.toLowerCase()} details to strengthen your resume.`;
+  const nextUpItems = [...nextMissingSteps.slice(0, 3).map((s) => `Add your ${s.label.toLowerCase()}`), 'Check ATS match'];
 
   return (
-    <main className={cn("flex flex-col lg:flex-row min-h-screen w-full overflow-x-clip font-sans selection:bg-black selection:text-white print:block print:h-auto print:overflow-visible", 'bg-[#E8E7E1] text-[#141312] cv-riso')}>
+    <main className="v3-builder print:block print:h-auto print:overflow-visible">
       <h1 className="sr-only">Free Resume Builder — create, edit, and download your resume</h1>
 
-      {/* EDITOR PANEL */}
-      <section className="w-full lg:w-[45%] border-r-[3px] border-[#141312] print:hidden px-6 py-8 lg:px-10 lg:py-12 flex-shrink-0 relative bg-white">
-        <div className="max-w-xl mx-auto pb-24 lg:pb-0">
+      {/* ===== TOP BAR (v3 concept) ===== */}
+      <header className="v3-top print:hidden">
+        <div className="v3-top-left">
+          <Link href="/" aria-label="Cvyon home">
+            <Logo size={30} wordSize={20} />
+          </Link>
+          <span className="v3-crumb">/ Build your resume</span>
+        </div>
+        <div className="v3-top-right">
+          <span className="v3-autosave-pill"><span className="v3-dot" /> Auto-saved</span>
+          <button className="v3-iconbtn" onClick={() => useResumeStore.temporal.getState().undo()} disabled={undoDepth === 0} title="Undo (Ctrl+Z)" aria-label="Undo"><Undo2 size={15} /></button>
+          <button className="v3-iconbtn" onClick={() => useResumeStore.temporal.getState().redo()} disabled={redoDepth === 0} title="Redo (Ctrl+Y)" aria-label="Redo"><Redo2 size={15} /></button>
+          <button className="v3-dl v3-dl-docx" onClick={handleDocxExport} title="Download Word document"><FileText size={14} /> Download DOCX</button>
+          <button className="v3-dl v3-dl-pdf" onClick={handleDownload} disabled={isGeneratingPdf}><FileDown size={14} /> {isGeneratingPdf ? 'Generating…' : 'Download PDF'}</button>
+          {/* Mobile: persistent download CTA (header buttons are hidden on mobile by CSS) */}
+          <button className="v3-dl v3-dl-pdf v3-mobile-dl" onClick={() => { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }} title="Review and download">
+            <FileDown size={14} /> Download
+          </button>
+        </div>
+      </header>
 
-          <header className="sticky top-0 z-30 -mx-6 -mt-8 px-6 py-4 lg:-mx-10 lg:-mt-12 lg:px-10 lg:py-5 bg-white/95 backdrop-blur-md border-b-2 border-[#141312] mb-8">
-            {/* MOBILE / TABLET HEADER — approved layout, slogan removed */}
-            <div className="lg:hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <div>
-                <Link href="/" className="flex items-center gap-2">
-                  <Image src="/logo-light-no-background.png" alt="Cvyon" width={200} height={65} priority className="h-9 sm:h-10 w-auto object-contain transition-all" />
-                </Link>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="flex items-center gap-1 text-[10px] fm font-semibold text-[#10B981]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" /> Auto-saved
-                  </span>
-                </div>
-              </div>
-              <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
-                <LiveAtsScore />
-                <div className="hidden sm:flex items-center gap-1 border-l-2 border-[#141312]/20 pl-2">
-                  <button onClick={() => useResumeStore.temporal.getState().undo()} className="p-2 border-2 border-[#141312] bg-white hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors text-[#141312]" title="Undo (Ctrl+Z)">
-                    <Undo2 size={16} />
-                  </button>
-                  <button onClick={() => useResumeStore.temporal.getState().redo()} className="p-2 border-2 border-[#141312] bg-white hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors text-[#141312]" title="Redo (Ctrl+Y)">
-                    <Redo2 size={16} />
-                  </button>
-                </div>
-                <button onClick={handleDownload} className="group flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-2 sm:px-4 py-2 sm:py-2.5 fm text-[10px] sm:text-xs font-bold uppercase tracking-wide sm:tracking-widest whitespace-nowrap active:translate-y-[2px] active:shadow-none transition-all">
-                  <Download size={15} className="hidden sm:block group-hover:-translate-y-0.5 transition-transform" /> Download PDF
-                </button>
-                <button onClick={handleDocxExport} className="flex-1 sm:flex-none flex group items-center justify-center gap-1.5 sm:gap-2 bg-[#2233FF] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-2 sm:px-4 py-2 sm:py-2.5 fm text-[10px] sm:text-xs font-bold uppercase tracking-wide sm:tracking-widest whitespace-nowrap active:translate-y-[2px] active:shadow-none transition-all" title="Download Word Document">
-                  <FileText size={15} className="hidden sm:block group-hover:-translate-y-0.5 transition-transform" /> Download DOCX
-                </button>
-              </div>
-            </div>
-
-            {/* DESKTOP HEADER — logo aligned with the utility cluster; the
-                download buttons get their own full-width row so they can
-                never overflow/float over the preview panel. */}
-            <div className="hidden lg:flex flex-col gap-4">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 min-w-0">
-                  <Link href="/" className="flex items-center shrink-0" aria-label="Cvyon home">
-                    <Image src="/logo-light-no-background.png" alt="Cvyon" width={200} height={65} priority className="h-11 w-auto object-contain" />
-                  </Link>
-                  <span className="flex items-center gap-1.5 fm text-[10px] font-bold uppercase tracking-[0.18em] text-[#10B981] border-2 border-[#10B981]/40 bg-[#10B981]/10 px-2.5 py-1 whitespace-nowrap">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" /> Auto-saved
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <LiveAtsScore />
-                  <div className="flex items-center gap-1 border-l-2 border-[#141312]/20 pl-2">
-                    <button onClick={() => useResumeStore.temporal.getState().undo()} className="p-2 border-2 border-[#141312] bg-white hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors text-[#141312]" title="Undo (Ctrl+Z)">
-                      <Undo2 size={16} />
-                    </button>
-                    <button onClick={() => useResumeStore.temporal.getState().redo()} className="p-2 border-2 border-[#141312] bg-white hover:bg-[#141312] hover:text-[#E8E7E1] transition-colors text-[#141312]" title="Redo (Ctrl+Y)">
-                      <Redo2 size={16} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={handleDownload} className="group flex-1 flex items-center justify-center gap-2 bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-4 py-3 fm text-xs font-bold uppercase tracking-widest whitespace-nowrap active:translate-y-[2px] active:shadow-none transition-all">
-                  <Download size={16} className="group-hover:-translate-y-0.5 transition-transform" /> Download PDF
-                </button>
-                <button onClick={handleDocxExport} className="flex-1 flex group items-center justify-center gap-2 bg-[#2233FF] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-4 py-3 fm text-xs font-bold uppercase tracking-widest whitespace-nowrap active:translate-y-[2px] active:shadow-none transition-all" title="Download Word Document">
-                  <FileText size={16} className="group-hover:-translate-y-0.5 transition-transform" /> Download DOCX
-                </button>
-              </div>
-            </div>
-          </header>
-
-
-          {publishedUrl && (
-            <div className="mb-8 p-4 bg-white border-[3px] border-[#0E8A4B] hs-sm flex items-center justify-between">
-              <div>
-                <p className="text-[#0E8A4B] fh font-bold text-sm">Your resume is live!</p>
-                <a href={publishedUrl} target="_blank" rel="noreferrer" className="text-[#0E8A4B] fm text-xs hover:underline mt-1 block">{publishedUrl}</a>
-              </div>
-              <button onClick={() => { navigator.clipboard.writeText(publishedUrl); toast.success('Copied!'); }} className="px-3 py-1.5 bg-[#0E8A4B] text-white fm text-[10px] font-bold uppercase tracking-widest hover:bg-[#141312] transition-colors">
-                Copy link
+      <div className="v3-workspace">
+        {/* ===== SIDEBAR (v3 concept) ===== */}
+        <aside className="v3-sidebar print:hidden">
+          <p className="v3-side-title">Resume</p>
+          <nav className="v3-nav" aria-label="Resume steps">
+            {WIZARD_STEPS.map((s, i) => (
+              <button key={s.id} onClick={() => goStep(i)}
+                className={cn('v3-nav-btn', activeStep === i && 'active')}
+                aria-current={activeStep === i ? 'step' : undefined}>
+                <span className="v3-num">{stepComplete[s.id] ? <Check size={12} strokeWidth={4} /> : i + 1}</span>
+                {s.label}
               </button>
-            </div>
-          )}
-
-          {/* AI Tools Bar */}
-          <div className="flex flex-wrap gap-2 mb-8">
-            <button onClick={() => setIsATSOpen(true)} className="flex items-center gap-2 px-4 py-2.5 border-2 border-[#141312] bg-white text-[#141312] hs-sm fm text-[11px] font-bold uppercase tracking-[0.16em] transition-all hover:bg-[#0E8A4B] hover:text-white hover:border-[#0E8A4B]">
-              <BarChart3 size={14} /> ATS Grader
-            </button>
-            <button onClick={() => setIsRewriterOpen(true)} className="flex items-center gap-2 px-4 py-2.5 border-2 border-[#141312] bg-white text-[#141312] hs-sm fm text-[11px] font-bold uppercase tracking-[0.16em] transition-all hover:bg-[#FF4326] hover:text-[#141312] hover:border-[#FF4326]">
-              <RefreshCw size={14} /> AI Rewriter
-            </button>
-          </div>
-
-          {/* Template Gallery Button */}
-          <div className="mb-12">
-            <button onClick={() => setIsGalleryOpen(true)} className="w-full relative overflow-hidden bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] hs p-4 sm:p-6 font-bold flex items-center justify-between group transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
-              <div className="flex items-center gap-4 sm:gap-5 relative z-10">
-                <div className="w-10 h-10 sm:w-14 sm:h-14 bg-[#FF4326] border-2 border-[#E8E7E1] flex items-center justify-center group-hover:rotate-6 transition-transform">
-                  <Layout className="text-[#141312] w-5 h-5 sm:w-6 sm:h-6" />
-                </div>
-                <div className="flex flex-col items-start">
-                  <span className="fd text-lg sm:text-xl tracking-tight leading-none mb-1">Template Gallery</span>
-                  <span className="hidden sm:block fm text-[10px] text-[#E8E7E1]/60 font-bold tracking-[0.18em] uppercase">{Object.keys(templates).length} ATS-optimized layouts</span>
-                  <span className="sm:hidden fm text-[9px] text-[#E8E7E1]/60 font-bold uppercase">{Object.keys(templates).length} layouts</span>
-                </div>
-              </div>
-              <div className="relative z-10 bg-[#E8E7E1] text-[#141312] px-4 py-2.5 fm text-[10px] sm:text-xs uppercase tracking-widest font-black group-hover:bg-[#FF4326] group-hover:text-[#141312] transition-colors flex items-center gap-2">
-                <span className="hidden sm:inline">Change Design</span>
-                <Paintbrush size={16} className="block sm:hidden" />
-              </div>
-            </button>
-          </div>
-
-          <DragDropContext onDragEnd={onDragEnd}>
-
-            {/* Design pane first in the DOM so mobile keeps its current order
-                (Theme, Import, sections). On desktop only the active tab's
-                pane is visible — see .editor-pane CSS below. */}
-            <div className={cn("editor-pane", safeActiveTab === 'design' && "editor-pane-active")}>
-              {designBlock}
-              {renderPaneNav('design')}
-            </div>
-
-            <ImportResume />
-
-            {/* Desktop section tabs — the end of endless scrolling. */}
-            <div ref={tabsTopRef} className="desktop-tabbar mb-8 scroll-mt-40">
-              <div className="flex items-center justify-between mb-3">
-                <p className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/50">Resume Sections</p>
-                <p className="fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/50">
-                  <span className="text-[#0E8A4B]">{completedTabs}</span> of {editorTabs.length} complete
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2" role="tablist" aria-label="Resume sections">
-                {editorTabs.map((tab) => {
-                  const TabIcon = tab.icon;
-                  const isActive = safeActiveTab === tab.id;
-                  const done = !!tabComplete[tab.id];
-                  return (
-                    <button
-                      key={tab.id}
-                      role="tab"
-                      aria-selected={isActive}
-                      onClick={() => selectTab(tab.id)}
-                      className={cn(
-                        "flex items-center gap-2 px-4 py-2.5 border-[3px] rounded-none fm text-[11px] font-bold uppercase tracking-[0.14em] transition-all",
-                        isActive
-                          ? "bg-[#141312] text-[#E8E7E1] border-[#141312] shadow-[4px_4px_0_#FF4326] -translate-y-0.5"
-                          : "bg-white text-[#141312] border-[#141312]/25 hover:border-[#141312] hover:-translate-y-0.5"
-                      )}>
-                      <TabIcon size={14} />
-                      {tab.label}
-                      {done && (
-                        <span className="flex items-center justify-center w-4 h-4 rounded-full bg-[#0E8A4B] text-white">
-                          <Check size={10} strokeWidth={4} />
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Editor sections — tab panes on desktop, stacked accordions on mobile. */}
-            {editorSectionIds.map((id) => (
-              <div key={id} className={cn("editor-pane", safeActiveTab === id && "editor-pane-active")}>
-                {sectionBlocks[id]}
-                {renderPaneNav(id)}
-              </div>
             ))}
+          </nav>
+          <div className="v3-progress">
+            <small>Completion</small>
+            <strong>{completionPct}%</strong>
+            <div className="v3-bar"><i style={{ width: `${completionPct}%` }} /></div>
+            <p>{completionHint}</p>
+          </div>
+        </aside>
 
-            {/* Add New Sections */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-12 pt-8 border-t-2 border-[#141312]/20 flex-wrap">
-              {!data.showProjects && (
-                <button onClick={() => enableSectionAndGo(toggleProjects, 'projects')} className="flex-1 min-w-[200px] py-4 bg-white border-2 border-dashed border-[#141312]/50 hover:border-[#141312] hover:bg-[#141312]/5 rounded-none fm text-xs font-bold uppercase tracking-widest text-[#141312]/70 hover:text-[#141312] flex items-center justify-center gap-2 transition-all">
-                  <Plus size={18} /> Add Projects
-                </button>
-              )}
-              {!data.showCertifications && (
-                <button onClick={() => enableSectionAndGo(toggleCertifications, 'certifications')} className="flex-1 min-w-[200px] py-4 bg-white border-2 border-dashed border-[#141312]/50 hover:border-[#141312] hover:bg-[#141312]/5 rounded-none fm text-xs font-bold uppercase tracking-widest text-[#141312]/70 hover:text-[#141312] flex items-center justify-center gap-2 transition-all">
-                  <Plus size={18} /> Add Certifications
-                </button>
-              )}
-              {!data.showReferences && (
-                <button onClick={() => enableSectionAndGo(toggleReferences, 'references')} className="flex-1 min-w-[200px] py-4 bg-white border-2 border-dashed border-[#141312]/50 hover:border-[#141312] hover:bg-[#141312]/5 rounded-none fm text-xs font-bold uppercase tracking-widest text-[#141312]/70 hover:text-[#141312] flex items-center justify-center gap-2 transition-all">
-                  <Plus size={18} /> Add References
-                </button>
-              )}
+        {/* ===== EDITOR (v3 concept) ===== */}
+        <section className="v3-editor print:hidden">
+          <div className="v3-editor-inner" id="builder-editor-top">
+            <div className="v3-mobilebar">
+              <div><strong>Step {activeStep + 1} of 6</strong><br /><small>{WIZARD_STEPS[activeStep].label}</small></div>
+              <button className="v3-primary" onClick={() => setIsGalleryOpen(true)}>Templates</button>
             </div>
 
-            {/* Custom Sections */}
+            <p className="v3-eyebrow">Step {activeStep + 1} of 6</p>
+            <h2 className="v3-heading">{WIZARD_STEPS[activeStep].heading}</h2>
+            <p className="v3-sub">{WIZARD_STEPS[activeStep].sub}</p>
+
+            <DragDropContext onDragEnd={onDragEnd}>
+              {WIZARD_STEPS.map((s, i) => (
+                <div key={s.id} id={`v3-step-${s.id}`} className={cn('v3-step', activeStep === i && 'v3-step-active')}>
+                  {s.id === 'basics' && (
+                    <div className="v3-block"><div className="v3-import"><ImportResume /></div></div>
+                  )}
+                  {s.id === 'extras' && (
+                    <div className="v3-block">
+                      <div className="v3-addrow">
+                        {!data.showProjects && (
+                          <button onClick={() => enableSectionAndGo(toggleProjects)} className="v3-addbtn">
+                            <Plus size={18} /> Add Projects
+                          </button>
+                        )}
+                        {!data.showCertifications && (
+                          <button onClick={() => enableSectionAndGo(toggleCertifications)} className="v3-addbtn">
+                            <Plus size={18} /> Add Certifications
+                          </button>
+                        )}
+                        {!data.showReferences && (
+                          <button onClick={() => enableSectionAndGo(toggleReferences)} className="v3-addbtn">
+                            <Plus size={18} /> Add References
+                          </button>
+                        )}
+                        <button onClick={addCustomSection} className="v3-addbtn v3-addbtn-accent">
+                          <Plus size={18} /> Create Custom Section
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {(stepBlocks[s.id] || []).map((block, bi) => (
+                    <div key={bi} className="v3-block">{block}</div>
+                  ))}
+                  {s.id === 'extras' && (
+                    <>
+                                  {/* Custom Sections */}
             {data.customSections?.map((section: any, sectionIndex: number) => (
               <div key={section.id} className="mt-8">
-                <div className="flex items-center justify-between mb-4 bg-white p-4 border-[3px] border-[#141312] hs-sm">
+                <div className="flex items-center justify-between mb-4 bg-white p-4 border border-[#dddde5] rounded-xl shadow-[0_2px_8px_rgba(21,26,70,.05)]">
                   <input type="text" value={section.title} onChange={(e) => updateCustomSectionTitle(section.id, e.target.value)}
-                    className="fd uppercase tracking-tight text-lg bg-transparent border-none outline-none focus:ring-0 flex-1 text-[#141312]" />
-                  <button onClick={() => removeCustomSection(section.id)} className="text-[#141312]/40 hover:text-[#D8362A] transition-colors p-2"><Trash2 size={16} /></button>
+                    className="font-brand uppercase tracking-tight text-lg bg-transparent border-none outline-none focus:ring-0 flex-1 text-[#151a46] font-bold" />
+                  <div className="flex items-center gap-1.5">
+                    <button type="button" onClick={() => reorderCustomSections(sectionIndex, sectionIndex - 1)} disabled={sectionIndex === 0} title="Move section up" aria-label="Move custom section up"
+                      className="p-2 rounded-lg border border-[#dddde5] bg-white text-[#151a46]/60 hover:text-[#151a46] hover:border-[#5548f5] hover:bg-[#eeecff] transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-[#dddde5] disabled:hover:bg-white"><ChevronUp size={14} /></button>
+                    <button type="button" onClick={() => reorderCustomSections(sectionIndex, sectionIndex + 1)} disabled={sectionIndex === (data.customSections?.length || 1) - 1} title="Move section down" aria-label="Move custom section down"
+                      className="p-2 rounded-lg border border-[#dddde5] bg-white text-[#151a46]/60 hover:text-[#151a46] hover:border-[#5548f5] hover:bg-[#eeecff] transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-[#dddde5] disabled:hover:bg-white"><ChevronDown size={14} /></button>
+                    <button onClick={() => removeCustomSection(section.id)} className="text-[#151a46]/40 hover:text-[#D8362A] transition-colors p-2"><Trash2 size={16} /></button>
+                  </div>
                 </div>
                 <Droppable droppableId={`custom-${section.id}`} type="custom-item">
                   {(provided) => (
@@ -1251,8 +1290,8 @@ export default function FreeCVApp() {
                       {section.items.map((item: any, index: number) => (
                         <Draggable key={item.id} draggableId={item.id} index={index}>
                           {(provided, snapshot) => (
-                            <div ref={provided.innerRef} {...provided.draggableProps} className={cn("bg-white border-2 border-[#141312] hs-sm rounded-none p-4 sm:p-5 relative group transition-all", snapshot.isDragging ? 'border-[#2233FF] shadow-[6px_6px_0_#2233FF] scale-[1.02] z-50' : 'hover:shadow-none')}>
-                              <div {...provided.dragHandleProps} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#141312]/30 opacity-0 group-hover:opacity-100 transition-opacity p-2 cursor-grab active:cursor-grabbing hover:text-[#141312]">
+                            <div ref={provided.innerRef} {...provided.draggableProps} className={cn("bg-white border border-[#dddde5] rounded-xl p-4 sm:p-5 relative group transition-all shadow-[0_2px_8px_rgba(21,26,70,.05)]", snapshot.isDragging ? 'border-[#5548f5] shadow-[0_8px_24px_rgba(85,72,245,.25)] scale-[1.02] z-50' : '')}>
+                              <div {...provided.dragHandleProps} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#151a46]/30 opacity-0 group-hover:opacity-100 transition-opacity p-2 cursor-grab active:cursor-grabbing hover:text-[#151a46]">
                                 <GripVertical size={16} />
                               </div>
                               <div className="pl-8">
@@ -1264,12 +1303,12 @@ export default function FreeCVApp() {
                                     </div>
                                     <Input label="Date/Info" value={item.date} onChange={(e: any) => updateCustomSectionItem(section.id, item.id, { date: e.target.value })} placeholder="2024, Fluent, etc." />
                                   </div>
-                                  <button onClick={() => removeCustomSectionItem(section.id, item.id)} className="text-[#141312]/40 hover:text-[#D8362A] transition-colors p-2 mt-6"><Trash2 size={16} /></button>
+                                  <button onClick={() => removeCustomSectionItem(section.id, item.id)} className="text-[#151a46]/40 hover:text-[#D8362A] transition-colors p-2 mt-6"><Trash2 size={16} /></button>
                                 </div>
                                 <div className="mt-3">
-                                  <label className="block fm text-[10px] font-bold uppercase tracking-[0.2em] text-[#141312]/60 mb-2">Description</label>
+                                  <label className="block font-brand text-[10px] font-bold uppercase tracking-[0.2em] text-[#151a46]/60 mb-2">Description</label>
                                   <textarea value={item.description} onChange={(e) => updateCustomSectionItem(section.id, item.id, { description: e.target.value })}
-                                    className="w-full bg-white border-2 border-[#141312] rounded-none p-3 min-h-[80px] outline-none transition-shadow focus:shadow-[3px_3px_0_#2233FF] resize-y text-sm text-[#141312]" placeholder="Describe this item..." />
+                                    className="w-full bg-white border border-[#d9dae5] rounded-[10px] p-3 min-h-[80px] outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)] resize-y text-sm text-[#151a46]" placeholder="Describe this item..." />
                                 </div>
                               </div>
                             </div>
@@ -1277,7 +1316,7 @@ export default function FreeCVApp() {
                         </Draggable>
                       ))}
                       {provided.placeholder}
-                      <button onClick={() => addCustomSectionItem(section.id)} className="w-full py-3 bg-white border-2 border-dashed border-[#141312]/50 hover:border-[#141312] hover:bg-[#141312]/5 rounded-none fm text-xs font-bold uppercase tracking-widest text-[#141312]/70 hover:text-[#141312] flex items-center justify-center gap-2 transition-all">
+                      <button onClick={() => addCustomSectionItem(section.id)} className="w-full py-3 bg-white border border-dashed border-[#151a46]/30 hover:border-[#5548f5] hover:bg-[#eeecff] rounded-xl font-brand text-xs font-bold uppercase tracking-widest text-[#151a46]/70 hover:text-[#151a46] flex items-center justify-center gap-2 transition-all">
                         <Plus size={16} /> Add Item
                       </button>
                     </div>
@@ -1286,128 +1325,284 @@ export default function FreeCVApp() {
               </div>
             ))}
 
-            <div className="mt-8">
-              <button onClick={addCustomSection} className="w-full py-4 bg-white border-2 border-dashed border-[#2233FF] hover:bg-[#2233FF]/5 rounded-none fm text-xs font-bold uppercase tracking-widest text-[#2233FF] flex items-center justify-center gap-2 transition-all">
-                <Plus size={18} /> Create Custom Section
+                    </>
+                  )}
+                </div>
+              ))}
+            </DragDropContext>
+
+            {/* Target the right role — desktop only (v3 concept) */}
+            <div className="v3-card v3-desktop-only">
+              <div className="v3-card-head">
+                <div>
+                  <h3>Target the right role</h3>
+                  <p className="v3-card-hint">Cvyon uses this to guide your ATS suggestions.</p>
+                </div>
+              </div>
+              <div className="v3-target">
+                <div className="v3-field">
+                  <label>Target job title</label>
+                  <input value={atsJobDesc} onChange={(e) => setAtsJobDesc(e.target.value)} placeholder="e.g. Senior Product Engineer" />
+                </div>
+                <button className="v3-primary" onClick={() => setIsATSOpen(true)}>Analyze</button>
+              </div>
+            </div>
+
+            {/* Tailor to Job — desktop only (v3 concept) */}
+            <div className="v3-card v3-desktop-only">
+              <div className="v3-card-head">
+                <div>
+                  <h3>Tailor to a job</h3>
+                  <p className="v3-card-hint">Paste a job posting — AI rewrites your summary, suggests skills, and sharpens bullets using only what's already on your resume.</p>
+                </div>
+              </div>
+              <button className="v3-primary w-full flex items-center justify-center gap-2" onClick={() => { setTailorResult(null); setTailorApplied({ summary: false, skills: [], bullets: [] }); setIsTailorOpen(true); }}>
+                <Target size={16} /> Tailor to Job
               </button>
             </div>
 
-            {/* Newsletter */}
-            <div className="mt-16 pt-8 border-t-2 border-[#141312]/20">
-              <NewsletterCapture source="main_editor" />
+            {/* Next up — desktop only (v3 concept) */}
+            <div className="v3-card v3-desktop-only">
+              <div className="v3-card-head">
+                <div>
+                  <h3>Next up</h3>
+                  <p className="v3-card-hint">Small actions, visible progress.</p>
+                </div>
+              </div>
+              <p className="v3-nextup">
+                {nextUpItems.map((item, i) => (
+                  <span key={item}>{i + 1}&#8419; {item}{i < nextUpItems.length - 1 ? '\u00A0\u00A0' : ''}</span>
+                ))}
+              </p>
             </div>
 
-            {/* Footer Links */}
-            <footer className="mt-12 pt-6 border-t-2 border-[#141312]/20 flex flex-wrap gap-4 fm text-xs font-bold uppercase tracking-widest justify-center pb-8 text-[#141312]/55">
-              <Link href="/blog" className="hover:text-[#FF4326] transition-colors">Career Blog</Link>
-              <span>&bull;</span>
-              <Link href="/recruiter" className="hover:text-[#FF4326] transition-colors">Recruiter Portal</Link>
-              <span>&bull;</span>
-              <Link href="/privacy" className="hover:text-[#FF4326] transition-colors">Privacy Policy & GDPR</Link>
-              <span>&bull;</span>
-              <Link href="/manage-data" className="hover:text-[#FF4326] transition-colors">Manage Data</Link>
-            </footer>
+            {/* Mobile step navigation: Back + Continue */}
+            <div className="v3-mobile-nav">
+              {activeStep > 0 && (
+                <button
+                  className="v3-pill v3-mobile-back"
+                  onClick={() => goStep(activeStep - 1)}>
+                  ← Back
+                </button>
+              )}
+              <button
+                className="v3-primary v3-mobile-next"
+                onClick={() => {
+                  if (activeStep < 5) goStep(activeStep + 1);
+                  else { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }
+                }}>
+                {activeStep === 5 ? 'Review & Download \u2192' : `Continue to ${WIZARD_STEPS[activeStep + 1].label} \u2192`}
+              </button>
+            </div>
 
-          </DragDropContext>
-        </div>
-      </section>
+            <div className="v3-desktop-only">
+              <div className="v3-newsletter">
+                <NewsletterCapture source="main_editor" />
+              </div>
+              <footer className="v3-footer">
+                <Link href="/blog" className="hover:text-[#5548f5] transition-colors">Career Blog</Link>
+                <span>&bull;</span>
+                <Link href="/recruiter" className="hover:text-[#5548f5] transition-colors">Recruiter Portal</Link>
+                <span>&bull;</span>
+                <Link href="/privacy" className="hover:text-[#5548f5] transition-colors">Privacy Policy & GDPR</Link>
+                <span>&bull;</span>
+                <Link href="/manage-data" className="hover:text-[#5548f5] transition-colors">Manage Data</Link>
+              </footer>
+            </div>
+          </div>
+        </section>
 
-      {/* MOBILE PREVIEW BUTTON — single page-wide blue button below lg.
-          Shows only while the editor is open; the preview overlay carries its
-          own Edit button to return. Positioning is inline (not Tailwind
-          utilities) so it can never be dropped by the utility scanner. */}
-      {!isPreviewOpen && (
-        <div className="lg:hidden fixed z-40 print:hidden w-full max-w-sm px-6"
-          style={{ position: 'fixed', bottom: '1.5rem', left: '50%', transform: 'translateX(-50%)' }}>
-          <button
-            onClick={() => { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3.5 fm text-xs font-bold uppercase tracking-widest transition-colors bg-[#2233FF] text-[#E8E7E1] border-[3px] border-[#141312] hs active:translate-y-[2px] active:shadow-none">
-            <Eye size={15} /> Preview
-          </button>
-        </div>
-      )}
+        {/* ===== LIVE PREVIEW (v3 concept) ===== */}
+        <section className="v3-preview" id="preview-panel" ref={previewViewportRef}>
+          <div className="v3-previewbar print:hidden">
+            <strong>Live preview</strong>
+            <div className="v3-preview-actions">
+              <button className="v3-pill-sm" onClick={() => setIsGalleryOpen(true)} title="Change template">
+                <Layout size={14} /> Templates
+              </button>
+              <button className="v3-pill-sm" onClick={() => setIsATSOpen(true)} title="Grade against a job description">
+                <BarChart3 size={14} /> ATS
+              </button>
+              <button className="v3-pill-sm" onClick={() => setIsRewriterOpen(true)} title="Rewrite with AI">
+                <Sparkles size={14} /> AI
+              </button>
+              <div className="v3-zoom">
+                <button onClick={() => setPreviewZoom((z) => Math.max(0.6, +(z - 0.1).toFixed(2)))} aria-label="Zoom out">&minus;</button>
+                <button onClick={() => setPreviewZoom((z) => Math.min(1.3, +(z + 0.1).toFixed(2)))} aria-label="Zoom in">+</button>
+              </div>
+            </div>
+          </div>
+          <div className="v3-canvas print:hidden" ref={previewCanvasRef}>
+            <div style={{ width: 816 * desktopPreviewFit.scale * previewZoom, height: desktopPreviewFit.paperH * desktopPreviewFit.scale * previewZoom, flexShrink: 0 }}>
+            <div className="v3-paperwrap" style={{ transform: `scale(${desktopPreviewFit.scale * previewZoom})`, width: 816 }}>
+              <div
+                ref={resumePageRef}
+                className="v3-paper"
+                style={{ '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
+              >
+                <ErrorBoundary fallbackTitle="Resume Preview Error" fallbackMessage="Could not render the current template. Try selecting another template or verifying your text inputs.">
+                  <HTMLPreview Tmpl={htmlTemplates[data.templateId as keyof typeof htmlTemplates]} data={previewData} />
+                </ErrorBoundary>
+              </div>
+            </div>
+            </div>
+          </div>
+          {/* Print: render the template directly, without the screen preview
+              chrome (HTMLPreview's cream background, padding, scale transform,
+              and fixed 1056px height would otherwise clip multi-page resumes
+              and print the preview frame into the PDF). The --theme-color
+              variable is set here so the printed PDF matches the on-screen
+              preview accents. */}
+          <div
+            className={cn("hidden print:block print-resume", previewData.density === 'compact' && "density-compact")}
+            style={{ '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
+          >
+            {(() => {
+              const PrintTmpl = htmlTemplates[data.templateId as keyof typeof htmlTemplates];
+              return <PrintTmpl data={previewData} />;
+            })()}
+          </div>
+        </section>
+      </div>
 
-      {/* PREVIEW PANEL — NON-STICKY, scrolls naturally with the page */}
-      <section
-        ref={previewViewportRef}
-        id="preview-panel"
-        className={cn(
-          "flex-1 bg-[#E8E7E1] p-0 lg:p-12 print:p-0 print:bg-white flex lg:justify-center items-start print-safe-container",
-          isPreviewOpen && !mobileZoom ? "overflow-x-hidden justify-center" : "overflow-x-auto",
-          isPreviewOpen ? "fixed inset-0 z-50 flex-col h-screen overflow-y-auto custom-scrollbar" : "hidden lg:flex"
-        )}>
+      {/* ATS readiness badge (v3 concept) */}
+      <div className="v3-score print:hidden">
+        <LiveAtsScore />
+      </div>
 
-        {/* Mobile Modal Actions */}
-        {isPreviewOpen && (
-          <div className="fixed bottom-0 left-0 w-full bg-white p-3 flex gap-1.5 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-50 lg:hidden print:hidden border-t-[3px] border-[#141312]">
-            <button onClick={() => setIsPreviewOpen(false)} className="bg-white border-2 border-[#141312] hs-sm text-[#141312] px-3 py-3 fm text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-1 active:translate-y-[2px] active:shadow-none transition-all">
+      {/* Mobile bottom tabs (v3 concept) */}
+      <nav className="v3-mobiletabs print:hidden" aria-label="Builder">
+        <button className={cn(!isPreviewOpen && 'active')} onClick={() => { setIsPreviewOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+          <span>&#9998;</span>Edit
+        </button>
+        <button onClick={() => { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }}>
+          <span>&#9635;</span>Preview
+        </button>
+        <button onClick={() => setIsRewriterOpen(true)}>
+          <span>&#10022;</span>AI
+        </button>
+        <button onClick={() => setIsDownloadModalOpen(true)}>
+          <span>&darr;</span>Export
+        </button>
+      </nav>
+
+      {/* Mobile preview overlay */}
+      {isPreviewOpen && (
+        <div className="v3-preview-overlay print:hidden">
+          <div className="v3-previewbar">
+            <strong>Live preview</strong>
+            <button className="v3-pill-sm" onClick={() => setIsPreviewOpen(false)}>
+              <X size={14} /> Close
+            </button>
+          </div>
+          <div className="v3-canvas">
+            <div
+              className="preview-scale-frame shrink-0"
+              style={{ width: mobilePreviewMetrics.width, height: mobilePreviewMetrics.height }}
+            >
+              <div
+                className="w-[816px] origin-top-left shrink-0 bg-white"
+                style={{ transform: mobilePreviewMetrics.scale !== 1 ? `scale(${mobilePreviewMetrics.scale})` : undefined, '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
+              >
+                <ErrorBoundary fallbackTitle="Resume Preview Error" fallbackMessage="Could not render the current template. Try selecting another template or verifying your text inputs.">
+                  <HTMLPreview Tmpl={htmlTemplates[data.templateId as keyof typeof htmlTemplates]} data={previewData} />
+                </ErrorBoundary>
+              </div>
+            </div>
+          </div>
+          <div className="v3-overlay-actions">
+            <button onClick={() => setIsPreviewOpen(false)} className="v3-pill-sm">
               <X size={14} /> Edit
             </button>
-            <button onClick={() => setMobileZoom(!mobileZoom)} className="bg-white border-2 border-[#141312] hs-sm text-[#141312] px-3 py-3 fm text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-1 active:translate-y-[2px] active:shadow-none transition-all">
+            <button onClick={() => setMobileZoom(!mobileZoom)} className="v3-pill-sm">
               {mobileZoom ? <ZoomOut size={14} /> : <ZoomIn size={14} />} Zoom
             </button>
-            <PDFDownloadButton
-              TemplateComponent={SelectedTemplate}
-              data={previewData}
-              themeColor={data.theme?.color || '#2563eb'}
-              onDownloadComplete={() => setIsJobsModalOpen(true)}
-              className="flex-1 bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs py-3 fm text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-1 active:translate-y-[2px] active:shadow-none transition-all"
-            />
-            <button onClick={handleDocxExport} className="bg-[#2233FF] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs px-3.5 py-3 fm text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-1 active:translate-y-[2px] active:shadow-none transition-all">
+            {/* Unified PDF path: React-PDF renders the matching React-PDF template
+                to a real file (no browser print headers/footers) —
+                the same engine as the desktop "Download PDF" button. */}
+            <button onClick={handleDownload} className="v3-primary" disabled={isGeneratingPdf}>
+              <Download size={14} /> {isGeneratingPdf ? 'Generating…' : 'PDF'}
+            </button>
+            <button onClick={handleDocxExport} className="v3-pill-sm">
               <FileText size={14} /> DOCX
             </button>
           </div>
-        )}
-
-
-        <div
-          className={cn("preview-scale-frame shrink-0 transition-all print:block", isPreviewOpen ? "mb-32 mt-8 lg:mt-4 mx-auto" : "mx-auto lg:mx-0")}
-          style={isPreviewOpen ? { width: mobilePreviewMetrics.width, height: mobilePreviewMetrics.height } : undefined}
-        >
-          <div
-            ref={resumePageRef}
-            className="w-[816px] origin-top-left shrink-0 shadow-2xl print:shadow-none bg-white transition-transform print-safe-content"
-            style={{ transform: isPreviewOpen && mobilePreviewMetrics.scale !== 1 ? `scale(${mobilePreviewMetrics.scale})` : undefined, '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
-          >
-            <ErrorBoundary fallbackTitle="Resume Preview Error" fallbackMessage="Could not render the current template. Try selecting another template or verifying your text inputs.">
-              <HTMLPreview Tmpl={htmlTemplates[data.templateId as keyof typeof htmlTemplates]} data={previewData} />
-            </ErrorBoundary>
-          </div>
         </div>
-      </section>
+      )}
+
 
       {/* TEMPLATE GALLERY MODAL */}
       {isGalleryOpen && (
-        <div className="fixed inset-0 z-[400] bg-[#E8E7E1] flex flex-col print:hidden">
-          <div className="p-6 lg:p-8 border-b-[3px] border-[#141312] flex justify-between items-center bg-[#E8E7E1] z-10 relative">
-            <div>
-              <h2 className="fd text-3xl font-black uppercase tracking-tight leading-none text-[#141312]">Template Gallery</h2>
-              <p className="fm text-[10px] font-bold uppercase tracking-widest text-[#141312]/55 mt-2">See your exact resume in {Object.keys(templates).length} ATS-optimized styles</p>
+        <div className="fixed inset-0 z-[400] bg-[#f6f5ef] font-brand flex flex-col print:hidden">
+          <div className="p-6 lg:p-8 border-b border-[#dddde5] bg-white z-10 relative">
+            <div className="flex justify-between items-center gap-4">
+              <div>
+                <h2 className="font-brand text-3xl font-black uppercase tracking-tight leading-none text-[#151a46]">Template Gallery</h2>
+                <p className="font-brand text-[10px] font-bold uppercase tracking-widest text-[#151a46]/55 mt-2">See your exact resume in {Object.keys(templates).length} ATS-optimized styles</p>
+              </div>
+              <button onClick={() => setIsGalleryOpen(false)} className="p-3 bg-white border border-[#dddde5] hover:bg-[#151a46] hover:text-white rounded-xl transition-colors shrink-0">
+                <X size={24} />
+              </button>
             </div>
-            <button onClick={() => setIsGalleryOpen(false)} className="p-4 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] rounded-none transition-colors">
-              <X size={24} />
-            </button>
+            <div className="flex items-center gap-3 mt-4 flex-wrap">
+              <span className="font-brand text-[10px] font-bold uppercase tracking-widest text-[#151a46]/55">Resume density</span>
+              <div className="flex rounded-full border border-[#dddde5] p-0.5 bg-[#f6f5ef]">
+                {(['comfortable', 'compact'] as const).map((d) => (
+                  <button key={d} type="button" onClick={() => setDensity(d)}
+                    aria-pressed={data.density === d}
+                    className={cn("px-4 py-1.5 rounded-full font-brand text-[10px] font-bold uppercase tracking-widest transition-colors",
+                      data.density === d ? "bg-[#151a46] text-white shadow" : "text-[#151a46]/60 hover:text-[#151a46]")}>
+                    {d === 'comfortable' ? 'Comfortable' : 'Compact'}
+                  </button>
+                ))}
+              </div>
+              <span className="font-brand text-[10px] text-[#151a46]/45">Compact tightens spacing and type across preview, PDF and DOCX.</span>
+            </div>
           </div>
-          <div className="flex-1 overflow-y-auto p-6 lg:p-12 custom-scrollbar bg-[#E8E7E1]">
+          <div className="flex-1 overflow-y-auto p-6 lg:p-12 custom-scrollbar bg-[#f6f5ef]">
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 max-w-[1600px] mx-auto">
               {(Object.keys(templates) as TemplateKey[]).map((key) => {
                 const isActive = data.templateId === key;
+                const selectTemplate = () => { trackEvent('template_selected', key); setTemplateId(key); setIsGalleryOpen(false); };
                 return (
-                  <button key={key} onClick={() => { trackEvent('template_selected', key); setTemplateId(key); setIsGalleryOpen(false); }}
-                    className={cn("flex flex-col text-left group bg-white border-[3px] rounded-none overflow-hidden transition-all relative", isActive ? "border-[#2233FF] shadow-[8px_8px_0_#2233FF] scale-[1.02]" : "border-[#141312] hs hover:-translate-y-1")}
+                  <div key={key} role="button" tabIndex={0}
+                    onClick={selectTemplate}
+                    onKeyDown={(e) => {
+                      const t = e.target as HTMLElement;
+                      if (t.closest('[data-colorctl]')) return;
+                      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectTemplate(); }
+                    }}
+                    className={cn("flex flex-col text-left group bg-white border rounded-xl overflow-hidden transition-all relative cursor-pointer", isActive ? "border-[#5548f5] shadow-[0_8px_24px_rgba(85,72,245,.25)] scale-[1.02]" : "border-[#dddde5] hover:border-[#151a46] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(21,26,70,.1)]")}
                     style={{ contentVisibility: 'auto', containIntrinsicSize: '300px 400px' }}>
                     <HTMLThumbnail Tmpl={htmlTemplates[key as keyof typeof htmlTemplates]} data={data} />
                     {isActive && (
-                      <div className="absolute top-4 right-4 bg-[#2233FF] text-[#E8E7E1] border-2 border-[#141312] px-3 py-1.5 fm text-[9px] font-black uppercase tracking-widest rounded-none shadow-lg z-10 flex items-center gap-1">
+                      <div className="absolute top-4 right-4 bg-[#5548f5] text-white px-3 py-1.5 font-brand text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg z-10 flex items-center gap-1">
                         <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" /> Active
                       </div>
                     )}
-                    <div className="p-4 border-t-2 border-[#141312] bg-white z-10 w-full flex items-center justify-between">
-                      <div className="truncate pr-2">
-                        <h3 className="fh font-bold text-sm lg:text-base leading-tight truncate text-[#141312]">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
+                    <div className="px-4 py-3 border-t border-[#dddde5] bg-white z-10 w-full">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-brand font-bold text-sm lg:text-base leading-tight truncate text-[#151a46]">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0" data-colorctl onClick={(e) => e.stopPropagation()} title="Pick this template's color">
+                          {['#000000', '#2563eb', '#16a34a', '#dc2626', '#9333ea', '#ea580c'].map((hex) => (
+                            <button key={hex} type="button" onClick={() => setThemeColor(hex)} aria-label={`Use color ${hex}`}
+                              className={cn("w-6 h-6 rounded-full border-2 transition-transform hover:scale-110", (data.theme?.color || '').toLowerCase() === hex ? "border-[#151a46] scale-110" : "border-black/10")}
+                              style={{ backgroundColor: hex }} />
+                          ))}
+                          <div className="relative w-6 h-6" title="Pick any custom color">
+                            <input type="color" value={data.theme?.color || '#2563eb'} onChange={(e) => setThemeColor(e.target.value)}
+                              className="v3-color-input" aria-label="Pick a custom color" />
+                            <div className="w-6 h-6 rounded-full border-2 border-black/10 flex items-center justify-center pointer-events-none"
+                              style={{ background: 'conic-gradient(from 20deg, #ef4444, #f59e0b, #84cc16, #06b6d4, #3b82f6, #a855f7, #ef4444)' }}>
+                              <Pipette size={11} className="text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]" />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>
@@ -1419,21 +1614,21 @@ export default function FreeCVApp() {
       {isATSOpen && (
         <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm overflow-y-auto print:hidden">
           <div className="min-h-screen px-4 flex items-center justify-center py-10">
-            <div className="rounded-none border-[3px] border-[#141312] hs max-w-2xl w-full p-6 sm:p-8 flex flex-col relative bg-white text-[#141312]">
+            <div className="rounded-2xl border border-[#dddde5] shadow-[0_24px_70px_rgba(21,26,70,.22)] max-w-2xl w-full p-6 sm:p-8 flex flex-col relative bg-white text-[#151a46]">
               <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h2 className="fd text-2xl font-black leading-tight flex items-center gap-2"><BarChart3 className="text-[#0E8A4B]" /> ATS Grader</h2>
-                  <p className="fm text-[11px] uppercase tracking-widest text-[#141312]/55 mt-1">Paste the job description to see how well your resume matches.</p>
+                  <h2 className="font-brand text-2xl font-black leading-tight flex items-center gap-2"><BarChart3 className="text-[#0E8A4B]" /> ATS Grader</h2>
+                  <p className="font-brand text-[11px] uppercase tracking-widest text-[#151a46]/55 mt-1">Paste the job description to see how well your resume matches.</p>
                 </div>
-                <button onClick={() => setIsATSOpen(false)} className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] rounded-none transition-colors"><X size={20} /></button>
+                <button onClick={() => setIsATSOpen(false)} className="p-2 bg-white border border-[#dddde5] hover:bg-[#151a46] hover:text-white rounded-xl transition-colors"><X size={20} /></button>
               </div>
 
               <textarea
-                className="w-full bg-white border-2 border-[#141312] rounded-none p-4 text-sm min-h-[150px] mb-4 outline-none transition-shadow focus:shadow-[3px_3px_0_#0E8A4B] resize-none text-[#141312]"
+                className="w-full bg-white border border-[#d9dae5] rounded-[10px] p-4 text-sm min-h-[150px] mb-4 outline-none transition-all focus:border-[#0E8A4B] focus:shadow-[0_0_0_3px_rgba(14,138,75,.12)] resize-none text-[#151a46]"
                 placeholder="Paste the target job description here..." value={atsJobDesc} onChange={(e) => setAtsJobDesc(e.target.value)} />
 
               <button onClick={handleATSGrade} disabled={isATSLoading || !atsJobDesc.trim()}
-                className="w-full bg-[#141312] hover:bg-[#0E8A4B] hover:border-[#0E8A4B] disabled:opacity-50 text-[#E8E7E1] border-[3px] border-[#141312] hs py-4 fm font-bold uppercase tracking-widest text-sm transition-all flex justify-center items-center gap-2 mb-6">
+                className="w-full bg-[#0E8A4B] hover:bg-[#0b6e3e] disabled:opacity-50 text-white rounded-xl shadow-[3px_3px_0_#151a46] py-4 font-brand font-bold uppercase tracking-widest text-sm transition-all flex justify-center items-center gap-2 mb-6">
                 {isATSLoading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
                 {isATSLoading ? 'Analyzing Resume...' : 'Analyze & Grade Resume'}
               </button>
@@ -1441,38 +1636,38 @@ export default function FreeCVApp() {
               {atsResult && (
                 <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-6">
                   <div className="flex items-center gap-6">
-                    <div className="relative w-24 h-24 flex items-center justify-center rounded-full border-8 border-[#141312]/10">
+                    <div className="relative w-24 h-24 flex items-center justify-center rounded-full border-8 border-[#151a46]/10">
                       <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
                         <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="8" strokeDasharray="289.026" strokeDashoffset={289.026 * (1 - atsResult.score / 100)} className={atsResult.score >= 80 ? 'text-[#0E8A4B]' : atsResult.score >= 60 ? 'text-[#FFB800]' : 'text-[#D8362A]'} strokeLinecap="round" />
                       </svg>
-                      <span className="fd text-2xl font-black">{atsResult.score}</span>
+                      <span className="font-brand text-2xl font-black">{atsResult.score}</span>
                     </div>
                     <div>
-                      <h3 className="fh text-xl font-bold">Match Score</h3>
-                      <p className="fm text-xs uppercase tracking-wider text-[#141312]/60">
+                      <h3 className="font-brand text-xl font-bold">Match Score</h3>
+                      <p className="font-brand text-xs uppercase tracking-wider text-[#151a46]/60">
                         {atsResult.score >= 80 ? 'Excellent match! You are highly qualified.' : atsResult.score >= 60 ? 'Good match. Consider adding missing keywords.' : 'Low match. Significant tailoring recommended.'}
                       </p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-white border-2 border-[#0E8A4B]">
-                      <h4 className="fh font-bold text-[#0E8A4B] mb-2 flex items-center gap-2"><Plus size={16} /> Strengths</h4>
+                    <div className="p-4 bg-white border border-[#0E8A4B] rounded-xl">
+                      <h4 className="font-brand font-bold text-[#0E8A4B] mb-2 flex items-center gap-2"><Plus size={16} /> Strengths</h4>
                       <ul className="list-disc list-inside text-sm space-y-1">{atsResult.strengths?.map((s: string, i: number) => <li key={i}>{s}</li>)}</ul>
                     </div>
-                    <div className="p-4 bg-white border-2 border-[#D8362A]">
-                      <h4 className="fh font-bold text-[#D8362A] mb-2 flex items-center gap-2"><RefreshCw size={16} /> Missing Keywords</h4>
+                    <div className="p-4 bg-white border border-[#D8362A] rounded-xl">
+                      <h4 className="font-brand font-bold text-[#D8362A] mb-2 flex items-center gap-2"><RefreshCw size={16} /> Missing Keywords</h4>
                       <ul className="list-disc list-inside text-sm space-y-1">{atsResult.missingKeywords?.map((k: string, i: number) => <li key={i}>{k}</li>)}</ul>
                     </div>
                   </div>
 
-                  <div className="p-4 bg-white border-2 border-[#2233FF]">
-                    <h4 className="fh font-bold text-[#2233FF] mb-2 flex items-center gap-2"><Sparkles size={16} /> Actionable Tips</h4>
+                  <div className="p-4 bg-white border border-[#5548f5] rounded-xl">
+                    <h4 className="font-brand font-bold text-[#5548f5] mb-2 flex items-center gap-2"><Sparkles size={16} /> Actionable Tips</h4>
                     <ul className="list-disc list-inside text-sm space-y-1">{atsResult.tips?.map((t: string, i: number) => <li key={i}>{t}</li>)}</ul>
                   </div>
 
                   <button onClick={() => { setIsATSOpen(false); setIsRewriterOpen(true); }}
-                    className="w-full bg-[#FF4326] hover:bg-[#141312] hover:text-[#E8E7E1] text-[#141312] border-[3px] border-[#141312] hs py-3 fm font-bold uppercase tracking-widest text-xs transition-all flex justify-center items-center gap-2 mt-4">
+                    className="w-full bg-[#ff604b] hover:bg-[#e54a34] text-white rounded-xl shadow-[3px_3px_0_#151a46] py-3 font-brand font-bold uppercase tracking-widest text-xs transition-all flex justify-center items-center gap-2 mt-4">
                     <RefreshCw size={14} /> Implement Recommendations with AI Rewriter
                   </button>
 
@@ -1481,7 +1676,7 @@ export default function FreeCVApp() {
                       const text = `I just scored a ${atsResult.score}% on my resume with Cvyon! Check out this free AI ATS Grader at cvyon.com`;
                       window.open(`https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(text)}`, '_blank');
                     }}
-                      className="w-full bg-[#0A66C2] hover:bg-[#004182] text-white border-2 border-[#141312] py-3 fm font-bold uppercase tracking-widest text-xs transition-all flex justify-center items-center gap-2 mt-4">
+                      className="w-full bg-[#0A66C2] hover:bg-[#004182] text-white rounded-xl py-3 font-brand font-bold uppercase tracking-widest text-xs transition-all flex justify-center items-center gap-2 mt-4">
                       <Share2 size={14} /> Share Score to LinkedIn
                     </button>
                   )}
@@ -1499,30 +1694,121 @@ export default function FreeCVApp() {
       {isRewriterOpen && (
         <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm overflow-y-auto print:hidden">
           <div className="min-h-screen px-4 flex items-center justify-center py-10">
-            <div className="rounded-none border-[3px] border-[#141312] hs max-w-md w-full p-6 sm:p-8 relative bg-white text-[#141312]">
+            <div className="rounded-2xl border border-[#dddde5] shadow-[0_24px_70px_rgba(21,26,70,.22)] max-w-md w-full p-6 sm:p-8 relative bg-white text-[#151a46]">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="fd text-2xl font-black leading-tight flex items-center gap-2"><RefreshCw className="text-[#FF4326]" /> AI Rewriter</h2>
-                <button onClick={() => setIsRewriterOpen(false)} className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] rounded-none transition-colors"><X size={20} /></button>
+                <h2 className="font-brand text-2xl font-black leading-tight flex items-center gap-2"><RefreshCw className="text-[#ff604b]" /> AI Rewriter</h2>
+                <button onClick={() => setIsRewriterOpen(false)} className="p-2 bg-white border border-[#dddde5] hover:bg-[#151a46] hover:text-white rounded-xl transition-colors"><X size={20} /></button>
               </div>
-              <p className="text-sm mb-6 text-[#141312]/65">Instantly rewrite your Summary and Experience sections to match a specific tone or career level.</p>
+              <p className="text-sm mb-6 text-[#151a46]/65">Instantly rewrite your Summary and Experience sections to match a specific tone or career level.</p>
               <div className="mb-6">
-                <label className="fm text-[10px] font-bold uppercase tracking-[0.2em] mb-2 block text-[#141312]/60">Target Tone / Style</label>
+                <label className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] mb-2 block text-[#151a46]/60">Target Tone / Style</label>
                 <div className="relative">
                   <select value={rewriteTone} onChange={(e) => setRewriteTone(e.target.value)}
-                    className="w-full appearance-none bg-white border-2 border-[#141312] rounded-none px-4 py-3 pr-10 text-sm font-bold text-[#141312] outline-none transition-shadow focus:shadow-[3px_3px_0_#FF4326] cursor-pointer">
+                    className="w-full appearance-none bg-white border border-[#d9dae5] rounded-[10px] px-4 py-3 pr-10 text-sm font-bold text-[#151a46] outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)] cursor-pointer">
                     <option value="Executive">Executive & Strategic</option>
                     <option value="Creative">Creative & Dynamic</option>
                     <option value="Technical">Technical & Analytical</option>
                     <option value="Entry-Level">Entry-Level & Enthusiastic</option>
                   </select>
-                  <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#141312]/40" />
+                  <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#151a46]/40" />
                 </div>
               </div>
               <button onClick={handleRewrite} disabled={isRewriting}
-                className="w-full bg-[#141312] hover:bg-[#FF4326] hover:text-[#141312] disabled:opacity-50 text-[#E8E7E1] border-[3px] border-[#141312] hs py-4 fm font-bold uppercase tracking-widest text-sm transition-all flex justify-center items-center gap-2">
+                className="w-full bg-[#5548f5] hover:bg-[#4538e0] disabled:opacity-50 text-white rounded-xl shadow-[3px_3px_0_#151a46] py-4 font-brand font-bold uppercase tracking-widest text-sm transition-all flex justify-center items-center gap-2">
                 {isRewriting ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
                 {isRewriting ? 'Rewriting Resume...' : 'Rewrite Entire Resume'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAILOR TO JOB MODAL */}
+      {isTailorOpen && (
+        <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm overflow-y-auto print:hidden">
+          <div className="min-h-screen px-4 flex items-center justify-center py-10">
+            <div className="rounded-2xl border border-[#dddde5] shadow-[0_24px_70px_rgba(21,26,70,.22)] max-w-2xl w-full p-6 sm:p-8 flex flex-col relative bg-white text-[#151a46]">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="font-brand text-2xl font-black leading-tight flex items-center gap-2"><Target className="text-[#5548f5]" /> Tailor to Job</h2>
+                <button onClick={() => setIsTailorOpen(false)} className="p-2 bg-white border border-[#dddde5] hover:bg-[#151a46] hover:text-white rounded-xl transition-colors"><X size={20} /></button>
+              </div>
+              <p className="text-sm mb-6 text-[#151a46]/65">Paste the job description and AI will rewrite your summary, suggest keyword-aligned skills, and sharpen your experience bullets — using only what's already on your resume. Nothing is invented.</p>
+              <label className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] mb-2 block text-[#151a46]/60">Job Description</label>
+              <textarea
+                value={tailorJobDesc}
+                onChange={(e) => setTailorJobDesc(e.target.value)}
+                placeholder="Paste the job posting here..."
+                rows={7}
+                maxLength={15000}
+                className="w-full bg-white border border-[#d9dae5] rounded-[10px] px-4 py-3 text-sm text-[#151a46] outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)] resize-y mb-4"
+              />
+              <button onClick={handleTailor} disabled={isTailorLoading || !tailorJobDesc.trim()}
+                className="v3-primary w-full flex justify-center items-center gap-2 mb-6 disabled:opacity-50">
+                {isTailorLoading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
+                {isTailorLoading ? 'Tailoring Resume...' : 'Tailor My Resume'}
+              </button>
+
+              {tailorResult && (
+                <div className="space-y-6">
+                  {/* Rewritten summary */}
+                  {tailorResult.summary && (
+                    <div className="border border-[#dddde5] bg-white rounded-xl p-5 shadow-[0_2px_8px_rgba(21,26,70,.05)]">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="font-brand text-[11px] font-bold uppercase tracking-[0.2em] text-[#151a46]/60">Rewritten Summary</h3>
+                        <button onClick={applyTailorSummary} disabled={tailorApplied.summary}
+                          className="font-brand text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 border border-[#0E8A4B] text-[#0E8A4B] rounded-lg hover:bg-[#0E8A4B] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-default disabled:hover:bg-transparent disabled:hover:text-[#0E8A4B]">
+                          {tailorApplied.summary ? 'Applied ✓' : 'Apply'}
+                        </button>
+                      </div>
+                      <p className="text-sm text-[#151a46]/80 leading-relaxed whitespace-pre-wrap">{tailorResult.summary}</p>
+                    </div>
+                  )}
+
+                  {/* Skills to add */}
+                  {Array.isArray(tailorResult.skillsToAdd) && tailorResult.skillsToAdd.length > 0 && (
+                    <div className="border border-[#dddde5] bg-white rounded-xl p-5 shadow-[0_2px_8px_rgba(21,26,70,.05)]">
+                      <h3 className="font-brand text-[11px] font-bold uppercase tracking-[0.2em] text-[#151a46]/60 mb-3">Skills to Add</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {tailorResult.skillsToAdd.map((skill: string) => {
+                          const applied = tailorApplied.skills.includes(skill);
+                          return (
+                            <button key={skill} onClick={() => !applied && applyTailorSkill(skill)} disabled={applied}
+                              className={cn("font-brand text-[11px] font-bold px-3 py-1.5 border rounded-lg transition-colors",
+                                applied ? "border-[#0E8A4B] bg-[#0E8A4B]/10 text-[#0E8A4B]/60 cursor-default"
+                                        : "border-[#dddde5] bg-white text-[#151a46] hover:border-[#5548f5] hover:bg-[#eeecff]")}>
+                              {applied ? `${skill} ✓` : `+ ${skill}`}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Improved bullets */}
+                  {Array.isArray(tailorResult.bulletImprovements) && tailorResult.bulletImprovements.length > 0 && (
+                    <div className="border border-[#dddde5] bg-white rounded-xl p-5 shadow-[0_2px_8px_rgba(21,26,70,.05)]">
+                      <h3 className="font-brand text-[11px] font-bold uppercase tracking-[0.2em] text-[#151a46]/60 mb-3">Sharpened Experience Bullets</h3>
+                      <div className="space-y-4">
+                        {tailorResult.bulletImprovements.map((b: any, i: number) => {
+                          const applied = tailorApplied.bullets.includes(i);
+                          const exp = data.experience.find(e => e.id === b.experienceId);
+                          return (
+                            <div key={i} className="border-t border-[#151a46]/10 pt-4 first:border-t-0 first:pt-0">
+                              {exp && <p className="font-brand text-[10px] font-bold uppercase tracking-widest text-[#151a46]/45 mb-2">{exp.role} @ {exp.company}</p>}
+                              <p className="text-xs text-[#151a46]/50 line-through mb-1.5">{b.original}</p>
+                              <p className="text-sm text-[#151a46]/85 leading-relaxed mb-3">{b.improved}</p>
+                              <button onClick={() => applyTailorBullet(i)} disabled={applied}
+                                className="font-brand text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 border border-[#0E8A4B] text-[#0E8A4B] rounded-lg hover:bg-[#0E8A4B] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-default disabled:hover:bg-transparent disabled:hover:text-[#0E8A4B]">
+                                {applied ? 'Applied ✓' : 'Apply Bullet'}
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1533,17 +1819,17 @@ export default function FreeCVApp() {
         <div className="fixed inset-0 z-[300] bg-black/60 backdrop-blur-sm flex items-end justify-center print:hidden lg:hidden">
           <div className="bg-white w-full rounded-t-3xl p-6 shadow-2xl animate-in slide-in-from-bottom-full duration-300">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="fd text-xl font-black text-[#141312]">Download Options</h2>
-              <button onClick={() => setIsDownloadModalOpen(false)} className="p-2 bg-white border-2 border-[#141312] hover:bg-[#141312] hover:text-[#E8E7E1] rounded-none text-[#141312] transition-colors"><X size={16} /></button>
+              <h2 className="font-brand text-xl font-black text-[#151a46]">Download Options</h2>
+              <button onClick={() => setIsDownloadModalOpen(false)} className="p-2 bg-white border border-[#dddde5] hover:bg-[#151a46] hover:text-white rounded-xl text-[#151a46] transition-colors"><X size={16} /></button>
             </div>
             <div className="flex flex-col gap-4">
-              <button onClick={() => { setIsDownloadModalOpen(false); handleDownload(); }} className="w-full bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs p-4 flex items-center gap-4 active:translate-y-[2px] active:shadow-none transition-all">
-                <div className="bg-white/20 p-2.5"><Download size={20} /></div>
-                <div className="text-left flex-1"><div className="fm font-bold uppercase tracking-wider text-sm">Download PDF</div><div className="fm text-xs text-white/70">Best for printing & sharing</div></div>
+              <button onClick={() => { setIsDownloadModalOpen(false); handleDownload(); }} disabled={isGeneratingPdf} className="w-full bg-[#5548f5] text-white rounded-xl shadow-[3px_3px_0_#151a46] p-4 flex items-center gap-4 transition-all hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] disabled:opacity-60">
+                <div className="bg-[#151a46]/10 p-2.5 rounded-lg text-[#151a46]"><Download size={20} /></div>
+                <div className="text-left flex-1"><div className="font-brand font-bold uppercase tracking-wider text-sm">{isGeneratingPdf ? 'Generating PDF…' : 'Download PDF'}</div><div className="font-brand text-xs text-white/70">Best for printing & sharing</div></div>
               </button>
-              <button onClick={() => { setIsDownloadModalOpen(false); handleDocxExport(); }} className="w-full bg-[#2233FF] text-[#E8E7E1] border-[3px] border-[#141312] rounded-none hover:bg-[#FF4326] hover:text-[#141312] hs p-4 flex items-center gap-4 active:translate-y-[2px] active:shadow-none transition-all mb-6">
-                <div className="bg-white/20 p-2.5"><FileText size={20} /></div>
-                <div className="text-left flex-1"><div className="fm font-bold uppercase tracking-wider text-sm">Download Word (DOCX)</div><div className="fm text-xs text-white/70">Editable in Microsoft Word</div></div>
+              <button onClick={() => { setIsDownloadModalOpen(false); handleDocxExport(); }} className="w-full bg-white text-[#151a46] border border-[#dddde5] rounded-xl shadow-[3px_3px_0_#151a46] p-4 flex items-center gap-4 transition-all hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] mb-6">
+                <div className="bg-[#151a46]/10 p-2.5 rounded-lg text-[#151a46]"><FileText size={20} /></div>
+                <div className="text-left flex-1"><div className="font-brand font-bold uppercase tracking-wider text-sm">Download Word (DOCX)</div><div className="font-brand text-xs text-[#151a46]/60">Editable in Microsoft Word</div></div>
               </button>
             </div>
           </div>
@@ -1555,36 +1841,51 @@ export default function FreeCVApp() {
         @media print {
           body { background: white !important; }
           .print\\:hidden { display: none !important; }
-          .custom-scrollbar { scrollbar-width: none; }
-          .custom-scrollbar::-webkit-scrollbar { display: none; }
+          .v3-builder { display: block; height: auto; overflow: visible; }
+          .v3-workspace { display: block; overflow: visible; }
+          .v3-top, .v3-sidebar, .v3-editor, .v3-score, .v3-mobiletabs, .v3-preview-overlay { display: none !important; }
+          .v3-preview { display: block; border: 0; background: #fff; }
         }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #14131233; border-radius: 0; }
-        /* Editor section headers: on desktop (lg+) the header is inert and
-           the section always expanded — the original pre-redesign look.
-           Below lg the accordion toggle works normally. Plain CSS (not
-           Tailwind responsive variants) so the production cascade can't
-           swallow it the way lg:block lost to .hidden. */
-        /* Desktop section tab bar: hidden below lg, shown on desktop.
-           Plain CSS (not Tailwind responsive variants) so the production
-           cascade can't swallow it the way lg:block lost to .hidden. */
-        .desktop-tabbar { display: none; }
-        @media (min-width: 1024px) {
-          .desktop-tabbar { display: block; }
-          .section-toggle { pointer-events: none; cursor: default; }
-          .section-toggle-chevron { display: none; }
-          .section-body { display: block !important; }
-          /* Desktop tabbed editor: only the active pane is visible, so the
-             editor is one screen of focused content instead of an endless
-             scroll. Below lg every pane renders (stacked accordions) — a
-             single DOM, so droppable IDs are never duplicated. */
-          .editor-pane { display: none; }
-          .editor-pane-active { display: block; animation: cvyonTabIn 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
-        }
-        @keyframes cvyonTabIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
+        /* Compact density: tightens spacing + type on the resume output.
+           Applied as a class on the template stage, so it flows through the
+           on-screen preview, print/PDF (same DOM) and the DOCX capture path
+           (which inlines computed styles). */
+        .density-compact .p-\\[0\\.75in\\] { padding: 0.45in !important; }
+        .density-compact .mb-8 { margin-bottom: 1rem !important; }
+        .density-compact .mb-6 { margin-bottom: 0.75rem !important; }
+        .density-compact .mb-5 { margin-bottom: 0.65rem !important; }
+        .density-compact .mb-4 { margin-bottom: 0.55rem !important; }
+        .density-compact .mb-3 { margin-bottom: 0.45rem !important; }
+        .density-compact .mb-2 { margin-bottom: 0.35rem !important; }
+        .density-compact .mb-1 { margin-bottom: 0.2rem !important; }
+        .density-compact .mt-8 { margin-top: 1rem !important; }
+        .density-compact .mt-6 { margin-top: 0.75rem !important; }
+        .density-compact .mt-4 { margin-top: 0.55rem !important; }
+        .density-compact .pb-8 { padding-bottom: 1rem !important; }
+        .density-compact .pt-8 { padding-top: 1rem !important; }
+        .density-compact .pl-6 { padding-left: 0.85rem !important; }
+        .density-compact .space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.9rem !important; }
+        .density-compact .space-y-5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.75rem !important; }
+        .density-compact .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.6rem !important; }
+        .density-compact .space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.45rem !important; }
+        .density-compact .space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.35rem !important; }
+        .density-compact .space-y-1 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.2rem !important; }
+        .density-compact .gap-12 { gap: 1.5rem !important; }
+        .density-compact .gap-8 { gap: 1.1rem !important; }
+        .density-compact .gap-6 { gap: 0.9rem !important; }
+        .density-compact .gap-4 { gap: 0.6rem !important; }
+        .density-compact .gap-3 { gap: 0.45rem !important; }
+        .density-compact .gap-2 { gap: 0.35rem !important; }
+        .density-compact .text-5xl { font-size: 2.35rem !important; }
+        .density-compact .text-4xl { font-size: 1.85rem !important; }
+        .density-compact .text-3xl { font-size: 1.45rem !important; }
+        .density-compact .text-2xl { font-size: 1.25rem !important; }
+        .density-compact .text-xl { font-size: 1.02rem !important; }
+        .density-compact .text-lg { font-size: 0.92rem !important; }
+        .density-compact .text-base { font-size: 0.83rem !important; }
+        .density-compact .text-sm { font-size: 0.76rem !important; }
+        .density-compact .text-xs { font-size: 0.68rem !important; }
+        .density-compact .leading-relaxed { line-height: 1.4 !important; }
 `}} />
     </main>
   );

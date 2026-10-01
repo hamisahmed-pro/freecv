@@ -9,6 +9,8 @@ import toast from "react-hot-toast";
 type Status = "loading" | "in" | "out" | "no-session";
 
 const DISMISS_KEY = "cvyon_optin_dismissed";
+/** Re-prompt after 14 days — a permanent dismiss starves the talent pool. */
+const DISMISS_TTL_MS = 14 * 24 * 60 * 60 * 1000;
 
 /**
  * First-class, benefit-framed recruiter-discovery opt-in.
@@ -37,7 +39,18 @@ export function RecruiterOptInCard({
 
   useEffect(() => {
     try {
-      if (localStorage.getItem(DISMISS_KEY)) { setDismissed(true); return; }
+      const raw = localStorage.getItem(DISMISS_KEY);
+      if (raw) {
+        const dismissedAt = Number(raw);
+        // Expire old dismissals: re-ask after 14 days. Non-numeric legacy
+        // values are treated as expired (re-prompt once).
+        if (!Number.isFinite(dismissedAt) || Date.now() - dismissedAt > DISMISS_TTL_MS) {
+          localStorage.removeItem(DISMISS_KEY);
+        } else {
+          setDismissed(true);
+          return;
+        }
+      }
     } catch {}
     refresh();
   }, [refresh]);
@@ -90,9 +103,9 @@ export function RecruiterOptInCard({
   if (dismissed) return null;
   if (status === "loading") {
     return (
-      <div className="flex items-center gap-3 border-[3px] border-[#141312] bg-white p-5">
-        <Loader2 size={18} className="animate-spin text-[#2233FF]" />
-        <span className="fm text-[11px] font-bold uppercase tracking-[0.2em] text-[#141312]/60">checking…</span>
+      <div className="flex items-center gap-3 rounded-2xl border border-line bg-paper p-5">
+        <Loader2 size={18} className="animate-spin text-brand" />
+        <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-navy/60">checking…</span>
       </div>
     );
   }
@@ -102,7 +115,7 @@ export function RecruiterOptInCard({
   // strip so a dismissed card leaves no empty container behind.
   const wrap = (inner: React.ReactNode) =>
     banner ? (
-      <div className="border-b-2 border-[#141312] bg-[#FFE14D]/30 p-4 sm:p-5">{inner}</div>
+      <div className="border-b border-line bg-gold/20 p-4 sm:p-5">{inner}</div>
     ) : (
       inner
     );
@@ -110,15 +123,15 @@ export function RecruiterOptInCard({
   /* ------------------------- already opted in ------------------------- */
   if (status === "in") {
     return wrap(
-      <div className={cn("border-[3px] border-[#141312] bg-[#0E8A4B]/10", banner ? "p-4 sm:p-5" : "hs p-6")}>
+      <div className={cn("rounded-2xl border border-line bg-[#0E8A4B]/10", banner ? "p-4 sm:p-5" : "p-6")}>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center border-[3px] border-[#0E8A4B] bg-white text-[#0E8A4B]">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[#0E8A4B]/40 bg-paper text-[#0E8A4B]">
               <Check size={20} />
             </span>
             <div>
-              <div className="fh font-extrabold text-[#141312]">You&apos;re discoverable</div>
-              <p className="mt-0.5 text-sm text-[#141312]/65">
+              <div className="font-extrabold text-navy">You&apos;re discoverable</div>
+              <p className="mt-0.5 text-sm text-navy/65">
                 Verified recruiters can find your anonymized profile and unlock your contact. One tap stops it.
               </p>
             </div>
@@ -126,7 +139,7 @@ export function RecruiterOptInCard({
           <button
             onClick={handleRevoke}
             disabled={busy}
-            className="flex shrink-0 items-center justify-center gap-2 border-[3px] border-[#141312] bg-white px-5 py-2.5 fh text-[11px] font-extrabold uppercase tracking-wider text-[#141312] transition-all hover:bg-[#FF4326] hover:border-[#FF4326] hover:text-white disabled:opacity-60"
+            className="flex shrink-0 items-center justify-center gap-2 rounded-[10px] border border-line bg-paper px-5 py-2.5 text-[11px] font-extrabold uppercase tracking-wider text-navy transition-all hover:border-coral hover:bg-coral hover:text-white disabled:opacity-60"
           >
             {busy ? <Loader2 size={14} className="animate-spin" /> : <EyeOff size={14} />}
             Stop sharing
@@ -139,37 +152,37 @@ export function RecruiterOptInCard({
   /* --------------------------- opt-in prompt -------------------------- */
   return wrap(
     <div className={cn(
-      "relative border-[3px] border-[#141312] bg-white",
-      banner ? "p-4 sm:p-6" : "hs overflow-hidden p-6 sm:p-8",
+      "relative rounded-2xl border border-line bg-paper shadow-[0_8px_22px_rgba(23,27,75,0.08)]",
+      banner ? "p-4 sm:p-6" : "overflow-hidden p-6 sm:p-8",
     )}>
-      {!banner && <div className="absolute inset-x-0 top-0 h-2 bg-[#FFE14D] border-b-[3px] border-[#141312]" />}
+      {!banner && <div className="absolute inset-x-0 top-0 h-1.5 bg-gold" />}
       <div className="flex items-start justify-between gap-3">
-        <div className={cn("fm inline-flex items-center gap-2 border-2 border-[#141312] bg-[#FFE14D] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em]", !banner && "mt-2")}>
-          <span className="blink inline-block h-2 w-2 rounded-full bg-[#FF4326]" /> free · 10 seconds
+        <div className={cn("inline-flex items-center gap-2 rounded-full bg-gold px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-navy", !banner && "mt-2")}>
+          <span className="blink inline-block h-2 w-2 rounded-full bg-coral" /> free · 10 seconds
         </div>
         <button
           onClick={handleDismiss}
           aria-label="Dismiss"
-          className="grid h-8 w-8 place-items-center border-2 border-[#141312]/20 text-[#141312]/50 transition-colors hover:border-[#141312] hover:text-[#141312]"
+          className="grid h-8 w-8 place-items-center rounded-lg border border-line text-navy/50 transition-colors hover:border-navy hover:text-navy"
         >
           <X size={15} />
         </button>
       </div>
 
       <div className="mt-3 flex items-start gap-4">
-        <span className="hidden sm:grid h-12 w-12 shrink-0 place-items-center border-[3px] border-[#141312] bg-[#141312] text-[#FFE14D]">
+        <span className="hidden sm:grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-navy text-gold">
           <Users size={22} />
         </span>
         <div>
-          <h3 className={cn("fh font-extrabold tracking-tight text-[#141312]", banner ? "text-lg" : "text-xl sm:text-2xl")}>
+          <h3 className={cn("font-extrabold tracking-tight text-navy", banner ? "text-lg" : "text-xl sm:text-2xl")}>
             Get discovered by recruiters
           </h3>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#141312]/70">
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-navy/70">
             Top employers search Cvyon for people like you. Opt in and your <strong>anonymized</strong> profile
             (title, skills, experience — never your name or contact) appears in their matches.
             You stay in control: <strong>one tap stops it</strong>, anytime.
           </p>
-          <div className="mt-3 flex items-center gap-2 fm text-[10px] font-bold uppercase tracking-[0.16em] text-[#141312]/55">
+          <div className="mt-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-navy/55">
             <ShieldCheck size={13} className="text-[#0E8A4B]" /> explicit consent · timestamped · revocable
           </div>
         </div>
@@ -179,7 +192,7 @@ export function RecruiterOptInCard({
         <button
           onClick={handleAllow}
           disabled={busy}
-          className="flex flex-1 items-center justify-center gap-2 border-[3px] border-[#141312] bg-[#141312] px-6 py-3.5 fh text-sm font-extrabold uppercase tracking-wider text-[#E8E7E1] transition-all hover:bg-[#0E8A4B] hover:border-[#0E8A4B] disabled:opacity-60"
+          className="flex flex-1 items-center justify-center gap-2 rounded-[10px] bg-navy px-6 py-3.5 text-sm font-extrabold uppercase tracking-wider text-white transition-all hover:bg-coral disabled:opacity-60"
         >
           {busy ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
           {status === "no-session" ? "Allow — sign in (free)" : "Allow recruiters to find me"}
@@ -187,13 +200,13 @@ export function RecruiterOptInCard({
         <button
           onClick={handleDismiss}
           disabled={busy}
-          className="flex items-center justify-center gap-2 border-[3px] border-[#141312] bg-white px-6 py-3.5 fh text-sm font-extrabold uppercase tracking-wider text-[#141312] transition-all hover:bg-[#E8E7E1] disabled:opacity-60"
+          className="flex items-center justify-center gap-2 rounded-[10px] border border-line bg-paper px-6 py-3.5 text-sm font-extrabold uppercase tracking-wider text-navy transition-all hover:border-navy disabled:opacity-60"
         >
           Not now
         </button>
       </div>
       {status === "no-session" && (
-        <p className="mt-3 fm text-[10px] uppercase tracking-[0.14em] text-[#141312]/50">
+        <p className="mt-3 text-[10px] uppercase tracking-[0.14em] text-navy/50">
           One-tap Google sign-in — we only use it to record your consent.
         </p>
       )}

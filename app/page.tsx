@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import LandingRiso from "@/components/landing/LandingRiso";
+import LandingV3 from "@/components/landing/LandingV3";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -23,5 +23,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <LandingRiso />;
+  return <LandingV3 />;
 }

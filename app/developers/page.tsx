@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Terminal, Copy, Check, ChevronRight, Server, Database, Shield } from 'lucide-react';
+import { Copy, Check, Terminal, Shield, Server, Database } from 'lucide-react';
+import { V3Page, V3Eyebrow } from "@/components/v3/V3Chrome";
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -21,19 +21,21 @@ const CodeBlock = ({ language, code }: { language: string, code: string }) => {
   };
 
   return (
-    <div className="relative rounded-xl overflow-hidden bg-[#0d1117] border border-gray-800 my-6">
-      <div className="flex items-center justify-between px-4 py-2 bg-[#161b22] border-b border-gray-800">
-        <span className="text-xs font-mono text-gray-400">{language}</span>
-        <button 
+    <div className="relative my-6 overflow-hidden rounded-[18px] border border-line bg-navy">
+      <div className="flex items-center justify-between border-b border-white/10 bg-white/5 px-4 py-2.5">
+        <span className="flex items-center gap-2 font-mono text-xs text-[#bfc2d5]">
+          <Terminal size={13} /> {language}
+        </span>
+        <button
           onClick={handleCopy}
-          className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-xs font-medium"
+          className="flex items-center gap-2 text-xs font-bold text-[#bfc2d5] transition-colors hover:text-white"
         >
-          {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+          {copied ? <Check size={14} className="text-teal" /> : <Copy size={14} />}
           {copied ? 'Copied' : 'Copy code'}
         </button>
       </div>
-      <div className="p-4 overflow-x-auto">
-        <pre className="text-sm font-mono leading-relaxed text-gray-300">
+      <div className="overflow-x-auto p-4">
+        <pre className="font-mono text-sm leading-relaxed text-[#dfe1ee]">
           <code>{code}</code>
         </pre>
       </div>
@@ -56,7 +58,7 @@ export default function DevelopersPage() {
       'Content-Type': 'application/json'
     }
   });
-  
+
   const data = await response.json();
   console.log(data);
 };`;
@@ -75,120 +77,129 @@ params = {
 response = requests.get(url, headers=headers, params=params)
 print(response.json())`;
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <Image
-              src="/logo-light-no-background.png"
-              alt="Cvyon"
-              width={200}
-              height={60}
-              priority
-              className="h-8 sm:h-10 md:h-11 w-auto object-contain transition-all"
-            />
-            <span className="text-gray-800 text-xs sm:text-sm font-bold bg-gray-100 px-2 py-0.5 rounded">API</span>
-          </Link>
-          <nav className="flex items-center gap-3 sm:gap-6 text-xs sm:text-sm font-medium text-gray-600">
-            <Link href="/" className="hover:text-blue-600 transition-colors whitespace-nowrap">Home</Link>
-            <Link href="/recruiter" className="hover:text-blue-600 transition-colors whitespace-nowrap hidden min-[400px]:inline">Recruiter Portal</Link>
-            <Link href="/support" className="hover:text-blue-600 transition-colors whitespace-nowrap hidden sm:inline">Support</Link>
-          </nav>
-        </div>
-      </header>
+  const NAV = [
+    { group: "Getting started", items: [
+      { id: "authentication", label: "Authentication" },
+      { id: "rate-limits", label: "Rate Limits" },
+    ]},
+    { group: "Endpoints", items: [
+      { id: "search-talent", label: "Search Talent" },
+      { id: "get-candidate", label: "Get Candidate" },
+    ]},
+  ];
 
-      <main className="flex-1 max-w-7xl mx-auto w-full flex">
+  return (
+    <V3Page
+      pageName="developers"
+      logoSub="API"
+      links={[
+        { href: "/", label: "Home" },
+        { href: "/recruiter", label: "Recruiter Portal" },
+        { href: "/support", label: "Support" },
+      ]}
+      cta={{ label: "Build free →", href: "/build" }}
+    >
+      <div className="flex gap-10">
         {/* Sidebar */}
-        <aside className="w-64 border-r border-gray-200 hidden md:block pt-12 pr-8 sticky top-16 h-[calc(100vh-64px)] overflow-y-auto">
-          <nav className="space-y-1">
-            <h4 className="font-bold text-gray-900 uppercase tracking-wider text-xs mb-3 px-3">Getting Started</h4>
-            <a href="#authentication" className={cn("block px-3 py-2 rounded-lg text-sm font-medium transition-colors", activeSection === 'authentication' ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-100")}>Authentication</a>
-            <a href="#rate-limits" className={cn("block px-3 py-2 rounded-lg text-sm font-medium transition-colors", activeSection === 'rate-limits' ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-100")}>Rate Limits</a>
-            
-            <h4 className="font-bold text-gray-900 uppercase tracking-wider text-xs mb-3 mt-8 px-3">Endpoints</h4>
-            <a href="#search-talent" className={cn("block px-3 py-2 rounded-lg text-sm font-medium transition-colors", activeSection === 'search-talent' ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-100")}>Search Talent</a>
-            <a href="#get-candidate" className={cn("block px-3 py-2 rounded-lg text-sm font-medium transition-colors", activeSection === 'get-candidate' ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-100")}>Get Candidate</a>
+        <aside className="sticky top-24 hidden h-fit w-60 shrink-0 md:block">
+          <nav className="space-y-6 rounded-[18px] border border-line bg-paper p-4 shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
+            {NAV.map((g) => (
+              <div key={g.group}>
+                <h4 className="mb-2 px-3 text-[11px] font-black uppercase tracking-[0.13em] text-muted">{g.group}</h4>
+                {g.items.map((item) => (
+                  <a
+                    key={item.id}
+                    href={`#${item.id}`}
+                    onClick={() => setActiveSection(item.id)}
+                    className={cn(
+                      "block rounded-[10px] px-3 py-2 text-sm font-bold transition-colors",
+                      activeSection === item.id ? "bg-lavender text-brand" : "text-muted hover:bg-cream hover:text-navy"
+                    )}
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            ))}
           </nav>
         </aside>
 
         {/* Content */}
-        <div className="flex-1 min-w-0 py-12 md:pl-12 px-4 max-w-4xl">
-          <div className="mb-12 sm:mb-16">
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 mb-4">Cvyon B2B API</h1>
-            <p className="text-lg sm:text-xl text-gray-600 leading-relaxed">
-              Integrate Cvyon's highly-structured talent pool directly into your ATS, CRM, or custom internal tools. Our REST API provides programmatic access to candidates who have opted in to be contacted by recruiters.
+        <div className="min-w-0 max-w-[760px] flex-1">
+          <div className="mb-12">
+            <V3Eyebrow>Developer docs</V3Eyebrow>
+            <h1 className="text-[44px] font-extrabold leading-[1.04] tracking-[-0.045em] text-navy">
+              Cvyon B2B API
+            </h1>
+            <p className="mt-5 max-w-[650px] text-[17px] leading-relaxed text-muted">
+              Integrate Cvyon&apos;s highly-structured talent pool directly into your ATS, CRM, or custom internal tools. Our REST API provides programmatic access to candidates who have opted in to be contacted by recruiters.
             </p>
           </div>
 
-          <div id="authentication" className="scroll-mt-24 mb-16">
-            <h2 className="text-2xl font-bold flex items-center gap-3 mb-4">
-              <Shield className="text-blue-600" /> Authentication
+          <div id="authentication" className="mb-14 scroll-mt-24">
+            <h2 className="flex items-center gap-3 text-2xl font-extrabold tracking-tight text-navy">
+              <Shield size={22} className="text-brand" /> Authentication
             </h2>
-            <p className="text-gray-600 mb-4">
-              Authenticate your API requests by including your secret API key in the <code className="bg-gray-100 px-1.5 py-0.5 rounded text-red-600 font-mono text-sm">Authorization</code> HTTP header.
+            <p className="mt-4 text-[15px] leading-relaxed text-muted">
+              Authenticate your API requests by including your secret API key in the <code className="rounded bg-lavender px-1.5 py-0.5 font-mono text-sm text-brand">Authorization</code> HTTP header.
             </p>
-            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-blue-800 text-sm font-medium">
+            <div className="mt-4 rounded-[14px] border border-line bg-lavender/50 p-4 text-sm font-medium text-navy">
               API keys require an active recruiter access pass (30 days from purchase). Keys are managed in the Recruiter Portal.
             </div>
-            
             <CodeBlock language="HTTP" code="Authorization: Bearer YOUR_API_KEY" />
           </div>
 
-          <div id="rate-limits" className="scroll-mt-24 mb-16">
-            <h2 className="text-2xl font-bold flex items-center gap-3 mb-4">
-              <Server className="text-blue-600" /> Rate Limits
+          <div id="rate-limits" className="mb-14 scroll-mt-24">
+            <h2 className="flex items-center gap-3 text-2xl font-extrabold tracking-tight text-navy">
+              <Server size={22} className="text-brand" /> Rate Limits
             </h2>
-            <p className="text-gray-600 mb-4">
+            <p className="mt-4 text-[15px] leading-relaxed text-muted">
               To ensure platform stability, API requests are rate-limited based on your access tier.
             </p>
-            <ul className="list-disc pl-5 space-y-2 text-gray-600 mb-4">
-              <li><strong>Pro Tier:</strong> 100 requests per minute, up to 10,000 requests per day.</li>
+            <ul className="mt-4 list-disc space-y-2 pl-5 text-[15px] text-muted">
+              <li><strong className="text-navy">Pro Tier:</strong> 100 requests per minute, up to 10,000 requests per day.</li>
             </ul>
-            <p className="text-gray-600">
-              If you exceed the rate limit, the API will return a <code className="bg-gray-100 px-1.5 py-0.5 rounded text-red-600 font-mono text-sm">429 Too Many Requests</code> HTTP status code.
+            <p className="mt-4 text-[15px] leading-relaxed text-muted">
+              If you exceed the rate limit, the API will return a <code className="rounded bg-lavender px-1.5 py-0.5 font-mono text-sm text-brand">429 Too Many Requests</code> HTTP status code.
             </p>
           </div>
 
-          <div className="w-full h-px bg-gray-200 my-12"></div>
-
-          <div id="search-talent" className="scroll-mt-24 mb-16">
-            <h2 className="text-2xl font-bold flex items-center gap-3 mb-4">
-              <Database className="text-blue-600" /> Search Talent
+          <div id="search-talent" className="mb-14 scroll-mt-24">
+            <h2 className="flex items-center gap-3 text-2xl font-extrabold tracking-tight text-navy">
+              <Database size={22} className="text-brand" /> Search Talent
             </h2>
-            <p className="text-gray-600 mb-4">
+            <p className="mt-4 text-[15px] leading-relaxed text-muted">
               Search for candidates across the Cvyon database. You can filter by keywords, job titles, or location.
             </p>
-            
-            <div className="flex items-center gap-3 mb-6">
-              <span className="px-3 py-1 bg-green-100 text-green-700 font-bold uppercase tracking-wider text-xs rounded-md">GET</span>
-              <code className="font-mono text-gray-800">/v1/talent</code>
+
+            <div className="mt-6 flex items-center gap-3">
+              <span className="rounded-full bg-teal/15 px-3 py-1 text-xs font-black uppercase tracking-[0.1em] text-teal">GET</span>
+              <code className="font-mono text-[15px] text-navy">/v1/talent</code>
             </div>
 
-            <h3 className="font-bold text-lg mb-3">Query Parameters</h3>
-            <div className="border border-gray-200 rounded-xl overflow-x-auto mb-6">
+            <h3 className="mb-3 mt-8 text-lg font-extrabold text-navy">Query parameters</h3>
+            <div className="overflow-x-auto rounded-[14px] border border-line bg-paper">
               <table className="w-full min-w-[560px] text-left text-sm">
-                <thead className="bg-gray-50 border-b border-gray-200 text-gray-600">
+                <thead className="border-b border-line bg-cream text-muted">
                   <tr>
-                    <th className="px-4 py-3 font-semibold">Parameter</th>
-                    <th className="px-4 py-3 font-semibold">Type</th>
-                    <th className="px-4 py-3 font-semibold">Description</th>
+                    <th className="px-4 py-3 text-[11px] font-black uppercase tracking-[0.13em]">Parameter</th>
+                    <th className="px-4 py-3 text-[11px] font-black uppercase tracking-[0.13em]">Type</th>
+                    <th className="px-4 py-3 text-[11px] font-black uppercase tracking-[0.13em]">Description</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 text-gray-700">
+                <tbody className="divide-y divide-line text-navy/80">
                   <tr>
-                    <td className="px-4 py-3 font-mono">query</td>
+                    <td className="px-4 py-3 font-mono text-brand">query</td>
                     <td className="px-4 py-3">string</td>
-                    <td className="px-4 py-3">Search term (e.g. "software engineer", "marketing").</td>
+                    <td className="px-4 py-3">Search term (e.g. &ldquo;software engineer&rdquo;, &ldquo;marketing&rdquo;).</td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 font-mono">country</td>
+                    <td className="px-4 py-3 font-mono text-brand">country</td>
                     <td className="px-4 py-3">string</td>
                     <td className="px-4 py-3">Filter by candidate location.</td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 font-mono">limit</td>
+                    <td className="px-4 py-3 font-mono text-brand">limit</td>
                     <td className="px-4 py-3">integer</td>
                     <td className="px-4 py-3">Max results to return (default 20, max 100).</td>
                   </tr>
@@ -196,24 +207,24 @@ print(response.json())`;
               </table>
             </div>
 
-            <h3 className="font-bold text-lg mb-3">Examples</h3>
-            
+            <h3 className="mb-3 mt-8 text-lg font-extrabold text-navy">Examples</h3>
+
             <div className="mb-6">
-              <h4 className="text-sm font-semibold text-gray-500 mb-2">cURL</h4>
+              <h4 className="mb-1 text-[11px] font-black uppercase tracking-[0.13em] text-muted">cURL</h4>
               <CodeBlock language="bash" code={curlExample} />
             </div>
-            
+
             <div className="mb-6">
-              <h4 className="text-sm font-semibold text-gray-500 mb-2">Node.js</h4>
+              <h4 className="mb-1 text-[11px] font-black uppercase tracking-[0.13em] text-muted">Node.js</h4>
               <CodeBlock language="javascript" code={nodeExample} />
             </div>
 
             <div className="mb-6">
-              <h4 className="text-sm font-semibold text-gray-500 mb-2">Python</h4>
+              <h4 className="mb-1 text-[11px] font-black uppercase tracking-[0.13em] text-muted">Python</h4>
               <CodeBlock language="python" code={pythonExample} />
             </div>
 
-            <h3 className="font-bold text-lg mb-3">Response</h3>
+            <h3 className="mb-3 mt-8 text-lg font-extrabold text-navy">Response</h3>
             <CodeBlock language="json" code={`{
   "success": true,
   "data": [
@@ -232,10 +243,25 @@ print(response.json())`;
     "has_more": true
   }
 }`} />
-          </div>
 
+            <div id="get-candidate" className="mt-14 scroll-mt-24">
+              <h2 className="flex items-center gap-3 text-2xl font-extrabold tracking-tight text-navy">
+                <Database size={22} className="text-brand" /> Get Candidate
+              </h2>
+              <p className="mt-4 text-[15px] leading-relaxed text-muted">
+                Retrieve a single candidate profile by ID. Candidate contact details are only returned after you have unlocked the profile with a credit.
+              </p>
+              <div className="mt-6 flex items-center gap-3">
+                <span className="rounded-full bg-teal/15 px-3 py-1 text-xs font-black uppercase tracking-[0.1em] text-teal">GET</span>
+                <code className="font-mono text-[15px] text-navy">/v1/talent/:id</code>
+              </div>
+              <CodeBlock language="bash" code={`curl -X GET "https://api.cvyon.com/v1/talent/cnd_123456789" \\
+  -H "Authorization: Bearer YOUR_API_KEY" \\
+  -H "Content-Type: application/json"`} />
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </V3Page>
   );
 }

@@ -45,7 +45,7 @@ export const metadata: Metadata = {
 };
 
 // Next 16+: themeColor belongs to the viewport export, not metadata.
-export const viewport: Viewport = { themeColor: '#141312' };
+export const viewport: Viewport = { themeColor: '#151a46' };
 
 import { ConsentManager } from "@/components/ConsentManager";
 import { AuthProvider } from "@/components/AuthProvider";
@@ -74,7 +74,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;700;800;900&family=Chakra+Petch:wght@500;600;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
         <script

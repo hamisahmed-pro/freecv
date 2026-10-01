@@ -19,68 +19,28 @@ export default function AdminError({
   }, [error]);
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#14110d",
-        color: "#f2ece1",
-        fontFamily: "system-ui, sans-serif",
-        padding: 24,
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 480,
-          border: "3px solid #3a342c",
-          background: "#1d1915",
-          padding: 32,
-          boxShadow: "6px 6px 0 #000",
-        }}
-      >
-        <div
-          style={{
-            fontSize: 11,
-            letterSpacing: "0.25em",
-            textTransform: "uppercase",
-            color: "#b3543f",
-            marginBottom: 8,
-          }}
-        >
+    <div className="flex min-h-screen items-center justify-center bg-cream p-6">
+      <div className="w-full max-w-[480px] rounded-2xl border border-line bg-paper p-8 shadow-[0_16px_38px_rgba(23,27,75,0.09)]">
+        <div className="mb-2 text-[11px] font-extrabold uppercase tracking-[0.2em] text-coral">
           Admin · load failed
         </div>
-        <h1 style={{ fontSize: 22, margin: "0 0 12px" }}>
+        <h1 className="text-xl font-black tracking-tight text-navy">
           Couldn&apos;t load the dashboard
         </h1>
-        <p style={{ fontSize: 14, color: "#a89f8d", lineHeight: 1.6 }}>
+        <p className="mt-3 text-sm leading-relaxed text-muted">
           {error?.message ||
             "Something went wrong while fetching admin data. Check the server logs for details."}
         </p>
-        <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
+        <div className="mt-6 flex gap-3">
           <button
             onClick={() => reset()}
-            style={{
-              background: "#b3543f",
-              color: "#fff",
-              border: "2px solid #b3543f",
-              padding: "10px 20px",
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
+            className="rounded-[10px] bg-navy px-5 py-2.5 text-[12px] font-extrabold uppercase tracking-wider text-white transition-transform hover:-translate-y-px hover:bg-coral"
           >
             Try again
           </button>
           <a
             href="/admin/login"
-            style={{
-              border: "2px solid #3a342c",
-              color: "#f2ece1",
-              padding: "10px 20px",
-              fontWeight: 700,
-              textDecoration: "none",
-            }}
+            className="rounded-[10px] border border-line bg-paper px-5 py-2.5 text-[12px] font-extrabold uppercase tracking-wider text-navy transition-transform hover:-translate-y-px hover:border-brand hover:text-brand"
           >
             Back to login
           </a>

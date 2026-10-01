@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { V3Page } from '@/components/v3/V3Chrome';
 import { compareSeoEntries, getCompareSeoEntry } from '@/lib/compare-seo';
 import CompareSeoPage from '@/components/seo/CompareSeoPage';
 
@@ -44,5 +45,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
   const more = compareSeoEntries.filter((e) => e.slug !== slug);
 
-  return <CompareSeoPage entry={entry} more={more} />;
+  return (
+    <V3Page pageName="seo_alternative" cta={{ label: "Build free →", href: "/build" }}>
+      <CompareSeoPage entry={entry} more={more} />
+    </V3Page>
+  );
 }

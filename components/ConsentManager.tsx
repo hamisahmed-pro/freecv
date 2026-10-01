@@ -18,6 +18,12 @@ export function ConsentManager() {
     }
   }, []);
 
+  // Let floating UI (e.g. the PWA install banner) know when the privacy dialog
+  // is open so they can get out of the way instead of overlapping it.
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('cvyon:consent-visibility', { detail: { open: isOpen } }));
+  }, [isOpen]);
+
   useEffect(() => {
     const email = data.personalInfo?.email?.trim()?.toLowerCase();
     const isValidEmail = email && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
@@ -70,18 +76,11 @@ export function ConsentManager() {
     syncConsent(fullConsents);
   };
 
+  // The privacy dialog appears only on first visit (until dismissed). There is
+  // no persistent tab — users manage preferences anytime via the dedicated
+  // Privacy Policy & Consent Center page (/privacy).
   if (!isOpen) {
-    return (
-      <div className="fixed bottom-3 left-3 z-[60] print:hidden">
-        <button 
-          onClick={() => setIsOpen(true)}
-          aria-label="Open privacy and data preferences"
-          className="flex items-center gap-1.5 bg-white/90 backdrop-blur-sm border shadow-sm px-2 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider text-gray-700 hover:text-black transition-all hover:scale-105"
-        >
-          <Shield size={10} /> Privacy
-        </button>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -89,8 +88,8 @@ export function ConsentManager() {
       <div className="bg-white/95 backdrop-blur-md text-gray-800 rounded-xl border border-gray-200 shadow-xl overflow-hidden animate-in slide-in-from-bottom-2 fade-in duration-300">
         <div className="p-3">
           <div className="flex justify-between items-center mb-2">
-            <div className="flex items-center gap-1.5 text-[#141312]">
-              <Shield size={12} className="text-[#FF4326]" />
+            <div className="flex items-center gap-1.5 text-[#151a46]">
+              <Shield size={12} className="text-[#ff604b]" />
               <h2 className="text-[11px] font-bold uppercase tracking-wider">Privacy & Data</h2>
             </div>
             {hasSeen && (
@@ -117,7 +116,7 @@ export function ConsentManager() {
               <span className="font-semibold text-[10px] text-gray-700">Essential & AI Processing (Required)</span>
             </div>
 
-            {/* Talent Pool */}
+            {/* Talent Pool — benefit-framed so it isn't skipped as "checkbox #2" */}
             <div
               role="checkbox"
               aria-checked={data.consents.recruiterShare}
@@ -128,13 +127,13 @@ export function ConsentManager() {
                   setConsents({ ...data.consents, recruiterShare: !data.consents.recruiterShare });
                 }
               }}
-              className="flex items-center gap-2 p-1.5 rounded-lg border border-gray-100 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors focus:outline-none focus:ring-1 focus:ring-[#FF4326]"
+              className="flex items-center gap-2 p-1.5 rounded-lg border border-gray-100 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors focus:outline-none focus:ring-1 focus:ring-[#ff604b]"
               onClick={() => setConsents({ ...data.consents, recruiterShare: !data.consents.recruiterShare })}
             >
-              <div className={cn("w-3.5 h-3.5 rounded flex items-center justify-center transition-colors", data.consents.recruiterShare ? 'bg-[#FF4326] text-white' : 'border border-gray-300')}>
+              <div className={cn("w-3.5 h-3.5 rounded flex items-center justify-center transition-colors", data.consents.recruiterShare ? 'bg-[#ff604b] text-white' : 'border border-gray-300')}>
                 {data.consents.recruiterShare && <Check size={8} />}
               </div>
-              <span className="font-semibold text-[10px] text-gray-700">Allow recruiters to find my profile</span>
+              <span className="font-semibold text-[10px] text-gray-700">Get discovered by recruiters <span className="font-normal text-gray-500">— anonymized profile, one tap to stop</span></span>
             </div>
 
             {/* Job Alerts & Matches */}
@@ -148,10 +147,10 @@ export function ConsentManager() {
                   setConsents({ ...data.consents, emailJobs: !data.consents.emailJobs });
                 }
               }}
-              className="flex items-center gap-2 p-1.5 rounded-lg border border-gray-100 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors focus:outline-none focus:ring-1 focus:ring-[#2233FF]"
+              className="flex items-center gap-2 p-1.5 rounded-lg border border-gray-100 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors focus:outline-none focus:ring-1 focus:ring-[#5548f5]"
               onClick={() => setConsents({ ...data.consents, emailJobs: !data.consents.emailJobs })}
             >
-              <div className={cn("w-3.5 h-3.5 rounded flex items-center justify-center transition-colors", data.consents.emailJobs ? 'bg-[#2233FF] text-white' : 'border border-gray-300')}>
+              <div className={cn("w-3.5 h-3.5 rounded flex items-center justify-center transition-colors", data.consents.emailJobs ? 'bg-[#5548f5] text-white' : 'border border-gray-300')}>
                 {data.consents.emailJobs && <Check size={8} />}
               </div>
               <span className="font-semibold text-[10px] text-gray-700">Job Alerts & Matching</span>
@@ -168,10 +167,10 @@ export function ConsentManager() {
                   setConsents({ ...data.consents, analytics: !data.consents.analytics });
                 }
               }}
-              className="flex items-center gap-2 p-1.5 rounded-lg border border-gray-100 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors focus:outline-none focus:ring-1 focus:ring-[#141312]"
+              className="flex items-center gap-2 p-1.5 rounded-lg border border-gray-100 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors focus:outline-none focus:ring-1 focus:ring-[#151a46]"
               onClick={() => setConsents({ ...data.consents, analytics: !data.consents.analytics })}
             >
-              <div className={cn("w-3.5 h-3.5 rounded flex items-center justify-center transition-colors", data.consents.analytics ? 'bg-[#141312] text-white' : 'border border-gray-300')}>
+              <div className={cn("w-3.5 h-3.5 rounded flex items-center justify-center transition-colors", data.consents.analytics ? 'bg-[#151a46] text-white' : 'border border-gray-300')}>
                 {data.consents.analytics && <Check size={8} />}
               </div>
               <span className="font-semibold text-[10px] text-gray-700">Anonymous Analytics</span>
@@ -187,7 +186,7 @@ export function ConsentManager() {
             </button>
             <button
               onClick={handleAcceptAll}
-              className="flex-1 py-1.5 rounded-lg font-bold text-[9px] uppercase tracking-wider bg-[#141312] text-white hover:bg-[#FF4326] transition-colors"
+              className="flex-1 py-1.5 rounded-lg font-bold text-[9px] uppercase tracking-wider bg-[#151a46] text-white hover:bg-[#ff604b] transition-colors"
             >
               Accept All
             </button>

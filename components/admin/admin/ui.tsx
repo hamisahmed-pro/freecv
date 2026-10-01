@@ -7,20 +7,15 @@ import { Sparkline, RadialGauge } from "./charts";
 
 export { cn, CountUp, Reveal };
 
-/* Global Riso grammar for the admin: the three fonts, hard-edge keyframes,
-   film grain, dotted field, and terminal scrollbars. Mount once in the shell. */
+/* Global admin styling: soft v3 cards, reveal/hover animations, and terminal
+   scrollbars. Mount once in the shell. */
 export function AdminStyle() {
   return (
     <style>{`
-      .fd{font-family:var(--fd)} .fm{font-family:var(--fm)} .fb{font-family:var(--fb)}
-      .adm-grain{position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.05;mix-blend-mode:overlay;
-        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-      .adm-dots{position:fixed;inset:0;pointer-events:none;z-index:0;
-        background-image:radial-gradient(var(--dot) 1.2px,transparent 1.2px);background-size:24px 24px}
       .adm-reveal{opacity:0;transform:translateY(18px);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
       .adm-reveal.adm-in{opacity:1;transform:none}
       .adm-hover{transition:transform .15s ease, box-shadow .15s ease}
-      .adm-hover:hover{transform:translate(-2px,-2px)}
+      .adm-hover:hover{transform:translateY(-1px)}
       .adm-pop{animation:admpop .26s cubic-bezier(.2,.8,.2,1) both}
       @keyframes admpop{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
       .adm-drawer{animation:admdraw .3s cubic-bezier(.2,.7,.2,1) both}
@@ -31,7 +26,7 @@ export function AdminStyle() {
       .adm-blink{animation:admb 1.1s steps(2,start) infinite}
       @keyframes admb{50%{opacity:.15}}
       .adm-scroll::-webkit-scrollbar{width:9px;height:9px}
-      .adm-scroll::-webkit-scrollbar-thumb{background:var(--sb,#322d27);border:2px solid transparent;background-clip:padding-box}
+      .adm-scroll::-webkit-scrollbar-thumb{background:var(--sb,#2e3577);border:2px solid transparent;background-clip:padding-box;border-radius:8px}
       .adm-scroll::-webkit-scrollbar-track{background:transparent}
       @media (prefers-reduced-motion:reduce){.adm-reveal,.adm-hover,.adm-pop,.adm-drawer,.adm-heat,.adm-blink{animation:none!important;transition:none!important;opacity:1!important;transform:none!important}}
     `}</style>
@@ -43,9 +38,9 @@ export function Card({ children, className = "", hover = false, style, accent }:
   { children: React.ReactNode; className?: string; hover?: boolean; style?: React.CSSProperties; accent?: string }) {
   const { t } = useAdminTheme();
   return (
-    <div className={cn("relative border-[3px] adm-hover", hover && "adm-hover", className)}
-      style={{ background: t.surface, borderColor: accent || t.border, boxShadow: `6px 6px 0 ${t.shadow}`, ...style }}>
-      {accent && <span className="absolute left-0 top-0 h-full w-[5px]" style={{ background: accent }} />}
+    <div className={cn("relative rounded-2xl border adm-hover", hover && "adm-hover", className)}
+      style={{ background: t.surface, borderColor: accent || t.border, boxShadow: `0 8px 22px ${t.shadow}`, ...style }}>
+      {accent && <span className="absolute left-0 top-0 h-full w-1 rounded-l-2xl" style={{ background: accent }} />}
       {children}
     </div>
   );
@@ -53,7 +48,7 @@ export function Card({ children, className = "", hover = false, style, accent }:
 
 export function SectionLabel({ children, color }: { children: React.ReactNode; color?: string }) {
   const { t } = useAdminTheme();
-  return <div className="mb-3 fm text-[11px] font-bold uppercase tracking-[0.25em]" style={{ color: color || t.cob }}>§ {children}</div>;
+  return <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.25em]" style={{ color: color || t.cob }}>§ {children}</div>;
 }
 
 /* ----------------------------- KPI ----------------------------- */
@@ -66,19 +61,19 @@ export function Kpi({ label, value, sub, accent, icon, spark, delta, gauge }:
   return (
     <Card hover className="p-5" accent={c}>
       <div className="flex items-start justify-between gap-2">
-        <span className="fm text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: t.muted }}>{label}</span>
+        <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: t.muted }}>{label}</span>
         {icon && <span style={{ color: c }}>{icon}</span>}
       </div>
       <div className="mt-2 flex items-end justify-between gap-3">
         <div className="min-w-0">
-          <div className="fd text-[2rem] leading-none tracking-tight" style={{ color: c }}>{value}</div>
-          {sub && <div className="mt-1.5 fm text-[11px]" style={{ color: t.faint }}>{sub}</div>}
+          <div className="text-[2rem] font-extrabold leading-none tracking-tight" style={{ color: c }}>{value}</div>
+          {sub && <div className="mt-1.5 text-[11px]" style={{ color: t.faint }}>{sub}</div>}
         </div>
         {gauge && <RadialGauge value={gauge.value} max={gauge.max} color={c} size={70} />}
         {spark && spark.length > 1 && <Sparkline data={spark} color={c} width={104} height={38} />}
       </div>
       {delta !== undefined && (
-        <div className="mt-3 inline-flex items-center gap-1 border-2 px-2 py-0.5 fm text-[10px] font-bold"
+        <div className="mt-3 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold"
           style={{ borderColor: up ? t.green : t.verm, color: up ? t.green : t.verm }}>
           {up ? "▲" : "▼"} {Math.abs(delta)}%
         </div>
@@ -90,7 +85,7 @@ export function Kpi({ label, value, sub, accent, icon, spark, delta, gauge }:
 export function Pill({ children, color, bg }: { children: React.ReactNode; color?: string; bg?: string }) {
   const { t } = useAdminTheme();
   return (
-    <span className="inline-flex items-center gap-1 border-2 px-2 py-0.5 fm text-[10px] font-bold uppercase tracking-wider"
+    <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
       style={{ color: color || t.muted, borderColor: color || t.border, background: bg || "transparent" }}>{children}</span>
   );
 }
@@ -99,11 +94,11 @@ export function Pill({ children, color, bg }: { children: React.ReactNode; color
 export function Btn({ children, onClick, variant = "primary", disabled, type = "button", className = "" }:
   { children: React.ReactNode; onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void; variant?: "primary" | "ghost" | "danger"; disabled?: boolean; type?: "button" | "submit"; className?: string }) {
   const { t } = useAdminTheme();
-  const base = "inline-flex items-center justify-center gap-2 border-[3px] px-4 py-2.5 fm text-[11px] font-bold uppercase tracking-widest transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50";
+  const base = "inline-flex items-center justify-center gap-2 rounded-[10px] border px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest transition-all hover:-translate-y-px active:translate-y-0 disabled:opacity-50";
   const styles: React.CSSProperties =
-    variant === "danger" ? { background: t.verm, borderColor: t.verm, color: t.onVerm, boxShadow: `4px 4px 0 ${t.shadow}` } :
-    variant === "ghost" ? { background: "transparent", borderColor: t.border, color: t.text, boxShadow: `4px 4px 0 ${t.shadow}` } :
-    { background: t.verm, borderColor: t.verm, color: t.onVerm, boxShadow: `4px 4px 0 ${t.shadow}` };
+    variant === "danger" ? { background: t.verm, borderColor: t.verm, color: t.onVerm, boxShadow: `0 4px 12px ${t.shadow}` } :
+    variant === "ghost" ? { background: "transparent", borderColor: t.border, color: t.text, boxShadow: `0 2px 8px ${t.shadow}` } :
+    { background: t.verm, borderColor: t.verm, color: t.onVerm, boxShadow: `0 4px 12px ${t.shadow}` };
   return <button type={type} onClick={onClick} disabled={disabled} className={cn(base, className)} style={styles}>{children}</button>;
 }
 
@@ -111,7 +106,7 @@ export function Field({ label, children, hint }: { label: string; children: Reac
   const { t } = useAdminTheme();
   return (
     <label className="block">
-      <span className="mb-1.5 block fm text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: t.muted }}>{label}</span>
+      <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: t.muted }}>{label}</span>
       {children}
       {hint && <span className="mt-1 block text-[11px]" style={{ color: t.faint }}>{hint}</span>}
     </label>
@@ -123,23 +118,23 @@ const fieldBox = (t: any): React.CSSProperties => ({
 });
 export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   const { t } = useAdminTheme();
-  return <input {...props} className={cn("w-full border-2 px-3 py-2.5 fb text-sm outline-none transition-colors focus:border-[var(--ring)]", props.className)} style={{ ...fieldBox(t), ...props.style }} />;
+  return <input {...props} className={cn("w-full rounded-[10px] border px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--ring)]", props.className)} style={{ ...fieldBox(t), ...props.style }} />;
 }
 export function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   const { t } = useAdminTheme();
-  return <textarea {...props} className={cn("w-full border-2 px-3 py-2.5 fb text-sm outline-none transition-colors focus:border-[var(--ring)]", props.className)} style={{ ...fieldBox(t), ...props.style }} />;
+  return <textarea {...props} className={cn("w-full rounded-[10px] border px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--ring)]", props.className)} style={{ ...fieldBox(t), ...props.style }} />;
 }
 export function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   const { t } = useAdminTheme();
-  return <select {...props} className={cn("w-full border-2 px-3 py-2.5 fb text-sm outline-none transition-colors focus:border-[var(--ring)]", props.className)} style={{ ...fieldBox(t), ...props.style }} />;
+  return <select {...props} className={cn("w-full rounded-[10px] border px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--ring)]", props.className)} style={{ ...fieldBox(t), ...props.style }} />;
 }
 export function Switch({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
   const { t } = useAdminTheme();
   return (
     <button type="button" onClick={() => onChange(!on)} aria-pressed={on}
-      className="relative h-6 w-11 shrink-0 border-2 transition-colors"
+      className="relative h-6 w-11 shrink-0 rounded-full border transition-colors"
       style={{ borderColor: t.border, background: on ? t.green : t.inset }}>
-      <span className="absolute top-[3px] h-[18px] w-[18px] bg-[#F2ECE1] transition-all" style={{ left: on ? 22 : 3 }} />
+      <span className="absolute top-[3px] h-[18px] w-[18px] rounded-full bg-[#F2ECE1] transition-all" style={{ left: on ? 22 : 3 }} />
     </button>
   );
 }
@@ -172,27 +167,27 @@ export function Modal({ open, onClose, title, children, wide }:
       <div
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "adm-pop relative my-auto max-h-[88vh] w-full flex flex-col overflow-hidden border-[3px] shadow-2xl",
+          "adm-pop relative my-auto max-h-[88vh] w-full flex flex-col overflow-hidden rounded-2xl border shadow-2xl",
           wide ? "max-w-3xl" : "max-w-lg"
         )}
         style={{
           background: t.bg,
           borderColor: t.borderStrong,
-          boxShadow: `10px 10px 0 ${t.shadow}`,
+          boxShadow: `0 18px 44px ${t.shadow}`,
         }}
       >
         {/* Sticky Header */}
         <div
-          className="sticky top-0 z-10 flex items-center justify-between border-b-[3px] px-5 py-3.5 sm:px-6 sm:py-4 shrink-0"
+          className="sticky top-0 z-10 flex items-center justify-between border-b px-5 py-3.5 sm:px-6 sm:py-4 shrink-0"
           style={{ borderColor: t.border, background: t.surface }}
         >
-          <h3 className="fd truncate text-base sm:text-lg tracking-tight font-extrabold" style={{ color: t.text }}>
+          <h3 className="truncate text-base sm:text-lg tracking-tight font-extrabold" style={{ color: t.text }}>
             {title}
           </h3>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="grid h-8 w-8 place-items-center border-2 transition-transform hover:scale-105 active:scale-95 shrink-0 ml-2"
+            className="grid h-8 w-8 place-items-center rounded-[10px] border transition-transform hover:scale-105 active:scale-95 shrink-0 ml-2"
             style={{ borderColor: t.border, color: t.muted, background: t.surface2 }}
           >
             <X size={16} />
@@ -221,10 +216,10 @@ export function Drawer({ open, onClose, title, children }:
 export function Table({ head, children }: { head: string[]; children: React.ReactNode }) {
   const { t } = useAdminTheme();
   return (
-    <div className="adm-scroll overflow-x-auto border-[3px]" style={{ borderColor: t.border }}>
+    <div className="adm-scroll overflow-x-auto rounded-xl border" style={{ borderColor: t.border }}>
       <table className="w-full text-left text-sm">
         <thead><tr style={{ background: t.surface2 }}>
-          {head.map((h) => <th key={h} className="whitespace-nowrap px-4 py-3 fm text-[10px] font-bold uppercase tracking-widest" style={{ color: t.muted }}>{h}</th>)}
+          {head.map((h) => <th key={h} className="whitespace-nowrap px-4 py-3 text-[10px] font-bold uppercase tracking-widest" style={{ color: t.muted }}>{h}</th>)}
         </tr></thead>
         <tbody>{children}</tbody>
       </table>
@@ -234,7 +229,7 @@ export function Table({ head, children }: { head: string[]; children: React.Reac
 export function Row({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) {
   const { t } = useAdminTheme();
   return (
-    <tr onClick={onClick} className={cn("border-t-2 transition-colors", onClick && "cursor-pointer")}
+    <tr onClick={onClick} className={cn("border-t transition-colors", onClick && "cursor-pointer")}
       style={{ borderColor: t.border }}
       onMouseEnter={(e) => (e.currentTarget.style.background = t.surface2)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>{children}</tr>
   );
@@ -249,8 +244,8 @@ export function EmptyState({ icon, title, hint }: { icon?: React.ReactNode; titl
   return (
     <div className="py-16 text-center">
       {icon && <div className="mb-3 flex justify-center" style={{ color: t.faint }}>{icon}</div>}
-      <p className="fd text-lg" style={{ color: t.text }}>{title}</p>
-      {hint && <p className="mt-1 fb text-sm" style={{ color: t.muted }}>{hint}</p>}
+      <p className="text-lg font-bold" style={{ color: t.text }}>{title}</p>
+      {hint && <p className="mt-1 text-sm" style={{ color: t.muted }}>{hint}</p>}
     </div>
   );
 }

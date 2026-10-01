@@ -1,8 +1,78 @@
 @import "tailwindcss";
 
+/* ===================================================================
+   CVYON V3 BRAND TOKENS (2026-09-30)
+   Navy/indigo/coral/teal on warm cream. Rounded, soft shadows with
+   hard offset accents. Inter for brand surfaces.
+   =================================================================== */
+@theme {
+  --color-navy: #151a46;
+  --color-brand: #5548f5;
+  --color-brand-deep: #4538e0;
+  --color-coral: #ff604b;
+  --color-teal: #24c9bd;
+  --color-gold: #ffd85a;
+  --color-cream: #f6f5ef;
+  --color-paper: #ffffff;
+  --color-ink: #171a2b;
+  --color-muted: #73778c;
+  --color-line: #dddde5;
+  --color-lavender: #eeecff;
+  --color-mint: #e6faf7;
+  --font-brand: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* v3 brand aliases for plain CSS */
+  --v3-navy: #151a46;
+  --v3-brand: #5548f5;
+  --v3-coral: #ff604b;
+  --v3-teal: #24c9bd;
+  --v3-gold: #ffd85a;
+  --v3-cream: #f6f5ef;
+  --v3-ink: #171a2b;
+  --v3-muted: #73778c;
+  --v3-line: #dddde5;
+}
+
+/* ---- v3 brand surface components --------------------------------- */
+.v3-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border-radius: 10px; padding: 12px 18px; font-weight: 800;
+  font-family: var(--font-brand);
+  border: 1px solid transparent; cursor: pointer; text-decoration: none;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.v3-btn-primary { background: var(--v3-brand); color: #fff; box-shadow: 4px 4px 0 var(--v3-navy); }
+.v3-btn-primary:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--v3-navy); }
+.v3-btn-dark { background: var(--v3-navy); color: #fff; }
+.v3-btn-dark:hover { background: #232a63; }
+.v3-btn-coral { background: var(--v3-coral); color: #fff; box-shadow: 5px 5px 0 #fff; }
+.v3-btn-light { background: #fff; border-color: var(--v3-line); color: var(--v3-navy); }
+.v3-btn-light:hover { border-color: var(--v3-brand); }
+.v3-card {
+  background: #fff; border: 1px solid var(--v3-line); border-radius: 16px;
+  padding: 24px; box-shadow: 0 2px 8px rgba(21, 26, 70, .04);
+}
+.v3-eyebrow {
+  font-size: 11px; font-weight: 800; color: var(--v3-brand);
+  letter-spacing: .16em; text-transform: uppercase;
+  font-family: var(--font-brand);
+}
+.v3-h-display {
+  font-family: var(--font-brand); color: var(--v3-navy);
+  letter-spacing: -.055em; line-height: .95; font-weight: 800;
+}
+.v3-field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #34374d; font-family: var(--font-brand); }
+.v3-field input, .v3-field textarea, .v3-field select {
+  width: 100%; border: 1px solid #d8d8e2; border-radius: 9px;
+  padding: 11px 12px; outline: 0; background: #fff; color: var(--v3-ink);
+  font-family: var(--font-brand); font-size: 14px;
+}
+.v3-field input:focus, .v3-field textarea:focus, .v3-field select:focus {
+  border-color: var(--v3-brand); box-shadow: 0 0 0 3px rgba(85, 72, 245, .12);
 }
 
 @theme inline {
@@ -70,6 +140,14 @@ body {
     display: none !important;
   }
 
+  /* --- Layer 3b: Never print the PWA install banner or other fixed overlays.
+     Fixed elements repeat on every printed page. The banner must not appear
+     in the exported PDF. Scoped by attribute so the resume itself is untouched. */
+  [data-pwa-banner],
+  [data-print-hide] {
+    display: none !important;
+  }
+
   /* --- Layer 4: The preview <section> (#preview-panel) ---
      Has: flex-1, h-full, overflow-y-auto, overflow-x-auto
      On mobile also has: fixed, inset-0
@@ -90,23 +168,18 @@ body {
     z-index: auto !important;
   }
 
-  /* --- Layer 5: The resume wrapper <div> (.print-safe-content) ---
-     Has: shrink-0, shadow-2xl, transform: scale(...), margin/padding
-     The transform is the WORST offender — it creates a containing block
-     that prevents page breaks entirely */
-  .print-safe-content {
-    transform: none !important;
-    zoom: 1 !important;
-    position: static !important;
-    margin: 0 !important;
+  /* --- Layer 5: The print-only resume wrapper (.print-resume) ---
+     Renders the selected template directly, without the screen preview
+     chrome (no scale transform, no fixed height, no cream background).
+     Keeps the 8.5in page width and lets content flow across pages. */
+  .print-resume {
+    display: block !important;
+    width: 8.5in !important;
+    max-width: 8.5in !important;
+    margin: 0 auto !important;
     padding: 0 !important;
-    width: auto !important;
-    height: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
+    background: white !important;
     overflow: visible !important;
-    box-shadow: none !important;
-    flex-shrink: 1 !important;
   }
 
   .preview-scale-frame {
@@ -125,7 +198,7 @@ body {
   /* --- Layer 6: The actual template root div ---
      Has: w-[8.5in], min-w-[8.5in], min-h-[11in], shadow-*
      Must keep width but allow height to grow and pages to break */
-  .print-safe-content > div {
+  .print-resume > div {
     width: 8.5in !important;
     min-width: 0 !important;
     height: auto !important;
@@ -133,11 +206,12 @@ body {
     max-height: none !important;
     overflow: visible !important;
     box-shadow: none !important;
+    border-radius: 0 !important;
     margin: 0 auto !important;
   }
 
   /* --- Layer 7: Allow page breaks everywhere inside the template --- */
-  .print-safe-content * {
+  .print-resume * {
     overflow: visible !important;
   }
 
@@ -150,18 +224,18 @@ body {
 
   /* --- Layer 9: Multi-page Smart Pagination ---
      Prevent page breaks inside critical elements like headings, paragraphs, and list items. */
-  .print-safe-content h1, 
-  .print-safe-content h2, 
-  .print-safe-content h3, 
-  .print-safe-content p,
-  .print-safe-content li {
+  .print-resume h1, 
+  .print-resume h2, 
+  .print-resume h3, 
+  .print-resume p,
+  .print-resume li {
     page-break-inside: avoid;
     break-inside: avoid;
   }
 
   /* Keep only explicitly atomic rows together; large layout wrappers must break naturally. */
-  .print-safe-content article,
-  .print-safe-content .break-inside-avoid {
+  .print-resume article,
+  .print-resume .break-inside-avoid {
     page-break-inside: avoid;
     break-inside: avoid;
   }
@@ -169,6 +243,164 @@ body {
 
 /* DSN-03: visible keyboard focus everywhere */
 :focus-visible {
-  outline: 3px solid #2233FF;
+  outline: 3px solid #5548f5;
   outline-offset: 2px;
+}
+
+/* ============================================================
+   Cvyon v3 — Builder step-wizard (matches the v3 builder concept)
+   ============================================================ */
+.v3-builder { min-height: 100vh; display: flex; flex-direction: column; background: #f6f5ef; color: #171a2b; font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+.v3-builder button { font-family: inherit; }
+
+/* Top bar */
+.v3-top { height: 62px; background: rgba(255,255,255,.96); border-bottom: 1px solid #dddde5; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; position: sticky; top: 0; z-index: 40; flex-shrink: 0; }
+.v3-top-left, .v3-top-right { display: flex; align-items: center; gap: 12px; }
+.v3-crumb { color: #85889b; font-size: 13px; white-space: nowrap; }
+.v3-autosave-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; color: #0E8A4B; border: 1px solid rgba(14,138,75,.4); background: rgba(14,138,75,.08); border-radius: 999px; padding: 7px 11px; white-space: nowrap; }
+.v3-dot { width: 6px; height: 6px; border-radius: 50%; background: #0E8A4B; animation: v3Pulse 2s infinite; }
+@keyframes v3Pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+.v3-pill { border: 1px solid #dddde5; background: #fff; color: #151a46; border-radius: 9px; padding: 9px 14px; font-weight: 700; font-size: 13px; cursor: pointer; transition: border-color .15s, background .15s; white-space: nowrap; display: inline-flex; align-items: center; gap: 7px; }
+.v3-pill:hover { border-color: #151a46; }
+/* Header undo/redo icon buttons */
+.v3-iconbtn { border: 1px solid #dddde5; background: #fff; color: #151a46; border-radius: 9px; padding: 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: border-color .15s, opacity .15s; }
+.v3-iconbtn:hover:not(:disabled) { border-color: #151a46; }
+.v3-iconbtn:disabled { opacity: .35; cursor: default; }
+.v3-primary { border: 0; background: #5548f5; color: #fff; border-radius: 9px; padding: 10px 16px; font-weight: 800; font-size: 13px; cursor: pointer; box-shadow: 4px 4px 0 #151a46; transition: box-shadow .15s, transform .15s; white-space: nowrap; }
+.v3-primary:hover { box-shadow: 0 0 0 #151a46; transform: translate(4px, 4px); }
+.v3-primary:active { transform: translate(4px, 4px) scale(.98); }
+/* Colored download buttons: PDF = coral orange, DOCX = indigo blue */
+.v3-dl { border: 0; color: #fff; border-radius: 9px; padding: 10px 16px; font-weight: 800; font-size: 13px; cursor: pointer; box-shadow: 4px 4px 0 #151a46; transition: box-shadow .15s, transform .15s; white-space: nowrap; display: inline-flex; align-items: center; gap: 7px; }
+/* Mobile download CTA: hidden on desktop, shown in the mobile header */
+.v3-mobile-dl { display: none; }
+.v3-dl:hover { box-shadow: 0 0 0 #151a46; transform: translate(4px, 4px); }
+.v3-dl:active { transform: translate(4px, 4px) scale(.98); }
+.v3-dl-pdf { background: #ff604b; }
+.v3-dl-docx { background: #5548f5; }
+
+/* Workspace grid */
+.v3-workspace { flex: 1; min-height: 0; display: grid; grid-template-columns: 220px minmax(0,1fr) minmax(0,43%); }
+@media (min-width: 1024px) {
+  .v3-builder { height: 100vh; height: 100dvh; overflow: hidden; }
+  .v3-workspace { overflow: hidden; }
+}
+
+/* Sidebar */
+.v3-sidebar { background: #fff; border-right: 1px solid #dddde5; padding: 18px 12px; overflow-y: auto; min-height: 0; }
+.v3-side-title { font-size: 10px; text-transform: uppercase; letter-spacing: .14em; color: #999bb0; padding: 0 10px 10px; font-weight: 800; margin: 0; }
+.v3-nav { display: grid; gap: 4px; }
+.v3-nav-btn { border: 0; background: transparent; text-align: left; padding: 12px 10px; border-radius: 9px; color: #70738a; font-size: 14px; cursor: pointer; display: flex; align-items: center; transition: background .15s; }
+.v3-nav-btn:hover { background: #f4f3ff; }
+.v3-nav-btn.active { background: #ecebff; color: #151a46; font-weight: 800; }
+.v3-num { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; background: #f0f0f5; margin-right: 8px; font-size: 11px; font-weight: 800; flex-shrink: 0; }
+.v3-nav-btn.active .v3-num { background: #5548f5; color: #fff; }
+.v3-progress { margin: 22px 10px 0; padding-top: 17px; border-top: 1px solid #dddde5; }
+.v3-progress small { font-size: 10px; color: #999bb0; text-transform: uppercase; letter-spacing: .12em; font-weight: 800; }
+.v3-progress strong { font-size: 25px; color: #151a46; display: block; line-height: 1.2; }
+.v3-bar { height: 6px; background: #ececf1; border-radius: 8px; margin-top: 9px; overflow: hidden; }
+.v3-bar i { display: block; height: 100%; background: linear-gradient(90deg, #5548f5, #24c9bd); border-radius: 8px; transition: width .4s ease; }
+.v3-progress p { color: #888; font-size: 12px; line-height: 1.5; margin: 10px 0 0; }
+
+/* Editor */
+.v3-editor { overflow-y: auto; padding: 32px clamp(22px, 4vw, 58px) 90px; min-width: 0; min-height: 0; }
+.v3-editor-inner { max-width: 720px; margin: 0 auto; }
+.v3-eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: .14em; color: #5548f5; font-weight: 900; margin: 0; }
+.v3-heading { font-size: 31px; line-height: 1.05; letter-spacing: -.045em; margin: 6px 0 8px; color: #151a46; font-weight: 900; }
+.v3-sub { color: #73778d; line-height: 1.55; margin: 0 0 26px; font-size: 14px; }
+.v3-step { display: none; scroll-margin-top: 80px; }
+.v3-step-active { display: block; animation: v3StepIn .28s ease; }
+/* Plain CSS: Tailwind v4 silently skips emitting .opacity-0 in this build,
+   which would leave native color inputs visibly stacked over their swatches. */
+.v3-color-input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+/* Sliding consent toggle — plain CSS because Tailwind v4 also drops the
+   translate-x-* utilities this toggle relied on (knob never moved). */
+.v3-switch { width: 48px; height: 26px; border-radius: 999px; background: #d1d5db; border: 0; padding: 0; position: relative; flex-shrink: 0; cursor: pointer; transition: background .25s ease; }
+.v3-switch[aria-checked="true"] { background: #5548f5; }
+.v3-switch-knob { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .25s ease; }
+.v3-switch[aria-checked="true"] .v3-switch-knob { transform: translateX(22px); }
+@keyframes v3StepIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.v3-block { margin-bottom: 15px; }
+
+/* Card headers (concept style) */
+.v3-card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 18px; }
+.v3-card-head h3 { margin: 0; font-size: 16px; color: #151a46; font-weight: 800; letter-spacing: -.01em; }
+.v3-card-hint { font-size: 12px; color: #999bad; margin: 7px 0 0; line-height: 1.5; }
+.v3-autosaved { font-size: 11px; color: #999bad; white-space: nowrap; }
+.v3-ai-btn { border: 1px solid #d9d6ff; background: #f0efff; color: #5548f5; border-radius: 9px; padding: 8px 11px; font-weight: 800; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; cursor: pointer; transition: background .15s; }
+.v3-ai-btn:hover { background: #e2defe; }
+.v3-ai-btn:disabled { opacity: .5; cursor: default; }
+.v3-icon-btn { border: 1px solid #dddde5; background: #fff; border-radius: 8px; padding: 8px; color: #151a46; display: inline-grid; place-items: center; cursor: pointer; transition: all .15s; }
+.v3-icon-btn:hover { background: #151a46; color: #fff; border-color: #151a46; }
+.v3-remove-btn { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: #D8362A; border: 1px solid #D8362A; border-radius: 8px; padding: 8px 10px; background: #fff; cursor: pointer; transition: all .15s; }
+.v3-remove-btn:hover { background: #D8362A; color: #fff; }
+
+/* Fields */
+.v3-field label { display: block; font-size: 12px; font-weight: 800; margin-bottom: 6px; color: #34374d; }
+.v3-field input, .v3-field textarea { width: 100%; border: 1px solid #d8d8e2; border-radius: 9px; padding: 11px 12px; outline: 0; background: #fff; color: #171a2b; font-size: 14px; font-family: inherit; }
+.v3-field input:focus, .v3-field textarea:focus { border-color: #5548f5; box-shadow: 0 0 0 3px rgba(85,72,245,.12); }
+.v3-textarea { min-height: 120px; resize: vertical; }
+.v3-target { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: end; }
+.v3-nextup { margin: 0; font-size: 13px; color: #34374d; line-height: 2; }
+.v3-addrow { display: flex; flex-wrap: wrap; gap: 12px; margin: 15px 0; }
+.v3-addbtn { flex: 1; min-width: 200px; padding: 16px; background: #fff; border: 1px dashed rgba(85,72,245,.5); border-radius: 12px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: rgba(21,26,70,.7); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all .15s; }
+.v3-addbtn:hover { border-color: #5548f5; background: #eeecff; color: #151a46; }
+.v3-addbtn-accent { border-color: #5548f5; color: #5548f5; border-style: dashed; }
+.v3-import { margin: 15px 0; }
+.v3-newsletter { margin-top: 32px; }
+.v3-footer { margin-top: 24px; padding: 20px 0 8px; border-top: 1px solid #dddde5; display: flex; flex-wrap: wrap; gap: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; justify-content: center; color: rgba(21,26,70,.55); }
+.v3-footer a { color: inherit; text-decoration: none; }
+.v3-desktop-only { }
+@media (max-width: 1023.98px) { .v3-desktop-only { display: none !important; } }
+
+/* Preview column */
+.v3-preview { background: #e7e8ef; border-left: 1px solid #d8d9e0; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.v3-previewbar { min-height: 55px; background: #fafaff; border-bottom: 1px solid #d8d9e0; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 15px; flex-wrap: wrap; flex-shrink: 0; }
+.v3-previewbar strong { color: #151a46; font-size: 14px; }
+.v3-preview-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.v3-pill-sm { border: 1px solid #d9dae2; background: #fff; border-radius: 7px; padding: 7px 10px; font-size: 12px; font-weight: 700; color: #151a46; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: border-color .15s; white-space: nowrap; }
+.v3-pill-sm:hover { border-color: #151a46; }
+.v3-zoom { display: flex; gap: 4px; }
+.v3-zoom button { border: 1px solid #d9dae2; background: #fff; border-radius: 7px; width: 32px; height: 30px; color: #151a46; font-weight: 800; cursor: pointer; font-size: 15px; line-height: 1; }
+.v3-zoom button:hover { border-color: #151a46; }
+.v3-canvas { flex: 1; overflow: auto; overflow-x: clip; padding: 35px; display: flex; justify-content: center; align-items: flex-start; min-height: 0; }
+.v3-paperwrap { transform-origin: top left; flex-shrink: 0; }
+.v3-paper { width: 816px; max-width: none; background: #fff; box-shadow: 0 10px 35px rgba(21,26,70,.22); }
+
+/* ATS score badge */
+.v3-score { position: fixed; right: 24px; bottom: 20px; z-index: 30; background: #151a46; color: #fff; border-radius: 12px; padding: 8px 12px; box-shadow: 0 8px 30px rgba(21,26,70,.3); }
+
+/* Mobile-only chrome */
+.v3-mobilebar, .v3-mobiletabs, .v3-mobile-next, .v3-mobile-nav, .v3-mobile-back { display: none; }
+.v3-preview-overlay { display: none; }
+
+@media (max-width: 1023.98px) {
+  .v3-workspace { display: block; }
+  .v3-sidebar { display: none; }
+  .v3-top { height: 58px; padding: 0 14px; }
+  .v3-crumb, .v3-top-right .v3-pill, .v3-top-right .v3-iconbtn, .v3-autosave-pill { display: none; }
+  .v3-top .v3-dl { display: none; }
+  /* Show the compact mobile download CTA in the header */
+  .v3-top .v3-dl.v3-mobile-dl { display: inline-flex; padding: 8px 12px; font-size: 12px; }
+  .v3-editor { padding: 20px 14px 130px; overflow: visible; }
+  .v3-editor-inner { max-width: none; }
+  .v3-heading { font-size: 27px; }
+  .v3-target { grid-template-columns: 1fr; }
+  .v3-preview { display: none; }
+  .v3-mobilebar { display: flex; align-items: center; justify-content: space-between; background: #151a46; color: #fff; padding: 11px 14px; margin: 0 -14px 18px; }
+  .v3-mobilebar strong { font-size: 14px; }
+  .v3-mobilebar small { opacity: .7; font-size: 12px; }
+  .v3-mobile-next { display: block; width: 100%; margin-top: 12px; padding: 14px 16px; font-size: 14px; }
+  .v3-mobile-nav { display: flex; gap: 10px; margin-top: 12px; }
+  .v3-mobile-nav .v3-mobile-next { margin-top: 0; }
+  .v3-mobile-back { display: block; padding: 14px 18px; font-size: 14px; white-space: nowrap; }
+  .v3-eyebrow { display: none; }
+  .v3-mobiletabs { display: grid; position: fixed; bottom: 0; left: 0; right: 0; background: #151a46; border-top: 1px solid rgba(255,255,255,.14); grid-template-columns: repeat(4, 1fr); z-index: 40; padding-bottom: env(safe-area-inset-bottom); }
+  .v3-mobiletabs button { border: 0; background: transparent; font-size: 11px; color: rgba(255,255,255,.62); padding: 10px 4px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; font-weight: 600; }
+  .v3-mobiletabs button.active { color: #fff; font-weight: 900; }
+  .v3-mobiletabs button.active span { color: #ff604b; }
+  .v3-mobiletabs span { font-size: 18px; line-height: 1; }
+  .v3-score { right: 14px; bottom: 78px; }
+  .v3-preview-overlay { position: fixed; inset: 0; z-index: 60; background: #e7e8ef; display: flex; flex-direction: column; }
+  .v3-overlay-actions { background: #fff; border-top: 1px solid #dddde5; padding: 12px; display: flex; gap: 8px; align-items: center; }
+  .v3-overlay-actions .v3-primary { flex: 1; text-align: center; }
 }

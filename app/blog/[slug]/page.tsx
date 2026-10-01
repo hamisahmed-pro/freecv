@@ -1,17 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { supabaseAdmin } from '@/lib/supabase';
 import { sanitizeHtml } from '@/lib/sanitizeHtml';
-import { ArrowLeft, Calendar } from 'lucide-react';
-import { Archivo, Archivo_Black, DM_Sans, Space_Mono } from '@/lib/fonts';
+import { ArrowLeft, ArrowRight, Calendar } from 'lucide-react';
 import { ArticleJsonLd } from '@/components/blog/ArticleJsonLd';
-
-const display = Archivo_Black({ subsets: ["latin"], weight: "400", display: "swap" });
-const head = Archivo({ subsets: ["latin"], weight: ["600", "800", "900"], display: "swap" });
-const body = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"], display: "swap" });
-const mono = Space_Mono({ subsets: ["latin"], weight: ["400", "700"], display: "swap" });
+import { V3Page } from '@/components/v3/V3Chrome';
 
 export const revalidate = 60; // Revalidate every minute
 
@@ -87,87 +81,82 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   }
 
   return (
-    <div className={`cv-riso relative min-h-screen text-[#141312] bg-[#E8E7E1] overflow-x-hidden ${body.className}`}
-      style={{ ["--ink" as any]: "#141312", ["--verm" as any]: "#FF4326", ["--cob" as any]: "#2233FF", ["--hi" as any]: "#FFE14D", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
+    <V3Page pageName="blog_article">
       <ArticleJsonLd post={post} />
-      <style>{`
-        .cv-riso{font-family:var(--fb)} .cv-riso .fd{font-family:var(--fd)} .cv-riso .fh{font-family:var(--fh)} .cv-riso .fm{font-family:var(--fm)}
-        .cv-riso .hs{box-shadow:7px 7px 0 var(--ink)} .cv-riso .hs-v{box-shadow:7px 7px 0 var(--verm)} .cv-riso .hs-c{box-shadow:6px 6px 0 var(--cob)}
-        .cv-riso .hs-sm{box-shadow:5px 5px 0 var(--ink)}
-        .cv-riso .riso-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: 3px solid var(--ink); background-color: var(--ink); color: #E8E7E1; padding: 0.75rem 1.5rem; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 7px 7px 0 var(--ink); transition: all 0.2s; cursor: pointer; text-decoration: none; }
-        .cv-riso .riso-btn:hover { transform: translate(2px, 2px); box-shadow: none; }
-        .cv-riso .riso-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: 7px 7px 0 var(--ink); }
-        .cv-riso .riso-btn-ghost { background-color: transparent; color: var(--ink); }
-        .cv-riso .riso-card { border: 3px solid var(--ink); background-color: #ffffff; box-shadow: 7px 7px 0 var(--ink); }
-        .cv-riso .riso-input { width: 100%; border: 3px solid var(--ink); background-color: #ffffff; padding: 0.75rem 1rem; font-family: var(--fm); font-size: 0.875rem; color: var(--ink); box-shadow: 4px 4px 0 var(--ink); transition: all 0.2s; outline: none; }
-        .cv-riso .riso-input:focus { box-shadow: none; transform: translate(2px, 2px); border-color: var(--verm); }
-        .cv-riso .riso-label { display: block; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; color: var(--ink); }
-        .cv-riso .riso-chip { display: inline-flex; align-items: center; gap: 0.25rem; border: 2px solid var(--ink); padding: 0.25rem 0.5rem; font-family: var(--fm); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold; color: var(--ink); background: #ffffff; }
-      `}</style>
+      <div className="mx-auto max-w-[760px]">
+        <Link
+          href="/blog"
+          className="inline-flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.12em] text-muted transition-colors hover:text-brand"
+        >
+          <ArrowLeft size={14} /> Back to blog
+        </Link>
 
-      <div className="pb-24">
-        {/* Header */}
-        <header className="bg-[#141312] text-[#E8E7E1] pt-24 pb-20 px-6 relative overflow-hidden">
-          <div className="max-w-3xl mx-auto relative z-10">
-            <Link href="/blog" className="fm inline-flex items-center gap-2 text-[#E8E7E1]/70 hover:text-[#FF4326] font-bold tracking-[0.2em] text-xs uppercase mb-8 transition-colors">
-              <ArrowLeft size={14} /> Back to Blog
-            </Link>
-            <h1 className="fd text-4xl sm:text-5xl uppercase tracking-tight mb-6 leading-tight">
-              {post.title}
-            </h1>
-            <div className="fm flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#E8E7E1]/70">
-              <Calendar size={14} />
-              {new Date(post.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-            </div>
-          </div>
-        </header>
+        <h1 className="mt-5 text-3xl font-black tracking-tight text-navy sm:text-[42px] sm:leading-[1.15]">
+          {post.title}
+        </h1>
+        <div className="mt-4 flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.12em] text-muted">
+          <Calendar size={14} />
+          {new Date(post.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+        </div>
 
-        {/* Article Content */}
-        <main className="max-w-3xl mx-auto px-6 mt-10 relative z-20">
-          <article className="riso-card overflow-hidden">
-            {/* Header Image */}
-            {post.header_image && (
-              <div className="w-full aspect-[2/1] relative border-b-[3px] border-[#141312]">
-                <img
-                  src={post.header_image}
-                  alt={post.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
-
-            {/* Content with proper HTML rendering */}
-            <div className="p-8 sm:p-12">
-              <div
-                className="blog-content leading-relaxed text-lg"
-                dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
+        <article className="mt-8 overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
+          {post.header_image && (
+            <div className="aspect-[2/1] w-full overflow-hidden border-b border-line">
+              <img
+                src={post.header_image}
+                alt={post.title}
+                className="h-full w-full object-cover"
               />
             </div>
-          </article>
-        </main>
+          )}
 
-        {/* Blog content styles - since @tailwindcss/typography is not installed */}
-        <style dangerouslySetInnerHTML={{ __html: `
-          .blog-content { color: #141312; }
-          .blog-content h1 { font-family: var(--fh); font-size: 2rem; font-weight: 800; margin: 1.5em 0 0.5em; line-height: 1.2; color: #141312; }
-          .blog-content h2 { font-family: var(--fh); font-size: 1.5rem; font-weight: 700; margin: 1.5em 0 0.5em; line-height: 1.3; color: #141312; }
-          .blog-content h3 { font-family: var(--fh); font-size: 1.25rem; font-weight: 600; margin: 1.25em 0 0.5em; line-height: 1.4; color: #141312; }
-          .blog-content p { margin: 1em 0; }
-          .blog-content ul { list-style-type: disc; padding-left: 1.5em; margin: 1em 0; }
-          .blog-content ol { list-style-type: decimal; padding-left: 1.5em; margin: 1em 0; }
-          .blog-content li { margin: 0.25em 0; }
-          .blog-content a { color: #2233FF; text-decoration: underline; }
-          .blog-content a:hover { color: #141312; }
-          .blog-content blockquote { border-left: 4px solid #141312; padding-left: 1em; margin: 1em 0; color: #141312; font-style: italic; }
-          .blog-content strong { font-weight: 700; }
-          .blog-content em { font-style: italic; }
-          .blog-content code { background: #E8E7E1; border: 2px solid #141312; padding: 0.2em 0.4em; font-size: 0.875em; font-family: monospace; }
-          .blog-content pre { background: #141312; color: #E8E7E1; padding: 1em; border: 3px solid #141312; overflow-x: auto; margin: 1em 0; }
-          .blog-content pre code { background: none; padding: 0; color: inherit; border: none; }
-          .blog-content img { max-width: 100%; height: auto; margin: 1em 0; border: 3px solid #141312; }
-          .blog-content hr { border: none; border-top: 3px solid #141312; margin: 2em 0; }
-        `}} />
+          {/* Content with proper HTML rendering (TipTap-authored, sanitized) */}
+          <div className="px-6 py-8 sm:px-10 sm:py-10">
+            <div
+              className="blog-content"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
+            />
+          </div>
+        </article>
+
+        {/* Product CTA */}
+        <div className="mt-8 rounded-2xl border border-line bg-lavender/60 p-8 text-center shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
+          <h2 className="text-2xl font-black tracking-tight text-navy">
+            Put this advice to work
+          </h2>
+          <p className="mx-auto mt-3 max-w-[480px] text-[15px] leading-relaxed text-navy/70">
+            Build an ATS-friendly resume with Cvyon&apos;s free builder — no signup, no watermark.
+          </p>
+          <Link
+            href="/build"
+            className="mt-5 inline-flex items-center gap-2 rounded-[10px] bg-brand px-[22px] py-3.5 text-[12px] font-extrabold uppercase tracking-wider text-white shadow-[0_8px_18px_rgba(85,72,245,0.22)] transition-transform hover:-translate-y-px"
+          >
+            Build my resume <ArrowRight size={16} />
+          </Link>
+        </div>
       </div>
-    </div>
+
+      {/* Article body typography — styled on v3 tokens since @tailwindcss/typography is not installed */}
+      <style>{`
+        .blog-content { color: var(--color-ink); font-size: 1.0625rem; line-height: 1.8; }
+        .blog-content h1 { font-size: 1.875rem; font-weight: 800; margin: 1.75em 0 0.6em; line-height: 1.25; color: var(--color-navy); letter-spacing: -0.02em; }
+        .blog-content h2 { font-size: 1.5rem; font-weight: 800; margin: 1.75em 0 0.6em; line-height: 1.3; color: var(--color-navy); letter-spacing: -0.02em; }
+        .blog-content h3 { font-size: 1.25rem; font-weight: 700; margin: 1.5em 0 0.5em; line-height: 1.4; color: var(--color-navy); }
+        .blog-content p { margin: 1em 0; }
+        .blog-content ul { list-style-type: disc; padding-left: 1.5em; margin: 1em 0; }
+        .blog-content ol { list-style-type: decimal; padding-left: 1.5em; margin: 1em 0; }
+        .blog-content li { margin: 0.35em 0; }
+        .blog-content a { color: var(--color-brand); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
+        .blog-content a:hover { color: var(--color-brand-deep); }
+        .blog-content blockquote { border-left: 4px solid var(--color-brand); padding: 0.25em 0 0.25em 1.25em; margin: 1.5em 0; color: var(--color-muted); font-style: italic; }
+        .blog-content strong { font-weight: 700; color: var(--color-navy); }
+        .blog-content em { font-style: italic; }
+        .blog-content code { background: var(--color-cream); border: 1px solid var(--color-line); border-radius: 6px; padding: 0.2em 0.45em; font-size: 0.875em; font-family: ui-monospace, monospace; }
+        .blog-content pre { background: var(--color-navy); color: var(--color-cream); padding: 1.25em; border-radius: 16px; overflow-x: auto; margin: 1.5em 0; }
+        .blog-content pre code { background: none; padding: 0; color: inherit; border: none; border-radius: 0; }
+        .blog-content img { max-width: 100%; height: auto; margin: 1.5em 0; border-radius: 16px; border: 1px solid var(--color-line); }
+        .blog-content hr { border: none; border-top: 1px solid var(--color-line); margin: 2.5em 0; }
+      `}</style>
+    </V3Page>
   );
 }

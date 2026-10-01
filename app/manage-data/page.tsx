@@ -1,13 +1,7 @@
-import React from 'react';
-import Link from 'next/link';
-import { Shield, Trash2, Download } from 'lucide-react';
-import type { Metadata } from 'next';
-import { Archivo, Archivo_Black, DM_Sans, Space_Mono } from '@/lib/fonts';
-
-const display = Archivo_Black({ subsets: ["latin"], weight: "400", display: "swap" });
-const head = Archivo({ subsets: ["latin"], weight: ["600", "800", "900"], display: "swap" });
-const body = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"], display: "swap" });
-const mono = Space_Mono({ subsets: ["latin"], weight: ["400", "700"], display: "swap" });
+import Link from "next/link";
+import { Diamond, Download, Trash2 } from "lucide-react";
+import type { Metadata } from "next";
+import { V3Page, V3Eyebrow, V3Pill } from "@/components/v3/V3Chrome";
 
 export const metadata: Metadata = {
   title: 'Manage Your Data — Cvyon',
@@ -18,79 +12,78 @@ export const metadata: Metadata = {
 
 export default function ManageDataPage() {
   return (
-    <div className={`cv-riso relative min-h-screen text-[#141312] bg-[#E8E7E1] overflow-x-hidden flex items-center justify-center p-6 ${body.className}`}
-      style={{ ["--ink" as any]: "#141312", ["--verm" as any]: "#FF4326", ["--cob" as any]: "#2233FF", ["--hi" as any]: "#FFE14D", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
-      <style>{`
-        .cv-riso{font-family:var(--fb)} .cv-riso .fd{font-family:var(--fd)} .cv-riso .fh{font-family:var(--fh)} .cv-riso .fm{font-family:var(--fm)}
-        .cv-riso .hs{box-shadow:7px 7px 0 var(--ink)} .cv-riso .hs-v{box-shadow:7px 7px 0 var(--verm)} .cv-riso .hs-c{box-shadow:6px 6px 0 var(--cob)}
-        .cv-riso .hs-sm{box-shadow:5px 5px 0 var(--ink)}
-        .cv-riso .riso-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: 3px solid var(--ink); background-color: var(--ink); color: #E8E7E1; padding: 0.75rem 1.5rem; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 7px 7px 0 var(--ink); transition: all 0.2s; cursor: pointer; text-decoration: none; }
-        .cv-riso .riso-btn:hover { transform: translate(2px, 2px); box-shadow: none; }
-        .cv-riso .riso-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: 7px 7px 0 var(--ink); }
-        .cv-riso .riso-btn-ghost { background-color: transparent; color: var(--ink); }
-        .cv-riso .riso-card { border: 3px solid var(--ink); background-color: #ffffff; box-shadow: 7px 7px 0 var(--ink); }
-        .cv-riso .riso-input { width: 100%; border: 3px solid var(--ink); background-color: #ffffff; padding: 0.75rem 1rem; font-family: var(--fm); font-size: 0.875rem; color: var(--ink); box-shadow: 4px 4px 0 var(--ink); transition: all 0.2s; outline: none; }
-        .cv-riso .riso-input:focus { box-shadow: none; transform: translate(2px, 2px); border-color: var(--verm); }
-        .cv-riso .riso-label { display: block; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; color: var(--ink); }
-        .cv-riso .riso-chip { display: inline-flex; align-items: center; gap: 0.25rem; border: 2px solid var(--ink); padding: 0.25rem 0.5rem; font-family: var(--fm); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold; color: var(--ink); background: #ffffff; }
-      `}</style>
-
-      <div className="max-w-2xl w-full riso-card p-8 sm:p-12">
-        <div className="flex justify-center mb-6">
-          <div className="bg-[#E8E7E1] p-4 border-[3px] border-[#141312] text-[#2233FF]">
-            <Shield size={48} />
+    <V3Page
+      pageName="manage-data"
+      logoSub="BUILD • GET HIRED"
+      cta={{ label: "Build free →", href: "/build" }}
+    >
+      <div className="mx-auto max-w-[860px]">
+        {/* Hero */}
+        <div className="pb-[30px] pt-[70px] text-center">
+          <div className="mx-auto mb-[18px] grid h-[44px] w-[44px] place-items-center rounded-[12px] bg-lavender text-brand">
+            <Diamond size={22} />
           </div>
+          <V3Eyebrow>Privacy centre</V3Eyebrow>
+          <h1 className="text-[44px] font-extrabold leading-[1.04] tracking-[-0.045em] text-navy md:text-[52px]">
+            Your privacy, your control.
+          </h1>
+          <p className="mx-auto mt-[18px] max-w-[650px] text-[17px] leading-relaxed text-muted">
+            Cvyon is committed to radical transparency. You have complete control over your
+            data.
+          </p>
         </div>
 
-        <h1 className="fd text-3xl tracking-tight text-center mb-4">Your Privacy Matters</h1>
-        <p className="text-[#141312]/70 text-center mb-10 text-sm font-medium">
-          Cvyon is committed to radical transparency. You have complete control over your data. If you opted into our Talent CRM, you can download everything we have on you or delete it permanently.
-        </p>
+        {/* Card with the two panels */}
+        <div className="rounded-[18px] border border-line bg-paper p-6 shadow-[0_16px_38px_rgba(23,27,75,0.09)] md:p-7">
+          <div className="grid grid-cols-1 gap-[28px] md:grid-cols-2">
+            {/* Download my data */}
+            <article className="rounded-[18px] border border-line bg-cream p-[22px]">
+              <div className="grid h-[44px] w-[44px] place-items-center rounded-[12px] bg-lavender text-brand">
+                <Download size={22} />
+              </div>
+              <h3 className="mt-4 text-[20px] font-extrabold leading-[1.04] tracking-[-0.045em] text-navy">
+                Download my data
+              </h3>
+              <p className="mt-2 text-[13px] leading-relaxed text-muted">
+                Request a JSON export of all data associated with your email address in our
+                Talent CRM, including your parsed resume data, location, and metadata.
+              </p>
+              <a
+                href="mailto:support@cvyon.com?subject=Data%20export%20request"
+                className="mt-4 inline-flex items-center justify-center gap-2 rounded-[10px] bg-lavender px-[18px] py-3 text-[12px] font-extrabold text-brand transition-transform hover:-translate-y-px"
+              >
+                Email support@cvyon.com
+              </a>
+            </article>
 
-        <div className="space-y-6">
-          {/* Download Data */}
-          <div className="border-[3px] border-[#141312] bg-white p-6">
-            <div className="flex items-start gap-4">
-              <div className="bg-[#E8E7E1] p-3 border-[3px] border-[#141312] shrink-0 mt-1">
-                <Download size={24} className="text-[#141312]" />
+            {/* Delete my data */}
+            <article className="rounded-[18px] border border-line bg-coral/5 p-[22px]">
+              <div className="grid h-[44px] w-[44px] place-items-center rounded-[12px] bg-coral/10 text-coral">
+                <Trash2 size={22} />
               </div>
-              <div>
-                <h3 className="fh text-lg font-extrabold">Download My Data</h3>
-                <p className="text-sm text-[#141312]/70 mt-1 mb-4">
-                  Request a JSON export of all data associated with your email address in our Talent CRM, including your full parsed resume data, location, and metadata.
-                </p>
-                <div className="border-[3px] border-[#141312] bg-[#E8E7E1] px-4 py-3 text-sm font-bold">
-                  Export and delete requests: email <a href="mailto:support@cvyon.com" className="text-[#2233FF] underline">support@cvyon.com</a>
-                </div>
-              </div>
-            </div>
+              <h3 className="mt-4 text-[20px] font-extrabold leading-[1.04] tracking-[-0.045em] text-navy">
+                Delete my data
+              </h3>
+              <p className="mt-2 text-[13px] leading-relaxed text-muted">
+                Permanently erase your profile, resume data, and all traces of your email
+                from our Talent CRM.
+              </p>
+              <a
+                href="mailto:support@cvyon.com?subject=Data%20deletion%20request"
+                className="mt-4 inline-flex items-center justify-center gap-2 rounded-[10px] bg-coral px-[18px] py-3 text-[12px] font-extrabold text-white transition-transform hover:-translate-y-px"
+              >
+                Email support@cvyon.com
+              </a>
+            </article>
           </div>
 
-          {/* Delete Data */}
-          <div className="border-[3px] border-[#141312] bg-white p-6">
-            <div className="flex items-start gap-4">
-              <div className="bg-[#FF4326]/10 p-3 border-[3px] border-[#FF4326] shrink-0 mt-1">
-                <Trash2 size={24} className="text-[#FF4326]" />
-              </div>
-              <div>
-                <h3 className="fh text-lg font-extrabold">Delete My Data</h3>
-                <p className="text-sm text-[#141312]/70 mt-1 mb-4">
-                  Permanently erase your profile, resume data, and all traces of your email from our Talent CRM. This action cannot be undone.
-                </p>
-                <div className="border-[3px] border-[#141312] bg-[#E8E7E1] px-4 py-3 text-sm font-bold">
-                  Export and delete requests: email <a href="mailto:support@cvyon.com" className="text-[#2233FF] underline">support@cvyon.com</a>
-                </div>
-              </div>
-            </div>
+          <div className="mt-[30px] text-center">
+            <Link href="/build">
+              <V3Pill>← Return to builder</V3Pill>
+            </Link>
           </div>
-        </div>
-
-        <div className="mt-10 text-center">
-          <Link href="/build" className="fm text-sm font-bold text-[#141312]/70 hover:text-[#FF4326] transition-colors uppercase tracking-[0.18em]">
-            ← Return to Builder
-          </Link>
         </div>
       </div>
-    </div>
+    </V3Page>
   );
 }

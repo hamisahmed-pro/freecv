@@ -15,27 +15,27 @@ export default function BlogError({
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
-      <div className="max-w-md w-full bg-white rounded-3xl border border-gray-200 shadow-xl p-10 text-center">
-        <p className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 mb-4">
+    <div className="flex min-h-screen items-center justify-center bg-cream px-6 font-brand">
+      <div className="w-full max-w-md rounded-2xl border border-line bg-paper p-10 text-center shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
+        <p className="mb-4 text-xs font-black uppercase tracking-[0.2em] text-muted">
           Article unavailable
         </p>
-        <h1 className="text-2xl font-black uppercase tracking-tight mb-3">
+        <h1 className="mb-3 text-2xl font-black tracking-tight text-navy">
           Couldn&apos;t load this article
         </h1>
-        <p className="text-gray-600 mb-8">
+        <p className="mb-8 text-muted">
           Something went wrong on our end. Please try again in a moment.
         </p>
-        <div className="flex gap-3 justify-center">
+        <div className="flex justify-center gap-3">
           <button
             onClick={() => reset()}
-            className="px-6 py-3 bg-black text-white text-sm font-bold uppercase tracking-widest rounded-full hover:bg-gray-800 transition-colors"
+            className="rounded-full bg-navy px-6 py-3 text-sm font-bold uppercase tracking-widest text-white transition-transform hover:-translate-y-px hover:bg-coral"
           >
             Try again
           </button>
           <Link
             href="/blog"
-            className="px-6 py-3 border-2 border-black text-sm font-bold uppercase tracking-widest rounded-full hover:bg-black hover:text-white transition-colors"
+            className="rounded-full border border-line bg-paper px-6 py-3 text-sm font-bold uppercase tracking-widest text-navy transition-all hover:border-navy hover:bg-navy hover:text-white"
           >
             All articles
           </Link>

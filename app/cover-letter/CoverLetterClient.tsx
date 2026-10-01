@@ -1,17 +1,16 @@
 "use client";
 
 import React, { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
 import { Sparkles, FileText, Loader2, Copy, CheckCircle2, Navigation } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
-import { cn } from '@/lib/utils';
-import { Archivo, Archivo_Black, DM_Sans, Space_Mono } from '@/lib/fonts';
+import { V3Page, V3Eyebrow, V3Pill } from "@/components/v3/V3Chrome";
 
-const display = Archivo_Black({ subsets: ["latin"], weight: "400", display: "swap" });
-const head = Archivo({ subsets: ["latin"], weight: ["600", "800", "900"], display: "swap" });
-const body = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"], display: "swap" });
-const mono = Space_Mono({ subsets: ["latin"], weight: ["400", "700"], display: "swap" });
+const TONES = [
+  { value: 'professional', label: 'Professional & Direct' },
+  { value: 'confident', label: 'Confident & Bold' },
+  { value: 'enthusiastic', label: 'Enthusiastic & Passionate' },
+  { value: 'creative', label: 'Creative & Unconventional' },
+];
 
 export default function CoverLetterClient() {
   const [resumeText, setResumeText] = useState('');
@@ -29,7 +28,7 @@ export default function CoverLetterClient() {
     setError('');
 
     try {
-      trackEvent('cover_letter_start', tone);
+      trackEvent('cover_letter_start', undefined, { tone });
       const res = await fetch('/api/ai/cover-letter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -54,156 +53,124 @@ export default function CoverLetterClient() {
     navigator.clipboard.writeText(result);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    trackEvent('cover_letter_copied', tone);
+    trackEvent('cover_letter_copied', undefined, { tone });
   };
 
+  const inputCls =
+    "w-full rounded-[10px] border border-line bg-paper px-[13px] py-3 text-[14px] text-navy outline-none transition-shadow placeholder:text-muted/60 focus:border-brand focus:shadow-[0_0_0_4px_rgba(85,72,245,0.1)]";
+
   return (
-    <div className={cn("cv-riso relative min-h-screen text-[#141312] bg-[#E8E7E1] overflow-x-hidden selection:bg-[#2233FF] selection:text-white", body.className)}
-      style={{ ["--ink" as any]: "#141312", ["--verm" as any]: "#FF4326", ["--cob" as any]: "#2233FF", ["--hi" as any]: "#FFE14D", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
-      <style>{`
-        .cv-riso{font-family:var(--fb)} .cv-riso .fd{font-family:var(--fd)} .cv-riso .fh{font-family:var(--fh)} .cv-riso .fm{font-family:var(--fm)}
-        .cv-riso .hs{box-shadow:7px 7px 0 var(--ink)} .cv-riso .hs-v{box-shadow:7px 7px 0 var(--verm)} .cv-riso .hs-c{box-shadow:6px 6px 0 var(--cob)}
-        .cv-riso .hs-sm{box-shadow:5px 5px 0 var(--ink)}
-        .cv-riso .riso-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: 3px solid var(--ink); background-color: var(--ink); color: #E8E7E1; padding: 0.75rem 1.5rem; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 7px 7px 0 var(--ink); transition: all 0.2s; cursor: pointer; text-decoration: none; }
-        .cv-riso .riso-btn:hover { transform: translate(2px, 2px); box-shadow: none; }
-        .cv-riso .riso-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: 7px 7px 0 var(--ink); }
-        .cv-riso .riso-btn-ghost { background-color: transparent; color: var(--ink); }
-        .cv-riso .riso-card { border: 3px solid var(--ink); background-color: #ffffff; box-shadow: 7px 7px 0 var(--ink); }
-        .cv-riso .riso-input { width: 100%; border: 3px solid var(--ink); background-color: #ffffff; padding: 0.75rem 1rem; font-family: var(--fm); font-size: 0.875rem; color: var(--ink); box-shadow: 4px 4px 0 var(--ink); transition: all 0.2s; outline: none; }
-        .cv-riso .riso-input:focus { box-shadow: none; transform: translate(2px, 2px); border-color: var(--verm); }
-        .cv-riso .riso-label { display: block; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; color: var(--ink); }
-        .cv-riso .riso-chip { display: inline-flex; align-items: center; gap: 0.25rem; border: 2px solid var(--ink); padding: 0.25rem 0.5rem; font-family: var(--fm); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold; color: var(--ink); background: #ffffff; }
-      `}</style>
+    <V3Page
+      pageName="cover_letter"
+      cta={{ label: "Build free →", href: "/build" }}
+    >
+      {/* ─── HERO ─── */}
+      <div className="mx-auto max-w-[900px] py-10 text-center md:py-[70px]">
+        <V3Eyebrow>AI tool</V3Eyebrow>
+        <div className="mb-5 flex justify-center">
+          <V3Pill><Sparkles size={12} /> 100% free tool</V3Pill>
+        </div>
+        <h1 className="mx-auto max-w-[760px] text-[44px] font-extrabold leading-[1.04] tracking-[-0.045em] text-navy sm:text-6xl lg:text-7xl">
+          AI Cover Letter <span className="text-brand">Generator</span>
+        </h1>
+        <p className="mx-auto mt-5 max-w-[650px] text-[17px] leading-relaxed text-muted">
+          Paste your resume and the job description. Our AI will write a highly tailored, conversion-optimized cover letter in 5 seconds.
+        </p>
+      </div>
 
-      {/* Brutalist Nav */}
-      <nav className="border-b-[3px] border-[#141312] bg-[#E8E7E1] sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/logo-light-no-background.png"
-              alt="Cvyon"
-              width={240}
-              height={80}
-              priority
-              className="h-10 sm:h-12 md:h-14 w-auto object-contain transition-all"
+      {/* ─── TOOL ─── */}
+      <div className="mx-auto grid max-w-[1120px] gap-[18px] pb-[50px] lg:grid-cols-2 md:pb-[72px]">
+        {/* Input form */}
+        <div className="flex flex-col gap-6 rounded-[18px] border border-line bg-paper p-6 shadow-[0_16px_38px_rgba(23,27,75,0.09)] md:p-8">
+          <div>
+            <label className="mb-2 flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.13em] text-navy/70">
+              <FileText size={15} className="text-brand" /> 1. Paste your resume
+            </label>
+            <textarea
+              value={resumeText}
+              onChange={(e) => setResumeText(e.target.value)}
+              placeholder="Paste your full resume text here..."
+              className={`${inputCls} h-40 resize-none`}
             />
-          </Link>
-          <div className="flex gap-4">
-            <Link href="/build" className="hidden sm:flex bg-[#141312] text-[#E8E7E1] border-[3px] border-[#141312] hover:bg-[#FF4326] hover:text-[#141312] px-6 py-2.5 rounded-none fm font-bold uppercase tracking-wider text-sm transition-transform active:scale-95 hs items-center gap-2">
-              <FileText size={16} /> Resume Builder
-            </Link>
           </div>
-        </div>
-      </nav>
 
-      <main className="max-w-5xl mx-auto px-4 py-12 lg:py-20">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-[#2233FF] text-white px-4 py-1.5 rounded-full fm text-xs font-bold uppercase tracking-widest border-[3px] border-[#141312] mb-6 shadow-[2px_2px_0_#141312]">
-            <Sparkles size={14} /> 100% Free Tool
+          <div>
+            <label className="mb-2 flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.13em] text-navy/70">
+              <Navigation size={15} className="text-brand" /> 2. Paste job description
+            </label>
+            <textarea
+              value={jobDescription}
+              onChange={(e) => setJobDescription(e.target.value)}
+              placeholder="Paste the job description you are applying for..."
+              className={`${inputCls} h-40 resize-none`}
+            />
           </div>
-          <h1 className="fd text-5xl md:text-7xl uppercase tracking-tight leading-[0.9] mb-6">
-            AI Cover Letter <br />
-            <span className="text-[#2233FF]">Generator</span>
-          </h1>
-          <p className="text-xl font-medium text-[#141312]/70 max-w-2xl mx-auto">
-            Paste your resume and the job description. Our AI will write a highly tailored, conversion-optimized cover letter in 5 seconds.
-          </p>
-        </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Input Form */}
-          <div className="bg-white border-[3px] border-[#141312] p-6 lg:p-8 hs flex flex-col gap-6">
-            <div>
-              <label className="fh flex items-center gap-2 text-sm font-extrabold uppercase tracking-widest mb-2">
-                <FileText size={16} /> 1. Paste Your Resume
-              </label>
-              <textarea
-                value={resumeText}
-                onChange={(e) => setResumeText(e.target.value)}
-                placeholder="Paste your full resume text here..."
-                className="w-full h-40 bg-white border-[3px] border-[#141312] p-4 text-sm font-medium focus:outline-none focus:border-[#FF4326] focus:translate-x-[2px] focus:translate-y-[2px] transition-all custom-scrollbar resize-none"
-              />
-            </div>
-
-            <div>
-              <label className="fh flex items-center gap-2 text-sm font-extrabold uppercase tracking-widest mb-2">
-                <Navigation size={16} /> 2. Paste Job Description
-              </label>
-              <textarea
-                value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-                placeholder="Paste the job description you are applying for..."
-                className="w-full h-40 bg-white border-[3px] border-[#141312] p-4 text-sm font-medium focus:outline-none focus:border-[#FF4326] focus:translate-x-[2px] focus:translate-y-[2px] transition-all custom-scrollbar resize-none"
-              />
-            </div>
-
-            <div>
-              <label className="fh flex items-center gap-2 text-sm font-extrabold uppercase tracking-widest mb-2">
-                3. Select Tone
-              </label>
-              <select
-                value={tone}
-                onChange={(e) => setTone(e.target.value)}
-                className="w-full bg-white border-[3px] border-[#141312] p-4 text-sm font-bold uppercase tracking-wider focus:outline-none focus:border-[#FF4326] cursor-pointer appearance-none"
-              >
-                <option value="professional">Professional & Direct</option>
-                <option value="confident">Confident & Bold</option>
-                <option value="enthusiastic">Enthusiastic & Passionate</option>
-                <option value="creative">Creative & Unconventional</option>
-              </select>
-            </div>
-
-            {error && (
-              <div className="bg-white border-[3px] border-[#FF4326] text-[#141312] p-4 font-bold text-sm">
-                {error}
-              </div>
-            )}
-
-            <button
-              onClick={handleGenerate}
-              disabled={loading || !resumeText || !jobDescription}
-              className="w-full bg-[#FF4326] text-white border-[3px] border-[#141312] py-5 fh font-extrabold uppercase tracking-widest text-lg transition-all shadow-[7px_7px_0_#141312] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-3 mt-2"
+          <div>
+            <label className="mb-2 flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.13em] text-navy/70">
+              3. Select tone
+            </label>
+            <select
+              value={tone}
+              onChange={(e) => setTone(e.target.value)}
+              className={`${inputCls} cursor-pointer appearance-none font-bold`}
             >
-              {loading ? (
-                <><Loader2 size={24} className="animate-spin" /> Generating...</>
-              ) : (
-                <><Sparkles size={24} /> Generate Cover Letter</>
-              )}
-            </button>
+              {TONES.map((t) => (
+                <option key={t.value} value={t.value}>{t.label}</option>
+              ))}
+            </select>
           </div>
 
-          {/* Result Output */}
-          <div className="bg-[#141312] text-white border-[3px] border-[#141312] shadow-[7px_7px_0_#FF4326] p-6 lg:p-8 flex flex-col">
-            <div className="flex items-center justify-between mb-6 pb-6 border-b-[3px] border-[#E8E7E1]/20">
-              <h2 className="fh text-xl font-extrabold uppercase tracking-widest flex items-center gap-2">
-                <FileText size={20} className="text-[#FF4326]" /> Your Cover Letter
-              </h2>
-              {result && (
-                <button
-                  onClick={copyToClipboard}
-                  className="flex items-center gap-2 bg-[#2233FF] hover:bg-[#FF4326] px-4 py-2 fm text-xs font-bold uppercase tracking-widest transition-colors border-[3px] border-white shadow-[2px_2px_0_white]"
-                >
-                  {copied ? <CheckCircle2 size={14} /> : <Copy size={14} />}
-                  {copied ? 'Copied!' : 'Copy Text'}
-                </button>
-              )}
+          {error && (
+            <div className="rounded-[10px] border border-coral/50 bg-coral/10 p-4 text-sm font-bold text-navy">
+              {error}
             </div>
+          )}
 
-            {result ? (
-              <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 text-[#E8E7E1]/80 whitespace-pre-wrap font-medium leading-relaxed">
-                {result}
-              </div>
+          <button
+            onClick={handleGenerate}
+            disabled={loading || !resumeText || !jobDescription}
+            className="mt-2 flex w-full items-center justify-center gap-3 rounded-[10px] bg-coral px-[18px] py-4 text-[12px] font-extrabold uppercase tracking-[0.1em] text-white transition-transform hover:-translate-y-px disabled:opacity-50"
+          >
+            {loading ? (
+              <><Loader2 size={20} className="animate-spin" /> Generating...</>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-center text-[#E8E7E1]/50">
-                <FileText size={64} className="mb-4" />
-                <p className="fh font-extrabold uppercase tracking-widest text-sm max-w-[200px]">
-                  Your AI-generated cover letter will appear here
-                </p>
-              </div>
+              <><Sparkles size={20} /> Generate cover letter</>
+            )}
+          </button>
+        </div>
+
+        {/* Result output */}
+        <div className="flex flex-col rounded-[18px] bg-navy p-6 text-white shadow-[0_16px_38px_rgba(23,27,75,0.09)] md:p-8">
+          <div className="mb-6 flex items-center justify-between border-b border-white/15 pb-6">
+            <h2 className="flex items-center gap-2 text-[13px] font-black uppercase tracking-[0.13em]">
+              <FileText size={18} className="text-coral" /> Your cover letter
+            </h2>
+            {result && (
+              <button
+                onClick={copyToClipboard}
+                className="flex items-center gap-2 rounded-[10px] bg-brand px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.1em] text-white transition-transform hover:-translate-y-px"
+              >
+                {copied ? <CheckCircle2 size={14} /> : <Copy size={14} />}
+                {copied ? 'Copied!' : 'Copy text'}
+              </button>
             )}
           </div>
+
+          {result ? (
+            <div className="flex-1 overflow-y-auto whitespace-pre-wrap pr-2 font-medium leading-relaxed text-[#bfc2d5]">
+              {result}
+            </div>
+          ) : (
+            <div className="flex flex-1 flex-col items-center justify-center text-center text-white/40">
+              <FileText size={64} className="mb-4" />
+              <p className="max-w-[220px] text-[12px] font-extrabold uppercase tracking-[0.13em]">
+                Your AI-generated cover letter will appear here
+              </p>
+            </div>
+          )}
         </div>
-      </main>
-    </div>
+      </div>
+    </V3Page>
   );
 }

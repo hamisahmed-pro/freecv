@@ -34,10 +34,26 @@ export default function ClientPreview() {
   }, [templateParam, data]);
 
   if (!templateParam || !templates[templateParam]) {
-    return <div>Invalid template</div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-cream px-4 font-brand">
+        <div className="max-w-sm rounded-2xl border border-line bg-paper p-8 text-center shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
+          <p className="text-lg font-extrabold tracking-tight text-navy">Invalid template</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
+            This preview link doesn&apos;t point to a valid resume template.
+          </p>
+        </div>
+      </div>
+    );
   }
 
-  if (!url) return <div id="pdf-generating">Generating PDF...</div>;
+  if (!url) return (
+    <div id="pdf-generating" className="flex min-h-screen items-center justify-center bg-cream px-4 font-brand">
+      <div className="flex items-center gap-3 rounded-2xl border border-line bg-paper px-6 py-5 shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-line border-t-brand" aria-hidden="true" />
+        <p className="text-sm font-bold text-navy">Generating PDF…</p>
+      </div>
+    </div>
+  );
 
   return (
     <div id="raw-template-container" style={{ width: '816px', height: '1056px', margin: 0, padding: 0, overflow: 'hidden', backgroundColor: 'white' }}>

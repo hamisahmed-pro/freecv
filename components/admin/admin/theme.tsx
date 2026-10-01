@@ -14,27 +14,26 @@ export interface Tokens {
   onVerm: string;
 }
 
-/* Riso palette. Dark mode keeps the hues PUNCHY (only lifted where ink-on-ink
-   would fail contrast) so it reads as the SAME family as the front-end, just
-   inverted. Light mode = the literal front-end bone/ink/verm/cob values. */
+/* Cvyon v3 palette for the admin tool. Dark mode stays dark (navy family);
+   light mode uses the front-end cream/paper/navy values. */
 export const T: Record<Mode, Tokens> = {
   dark: {
     mode: "dark",
-    bg: "#141312", rail: "#0e0d0c", surface: "#1b1916", surface2: "#242019", inset: "#0c0b0a",
-    border: "#322d27", borderStrong: "#E8E7E1",
-    text: "#F2ECE1", muted: "#9a9187", faint: "#6a6258",
-    verm: "#FF4326", cob: "#4F73FF", green: "#2FB877", gold: "#FFC83D", hi: "#FFE14D",
-    shadow: "#000000", grid: "rgba(242,236,225,0.05)", dot: "rgba(242,236,225,0.06)",
-    ring: "#4F73FF", onVerm: "#F2ECE1",
+    bg: "#151a46", rail: "#10143a", surface: "#1c2154", surface2: "#252b66", inset: "#0f1233",
+    border: "#2e3577", borderStrong: "#f6f5ef",
+    text: "#F2ECE1", muted: "#a3a7c8", faint: "#6e74a3",
+    verm: "#ff604b", cob: "#5548f5", green: "#24c9bd", gold: "#ffd85a", hi: "#ffd85a",
+    shadow: "rgba(0,0,0,0.45)", grid: "rgba(242,236,225,0.05)", dot: "rgba(242,236,225,0.06)",
+    ring: "#5548f5", onVerm: "#ffffff",
   },
   light: {
     mode: "light",
-    bg: "#E8E7E1", rail: "#dedbd2", surface: "#ffffff", surface2: "#f1eee6", inset: "#f6f4ee",
-    border: "#cdc8bd", borderStrong: "#141312",
-    text: "#141312", muted: "#5d564c", faint: "#8c8478",
-    verm: "#FF4326", cob: "#2233FF", green: "#0E8A4B", gold: "#b07d18", hi: "#d8a400",
-    shadow: "#141312", grid: "rgba(20,19,18,0.05)", dot: "rgba(20,19,18,0.07)",
-    ring: "#2233FF", onVerm: "#F2ECE1",
+    bg: "#f6f5ef", rail: "#e9e9f1", surface: "#ffffff", surface2: "#f1f2f9", inset: "#eef0f7",
+    border: "#dddde5", borderStrong: "#151a46",
+    text: "#151a46", muted: "#73778c", faint: "#a8abc0",
+    verm: "#ff604b", cob: "#5548f5", green: "#24c9bd", gold: "#b07d18", hi: "#ffd85a",
+    shadow: "rgba(23,27,75,0.10)", grid: "rgba(21,26,70,0.05)", dot: "rgba(21,26,70,0.07)",
+    ring: "#5548f5", onVerm: "#ffffff",
   },
 };
 
@@ -65,7 +64,7 @@ export function ThemeToggle() {
       onClick={() => setMode(mode === "dark" ? "light" : "dark")}
       aria-label="Toggle theme"
       title={mode === "dark" ? "Switch to light" : "Switch to dark"}
-      className="grid h-9 w-9 shrink-0 place-items-center border-2 transition-colors"
+      className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] border transition-colors"
       style={{ borderColor: t.border, background: t.inset, color: t.text }}
     >
       {mode === "dark" ? <Sun size={15} /> : <Moon size={15} />}
