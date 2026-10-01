@@ -7,7 +7,6 @@ import {
   Packer,
   Paragraph,
   TextRun,
-  ImageRun,
   AlignmentType,
   BorderStyle,
   TabStopType,
@@ -306,32 +305,6 @@ export async function POST(request: Request) {
     // -- Header: name / title / contact (mirrors the preview header) ---------
     const fullName = cleanText(personalInfo.fullName);
     const jobTitle = cleanText(personalInfo.jobTitle);
-    // Profile photo (data URL from the builder). Rendered as a centered
-    // ~1.1in image above the name, like photo templates do on screen.
-    const photoSrc = typeof personalInfo.profilePicture === 'string' ? personalInfo.profilePicture : '';
-    if (photoSrc.startsWith('data:image/')) {
-      try {
-        const base64 = photoSrc.slice(photoSrc.indexOf(',') + 1);
-        const buffer = Buffer.from(base64, 'base64');
-        if (buffer.length > 0 && buffer.length < 8 * 1024 * 1024) {
-          children.push(
-            new Paragraph({
-              alignment: AlignmentType.CENTER,
-              spacing: { after: 120 },
-              children: [
-                new ImageRun({
-                  type: "png",
-                  data: buffer,
-                  transformation: { width: 110, height: 110 },
-                }),
-              ],
-            })
-          );
-        }
-      } catch {
-        /* photo decode failed — skip it, keep the text header */
-      }
-    }
     if (fullName) {
       children.push(
         new Paragraph({

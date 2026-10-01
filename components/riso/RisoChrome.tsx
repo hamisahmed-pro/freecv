@@ -38,7 +38,7 @@ export function usePageView(page: string) {
     import("@/lib/analytics")
       .then((m: any) => {
         if (alive && typeof m?.trackEvent === "function") {
-          m.trackEvent("page_view", undefined, { page });
+          m.trackEvent("page_view", page);
         }
       })
       .catch(() => {

@@ -100,21 +100,15 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </div>
 
         <article className="mt-8 overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
-          {(() => {
-            const img = post.header_image;
-            const src = (img && typeof img === 'string' && img.startsWith('http') && !img.includes('placeholder'))
-              ? img
-              : 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=1200&q=80';
-            return (
-              <div className="aspect-[2/1] w-full overflow-hidden border-b border-line">
-                <img
-                  src={src}
-                  alt={post.title}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            );
-          })()}
+          {post.header_image && (
+            <div className="aspect-[2/1] w-full overflow-hidden border-b border-line">
+              <img
+                src={post.header_image}
+                alt={post.title}
+                className="h-full w-full object-cover"
+              />
+            </div>
+          )}
 
           {/* Content with proper HTML rendering (TipTap-authored, sanitized) */}
           <div className="px-6 py-8 sm:px-10 sm:py-10">

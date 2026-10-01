@@ -9,10 +9,10 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { temporal } from 'zundo';
 import {
-  User, Briefcase, GraduationCap, Wrench, Plus, Trash2, Download, X, Eye, EyeOff, Layout,
+  User, Briefcase, GraduationCap, Wrench, Plus, Trash2, Download, X, Eye, Layout,
   FolderOpen, Award, Users, Paintbrush, Sparkles, Loader2, GripVertical, FileText,
-  BarChart3, RefreshCw, Undo2, Redo2, ChevronDown, ChevronUp, ZoomIn, ZoomOut, Upload, Share2,
-  Pipette, Check, ArrowLeft, ArrowRight, FileDown, Target
+  BarChart3, RefreshCw, Undo2, Redo2, ChevronDown, ZoomIn, ZoomOut, Upload, Share2,
+  Pipette, Check, ArrowLeft, ArrowRight, FileDown
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { clsx, type ClassValue } from 'clsx';
@@ -40,31 +40,6 @@ function cn(...inputs: ClassValue[]) {
 
 import { useResumeStore, initialData, type ResumeData, type PersonalInfo, type Experience, type Education, type Skill, type Project, type Certification, type CustomSection, type CustomSectionItem, type Reference, type ResumeSectionId, DEFAULT_SECTION_ORDER } from '@/store/useResumeStore';
 import { setRecruiterConsent } from '@/lib/recruiter-api';
-
-// --- Section header tools: visibility eye + up/down ordering (v3 style) ---
-// Restored from the pre-redesign builder. The eye toggles the section in the
-// resume OUTPUT (preview/PDF/DOCX); up/down reorders via the store's
-// sectionOrder, which templates honor through orderSections().
-const SectionHeaderTools = ({ id, isHidden, isFirst, isLast, onToggle, onMove }: {
-  id: ResumeSectionId; isHidden: boolean; isFirst: boolean; isLast: boolean;
-  onToggle: (id: ResumeSectionId) => void; onMove: (id: ResumeSectionId, dir: 'up' | 'down') => void;
-}) => {
-  const btn = "p-2 rounded-lg border border-[#dddde5] bg-white text-[#151a46]/60 hover:text-[#151a46] hover:border-[#5548f5] hover:bg-[#eeecff] transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-[#dddde5] disabled:hover:bg-white disabled:hover:text-[#151a46]/60";
-  return (
-    <div className="flex items-center gap-1.5">
-      <button type="button" onClick={() => onMove(id, 'up')} disabled={isFirst} title="Move section up" aria-label="Move section up" className={btn}>
-        <ChevronUp size={14} />
-      </button>
-      <button type="button" onClick={() => onMove(id, 'down')} disabled={isLast} title="Move section down" aria-label="Move section down" className={btn}>
-        <ChevronDown size={14} />
-      </button>
-      <button type="button" onClick={() => onToggle(id)} title={isHidden ? 'Show section in resume' : 'Hide section from resume'} aria-label={isHidden ? 'Show section in resume' : 'Hide section from resume'} aria-pressed={isHidden}
-        className={cn(btn, isHidden && "bg-[#151a46]/10 border-[#151a46]/20")}>
-        {isHidden ? <EyeOff size={14} /> : <Eye size={14} />}
-      </button>
-    </div>
-  );
-};
 
 // --- v3 primitives ---
 const Input = ({ label, ...props }: any) => (
@@ -144,7 +119,7 @@ const HTMLPreview = ({ Tmpl, data }: { Tmpl: any, data: any }) => {
     <div ref={containerRef} className="w-full h-full bg-[#f6f5ef] flex justify-center overflow-auto p-4 sm:p-8 cv-riso custom-scrollbar">
       <div
         data-cvyon-template-stage
-        className={cn("bg-white shadow-[0_12px_40px_rgba(21,26,70,.14)] rounded-lg overflow-hidden flex-shrink-0 relative border border-[#dddde5]", data.density === 'compact' && "density-compact")}
+        className="bg-white shadow-[0_12px_40px_rgba(21,26,70,.14)] rounded-lg overflow-hidden flex-shrink-0 relative border border-[#dddde5]"
         style={{ width: '816px', height: '1056px', transform: `scale(${scale})`, transformOrigin: 'top center', marginBottom: `-${1056 * (1 - scale)}px`, '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
       >
         <Tmpl data={data} themeColor={data.theme?.color || '#2563eb'} />
@@ -172,9 +147,8 @@ export default function FreeCVApp() {
     addSkill, removeSkill,
     toggleProjects, addProject, updateProject, removeProject,
     toggleCertifications, addCertification, updateCertification, removeCertification,
-    toggleReferences, addReference, updateReference, removeReference, setConsents, setDensity,
-    reorderExperience, reorderEducation, reorderSkills, setAllData, addCustomSection, updateCustomSectionTitle, removeCustomSection, addCustomSectionItem, updateCustomSectionItem, removeCustomSectionItem, reorderCustomSections, reorderCustomSectionItems,
-    toggleSectionVisibility, moveSection
+    toggleReferences, addReference, updateReference, removeReference, setConsents,
+    reorderExperience, reorderEducation, reorderSkills, setAllData, addCustomSection, updateCustomSectionTitle, removeCustomSection, addCustomSectionItem, updateCustomSectionItem, removeCustomSectionItem, reorderCustomSections, reorderCustomSectionItems
   } = useResumeStore();
 
   const data = useMemo(() => ({
@@ -238,13 +212,6 @@ export default function FreeCVApp() {
   const [isRewriterOpen, setIsRewriterOpen] = useState(false);
   const [rewriteTone, setRewriteTone] = useState('Executive');
   const [isRewriting, setIsRewriting] = useState(false);
-
-  // Tailor to Job (restored from pre-redesign builder)
-  const [isTailorOpen, setIsTailorOpen] = useState(false);
-  const [tailorJobDesc, setTailorJobDesc] = useState('');
-  const [tailorResult, setTailorResult] = useState<any>(null);
-  const [isTailorLoading, setIsTailorLoading] = useState(false);
-  const [tailorApplied, setTailorApplied] = useState<{ summary: boolean; skills: string[]; bullets: number[] }>({ summary: false, skills: [], bullets: [] });
 
   const [suggestedSkills, setSuggestedSkills] = useState<string[]>([]);
   const [isLoadingSkills, setIsLoadingSkills] = useState(false);
@@ -366,11 +333,9 @@ export default function FreeCVApp() {
     else if (type === 'education') reorderEducation(source.index, destination.index);
     else if (type === 'skills') reorderSkills(source.index, destination.index);
     else if (type === 'custom-item') {
-      // droppableId is `custom-${section.id}`; items stay within their section.
-      const srcId = String(source.droppableId || '').replace(/^custom-/, '');
-      const dstId = String(destination.droppableId || '').replace(/^custom-/, '');
-      if (!srcId || srcId !== dstId) return; // reject cross-section moves
-      reorderCustomSectionItems(srcId, source.index, destination.index);
+      // droppableId is `custom-${section.id}`
+      const sectionId = String(result.droppableId || '').replace(/^custom-/, '');
+      if (sectionId) reorderCustomSectionItems(sectionId, source.index, destination.index);
     }
   };
 
@@ -426,31 +391,9 @@ export default function FreeCVApp() {
 
   useEffect(() => {
     setIsHydrated(true);
-    trackEvent('page_view', undefined, { page: 'build' });
+    trackEvent('page_view', 'build');
+    trackEvent('milestone_started');
   }, []);
-
-  // milestone_started fires on the FIRST MEANINGFUL EDIT, not on page mount.
-  // (Mount-time firing inflated "started" with bounces and SEO landers.)
-  const startedFiredRef = useRef(false);
-  const initialDataRef = useRef<string | null>(null);
-  useEffect(() => {
-    if (!isHydrated || startedFiredRef.current) return;
-    const snapshot = JSON.stringify({
-      pi: storeData.personalInfo,
-      exp: storeData.experience,
-      edu: storeData.education,
-      skills: storeData.skills,
-      summary: storeData.summary,
-    });
-    if (initialDataRef.current === null) {
-      initialDataRef.current = snapshot;
-      return;
-    }
-    if (snapshot !== initialDataRef.current) {
-      startedFiredRef.current = true;
-      trackEvent('milestone_started', data.templateId);
-    }
-  }, [isHydrated, storeData, data.templateId]);
 
   useEffect(() => {
     if (!isHydrated || onboardingAppliedRef.current) return;
@@ -474,11 +417,6 @@ export default function FreeCVApp() {
       skills: nextSkills
     });
     onboardingAppliedRef.current = true;
-    // Close the SEO-flow tracking gap: users arriving from /templates/[slug]
-    // silently get this template applied — record it like a gallery selection.
-    if (template && templates[template]) {
-      trackEvent('template_selected', template, { source: 'seo' });
-    }
     window.history.replaceState({}, '', window.location.pathname);
   }, [isHydrated, data, setAllData]);
 
@@ -510,9 +448,9 @@ export default function FreeCVApp() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) { e.preventDefault(); useResumeStore.temporal.getState().undo(); }
       if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); useResumeStore.temporal.getState().redo(); }
-      // Escape dismisses the ATS grader / AI rewriter / tailor / template gallery /
+      // Escape dismisses the ATS grader / AI rewriter / template gallery /
       // download overlays (the jobs modal handles its own Escape via its portal).
-      if (e.key === 'Escape') { setIsATSOpen(false); setIsRewriterOpen(false); setIsTailorOpen(false); setIsGalleryOpen(false); setIsDownloadModalOpen(false); }
+      if (e.key === 'Escape') { setIsATSOpen(false); setIsRewriterOpen(false); setIsGalleryOpen(false); setIsDownloadModalOpen(false); }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -559,54 +497,6 @@ export default function FreeCVApp() {
     setIsRewriting(false);
   };
 
-  // ---- Tailor to Job (restored from pre-redesign builder) ----
-  const handleTailor = async () => {
-    if (!tailorJobDesc.trim()) return;
-    setIsTailorLoading(true);
-    setTailorResult(null);
-    setTailorApplied({ summary: false, skills: [], bullets: [] });
-    try {
-      const resumePayload = { ...data, personalInfo: { ...data.personalInfo, profilePicture: undefined } };
-      const res = await fetch('/api/ai/tailor-resume', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ resumeData: resumePayload, jobDescription: tailorJobDesc }) });
-      if (!res.ok) {
-        const text = await res.text(); let errMsg = '';
-        try { const err = JSON.parse(text); errMsg = err.error || `API error: ${res.status}`; } catch (e) { errMsg = text.includes('An error') ? 'The AI request timed out. Please try again.' : `API error: ${res.status}`; }
-        throw new Error(errMsg);
-      }
-      const resData = await res.json();
-      setTailorResult(resData);
-    } catch (err: any) { toast.error('Tailoring failed: ' + err.message); }
-    setIsTailorLoading(false);
-  };
-
-  const applyTailorSummary = () => {
-    if (!tailorResult?.summary) return;
-    updateSummary(tailorResult.summary);
-    setTailorApplied(prev => ({ ...prev, summary: true }));
-    toast.success('Summary updated');
-  };
-
-  const applyTailorSkill = (skill: string) => {
-    addSkill(skill);
-    setTailorApplied(prev => ({ ...prev, skills: [...prev.skills, skill] }));
-    toast.success(`Skill added: ${skill}`);
-  };
-
-  const applyTailorBullet = (index: number) => {
-    const b = tailorResult?.bulletImprovements?.[index];
-    if (!b) return;
-    const exp = data.experience.find(e => e.id === b.experienceId);
-    if (!exp) { toast.error('That experience entry no longer exists.'); return; }
-    // Match the bullet line exactly; the AI was instructed to copy it verbatim.
-    const lines = (exp.description || '').split('\n');
-    const lineIdx = lines.findIndex(l => l.trim() === (b.original || '').trim());
-    if (lineIdx === -1) { toast.error('Could not find the original bullet — it may have been edited.'); return; }
-    lines[lineIdx] = b.improved;
-    updateExperience(b.experienceId, { description: lines.join('\n') });
-    setTailorApplied(prev => ({ ...prev, bullets: [...prev.bullets, index] }));
-    toast.success('Bullet updated');
-  };
-
   const handleSuggestSkills = async () => {
     if (!data.personalInfo.jobTitle) return;
     setIsLoadingSkills(true);
@@ -639,9 +529,6 @@ export default function FreeCVApp() {
   };
 
   const handleDocxExport = async () => {
-    const telemetry = getTelemetryMetadata('docx');
-    const deviceType = typeof window !== 'undefined' && window.innerWidth < 1024 ? 'mobile' : 'desktop';
-    trackEvent('download_attempted', data.templateId, { ...telemetry, device_type: deviceType, density: data.density || 'comfortable' });
     try {
       if (isRealUserEmail(data.personalInfo.email)) {
         try {
@@ -691,12 +578,8 @@ export default function FreeCVApp() {
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 5000);
       trackEvent('milestone_downloaded', data.templateId, getTelemetryMetadata('docx'));
-      trackEvent('download_completed', data.templateId, { ...telemetry, device_type: deviceType, density: data.density || 'comfortable' });
       setIsJobsModalOpen(true);
-    } catch (err: any) {
-      trackEvent('download_failed', data.templateId, { ...telemetry, device_type: deviceType, density: data.density || 'comfortable', error: err.message?.slice(0, 200) || 'unknown' });
-      toast.error('DOCX export failed: ' + err.message);
-    }
+    } catch (err: any) { toast.error('DOCX export failed: ' + err.message); }
   };
 
   const handleAddSkill = (e: React.FormEvent) => {
@@ -704,12 +587,24 @@ export default function FreeCVApp() {
     if (skillInput.trim()) { addSkill(skillInput.trim()); setSkillInput(''); }
   };
 
+  const triggerPrint = (onAfterPrint?: () => void) => {
+    const originalTitle = document.title;
+    const safeName = data.personalInfo.fullName.replace(/[\r\n]+/g, ' ').replace(/[^\w\s-]/g, '').trim() || 'My';
+    const safeRole = data.personalInfo.jobTitle.replace(/[\r\n]+/g, ' ').replace(/[^\w\s-]/g, '').trim() || 'Resume';
+    document.title = `${safeName} - ${safeRole} - Resume`;
+    const panel = document.getElementById('preview-panel');
+    if (panel) panel.scrollTop = 0;
+    window.scrollTo(0, 0);
+    document.body.classList.add('printing');
+    // window.print() blocks until the native print dialog is dismissed, so the
+    // jobs upsell opens after — never racing/covered by the native dialog.
+    setTimeout(() => { window.print(); document.body.classList.remove('printing'); document.title = originalTitle; onAfterPrint?.(); }, 150);
+  };
+
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const handleDownload = async () => {
-    const telemetry = getTelemetryMetadata('pdf');
-    const deviceType = typeof window !== 'undefined' && window.innerWidth < 1024 ? 'mobile' : 'desktop';
-    trackEvent('download_attempted', data.templateId, { ...telemetry, device_type: deviceType, density: data.density || 'comfortable' });
+    trackEvent('milestone_downloaded', data.templateId, getTelemetryMetadata('pdf'));
     if (isRealUserEmail(data.personalInfo.email)) {
       try {
         fetch('/api/crm/optin', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
@@ -738,50 +633,18 @@ export default function FreeCVApp() {
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 5000);
-      // Confirmed delivery only: the file was generated and the download was
-      // triggered. Firing on click inflates the download count with failed or
-      // abandoned generations.
-      trackEvent('milestone_downloaded', data.templateId, getTelemetryMetadata('pdf'));
-      trackEvent('download_completed', data.templateId, { ...telemetry, device_type: deviceType, density: data.density || 'comfortable' });
-      setIsJobsModalOpen(true);
     } catch (err: any) {
-      // Hard error — no silent fallback to window.print() (a dead end on
-      // mobile, and it masked failures behind a print dialog + jobs upsell).
-      console.error('[PDF] React-PDF generation failed:', err);
-      trackEvent('download_failed', data.templateId, { ...telemetry, device_type: deviceType, density: data.density || 'comfortable', error: err.message?.slice(0, 200) || 'unknown' });
-      toast.error('PDF download failed: ' + err.message + '. Please try again, or use the Word (DOCX) download instead.');
+      console.error('[PDF] React-PDF generation failed, falling back to print:', err);
+      toast.error('PDF generation failed, opening print dialog instead: ' + err.message);
+      triggerPrint();
     } finally {
       setIsGeneratingPdf(false);
+      setIsJobsModalOpen(true);
     }
   };
 
   if (!isHydrated) return null;
 
-
-  // ---- Section visibility + ordering (restored from pre-redesign builder) --
-  // editorSectionIds: sections as they appear in the editor, in the user's
-  // sectionOrder, skipping removed optional sections. Drives the up/down
-  // disabled states; the store's moveSection does the actual reordering.
-  const editorSectionIds = useMemo(() => {
-    const order = data.sectionOrder && data.sectionOrder.length ? data.sectionOrder : DEFAULT_SECTION_ORDER;
-    return order.filter((id) =>
-      id !== 'cover-letter' &&
-      (id !== 'projects' || data.showProjects) &&
-      (id !== 'certifications' || data.showCertifications) &&
-      (id !== 'references' || data.showReferences)
-    );
-  }, [data.sectionOrder, data.showProjects, data.showCertifications, data.showReferences]);
-
-  const makeSectionTools = (id: ResumeSectionId) => (
-    <SectionHeaderTools
-      id={id}
-      isHidden={data.sectionVisibility?.[id] === false}
-      isFirst={editorSectionIds[0] === id}
-      isLast={editorSectionIds[editorSectionIds.length - 1] === id}
-      onToggle={toggleSectionVisibility}
-      onMove={moveSection}
-    />
-  );
 
   // ---- Editor section blocks: visibility toggles + up/down ordering ----
   // Each block keeps its own JSX (and mobile accordion state); the editor
@@ -796,10 +659,7 @@ export default function FreeCVApp() {
           <h3>Personal information</h3>
           <p className="v3-card-hint">Keep this simple. Your name and role do the heavy lifting.</p>
         </div>
-        <div className="flex items-center gap-2">
-          {makeSectionTools('personal')}
-          <span className="v3-autosaved">Autosaved</span>
-        </div>
+        <span className="v3-autosaved">Autosaved</span>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input label="Full Name" value={data.personalInfo.fullName} onChange={(e: any) => updatePersonalInfo({ fullName: e.target.value })} placeholder="Jane Doe" />
@@ -911,10 +771,7 @@ export default function FreeCVApp() {
           <h3>Experience</h3>
           <p className="v3-card-hint">Turn responsibilities into evidence. Quantify where possible.</p>
         </div>
-        <div className="flex items-center gap-2">
-          {makeSectionTools('experience')}
-          <button onClick={addExperience} aria-label="Add experience" className="v3-icon-btn"><Plus size={18} /></button>
-        </div>
+        <button onClick={addExperience} aria-label="Add experience" className="v3-icon-btn"><Plus size={18} /></button>
       </div>
     <Droppable droppableId="experience" type="experience">
       {(provided) => (
@@ -974,10 +831,7 @@ export default function FreeCVApp() {
           <h3>Education</h3>
           <p className="v3-card-hint">Add your most relevant qualifications first.</p>
         </div>
-        <div className="flex items-center gap-2">
-          {makeSectionTools('education')}
-          <button onClick={addEducation} aria-label="Add education" className="v3-icon-btn"><Plus size={18} /></button>
-        </div>
+        <button onClick={addEducation} aria-label="Add education" className="v3-icon-btn"><Plus size={18} /></button>
       </div>
     <Droppable droppableId="education" type="education">
       {(provided) => (
@@ -1018,7 +872,6 @@ export default function FreeCVApp() {
           <h3>Skills</h3>
           <p className="v3-card-hint">Prioritize skills that match your target role.</p>
         </div>
-        {makeSectionTools('skills')}
       </div>
       <form onSubmit={handleAddSkill} className="flex gap-2 mb-6">
         <input
@@ -1079,7 +932,6 @@ export default function FreeCVApp() {
             <p className="v3-card-hint">Showcase your key projects.</p>
           </div>
           <div className="flex items-center gap-2">
-            {makeSectionTools('projects')}
             <button onClick={addProject} aria-label="Add project" className="v3-icon-btn"><Plus size={18} /></button>
             <button onClick={toggleProjects} className="v3-remove-btn">Remove</button>
           </div>
@@ -1106,7 +958,6 @@ export default function FreeCVApp() {
             <p className="v3-card-hint">Official recognitions.</p>
           </div>
           <div className="flex items-center gap-2">
-            {makeSectionTools('certifications')}
             <button onClick={addCertification} aria-label="Add certification" className="v3-icon-btn"><Plus size={18} /></button>
             <button onClick={toggleCertifications} className="v3-remove-btn">Remove</button>
           </div>
@@ -1133,7 +984,6 @@ export default function FreeCVApp() {
             <p className="v3-card-hint">People who vouch for you.</p>
           </div>
           <div className="flex items-center gap-2">
-            {makeSectionTools('references')}
             <button onClick={addReference} aria-label="Add reference" className="v3-icon-btn"><Plus size={18} /></button>
             <button onClick={toggleReferences} className="v3-remove-btn">Remove</button>
           </div>
@@ -1194,10 +1044,6 @@ export default function FreeCVApp() {
           <button className="v3-iconbtn" onClick={() => useResumeStore.temporal.getState().redo()} disabled={redoDepth === 0} title="Redo (Ctrl+Y)" aria-label="Redo"><Redo2 size={15} /></button>
           <button className="v3-dl v3-dl-docx" onClick={handleDocxExport} title="Download Word document"><FileText size={14} /> Download DOCX</button>
           <button className="v3-dl v3-dl-pdf" onClick={handleDownload} disabled={isGeneratingPdf}><FileDown size={14} /> {isGeneratingPdf ? 'Generating…' : 'Download PDF'}</button>
-          {/* Mobile: persistent download CTA (header buttons are hidden on mobile by CSS) */}
-          <button className="v3-dl v3-dl-pdf v3-mobile-dl" onClick={() => { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }} title="Review and download">
-            <FileDown size={14} /> Download
-          </button>
         </div>
       </header>
 
@@ -1276,13 +1122,7 @@ export default function FreeCVApp() {
                 <div className="flex items-center justify-between mb-4 bg-white p-4 border border-[#dddde5] rounded-xl shadow-[0_2px_8px_rgba(21,26,70,.05)]">
                   <input type="text" value={section.title} onChange={(e) => updateCustomSectionTitle(section.id, e.target.value)}
                     className="font-brand uppercase tracking-tight text-lg bg-transparent border-none outline-none focus:ring-0 flex-1 text-[#151a46] font-bold" />
-                  <div className="flex items-center gap-1.5">
-                    <button type="button" onClick={() => reorderCustomSections(sectionIndex, sectionIndex - 1)} disabled={sectionIndex === 0} title="Move section up" aria-label="Move custom section up"
-                      className="p-2 rounded-lg border border-[#dddde5] bg-white text-[#151a46]/60 hover:text-[#151a46] hover:border-[#5548f5] hover:bg-[#eeecff] transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-[#dddde5] disabled:hover:bg-white"><ChevronUp size={14} /></button>
-                    <button type="button" onClick={() => reorderCustomSections(sectionIndex, sectionIndex + 1)} disabled={sectionIndex === (data.customSections?.length || 1) - 1} title="Move section down" aria-label="Move custom section down"
-                      className="p-2 rounded-lg border border-[#dddde5] bg-white text-[#151a46]/60 hover:text-[#151a46] hover:border-[#5548f5] hover:bg-[#eeecff] transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-[#dddde5] disabled:hover:bg-white"><ChevronDown size={14} /></button>
-                    <button onClick={() => removeCustomSection(section.id)} className="text-[#151a46]/40 hover:text-[#D8362A] transition-colors p-2"><Trash2 size={16} /></button>
-                  </div>
+                  <button onClick={() => removeCustomSection(section.id)} className="text-[#151a46]/40 hover:text-[#D8362A] transition-colors p-2"><Trash2 size={16} /></button>
                 </div>
                 <Droppable droppableId={`custom-${section.id}`} type="custom-item">
                   {(provided) => (
@@ -1348,19 +1188,6 @@ export default function FreeCVApp() {
               </div>
             </div>
 
-            {/* Tailor to Job — desktop only (v3 concept) */}
-            <div className="v3-card v3-desktop-only">
-              <div className="v3-card-head">
-                <div>
-                  <h3>Tailor to a job</h3>
-                  <p className="v3-card-hint">Paste a job posting — AI rewrites your summary, suggests skills, and sharpens bullets using only what's already on your resume.</p>
-                </div>
-              </div>
-              <button className="v3-primary w-full flex items-center justify-center gap-2" onClick={() => { setTailorResult(null); setTailorApplied({ summary: false, skills: [], bullets: [] }); setIsTailorOpen(true); }}>
-                <Target size={16} /> Tailor to Job
-              </button>
-            </div>
-
             {/* Next up — desktop only (v3 concept) */}
             <div className="v3-card v3-desktop-only">
               <div className="v3-card-head">
@@ -1391,7 +1218,7 @@ export default function FreeCVApp() {
                   if (activeStep < 5) goStep(activeStep + 1);
                   else { trackEvent('milestone_previewed', data.templateId); setIsPreviewOpen(true); }
                 }}>
-                {activeStep === 5 ? 'Review & Download \u2192' : `Continue to ${WIZARD_STEPS[activeStep + 1].label} \u2192`}
+                {activeStep === 5 ? 'Review my resume \u2192' : `Continue to ${WIZARD_STEPS[activeStep + 1].label} \u2192`}
               </button>
             </div>
 
@@ -1454,7 +1281,7 @@ export default function FreeCVApp() {
               variable is set here so the printed PDF matches the on-screen
               preview accents. */}
           <div
-            className={cn("hidden print:block print-resume", previewData.density === 'compact' && "density-compact")}
+            className="hidden print:block print-resume"
             style={{ '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
           >
             {(() => {
@@ -1534,30 +1361,14 @@ export default function FreeCVApp() {
       {/* TEMPLATE GALLERY MODAL */}
       {isGalleryOpen && (
         <div className="fixed inset-0 z-[400] bg-[#f6f5ef] font-brand flex flex-col print:hidden">
-          <div className="p-6 lg:p-8 border-b border-[#dddde5] bg-white z-10 relative">
-            <div className="flex justify-between items-center gap-4">
-              <div>
-                <h2 className="font-brand text-3xl font-black uppercase tracking-tight leading-none text-[#151a46]">Template Gallery</h2>
-                <p className="font-brand text-[10px] font-bold uppercase tracking-widest text-[#151a46]/55 mt-2">See your exact resume in {Object.keys(templates).length} ATS-optimized styles</p>
-              </div>
-              <button onClick={() => setIsGalleryOpen(false)} className="p-3 bg-white border border-[#dddde5] hover:bg-[#151a46] hover:text-white rounded-xl transition-colors shrink-0">
-                <X size={24} />
-              </button>
+          <div className="p-6 lg:p-8 border-b border-[#dddde5] flex justify-between items-center bg-white z-10 relative">
+            <div>
+              <h2 className="font-brand text-3xl font-black uppercase tracking-tight leading-none text-[#151a46]">Template Gallery</h2>
+              <p className="font-brand text-[10px] font-bold uppercase tracking-widest text-[#151a46]/55 mt-2">See your exact resume in {Object.keys(templates).length} ATS-optimized styles</p>
             </div>
-            <div className="flex items-center gap-3 mt-4 flex-wrap">
-              <span className="font-brand text-[10px] font-bold uppercase tracking-widest text-[#151a46]/55">Resume density</span>
-              <div className="flex rounded-full border border-[#dddde5] p-0.5 bg-[#f6f5ef]">
-                {(['comfortable', 'compact'] as const).map((d) => (
-                  <button key={d} type="button" onClick={() => setDensity(d)}
-                    aria-pressed={data.density === d}
-                    className={cn("px-4 py-1.5 rounded-full font-brand text-[10px] font-bold uppercase tracking-widest transition-colors",
-                      data.density === d ? "bg-[#151a46] text-white shadow" : "text-[#151a46]/60 hover:text-[#151a46]")}>
-                    {d === 'comfortable' ? 'Comfortable' : 'Compact'}
-                  </button>
-                ))}
-              </div>
-              <span className="font-brand text-[10px] text-[#151a46]/45">Compact tightens spacing and type across preview, PDF and DOCX.</span>
-            </div>
+            <button onClick={() => setIsGalleryOpen(false)} className="p-3 bg-white border border-[#dddde5] hover:bg-[#151a46] hover:text-white rounded-xl transition-colors">
+              <X size={24} />
+            </button>
           </div>
           <div className="flex-1 overflow-y-auto p-6 lg:p-12 custom-scrollbar bg-[#f6f5ef]">
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 max-w-[1600px] mx-auto">
@@ -1723,97 +1534,6 @@ export default function FreeCVApp() {
         </div>
       )}
 
-      {/* TAILOR TO JOB MODAL */}
-      {isTailorOpen && (
-        <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm overflow-y-auto print:hidden">
-          <div className="min-h-screen px-4 flex items-center justify-center py-10">
-            <div className="rounded-2xl border border-[#dddde5] shadow-[0_24px_70px_rgba(21,26,70,.22)] max-w-2xl w-full p-6 sm:p-8 flex flex-col relative bg-white text-[#151a46]">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="font-brand text-2xl font-black leading-tight flex items-center gap-2"><Target className="text-[#5548f5]" /> Tailor to Job</h2>
-                <button onClick={() => setIsTailorOpen(false)} className="p-2 bg-white border border-[#dddde5] hover:bg-[#151a46] hover:text-white rounded-xl transition-colors"><X size={20} /></button>
-              </div>
-              <p className="text-sm mb-6 text-[#151a46]/65">Paste the job description and AI will rewrite your summary, suggest keyword-aligned skills, and sharpen your experience bullets — using only what's already on your resume. Nothing is invented.</p>
-              <label className="font-brand text-[10px] font-bold uppercase tracking-[0.2em] mb-2 block text-[#151a46]/60">Job Description</label>
-              <textarea
-                value={tailorJobDesc}
-                onChange={(e) => setTailorJobDesc(e.target.value)}
-                placeholder="Paste the job posting here..."
-                rows={7}
-                maxLength={15000}
-                className="w-full bg-white border border-[#d9dae5] rounded-[10px] px-4 py-3 text-sm text-[#151a46] outline-none transition-all focus:border-[#5548f5] focus:shadow-[0_0_0_3px_rgba(85,72,245,.12)] resize-y mb-4"
-              />
-              <button onClick={handleTailor} disabled={isTailorLoading || !tailorJobDesc.trim()}
-                className="v3-primary w-full flex justify-center items-center gap-2 mb-6 disabled:opacity-50">
-                {isTailorLoading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
-                {isTailorLoading ? 'Tailoring Resume...' : 'Tailor My Resume'}
-              </button>
-
-              {tailorResult && (
-                <div className="space-y-6">
-                  {/* Rewritten summary */}
-                  {tailorResult.summary && (
-                    <div className="border border-[#dddde5] bg-white rounded-xl p-5 shadow-[0_2px_8px_rgba(21,26,70,.05)]">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-brand text-[11px] font-bold uppercase tracking-[0.2em] text-[#151a46]/60">Rewritten Summary</h3>
-                        <button onClick={applyTailorSummary} disabled={tailorApplied.summary}
-                          className="font-brand text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 border border-[#0E8A4B] text-[#0E8A4B] rounded-lg hover:bg-[#0E8A4B] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-default disabled:hover:bg-transparent disabled:hover:text-[#0E8A4B]">
-                          {tailorApplied.summary ? 'Applied ✓' : 'Apply'}
-                        </button>
-                      </div>
-                      <p className="text-sm text-[#151a46]/80 leading-relaxed whitespace-pre-wrap">{tailorResult.summary}</p>
-                    </div>
-                  )}
-
-                  {/* Skills to add */}
-                  {Array.isArray(tailorResult.skillsToAdd) && tailorResult.skillsToAdd.length > 0 && (
-                    <div className="border border-[#dddde5] bg-white rounded-xl p-5 shadow-[0_2px_8px_rgba(21,26,70,.05)]">
-                      <h3 className="font-brand text-[11px] font-bold uppercase tracking-[0.2em] text-[#151a46]/60 mb-3">Skills to Add</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {tailorResult.skillsToAdd.map((skill: string) => {
-                          const applied = tailorApplied.skills.includes(skill);
-                          return (
-                            <button key={skill} onClick={() => !applied && applyTailorSkill(skill)} disabled={applied}
-                              className={cn("font-brand text-[11px] font-bold px-3 py-1.5 border rounded-lg transition-colors",
-                                applied ? "border-[#0E8A4B] bg-[#0E8A4B]/10 text-[#0E8A4B]/60 cursor-default"
-                                        : "border-[#dddde5] bg-white text-[#151a46] hover:border-[#5548f5] hover:bg-[#eeecff]")}>
-                              {applied ? `${skill} ✓` : `+ ${skill}`}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Improved bullets */}
-                  {Array.isArray(tailorResult.bulletImprovements) && tailorResult.bulletImprovements.length > 0 && (
-                    <div className="border border-[#dddde5] bg-white rounded-xl p-5 shadow-[0_2px_8px_rgba(21,26,70,.05)]">
-                      <h3 className="font-brand text-[11px] font-bold uppercase tracking-[0.2em] text-[#151a46]/60 mb-3">Sharpened Experience Bullets</h3>
-                      <div className="space-y-4">
-                        {tailorResult.bulletImprovements.map((b: any, i: number) => {
-                          const applied = tailorApplied.bullets.includes(i);
-                          const exp = data.experience.find(e => e.id === b.experienceId);
-                          return (
-                            <div key={i} className="border-t border-[#151a46]/10 pt-4 first:border-t-0 first:pt-0">
-                              {exp && <p className="font-brand text-[10px] font-bold uppercase tracking-widest text-[#151a46]/45 mb-2">{exp.role} @ {exp.company}</p>}
-                              <p className="text-xs text-[#151a46]/50 line-through mb-1.5">{b.original}</p>
-                              <p className="text-sm text-[#151a46]/85 leading-relaxed mb-3">{b.improved}</p>
-                              <button onClick={() => applyTailorBullet(i)} disabled={applied}
-                                className="font-brand text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 border border-[#0E8A4B] text-[#0E8A4B] rounded-lg hover:bg-[#0E8A4B] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-default disabled:hover:bg-transparent disabled:hover:text-[#0E8A4B]">
-                                {applied ? 'Applied ✓' : 'Apply Bullet'}
-                              </button>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* DOWNLOAD OPTIONS MODAL (MOBILE) */}
       {isDownloadModalOpen && (
         <div className="fixed inset-0 z-[300] bg-black/60 backdrop-blur-sm flex items-end justify-center print:hidden lg:hidden">
@@ -1846,46 +1566,6 @@ export default function FreeCVApp() {
           .v3-top, .v3-sidebar, .v3-editor, .v3-score, .v3-mobiletabs, .v3-preview-overlay { display: none !important; }
           .v3-preview { display: block; border: 0; background: #fff; }
         }
-        /* Compact density: tightens spacing + type on the resume output.
-           Applied as a class on the template stage, so it flows through the
-           on-screen preview, print/PDF (same DOM) and the DOCX capture path
-           (which inlines computed styles). */
-        .density-compact .p-\\[0\\.75in\\] { padding: 0.45in !important; }
-        .density-compact .mb-8 { margin-bottom: 1rem !important; }
-        .density-compact .mb-6 { margin-bottom: 0.75rem !important; }
-        .density-compact .mb-5 { margin-bottom: 0.65rem !important; }
-        .density-compact .mb-4 { margin-bottom: 0.55rem !important; }
-        .density-compact .mb-3 { margin-bottom: 0.45rem !important; }
-        .density-compact .mb-2 { margin-bottom: 0.35rem !important; }
-        .density-compact .mb-1 { margin-bottom: 0.2rem !important; }
-        .density-compact .mt-8 { margin-top: 1rem !important; }
-        .density-compact .mt-6 { margin-top: 0.75rem !important; }
-        .density-compact .mt-4 { margin-top: 0.55rem !important; }
-        .density-compact .pb-8 { padding-bottom: 1rem !important; }
-        .density-compact .pt-8 { padding-top: 1rem !important; }
-        .density-compact .pl-6 { padding-left: 0.85rem !important; }
-        .density-compact .space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.9rem !important; }
-        .density-compact .space-y-5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.75rem !important; }
-        .density-compact .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.6rem !important; }
-        .density-compact .space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.45rem !important; }
-        .density-compact .space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.35rem !important; }
-        .density-compact .space-y-1 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.2rem !important; }
-        .density-compact .gap-12 { gap: 1.5rem !important; }
-        .density-compact .gap-8 { gap: 1.1rem !important; }
-        .density-compact .gap-6 { gap: 0.9rem !important; }
-        .density-compact .gap-4 { gap: 0.6rem !important; }
-        .density-compact .gap-3 { gap: 0.45rem !important; }
-        .density-compact .gap-2 { gap: 0.35rem !important; }
-        .density-compact .text-5xl { font-size: 2.35rem !important; }
-        .density-compact .text-4xl { font-size: 1.85rem !important; }
-        .density-compact .text-3xl { font-size: 1.45rem !important; }
-        .density-compact .text-2xl { font-size: 1.25rem !important; }
-        .density-compact .text-xl { font-size: 1.02rem !important; }
-        .density-compact .text-lg { font-size: 0.92rem !important; }
-        .density-compact .text-base { font-size: 0.83rem !important; }
-        .density-compact .text-sm { font-size: 0.76rem !important; }
-        .density-compact .text-xs { font-size: 0.68rem !important; }
-        .density-compact .leading-relaxed { line-height: 1.4 !important; }
 `}} />
     </main>
   );

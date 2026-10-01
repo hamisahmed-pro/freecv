@@ -28,7 +28,7 @@ export default function CoverLetterClient() {
     setError('');
 
     try {
-      trackEvent('cover_letter_start', undefined, { tone });
+      trackEvent('cover_letter_start', tone);
       const res = await fetch('/api/ai/cover-letter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -53,7 +53,7 @@ export default function CoverLetterClient() {
     navigator.clipboard.writeText(result);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    trackEvent('cover_letter_copied', undefined, { tone });
+    trackEvent('cover_letter_copied', tone);
   };
 
   const inputCls =
