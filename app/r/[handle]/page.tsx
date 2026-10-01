@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import { supabaseAdmin } from '@/lib/supabase';
 import type { Metadata } from 'next';
 import { PublicResumeClient } from '@/components/public/PublicResumeClient';
+import { V3Nav, V3Footer } from '@/components/v3/V3Chrome';
 
 type Props = {
   params: Promise<{ handle: string }>
@@ -54,14 +56,30 @@ export default async function PublicResumePage(props: Props) {
   const resumeData = record.data;
 
   return (
-    <div className="min-h-screen bg-[#f6f5ef] flex flex-col items-center py-10 selection:bg-black selection:text-white">
-      <div className="w-full max-w-4xl mx-auto px-4 h-[1000px] shadow-2xl">
-        <PublicResumeClient data={resumeData} />
-      </div>
+    <div className="min-h-screen bg-cream font-brand text-navy antialiased selection:bg-navy selection:text-white">
+      <V3Nav cta={{ label: 'Create yours free →', href: '/build' }} />
+      <main className="mx-auto w-full max-w-4xl px-4 py-10">
+        <div className="h-[1000px] overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_16px_38px_rgba(23,27,75,0.10)]">
+          <PublicResumeClient data={resumeData} />
+        </div>
 
-      <footer className="mt-12 text-center text-sm font-medium text-gray-500 pb-10 uppercase tracking-widest">
-        Built free with <a href="/" className="font-bold text-[#ff604b] hover:underline">Cvyon</a>. Create yours in minutes.
-      </footer>
+        <div className="mt-8 rounded-2xl border border-line bg-paper p-6 text-center shadow-[0_8px_22px_rgba(23,27,75,0.08)] sm:p-8">
+          <p className="text-sm font-medium text-muted">
+            Built free with{' '}
+            <Link href="/" className="font-extrabold text-coral hover:underline">
+              Cvyon
+            </Link>
+            . Create yours in minutes.
+          </p>
+          <Link
+            href="/build"
+            className="mt-4 inline-flex items-center justify-center rounded-[10px] bg-navy px-[22px] py-3.5 text-[12px] font-extrabold uppercase tracking-wider text-white transition-transform hover:-translate-y-px hover:bg-coral"
+          >
+            Build my resume →
+          </Link>
+        </div>
+      </main>
+      <V3Footer />
     </div>
   );
 }

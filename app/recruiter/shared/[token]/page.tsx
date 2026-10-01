@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { supabaseAdmin } from '@/lib/supabase';
+import { V3Page, V3Eyebrow } from '@/components/v3/V3Chrome';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,11 +20,11 @@ interface SharedSnapshotItem {
 }
 
 const STAGE_STYLES: Record<string, string> = {
-  new: 'bg-white',
-  contacted: 'bg-[#FFF6D6]',
-  interviewing: 'bg-[#DDEBFF]',
-  hired: 'bg-[#D8F5D0]',
-  rejected: 'bg-[#FFDCD4]',
+  new: 'border-line bg-paper',
+  contacted: 'border-gold/60 bg-gold/30',
+  interviewing: 'border-brand/30 bg-lavender',
+  hired: 'border-teal/40 bg-mint',
+  rejected: 'border-coral/40 bg-coral/10',
 };
 
 function stageLabel(stage?: string) {
@@ -59,23 +60,21 @@ export default async function SharedShortlistPage({
     : null;
 
   return (
-    <main className="fd min-h-screen bg-[#FFF9F0] px-4 py-10 text-[#151a46] sm:px-8">
-      <div className="mx-auto max-w-3xl">
+    <V3Page pageName="recruiter_shared" logoSub="RECRUITER">
+      <div className="mx-auto max-w-3xl py-6">
         {/* Header */}
-        <div className="mb-8 border-[3px] border-[#151a46] bg-white p-6 hs">
-          <p className="fm mb-2 text-[11px] font-bold uppercase tracking-[0.22em]">
-            Shared shortlist — via Cvyon for Recruiters
-          </p>
-          <h1 className="fh text-3xl font-black sm:text-4xl">
+        <div className="rounded-2xl border border-line bg-paper p-6 shadow-[0_8px_22px_rgba(23,27,75,0.08)] sm:p-8">
+          <V3Eyebrow>Shared shortlist — via Cvyon for Recruiters</V3Eyebrow>
+          <h1 className="text-3xl font-black tracking-tight text-navy sm:text-4xl">
             {items.length} candidate{items.length === 1 ? '' : 's'} shortlisted
           </h1>
           {sharedOn && (
-            <p className="mt-2 text-sm opacity-70">Shared on {sharedOn}</p>
+            <p className="mt-2 text-sm text-muted">Shared on {sharedOn}</p>
           )}
         </div>
 
         {/* Candidate cards */}
-        <div className="space-y-5">
+        <div className="mt-6 space-y-5">
           {items.map((item, i) => {
             const p = item.profile || {};
             const skills = Array.isArray(p.topSkills) ? p.topSkills : [];
@@ -84,23 +83,23 @@ export default async function SharedShortlistPage({
             return (
               <article
                 key={item.profileId || `item-${i}`}
-                className="border-[3px] border-[#151a46] bg-white p-5 hs sm:p-6"
+                className="rounded-2xl border border-line bg-paper p-5 shadow-[0_8px_22px_rgba(23,27,75,0.08)] sm:p-6"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <h2 className="fh text-xl font-black">{p.headline || 'Candidate'}</h2>
+                    <h2 className="text-xl font-extrabold tracking-tight text-navy">{p.headline || 'Candidate'}</h2>
                     {p.currentTitle && (
-                      <p className="mt-1 font-bold">{p.currentTitle}</p>
+                      <p className="mt-1 font-bold text-navy/80">{p.currentTitle}</p>
                     )}
                   </div>
                   <span
-                    className={`inline-block border-[3px] border-[#151a46] px-3 py-1 text-xs font-black uppercase tracking-wider ${STAGE_STYLES[stage] || 'bg-white'}`}
+                    className={`inline-block rounded-full border px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-navy ${STAGE_STYLES[stage] || 'border-line bg-paper'}`}
                   >
                     {stageLabel(item.stage)}
                   </span>
                 </div>
 
-                <div className="fm mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm font-bold">
+                <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm font-bold text-navy/70">
                   {p.yearsExperience != null && (
                     <span>{p.yearsExperience} yrs experience</span>
                   )}
@@ -112,7 +111,7 @@ export default async function SharedShortlistPage({
                     {skills.map((s, j) => (
                       <span
                         key={j}
-                        className="border-2 border-[#151a46] bg-[#FFF6D6] px-2.5 py-1 text-xs font-bold"
+                        className="rounded-full border border-line bg-cream px-3 py-1 text-xs font-bold text-navy"
                       >
                         {s}
                       </span>
@@ -121,7 +120,7 @@ export default async function SharedShortlistPage({
                 )}
 
                 {item.note && (
-                  <div className="mt-4 border-l-[3px] border-[#151a46] bg-[#F7F3EA] px-4 py-3 text-sm italic">
+                  <div className="mt-4 rounded-r-lg border-l-2 border-gold bg-cream/60 px-4 py-3 text-sm italic text-navy/80">
                     {item.note}
                   </div>
                 )}
@@ -129,18 +128,18 @@ export default async function SharedShortlistPage({
             );
           })}
           {items.length === 0 && (
-            <p className="border-[3px] border-[#151a46] bg-white p-6 text-center hs">
+            <div className="rounded-2xl border border-dashed border-navy/25 bg-paper p-8 text-center text-sm font-bold text-muted">
               This shortlist is empty.
-            </p>
+            </div>
           )}
         </div>
 
         {/* Footer */}
-        <footer className="fm mt-10 border-[3px] border-[#151a46] bg-[#151a46] p-5 text-center text-sm font-bold text-white">
+        <div className="mt-8 rounded-2xl bg-navy p-6 text-center text-sm font-bold text-white/90">
           Shared via Cvyon for Recruiters · candidate identities stay private until
           the recruiter unlocks contact.
-        </footer>
+        </div>
       </div>
-    </main>
+    </V3Page>
   );
 }

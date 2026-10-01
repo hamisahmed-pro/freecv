@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { V3Page } from '@/components/v3/V3Chrome';
 import { jobTitleSeoEntries, getJobTitleSeoEntry } from '@/lib/job-title-seo';
 import JobTitleSeoPage from '@/components/seo/JobTitleSeoPage';
 
@@ -46,5 +47,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const idx = jobTitleSeoEntries.findIndex((e) => e.slug === slug);
   const more = [5, 11, 17].map((offset) => jobTitleSeoEntries[(idx + offset) % jobTitleSeoEntries.length]);
 
-  return <JobTitleSeoPage entry={entry} more={more} />;
+  return (
+    <V3Page pageName="seo_job_title" cta={{ label: "Build free →", href: "/build" }}>
+      <JobTitleSeoPage entry={entry} more={more} />
+    </V3Page>
+  );
 }

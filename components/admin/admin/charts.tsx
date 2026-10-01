@@ -25,7 +25,7 @@ export function Sparkline({ data, color, width = 132, height = 40, fill = true }
         </linearGradient>
       </defs>
       {fill && <path d={area} fill={`url(#sp-${gid})`} opacity={lp} />}
-      <path d={line} fill="none" stroke={color} strokeWidth="2" strokeLinecap="square"
+      <path d={line} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round"
         pathLength={1} strokeDasharray={1} strokeDashoffset={1 - lp} />
       <circle cx={x(data.length - 1)} cy={y(data[data.length - 1])} r="3" fill={color} opacity={lp}>
         <animate attributeName="r" values="3;5;3" dur="1.6s" repeatCount="indefinite" />
@@ -76,12 +76,12 @@ export function LineChart({ data, labels, height = 240, color, unit = "", valueL
           return (
             <g key={i}>
               <line x1={padL} y1={gy} x2={W - padR} y2={gy} stroke={t.border} strokeWidth="1" strokeDasharray="2 4" />
-              {valueLabels && <text x={padL - 8} y={gy + 3} textAnchor="end" className="fm" fontSize="9" fill={t.faint}>{val}{unit}</text>}
+              {valueLabels && <text x={padL - 8} y={gy + 3} textAnchor="end" className="" fontSize="9" fill={t.faint}>{val}{unit}</text>}
             </g>
           );
         })}
         <path d={area} fill={`url(#ln-${gid})`} opacity={lp} />
-        <path d={line} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="square" strokeLinejoin="miter"
+        <path d={line} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="miter"
           pathLength={1} strokeDasharray={1} strokeDashoffset={1 - lp} />
         {data.map((v, i) => (
           <circle key={i} cx={x(i)} cy={y(v)} r={hover === i ? 4.5 : 2.5} fill={i === n - 1 ? color : t.surface}
@@ -91,12 +91,12 @@ export function LineChart({ data, labels, height = 240, color, unit = "", valueL
           <line x1={x(hover)} y1={padT} x2={x(hover)} y2={padT + innerH} stroke={color} strokeWidth="1" strokeDasharray="3 3" opacity="0.7" />
         )}
         {labels && labels.map((l, i) => (i % Math.ceil(n / 6) === 0 || i === n - 1) && (
-          <text key={i} x={x(i)} y={H - 8} textAnchor="middle" className="fm" fontSize="9" fill={t.faint}>{l}</text>
+          <text key={i} x={x(i)} y={H - 8} textAnchor="middle" className="" fontSize="9" fill={t.faint}>{l}</text>
         ))}
       </svg>
       {hover !== null && (
-        <div className="pointer-events-none absolute top-1 z-10 -translate-x-1/2 border-2 px-2 py-1 fm text-[10px] font-bold"
-          style={{ left: `${(x(hover) / W) * 100}%`, background: t.surface, borderColor: color, color: t.text, boxShadow: `3px 3px 0 ${t.shadow}` }}>
+        <div className="pointer-events-none absolute top-1 z-10 -translate-x-1/2 rounded-lg border px-2 py-1 text-[10px] font-bold"
+          style={{ left: `${(x(hover) / W) * 100}%`, background: t.surface, borderColor: color, color: t.text, boxShadow: `0 6px 16px ${t.shadow}` }}>
           {labels?.[hover] ? <span style={{ color: t.muted }}>{labels[hover]} · </span> : null}
           <span style={{ color }}>{data[hover].toLocaleString()}{unit}</span>
         </div>
@@ -116,13 +116,13 @@ export function RadialGauge({ value, max = 100, color, label, size = 132, suffix
     <div className="flex flex-col items-center">
       <svg ref={ref} width={size} height={size} className="-rotate-90">
         <circle cx={c} cy={c} r={r} fill="none" stroke={t.surface2} strokeWidth={sw} />
-        <circle cx={c} cy={c} r={r} fill="none" stroke={color} strokeWidth={sw} strokeLinecap="square"
+        <circle cx={c} cy={c} r={r} fill="none" stroke={color} strokeWidth={sw} strokeLinecap="round"
           pathLength={1} strokeDasharray={`${frac * easeOutCubic(p)} ${1 - frac * easeOutCubic(p)}`} strokeDashoffset={0} />
       </svg>
       <div className="-mt-[calc(var(--s)/2+8px)] flex flex-col items-center" style={{ ["--s" as any]: `${size}px`, marginTop: -size / 2 - 6 }}>
-        <span className="fd text-3xl leading-none" style={{ color: t.text }}>{Math.round(value * easeOutCubic(p))}<span className="text-lg" style={{ color: t.muted }}>{suffix}</span></span>
+        <span className="text-3xl font-extrabold leading-none" style={{ color: t.text }}>{Math.round(value * easeOutCubic(p))}<span className="text-lg" style={{ color: t.muted }}>{suffix}</span></span>
       </div>
-      {label && <span className="fm mt-1 text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: t.muted }}>{label}</span>}
+      {label && <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: t.muted }}>{label}</span>}
     </div>
   );
 }
@@ -157,7 +157,7 @@ export function Donut({ segments, size = 168, thickness = 26 }:
             <span className="flex items-center gap-2 text-sm" style={{ color: t.text }}>
               <span className="h-3 w-3 shrink-0" style={{ background: s.color }} />{s.label}
             </span>
-            <span className="fm text-[11px] font-bold" style={{ color: t.muted }}>
+            <span className="text-[11px] font-bold" style={{ color: t.muted }}>
               {s.value.toLocaleString()} · {Math.round((s.value / total) * 100)}%
             </span>
           </div>
@@ -176,7 +176,7 @@ export function Heatmap({ grid, cols, rowLabels, color, cell = 15 }:
   return (
     <div className="flex gap-2 overflow-x-auto">
       {rowLabels && (
-        <div className="flex flex-col justify-around py-0.5 fm text-[9px] font-bold uppercase" style={{ color: t.faint }}>
+        <div className="flex flex-col justify-around py-0.5 text-[9px] font-bold uppercase" style={{ color: t.faint }}>
           {rowLabels.map((l) => <span key={l} style={{ height: cell }}>{l}</span>)}
         </div>
       )}
@@ -188,7 +188,7 @@ export function Heatmap({ grid, cols, rowLabels, color, cell = 15 }:
           }} title={`${Math.round(v * 100)}%`} />
         ))}
       </div>
-      <div className="flex items-end gap-1 pl-2 fm text-[9px]" style={{ color: t.faint }}>
+      <div className="flex items-end gap-1 pl-2 text-[9px]" style={{ color: t.faint }}>
         <span>less</span>
         {[0.1, 0.4, 0.7, 1].map((o) => <span key={o} style={{ width: cell, height: cell, background: color, opacity: o }} />)}
         <span>more</span>
@@ -211,9 +211,9 @@ export function Bars({ data, color, horizontal = true, height }:
           const ep = easeOutCubic(Math.max(0, Math.min(1, (p - i * 0.05) / (1 - i * 0.05 || 1))));
           return (
             <div key={i} className="flex flex-1 flex-col items-center justify-end gap-1">
-              <span className="fm text-[9px] font-bold" style={{ color: t.muted }}>{d.value}</span>
+              <span className="text-[9px] font-bold" style={{ color: t.muted }}>{d.value}</span>
               <div className="w-full" style={{ height: (d.value / max) * h * ep, background: color, minHeight: d.value ? 3 : 0, transition: "height .1s" }} />
-              <span className="w-full truncate text-center fm text-[8px] uppercase" style={{ color: t.faint }}>{d.label}</span>
+              <span className="w-full truncate text-center text-[8px] uppercase" style={{ color: t.faint }}>{d.label}</span>
             </div>
           );
         })}
@@ -226,7 +226,7 @@ export function Bars({ data, color, horizontal = true, height }:
         const ep = easeOutCubic(Math.max(0, Math.min(1, (p - i * 0.06) / (1 - i * 0.06 || 1))));
         return (
           <div key={i}>
-            <div className="mb-1 flex items-center justify-between fm text-[11px] font-bold uppercase tracking-wider">
+            <div className="mb-1 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider">
               <span className="truncate pr-2" style={{ color: t.text }}>{d.label}</span>
               <span style={{ color: t.muted }}>{d.value.toLocaleString()}</span>
             </div>

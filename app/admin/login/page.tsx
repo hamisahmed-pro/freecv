@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { Lock } from 'lucide-react';
+import { Lock, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { Logo } from "@/components/brand/Logo";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
@@ -36,65 +36,56 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center font-sans p-6 text-white">
+    <div className="flex min-h-screen items-center justify-center bg-cream p-6">
       <div className="w-full max-w-md">
-        <div className="bg-[#111] border-2 border-[#333] p-8 sm:p-12 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-2 bg-[#ff3333]" />
-          <div className="absolute top-0 right-0 w-16 h-16 border-b-2 border-l-2 border-[#333] transform translate-x-8 -translate-y-8 rotate-45" />
-
-          <div className="flex items-center justify-between gap-4 mb-8">
-            <Image
-              src="/logo-dark-no-background.png"
-              alt="Cvyon"
-              width={220}
-              height={70}
-              priority
-              className="h-10 sm:h-12 w-auto object-contain transition-all"
-            />
-            <div className="w-10 h-10 bg-white text-black flex items-center justify-center rounded-none shadow-[3px_3px_0px_0px_rgba(255,51,51,1)]">
-              <Lock size={20} className="stroke-[3]" />
+        <div className="rounded-2xl border border-line bg-paper p-8 shadow-[0_16px_38px_rgba(23,27,75,0.09)] sm:p-10">
+          <div className="mb-8 flex items-center justify-between gap-4">
+            <Logo size={30} wordSize={24} sub="ADMIN" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-lavender">
+              <Lock size={18} className="text-brand" />
             </div>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Admin Email</label>
-              <input 
+          <form onSubmit={handleLogin} className="grid gap-5">
+            <div className="grid gap-2">
+              <label className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-navy/60">Admin email</label>
+              <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-black border-2 border-[#333] px-5 py-4 text-white font-mono focus:outline-none focus:border-white transition-colors"
+                className="w-full rounded-[10px] border border-line bg-paper px-4 py-3 text-sm text-navy outline-none transition-shadow placeholder:text-navy/35 focus:border-brand focus:shadow-[0_0_0_4px_rgba(85,72,245,0.1)]"
                 placeholder="admin@cvyon.com"
                 autoFocus
               />
             </div>
-            <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Password</label>
-              <input 
+            <div className="grid gap-2">
+              <label className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-navy/60">Password</label>
+              <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-black border-2 border-[#333] px-5 py-4 text-white font-mono focus:outline-none focus:border-white transition-colors"
+                className="w-full rounded-[10px] border border-line bg-paper px-4 py-3 text-sm text-navy outline-none transition-shadow placeholder:text-navy/35 focus:border-brand focus:shadow-[0_0_0_4px_rgba(85,72,245,0.1)]"
                 placeholder="••••••••"
               />
             </div>
 
-            {error && <p className="text-sm font-bold text-[#ff3333] uppercase">{error}</p>}
+            {error && <p className="text-sm font-bold text-coral">{error}</p>}
 
-            <button 
+            <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-white text-black font-black uppercase tracking-widest py-4 hover:bg-[#ff3333] hover:text-white transition-colors disabled:opacity-50"
+              className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-navy px-6 py-3.5 text-[12px] font-extrabold uppercase tracking-wider text-white transition-transform hover:-translate-y-px hover:bg-coral disabled:opacity-60"
             >
-              {isLoading ? 'Authenticating...' : 'Initialize Override'}
+              {isLoading && <Loader2 size={16} className="animate-spin" />}
+              {isLoading ? 'Authenticating...' : 'Sign in'}
             </button>
           </form>
         </div>
-        
-        <p className="text-center text-[10px] font-mono text-gray-600 mt-8 uppercase tracking-widest">
-          Cvyon Architecture © 2026
+
+        <p className="mt-8 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-muted">
+          Cvyon Admin
         </p>
       </div>
     </div>

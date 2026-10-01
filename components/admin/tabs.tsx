@@ -85,7 +85,7 @@ export function OverviewTab({ candidates, analytics, aiLogs }: { candidates: any
                 { label: "Talent Pool Opt-in", count: funnel.optIns, pct: optConv, color: t.gold },
               ].map((step) => (
                 <div key={step.label} className="space-y-1">
-                  <div className="flex justify-between fm text-[11px]">
+                  <div className="flex justify-between text-[11px]">
                     <span style={{ color: t.muted }}>{step.label}</span>
                     <span className="font-bold" style={{ color: step.color }}>{step.count.toLocaleString()} ({step.pct}%)</span>
                   </div>
@@ -103,13 +103,13 @@ export function OverviewTab({ candidates, analytics, aiLogs }: { candidates: any
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Reveal><Card className="p-5"><SectionLabel color={t.verm}>talent pool</SectionLabel>
           <div className="space-y-3">
-            <div className="flex justify-between fm text-[11px]"><span style={{ color: t.muted }}>Total candidates</span><b style={{ color: t.text }}>{Math.max(candidates.length, o?.candidates || 0).toLocaleString()}</b></div>
+            <div className="flex justify-between text-[11px]"><span style={{ color: t.muted }}>Total candidates</span><b style={{ color: t.text }}>{Math.max(candidates.length, o?.candidates || 0).toLocaleString()}</b></div>
             <Bars data={[{ label: "recruiter-consented", value: o?.consented ?? candidates.filter(c => c.consent_recruiter_share).length }, { label: "total", value: Math.max(candidates.length, o?.candidates || 0) }]} color={t.verm} />
           </div></Card></Reveal>
         <Reveal delay={80}><Card className="p-5"><SectionLabel color={t.cob}>devices</SectionLabel>
-          {Object.keys(device).length ? <Donut segments={topN(device, 4).map(([k, v]) => ({ label: k, value: v, color: k === "mobile" ? t.cob : k === "desktop" ? t.green : t.gold }))} size={132} thickness={22} /> : <p className="fb text-sm" style={{ color: t.faint }}>No data.</p>}</Card></Reveal>
+          {Object.keys(device).length ? <Donut segments={topN(device, 4).map(([k, v]) => ({ label: k, value: v, color: k === "mobile" ? t.cob : k === "desktop" ? t.green : t.gold }))} size={132} thickness={22} /> : <p className="text-sm" style={{ color: t.faint }}>No data.</p>}</Card></Reveal>
         <Reveal delay={120}><Card className="p-5"><SectionLabel color={t.gold}>pipeline by stage</SectionLabel>
-          {o?.pipelineStages && Object.keys(o.pipelineStages).length ? <Bars data={Object.entries(o.pipelineStages).map(([k, v]) => ({ label: k, value: v as number }))} color={t.gold} /> : <p className="fb text-sm" style={{ color: t.faint }}>No deals yet.</p>}</Card></Reveal>
+          {o?.pipelineStages && Object.keys(o.pipelineStages).length ? <Bars data={Object.entries(o.pipelineStages).map(([k, v]) => ({ label: k, value: v as number }))} color={t.gold} /> : <p className="text-sm" style={{ color: t.faint }}>No deals yet.</p>}</Card></Reveal>
       </div>
     </div>
   );
@@ -171,30 +171,30 @@ export function EventLogTab({ events = [] }: { events?: any[] }) {
     <div className="space-y-5">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <Reveal><SectionLabel color={t.cob}>event log · raw analytics events</SectionLabel>
-          <p className="fm text-[11px] uppercase tracking-widest" style={{ color: t.muted }}>{events.length.toLocaleString()} events captured</p></Reveal>
+          <p className="text-[11px] uppercase tracking-widest" style={{ color: t.muted }}>{events.length.toLocaleString()} events captured</p></Reveal>
       </div>
       {rows.length === 0 ? <Card><EmptyState icon={<Activity size={32} />} title="No events logged yet." hint="Events are captured from site traffic automatically." /></Card> :
         <>
           <Table head={["Time", "Event", "Template", "Location", "Device", "Browser", "Session"]}>
             {rows.map((e, i) => (
               <Row key={e.id || i}>
-                <Cell className="fm text-[11px]" style={{ color: t.faint }}>{(e.created_at || "").slice(0, 19).replace("T", " ")}</Cell>
+                <Cell className="text-[11px]" style={{ color: t.faint }}>{(e.created_at || "").slice(0, 19).replace("T", " ")}</Cell>
                 <Cell><Pill color={t.cob}>{e.event_type || "—"}</Pill></Cell>
-                <Cell className="fm text-[11px]">{e.template_id || "—"}</Cell>
-                <Cell className="fm text-[11px]">{[e.city, e.country].filter(Boolean).join(", ") || "—"}</Cell>
-                <Cell className="fm text-[11px] capitalize">{e.device_type || "—"}</Cell>
-                <Cell className="fm text-[11px]">{e.browser || "—"}</Cell>
-                <Cell className="fm text-[10px]" style={{ color: t.faint }}>{(e.session_id || "").slice(0, 12)}</Cell>
+                <Cell className="text-[11px]">{e.template_id || "—"}</Cell>
+                <Cell className="text-[11px]">{[e.city, e.country].filter(Boolean).join(", ") || "—"}</Cell>
+                <Cell className="text-[11px] capitalize">{e.device_type || "—"}</Cell>
+                <Cell className="text-[11px]">{e.browser || "—"}</Cell>
+                <Cell className="text-[10px]" style={{ color: t.faint }}>{(e.session_id || "").slice(0, 12)}</Cell>
               </Row>
             ))}
           </Table>
           <div className="flex items-center justify-between pt-2">
-            <div className="fm text-xs" style={{ color: t.muted }}>
+            <div className="text-xs" style={{ color: t.muted }}>
               Showing {Math.min((page - 1) * pageSize + 1, events.length)}–{Math.min(page * pageSize, events.length)} of {events.length.toLocaleString()} events
             </div>
             <div className="flex items-center gap-2">
               <Btn variant="ghost" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="text-xs py-1 px-2.5"><ArrowLeft size={13} /> Prev</Btn>
-              <span className="fm text-xs font-bold px-1" style={{ color: t.text }}>{page} / {totalPages}</span>
+              <span className="text-xs font-bold px-1" style={{ color: t.text }}>{page} / {totalPages}</span>
               <Btn variant="ghost" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="text-xs py-1 px-2.5">Next <ArrowRight size={13} /></Btn>
             </div>
           </div>
@@ -222,28 +222,28 @@ export function AiUsageTab({ logs = [] }: { logs?: any[] }) {
         <Reveal delay={180}><Kpi label="Features used" value={<CountUp to={features} />} accent={t.gold} icon={<Layers size={16} />} /></Reveal>
       </div>
       <Reveal><SectionLabel color={t.verm}>ai usage log</SectionLabel>
-        <p className="fm text-[11px] uppercase tracking-widest" style={{ color: t.muted }}>{logs.length.toLocaleString()} calls recorded</p></Reveal>
+        <p className="text-[11px] uppercase tracking-widest" style={{ color: t.muted }}>{logs.length.toLocaleString()} calls recorded</p></Reveal>
       {rows.length === 0 ? <Card><EmptyState icon={<Cpu size={32} />} title="No AI usage recorded." hint="AI calls are logged automatically with cost estimates." /></Card> :
         <>
           <Table head={["Time", "Feature", "Endpoint", "Tokens in/out", "Est. cost", "Cache"]}>
             {rows.map((l, i) => (
               <Row key={l.id || i}>
-                <Cell className="fm text-[11px]" style={{ color: t.faint }}>{(l.created_at || "").slice(0, 19).replace("T", " ")}</Cell>
+                <Cell className="text-[11px]" style={{ color: t.faint }}>{(l.created_at || "").slice(0, 19).replace("T", " ")}</Cell>
                 <Cell><Pill color={t.verm}>{l.feature || "—"}</Pill></Cell>
-                <Cell className="fm text-[11px]">{l.endpoint || "—"}</Cell>
-                <Cell className="fm text-[11px]">{(l.input_tokens ?? l.prompt_tokens ?? 0).toLocaleString()} / {(l.output_tokens ?? l.completion_tokens ?? 0).toLocaleString()}</Cell>
+                <Cell className="text-[11px]">{l.endpoint || "—"}</Cell>
+                <Cell className="text-[11px]">{(l.input_tokens ?? l.prompt_tokens ?? 0).toLocaleString()} / {(l.output_tokens ?? l.completion_tokens ?? 0).toLocaleString()}</Cell>
                 <Cell style={{ color: t.verm }}>${(Number(l.cost_estimate) || 0).toFixed(4)}</Cell>
                 <Cell>{l.cache_hit ? <Pill color={t.green}>hit</Pill> : <span style={{ color: t.faint }}>miss</span>}</Cell>
               </Row>
             ))}
           </Table>
           <div className="flex items-center justify-between pt-2">
-            <div className="fm text-xs" style={{ color: t.muted }}>
+            <div className="text-xs" style={{ color: t.muted }}>
               Showing {Math.min((page - 1) * pageSize + 1, logs.length)}–{Math.min(page * pageSize, logs.length)} of {logs.length.toLocaleString()} calls
             </div>
             <div className="flex items-center gap-2">
               <Btn variant="ghost" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="text-xs py-1 px-2.5"><ArrowLeft size={13} /> Prev</Btn>
-              <span className="fm text-xs font-bold px-1" style={{ color: t.text }}>{page} / {totalPages}</span>
+              <span className="text-xs font-bold px-1" style={{ color: t.text }}>{page} / {totalPages}</span>
               <Btn variant="ghost" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="text-xs py-1 px-2.5">Next <ArrowRight size={13} /></Btn>
             </div>
           </div>
@@ -367,7 +367,7 @@ export function TalentTab({ candidates: initialCandidates = [] }: { candidates?:
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <Reveal>
           <SectionLabel color={t.verm}>talent pool CRM & candidate telemetry</SectionLabel>
-          <p className="fm text-[11px] uppercase tracking-widest" style={{ color: t.muted }}>{filtered.length} of {candidatesList.length} candidates visible</p>
+          <p className="text-[11px] uppercase tracking-widest" style={{ color: t.muted }}>{filtered.length} of {candidatesList.length} candidates visible</p>
         </Reveal>
         <div className="flex items-center gap-2">
           <Btn variant="ghost" onClick={fetchLiveTalent} className="text-xs">
@@ -413,28 +413,28 @@ export function TalentTab({ candidates: initialCandidates = [] }: { candidates?:
               <Row key={c.id || c.email} onClick={() => setDetail(c)}>
                 <Cell>
                   <div className="font-semibold" style={{ color: t.text }}>{c.full_name || "Anonymous Candidate"}</div>
-                  <div className="fm text-[11px]" style={{ color: t.faint }}>{c.email || "No email"}</div>
+                  <div className="text-[11px]" style={{ color: t.faint }}>{c.email || "No email"}</div>
                 </Cell>
                 <Cell>
                   <div>{c.current_title || "—"}</div>
-                  {c.title_category && <div className="fm text-[10px]" style={{ color: t.muted }}>{c.title_category}</div>}
+                  {c.title_category && <div className="text-[10px]" style={{ color: t.muted }}>{c.title_category}</div>}
                 </Cell>
                 <Cell>
                   <div className="flex items-center gap-1">
                     <span>{c.country || "—"}</span>
-                    {c.city && <span className="fm text-[10px]" style={{ color: t.faint }}>({c.city})</span>}
+                    {c.city && <span className="text-[10px]" style={{ color: t.faint }}>({c.city})</span>}
                   </div>
                 </Cell>
                 <Cell>
-                  <div className="flex items-center gap-1.5 fm text-xs">
+                  <div className="flex items-center gap-1.5 text-xs">
                     {getDeviceIcon(c.device_type)}
                     <span className="capitalize">{c.device_type || "desktop"}</span>
                   </div>
                 </Cell>
-                <Cell className="fm text-[12px]">{c.experience_years ? `${c.experience_years}y` : "—"}</Cell>
-                <Cell><span className="fm text-[11px] font-bold" style={{ color: (c.completeness_score || 0) >= 80 ? t.green : t.gold }}>{c.completeness_score ?? 0}%</span></Cell>
+                <Cell className="text-[12px]">{c.experience_years ? `${c.experience_years}y` : "—"}</Cell>
+                <Cell><span className="text-[11px] font-bold" style={{ color: (c.completeness_score || 0) >= 80 ? t.green : t.gold }}>{c.completeness_score ?? 0}%</span></Cell>
                 <Cell>{c.consent_recruiter_share ? <Pill color={t.green}>yes</Pill> : <Pill color={t.verm}>no</Pill>}</Cell>
-                <Cell><span className="fm text-[11px]" style={{ color: t.faint }}>{(c.opted_in_at || c.created_at || "").slice(0, 10) || "—"}</span></Cell>
+                <Cell><span className="text-[11px]" style={{ color: t.faint }}>{(c.opted_in_at || c.created_at || "").slice(0, 10) || "—"}</span></Cell>
                 <Cell>
                   <Btn variant="ghost" onClick={(e) => { e.stopPropagation(); setDetail(c); }} className="text-xs py-1 px-2.5">
                     <Eye size={13} /> View
@@ -446,7 +446,7 @@ export function TalentTab({ candidates: initialCandidates = [] }: { candidates?:
 
           {/* Pagination Toolbar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-            <div className="fm text-xs" style={{ color: t.muted }}>
+            <div className="text-xs" style={{ color: t.muted }}>
               Showing {Math.min((page - 1) * pageSize + 1, filtered.length)}–{Math.min(page * pageSize, filtered.length)} of {filtered.length} candidates
             </div>
             <div className="flex items-center gap-2">
@@ -458,7 +458,7 @@ export function TalentTab({ candidates: initialCandidates = [] }: { candidates?:
               <Btn variant="ghost" disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))} className="text-xs py-1 px-2.5">
                 <ArrowLeft size={13} /> Prev
               </Btn>
-              <span className="fm text-xs font-bold px-1" style={{ color: t.text }}>
+              <span className="text-xs font-bold px-1" style={{ color: t.text }}>
                 {page} / {totalPages}
               </span>
               <Btn variant="ghost" disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} className="text-xs py-1 px-2.5">
@@ -491,7 +491,7 @@ export function TalentTab({ candidates: initialCandidates = [] }: { candidates?:
               {detail.completeness_score && <Pill color={t.gold}>{detail.completeness_score}% Complete</Pill>}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 fb text-sm p-4 border-[2px] rounded-lg" style={{ borderColor: t.border, background: t.surface2 }}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm p-4 border-[2px] rounded-lg" style={{ borderColor: t.border, background: t.surface2 }}>
               {[
                 ["Full Name", detail.full_name],
                 ["Email", detail.email],
@@ -504,7 +504,7 @@ export function TalentTab({ candidates: initialCandidates = [] }: { candidates?:
                 ["Opt-in Date", (detail.opted_in_at || detail.created_at || "").slice(0, 19).replace("T", " ")],
               ].map(([k, v]) => (
                 <div key={k as string}>
-                  <div className="fm text-[10px] uppercase tracking-widest" style={{ color: t.muted }}>{k}</div>
+                  <div className="text-[10px] uppercase tracking-widest" style={{ color: t.muted }}>{k}</div>
                   <div className="mt-0.5 break-words font-medium" style={{ color: t.text }}>{(v as string) || "—"}</div>
                 </div>
               ))}
@@ -512,7 +512,7 @@ export function TalentTab({ candidates: initialCandidates = [] }: { candidates?:
 
             {Array.isArray(detail.skills) && detail.skills.length > 0 && (
               <div>
-                <div className="fm text-[10px] uppercase tracking-widest mb-2" style={{ color: t.muted }}>Skills & Tech Stack</div>
+                <div className="text-[10px] uppercase tracking-widest mb-2" style={{ color: t.muted }}>Skills & Tech Stack</div>
                 <div className="flex flex-wrap gap-1.5">
                   {detail.skills.map((sk: any, i: number) => {
                     const name = typeof sk === "string" ? sk : sk?.name;
@@ -525,7 +525,7 @@ export function TalentTab({ candidates: initialCandidates = [] }: { candidates?:
             {detail.resume_data && (
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <div className="fm text-[10px] uppercase tracking-widest" style={{ color: t.muted }}>Structured Resume Data</div>
+                  <div className="text-[10px] uppercase tracking-widest" style={{ color: t.muted }}>Structured Resume Data</div>
                   <Btn variant="ghost" className="text-[10px] py-0.5 px-2" onClick={() => {
                     navigator.clipboard.writeText(JSON.stringify(detail.resume_data, null, 2));
                     toast.success("Resume JSON copied to clipboard");
@@ -533,14 +533,14 @@ export function TalentTab({ candidates: initialCandidates = [] }: { candidates?:
                     Copy JSON
                   </Btn>
                 </div>
-                <pre className="p-3 border-2 rounded fm text-[11px] leading-relaxed overflow-x-auto max-h-52" style={{ borderColor: t.border, background: t.inset, color: t.text }}>
+                <pre className="p-3 border rounded-[10px] text-[11px] leading-relaxed overflow-x-auto max-h-52" style={{ borderColor: t.border, background: t.inset, color: t.text }}>
                   {JSON.stringify(detail.resume_data, null, 2)}
                 </pre>
               </div>
             )}
 
             {/* Modal Bottom Actions */}
-            <div className="flex items-center justify-end gap-3 pt-3 border-t-2" style={{ borderColor: t.border }}>
+            <div className="flex items-center justify-end gap-3 pt-3 border-t" style={{ borderColor: t.border }}>
               <Btn variant="primary" onClick={() => setDetail(null)} className="px-6 py-2 text-xs">
                 Close
               </Btn>
@@ -614,19 +614,19 @@ export function RecruitersTab() {
           const active = !!activeSub;
           return <Row key={r.id} onClick={() => setDetail(r)}>
             <Cell className="font-semibold">{r.company_name}</Cell>
-            <Cell><div>{r.contact_name || "—"}</div><div className="fm text-[11px]" style={{ color: t.faint }}>{r.contact_email || r.email || "—"}</div></Cell>
+            <Cell><div>{r.contact_name || "—"}</div><div className="text-[11px]" style={{ color: t.faint }}>{r.contact_email || r.email || "—"}</div></Cell>
             <Cell><Pill color={r.status === "churned" ? t.verm : active ? t.green : t.gold}>{r.status === "churned" ? "churned" : active ? "active" : "pending"}</Pill></Cell>
             <Cell>{active ? <span className="inline-flex items-center gap-1.5"><Pill color={t.cob}>{activeSub?.tier || "—"}</Pill>{isCompTrial(activeSub) && <Pill color={t.gold}>COMP</Pill>}</span> : <span style={{ color: t.faint }}>—</span>}</Cell>
-            <Cell className="fm text-[11px]">{r.api_calls_count || 0}</Cell>
-            <Cell className="fm text-[11px]" style={{ color: t.faint }}>{(r.created_at || "").slice(0, 10)}</Cell>
+            <Cell className="text-[11px]">{r.api_calls_count || 0}</Cell>
+            <Cell className="text-[11px]" style={{ color: t.faint }}>{(r.created_at || "").slice(0, 10)}</Cell>
             <Cell><button onClick={(e) => { e.stopPropagation(); setEdit({ ...r }); }} className="p-1" style={{ color: t.muted }}><Settings size={14} /></button></Cell>
           </Row>; })}</Table>}
 
       <Modal open={onboard} onClose={() => { setOnboard(false); setCreds(null); }} title="Onboard recruiter" wide>
         {creds ? (
           <div className="space-y-4">
-            <div className="border-[3px] p-4" style={{ borderColor: t.green }}><Mail style={{ color: t.green }} className="mb-2" size={20} /><p className="fd text-lg" style={{ color: t.text }}>Account created</p>
-              <p className="mt-1 fb text-sm" style={{ color: t.muted }}>Send these credentials to <b>{creds.email}</b> — shown only once.</p></div>
+            <div className="rounded-xl border p-4" style={{ borderColor: t.green }}><Mail style={{ color: t.green }} className="mb-2" size={20} /><p className="text-lg" style={{ color: t.text }}>Account created</p>
+              <p className="mt-1 text-sm" style={{ color: t.muted }}>Send these credentials to <b>{creds.email}</b> — shown only once.</p></div>
             <Field label="Temporary password"><div className="flex gap-2"><Input readOnly value={creds.pw} /><Btn variant="ghost" onClick={() => { navigator.clipboard.writeText(creds.pw); toast.success("Copied"); }}>Copy</Btn></div></Field>
             <Btn onClick={() => setCreds(null)}>Done</Btn>
           </div>
@@ -642,7 +642,7 @@ export function RecruitersTab() {
             <Field label="Country"><Input value={form.country} onChange={(e) => set("country", e.target.value)} /></Field>
             <Field label="Company size"><Select value={form.company_size} onChange={(e) => set("company_size", e.target.value)}><option value="">—</option>{["1-10", "11-50", "51-200", "201-1000", "1000+"].map((s) => <option key={s}>{s}</option>)}</Select></Field>
             <Field label="Industry"><Input value={form.industry} onChange={(e) => set("industry", e.target.value)} /></Field>
-            <div className="sm:col-span-2 flex items-center justify-between border-2 p-3" style={{ borderColor: t.border }}><span className="fb text-sm" style={{ color: t.text }}>Grant a trial / comp subscription</span><Switch on={form.grant} onChange={(v) => set("grant", v)} /></div>
+            <div className="sm:col-span-2 flex items-center justify-between rounded-xl border p-3" style={{ borderColor: t.border }}><span className="text-sm" style={{ color: t.text }}>Grant a trial / comp subscription</span><Switch on={form.grant} onChange={(v) => set("grant", v)} /></div>
             {form.grant && <><Field label="Tier"><Select value={form.tier} onChange={(e) => set("tier", e.target.value)}><option value="pro">pro</option><option value="basic">basic</option></Select></Field><Field label="Days"><Input type="number" value={form.days} onChange={(e) => set("days", e.target.value)} /></Field></>}
             <div className="sm:col-span-2"><Field label="Notes"><TextArea rows={2} value={form.notes} onChange={(e) => set("notes", e.target.value)} /></Field></div>
             <div className="sm:col-span-2 flex justify-end gap-2"><Btn variant="ghost" onClick={() => setOnboard(false)}>Cancel</Btn><Btn onClick={submit}>Create account</Btn></div>
@@ -658,27 +658,27 @@ export function RecruitersTab() {
               {(detail.subscriptions || []).some((s: any) => s.status === "active") && <Pill color={t.cob}>subscribed</Pill>}
               {detail.country && <Pill><Globe size={11} /> {detail.country}</Pill>}
             </div>
-            <div className="grid grid-cols-2 gap-4 fb text-sm">
+            <div className="grid grid-cols-2 gap-4 text-sm">
               {[["Contact", detail.contact_name], ["Email", detail.contact_email || detail.email], ["Phone", detail.phone], ["Website", detail.website], ["Location", detail.location], ["Size", detail.company_size], ["Industry", detail.industry], ["Onboarded by", detail.onboarded_by]].map(([k, v]) => (
                 <div key={k as string}>
-                  <div className="fm text-[10px] uppercase tracking-widest" style={{ color: t.muted }}>{k}</div>
+                  <div className="text-[10px] uppercase tracking-widest" style={{ color: t.muted }}>{k}</div>
                   <div className="mt-0.5 break-words" style={{ color: t.text }}>{(v as string) || "—"}</div>
                 </div>
               ))}
             </div>
             {detail.notes && (
               <div>
-                <div className="fm text-[10px] uppercase tracking-widest" style={{ color: t.muted }}>Notes</div>
-                <p className="mt-1 whitespace-pre-wrap fb text-sm" style={{ color: t.text }}>{detail.notes}</p>
+                <div className="text-[10px] uppercase tracking-widest" style={{ color: t.muted }}>Notes</div>
+                <p className="mt-1 whitespace-pre-wrap text-sm" style={{ color: t.text }}>{detail.notes}</p>
               </div>
             )}
             <div>
-              <div className="fm text-[10px] uppercase tracking-widest mb-2" style={{ color: t.muted }}>Subscriptions</div>
+              <div className="text-[10px] uppercase tracking-widest mb-2" style={{ color: t.muted }}>Subscriptions</div>
               {(detail.subscriptions || []).length === 0 ? (
-                <p className="fb text-sm" style={{ color: t.faint }}>None active.</p>
+                <p className="text-sm" style={{ color: t.faint }}>None active.</p>
               ) : (
                 (detail.subscriptions || []).map((s: any) => (
-                  <div key={s.id} className="mb-2 flex items-center justify-between border-2 p-3 fb text-sm" style={{ borderColor: t.border }}>
+                  <div key={s.id} className="mb-2 flex items-center justify-between rounded-xl border p-3 text-sm" style={{ borderColor: t.border }}>
                     <span style={{ color: t.text }}>{s.tier} · {s.currency} {s.amount_minor ? (s.amount_minor / 100) : "—"}</span>
                     <span className="inline-flex items-center gap-1.5">
                       {isCompTrial(s) && <Pill color={t.gold}>COMP</Pill>}
@@ -688,7 +688,7 @@ export function RecruitersTab() {
                 ))
               )}
             </div>
-            <div className="flex items-center justify-between pt-4 border-t-2" style={{ borderColor: t.border }}>
+            <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor: t.border }}>
               <Btn variant="ghost" onClick={() => setEdit({ ...detail })}>
                 <Settings size={14} /> Edit details
               </Btn>
@@ -742,8 +742,8 @@ export function RevenueTab() {
       </div>
 
       <Reveal>
-        <Card className="border-[3px] p-4" style={{ borderColor: t.gold }}>
-          <p className="fb text-sm" style={{ color: t.muted }}>
+        <Card className="p-4" style={{ borderColor: t.gold }}>
+          <p className="text-sm" style={{ color: t.muted }}>
             <b style={{ color: t.gold }}>Reconciliation Policy:</b> {r.fxNote || "Affiliate income is a CPC run-rate from CareerJet job clicks — shown alongside subscription MRR, never folded into it."}
           </p>
         </Card>
@@ -760,11 +760,11 @@ export function RevenueTab() {
           <Card className="p-5">
             <SectionLabel color={t.green}>active recruiter subscriptions</SectionLabel>
             {(!r.subBreakdown || r.subBreakdown.length === 0) ? (
-              <p className="fb text-sm" style={{ color: t.faint }}>No active seats.</p>
+              <p className="text-sm" style={{ color: t.faint }}>No active seats.</p>
             ) : (
               <div className="space-y-2">
                 {r.subBreakdown.map((s: any, i: number) => (
-                  <div key={i} className="flex items-center justify-between border-b-2 py-2 fb text-sm" style={{ borderColor: t.border }}>
+                  <div key={i} className="flex items-center justify-between border-b py-2 text-sm" style={{ borderColor: t.border }}>
                     <span style={{ color: t.text }}>{s.company} <Pill>{s.tier}</Pill></span>
                     <b style={{ color: t.green }}>{usd(s.usd)}</b>
                   </div>
@@ -783,7 +783,7 @@ export function RevenueTab() {
             <Pill color={t.gold}>{r.affiliateClicksMonth ?? 0} clicks MTD</Pill>
           </div>
           {(!r.affByCountry || r.affByCountry.length === 0) ? (
-            <p className="fb text-sm" style={{ color: t.faint }}>No job clicks recorded yet this month.</p>
+            <p className="text-sm" style={{ color: t.faint }}>No job clicks recorded yet this month.</p>
           ) : (
             <div className="space-y-3">
               <Bars data={r.affByCountry.slice(0, 8).map((c: any) => ({ label: `${c.country} · ${c.clicks} clicks`, value: Math.round(c.usd * 100) }))} color={t.gold} />
@@ -796,16 +796,16 @@ export function RevenueTab() {
         <Card className="p-5">
           <SectionLabel>revenue ledger</SectionLabel>
           {(!r.ledger || r.ledger.length === 0) ? (
-            <p className="fb text-sm" style={{ color: t.faint }}>No ledger entries.</p>
+            <p className="text-sm" style={{ color: t.faint }}>No ledger entries.</p>
           ) : (
             <Table head={["Source", "Ref", "Amount", "Status", "When"]}>
               {r.ledger.map((l: any) => (
                 <Row key={l.id}>
                   <Cell><Pill>{l.source}</Pill></Cell>
-                  <Cell className="fm text-[11px]">{(l.ref || "—").slice(0, 18)}</Cell>
+                  <Cell className="text-[11px]">{(l.ref || "—").slice(0, 18)}</Cell>
                   <Cell style={{ color: t.green }}>{l.currency} {l.amount_minor / 100}</Cell>
                   <Cell><Pill color={l.status === "settled" ? t.green : t.gold}>{l.status}</Pill></Cell>
-                  <Cell className="fm text-[11px]" style={{ color: t.faint }}>{(l.created_at || "").slice(0, 10)}</Cell>
+                  <Cell className="text-[11px]" style={{ color: t.faint }}>{(l.created_at || "").slice(0, 10)}</Cell>
                 </Row>
               ))}
             </Table>
@@ -841,7 +841,7 @@ export function ExpensesTab() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Reveal className="lg:col-span-2"><Kpi label="All-time spend" value={<CountUp to={total} prefix="$" decimals={0} />} sub={`${rows.length} entries · recurring tracked`} accent={t.verm} icon={<Wallet size={16} />} /></Reveal>
-        <Reveal delay={80}><Card className="flex h-full flex-col justify-center p-5"><SectionLabel color={t.gold}>by category</SectionLabel>{donutSeg.length ? <Donut segments={donutSeg} size={120} thickness={20} /> : <p className="fb text-sm" style={{ color: t.faint }}>Nothing logged.</p>}</Card></Reveal>
+        <Reveal delay={80}><Card className="flex h-full flex-col justify-center p-5"><SectionLabel color={t.gold}>by category</SectionLabel>{donutSeg.length ? <Donut segments={donutSeg} size={120} thickness={20} /> : <p className="text-sm" style={{ color: t.faint }}>Nothing logged.</p>}</Card></Reveal>
       </div>
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <Reveal><SectionLabel color={t.verm}>expenditure</SectionLabel></Reveal>
@@ -849,8 +849,8 @@ export function ExpensesTab() {
       </div>
       {rows.length === 0 ? <Card><EmptyState icon={<Wallet size={32} />} title="No expenses logged." hint="Track servers, AI credits, email, ads, hires, services." /></Card> :
         <Table head={["Date", "Category", "Vendor / Description", "Recurring", "Amount", ""]}>{rows.map((r) => <Row key={r.id}>
-          <Cell className="fm text-[11px]" style={{ color: t.faint }}>{r.spent_on}</Cell><Cell><Pill color={CAT_COLOR[r.category]}>{r.category}</Pill></Cell>
-          <Cell><div className="font-semibold">{r.vendor || "—"}</div><div className="fb text-xs" style={{ color: t.muted }}>{r.description}</div></Cell>
+          <Cell className="text-[11px]" style={{ color: t.faint }}>{r.spent_on}</Cell><Cell><Pill color={CAT_COLOR[r.category]}>{r.category}</Pill></Cell>
+          <Cell><div className="font-semibold">{r.vendor || "—"}</div><div className="text-xs" style={{ color: t.muted }}>{r.description}</div></Cell>
           <Cell>{r.recurring ? <Pill color={t.gold}>{r.period}</Pill> : <span style={{ color: t.faint }}>one-off</span>}</Cell>
           <Cell style={{ color: t.verm }}>{r.currency} {(Number(r.amount_minor) / 100).toLocaleString()}</Cell>
           <Cell><button onClick={() => del(r.id)} className="p-1" style={{ color: t.verm }}><Trash size={14} /></button></Cell></Row>)}</Table>}
@@ -862,7 +862,7 @@ export function ExpensesTab() {
           <Field label="Currency"><Select value={form.currency} onChange={(e) => set("currency", e.target.value)}>{["USD", "NGN", "GBP", "EUR"].map((c) => <option key={c}>{c}</option>)}</Select></Field>
           <Field label="Date"><Input type="date" value={form.spent_on} onChange={(e) => set("spent_on", e.target.value)} /></Field>
           <Field label="Period"><Select value={form.period} onChange={(e) => set("period", e.target.value)}>{["one_off", "monthly", "quarterly", "yearly"].map((c) => <option key={c}>{c}</option>)}</Select></Field>
-          <div className="sm:col-span-2 flex items-center justify-between border-2 p-3" style={{ borderColor: t.border }}><span className="fb text-sm" style={{ color: t.text }}>Recurring</span><Switch on={form.recurring} onChange={(v) => set("recurring", v)} /></div>
+          <div className="sm:col-span-2 flex items-center justify-between rounded-xl border p-3" style={{ borderColor: t.border }}><span className="text-sm" style={{ color: t.text }}>Recurring</span><Switch on={form.recurring} onChange={(v) => set("recurring", v)} /></div>
           <div className="sm:col-span-2"><Field label="Description"><TextArea rows={2} value={form.description} onChange={(e) => set("description", e.target.value)} /></Field></div>
           <div className="sm:col-span-2 flex justify-end gap-2"><Btn variant="ghost" onClick={() => setAdd(false)}>Cancel</Btn><Btn onClick={submit}>Log</Btn></div>
         </div>
@@ -896,28 +896,28 @@ export function PipelineTab({ onConvert }: { onConvert?: (company: string, email
     <div className="space-y-5">
       <Reveal><Card className="p-5"><SectionLabel color={t.cob}>funnel shape</SectionLabel><Bars data={stageCounts} color={t.cob} horizontal={false} height={120} /></Card></Reveal>
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <Reveal><SectionLabel color={t.gold}>sales pipeline</SectionLabel><p className="fm text-[11px] uppercase tracking-widest" style={{ color: t.muted }}>{rows.filter((r) => r.stage !== "lost" && r.stage !== "customer").length} open deals</p></Reveal>
+        <Reveal><SectionLabel color={t.gold}>sales pipeline</SectionLabel><p className="text-[11px] uppercase tracking-widest" style={{ color: t.muted }}>{rows.filter((r) => r.stage !== "lost" && r.stage !== "customer").length} open deals</p></Reveal>
         <Btn onClick={() => setAdd(true)}><Plus size={14} /> Add deal</Btn>
       </div>
       <div className="flex gap-4 overflow-x-auto pb-4 adm-scroll">
         {STAGES.map(([key, label]) => { const items = rows.filter((r) => r.stage === key);
           return (
-            <div key={key} className="w-72 shrink-0 border-[3px] p-3" style={{ borderColor: t.border, background: t.surface, boxShadow: `5px 5px 0 ${t.shadow}` }}
+            <div key={key} className="w-72 shrink-0 rounded-xl border p-3" style={{ borderColor: t.border, background: t.surface, boxShadow: `0 8px 22px ${t.shadow}` }}
               onDragOver={(e) => e.preventDefault()} onDrop={() => drag && move(drag, key)}>
-              <div className="mb-3 flex items-center justify-between border-b-2 pb-2" style={{ borderColor: t.border }}><span className="fm text-[11px] font-bold uppercase tracking-widest" style={{ color: colColor(key) }}>{label}</span><Pill color={colColor(key)}>{items.length}</Pill></div>
+              <div className="mb-3 flex items-center justify-between border-b pb-2" style={{ borderColor: t.border }}><span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: colColor(key) }}>{label}</span><Pill color={colColor(key)}>{items.length}</Pill></div>
               <div className="space-y-2">
                 {items.map((d) => (
-                  <div key={d.id} draggable onDragStart={() => setDrag(d.id)} className="adm-hover cursor-grab border-2 p-3 active:cursor-grabbing" style={{ borderColor: t.border, background: t.bg, boxShadow: `3px 3px 0 ${t.shadow}` }}>
-                    <div className="flex items-start justify-between gap-2"><span className="fd text-sm" style={{ color: t.text }}>{d.company_name}</span>{d.value_minor > 0 && <span className="fm text-[10px]" style={{ color: t.gold }}>{d.currency} {d.value_minor / 100}</span>}</div>
-                    {d.contact_email && <div className="mt-0.5 truncate fm text-[10px]" style={{ color: t.faint }}>{d.contact_email}</div>}
+                  <div key={d.id} draggable onDragStart={() => setDrag(d.id)} className="adm-hover cursor-grab rounded-xl border p-3 active:cursor-grabbing" style={{ borderColor: t.border, background: t.bg, boxShadow: `0 6px 16px ${t.shadow}` }}>
+                    <div className="flex items-start justify-between gap-2"><span className="text-sm" style={{ color: t.text }}>{d.company_name}</span>{d.value_minor > 0 && <span className="text-[10px]" style={{ color: t.gold }}>{d.currency} {d.value_minor / 100}</span>}</div>
+                    {d.contact_email && <div className="mt-0.5 truncate text-[10px]" style={{ color: t.faint }}>{d.contact_email}</div>}
                     <div className="mt-2 flex items-center gap-1">
                       <button onClick={() => { const i = STAGES.findIndex((s) => s[0] === d.stage); if (i > 0) move(d.id, STAGES[i - 1][0]); }} className="p-1" style={{ color: t.muted }}><ArrowLeft size={12} /></button>
                       <button onClick={() => { const i = STAGES.findIndex((s) => s[0] === d.stage); if (i < STAGES.length - 1) move(d.id, STAGES[i + 1][0]); }} className="p-1" style={{ color: t.muted }}><ArrowRight size={12} /></button>
                       <button onClick={() => delDeal(d.id)} className="p-1" style={{ color: t.verm }} title="Delete deal"><Trash size={12} /></button>
-                      {key === "qualified" && onConvert && <button onClick={() => onConvert(d.company_name, d.contact_email)} className="ml-auto border-2 px-2 py-0.5 fm text-[9px] font-bold uppercase tracking-widest" style={{ color: t.green, borderColor: t.green }}>Convert</button>}
+                      {key === "qualified" && onConvert && <button onClick={() => onConvert(d.company_name, d.contact_email)} className="ml-auto rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest" style={{ color: t.green, borderColor: t.green }}>Convert</button>}
                     </div>
                   </div>))}
-                {items.length === 0 && <div className="border-2 border-dashed py-6 text-center fm text-[10px] uppercase tracking-widest" style={{ borderColor: t.border, color: t.faint }}>drop here</div>}
+                {items.length === 0 && <div className="rounded-xl border border-dashed py-6 text-center text-[10px] uppercase tracking-widest" style={{ borderColor: t.border, color: t.faint }}>drop here</div>}
               </div>
             </div>); })}
       </div>
@@ -960,23 +960,23 @@ export function SupportTab() {
       <Reveal><SectionLabel color={t.verm}>help desk</SectionLabel></Reveal>
       {loading ? <Spinner /> : rows.length === 0 ? <Card><EmptyState icon={<Inbox size={32} />} title="Inbox zero." hint="Tickets submitted from /support land here." /></Card> :
         <Card className="grid grid-cols-1 overflow-hidden lg:grid-cols-[340px_1fr]" style={{ minHeight: 520 }}>
-          <div className="adm-scroll max-h-[70vh] overflow-y-auto border-b-[3px] lg:border-b-0 lg:border-r-[3px]" style={{ borderColor: t.border }}>
+          <div className="adm-scroll max-h-[70vh] overflow-y-auto border-b lg:border-b-0 lg:border-r" style={{ borderColor: t.border }}>
             {rows.map((r) => (
-              <button key={r.id} onClick={() => { setSel(r); setReply(r.admin_reply || ""); }} className="flex w-full items-start gap-3 border-b-2 px-4 py-3 text-left transition-colors" style={{ borderColor: t.border, background: open?.id === r.id ? t.surface2 : "transparent" }}>
+              <button key={r.id} onClick={() => { setSel(r); setReply(r.admin_reply || ""); }} className="flex w-full items-start gap-3 border-b px-4 py-3 text-left transition-colors" style={{ borderColor: t.border, background: open?.id === r.id ? t.surface2 : "transparent" }}>
                 <span className="mt-1 h-2.5 w-2.5 shrink-0" style={{ background: PRIO[r.priority || "normal"] }} />
-                <div className="min-w-0 flex-1"><div className="flex items-center justify-between gap-2"><span className="truncate fb text-sm font-semibold" style={{ color: t.text }}>{r.subject || "(no subject)"}</span><Pill color={statusColor(r.status)}>{r.status}</Pill></div>
-                  <div className="truncate fm text-[11px]" style={{ color: t.faint }}>{r.user_email}</div></div>
+                <div className="min-w-0 flex-1"><div className="flex items-center justify-between gap-2"><span className="truncate text-sm font-semibold" style={{ color: t.text }}>{r.subject || "(no subject)"}</span><Pill color={statusColor(r.status)}>{r.status}</Pill></div>
+                  <div className="truncate text-[11px]" style={{ color: t.faint }}>{r.user_email}</div></div>
               </button>))}
           </div>
           <div className="flex flex-col">
             {open ? (
               <>
                 <div className="adm-scroll flex-1 space-y-4 overflow-y-auto p-5">
-                  <div className="flex flex-wrap items-center gap-2"><Pill color={statusColor(open.status)}>{open.status}</Pill><Pill color={PRIO[open.priority || "normal"]}>{open.priority}</Pill>{open.category && <Pill>{open.category}</Pill>}<span className="fm text-[11px]" style={{ color: t.faint }}>{open.user_email} · {(open.created_at || "").slice(0, 10)}</span></div>
-                  <div className="border-2 p-4" style={{ borderColor: t.border, background: t.inset }}><div className="mb-1 fm text-[10px] uppercase tracking-widest" style={{ color: t.muted }}>customer</div><p className="whitespace-pre-wrap fb text-sm" style={{ color: t.text }}>{open.message}</p></div>
-                  {open.admin_reply && <div className="border-2 p-4" style={{ borderColor: t.green, background: t.surface }}><div className="mb-1 fm text-[10px] uppercase tracking-widest" style={{ color: t.green }}>admin reply</div><p className="whitespace-pre-wrap fb text-sm" style={{ color: t.text }}>{open.admin_reply}</p></div>}
+                  <div className="flex flex-wrap items-center gap-2"><Pill color={statusColor(open.status)}>{open.status}</Pill><Pill color={PRIO[open.priority || "normal"]}>{open.priority}</Pill>{open.category && <Pill>{open.category}</Pill>}<span className="text-[11px]" style={{ color: t.faint }}>{open.user_email} · {(open.created_at || "").slice(0, 10)}</span></div>
+                  <div className="rounded-xl border p-4" style={{ borderColor: t.border, background: t.inset }}><div className="mb-1 text-[10px] uppercase tracking-widest" style={{ color: t.muted }}>customer</div><p className="whitespace-pre-wrap text-sm" style={{ color: t.text }}>{open.message}</p></div>
+                  {open.admin_reply && <div className="rounded-xl border p-4" style={{ borderColor: t.green, background: t.surface }}><div className="mb-1 text-[10px] uppercase tracking-widest" style={{ color: t.green }}>admin reply</div><p className="whitespace-pre-wrap text-sm" style={{ color: t.text }}>{open.admin_reply}</p></div>}
                 </div>
-                <div className="space-y-3 border-t-[3px] p-4" style={{ borderColor: t.border }}>
+                <div className="space-y-3 border-t p-4" style={{ borderColor: t.border }}>
                   <div className="flex flex-wrap gap-2">
                     <Select value={open.status} onChange={(e) => patch({ status: e.target.value })} className="w-auto">{["open", "pending", "closed"].map((s) => <option key={s}>{s}</option>)}</Select>
                     <Select value={open.priority || "normal"} onChange={(e) => patch({ priority: e.target.value })} className="w-auto">{["low", "normal", "high", "urgent"].map((s) => <option key={s}>{s}</option>)}</Select>
@@ -1127,7 +1127,7 @@ export function SettingsTab({ siteSettings, featureFlags, appSettings, overview 
           <div className="flex items-center justify-between mb-3">
             <div>
               <SectionLabel color={diag?.overall === "ALL_HEALTHY" ? t.green : t.cob}>system diagnostics & live health</SectionLabel>
-              <p className="fb text-xs" style={{ color: t.muted }}>
+              <p className="text-xs" style={{ color: t.muted }}>
                 Verify live database connectivity, candidate table writes, and external API services.
               </p>
             </div>
@@ -1138,60 +1138,60 @@ export function SettingsTab({ siteSettings, featureFlags, appSettings, overview 
 
           {diag ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-              <div className="border-2 p-3 rounded" style={{ borderColor: t.border, background: t.inset }}>
+              <div className="border p-3 rounded-[10px]" style={{ borderColor: t.border, background: t.inset }}>
                 <div className="flex items-center gap-1.5 mb-1">
                   {diag.checks?.supabase?.status === "OK" ? <CheckCircle size={14} className="text-green-500" /> : <AlertCircle size={14} className="text-red-500" />}
-                  <span className="fm text-xs font-bold" style={{ color: t.text }}>Supabase DB</span>
+                  <span className="text-xs font-bold" style={{ color: t.text }}>Supabase DB</span>
                 </div>
-                <div className="fm text-[11px]" style={{ color: t.muted }}>
+                <div className="text-[11px]" style={{ color: t.muted }}>
                   Status: <b style={{ color: diag.checks?.supabase?.status === "OK" ? t.green : t.verm }}>{diag.checks?.supabase?.status || "UNKNOWN"}</b>
                 </div>
-                <div className="fm text-[10px]" style={{ color: t.faint }}>
+                <div className="text-[10px]" style={{ color: t.faint }}>
                   Client: {diag.checks?.supabase_client?.is_real ? "Live DB" : "Mock (Memory)"}
                 </div>
               </div>
 
-              <div className="border-2 p-3 rounded" style={{ borderColor: t.border, background: t.inset }}>
+              <div className="border p-3 rounded-[10px]" style={{ borderColor: t.border, background: t.inset }}>
                 <div className="flex items-center gap-1.5 mb-1">
                   {diag.checks?.write_test?.status === "OK" ? <CheckCircle size={14} className="text-green-500" /> : <AlertCircle size={14} className="text-amber-500" />}
-                  <span className="fm text-xs font-bold" style={{ color: t.text }}>Live Write Test</span>
+                  <span className="text-xs font-bold" style={{ color: t.text }}>Live Write Test</span>
                 </div>
-                <div className="fm text-[11px]" style={{ color: t.muted }}>
+                <div className="text-[11px]" style={{ color: t.muted }}>
                   {diag.checks?.write_test?.status === "OK" ? "Write Verified" : diag.checks?.write_test?.status || "Pending"}
                 </div>
-                <div className="fm text-[10px]" style={{ color: t.faint }}>
+                <div className="text-[10px]" style={{ color: t.faint }}>
                   {diag.checks?.write_test?.error || "Candidates table writable"}
                 </div>
               </div>
 
-              <div className="border-2 p-3 rounded" style={{ borderColor: t.border, background: t.inset }}>
+              <div className="border p-3 rounded-[10px]" style={{ borderColor: t.border, background: t.inset }}>
                 <div className="flex items-center gap-1.5 mb-1">
                   <Activity size={14} className="text-blue-500" />
-                  <span className="fm text-xs font-bold" style={{ color: t.text }}>Pool Records</span>
+                  <span className="text-xs font-bold" style={{ color: t.text }}>Pool Records</span>
                 </div>
-                <div className="fm text-[11px]" style={{ color: t.muted }}>
+                <div className="text-[11px]" style={{ color: t.muted }}>
                   Candidates: <b style={{ color: t.text }}>{diag.checks?.candidates_table?.candidates_count ?? 0}</b>
                 </div>
-                <div className="fm text-[10px]" style={{ color: t.faint }}>
+                <div className="text-[10px]" style={{ color: t.faint }}>
                   Profiles: {diag.checks?.supabase?.candidate_profiles_count ?? 0}
                 </div>
               </div>
 
-              <div className="border-2 p-3 rounded" style={{ borderColor: t.border, background: t.inset }}>
+              <div className="border p-3 rounded-[10px]" style={{ borderColor: t.border, background: t.inset }}>
                 <div className="flex items-center gap-1.5 mb-1">
                   {diag.checks?.careerjet_proxy?.status === "OK" ? <CheckCircle size={14} className="text-green-500" /> : <AlertCircle size={14} className="text-amber-500" />}
-                  <span className="fm text-xs font-bold" style={{ color: t.text }}>Job Proxy</span>
+                  <span className="text-xs font-bold" style={{ color: t.text }}>Job Proxy</span>
                 </div>
-                <div className="fm text-[11px]" style={{ color: t.muted }}>
+                <div className="text-[11px]" style={{ color: t.muted }}>
                   Status: {diag.checks?.careerjet_proxy?.status || "N/A"}
                 </div>
-                <div className="fm text-[10px]" style={{ color: t.faint }}>
+                <div className="text-[10px]" style={{ color: t.faint }}>
                   Jobs Feed: {diag.checks?.careerjet_proxy?.jobs_count ? `${diag.checks.careerjet_proxy.jobs_count} live` : "0"}
                 </div>
               </div>
             </div>
           ) : (
-            <div className="p-3 border border-dashed rounded text-center fm text-xs" style={{ borderColor: t.border, color: t.muted }}>
+            <div className="p-3 border border-dashed rounded text-center text-xs" style={{ borderColor: t.border, color: t.muted }}>
               Click &quot;Run Health Test&quot; to test production database read/write and external service health.
             </div>
           )}
@@ -1202,7 +1202,7 @@ export function SettingsTab({ siteSettings, featureFlags, appSettings, overview 
       <Reveal>
         <Card className="p-5" accent={t.green}>
           <SectionLabel color={t.green}>billing (recruiter subscription plan)</SectionLabel>
-          <p className="mb-4 fb text-sm" style={{ color: t.muted }}>
+          <p className="mb-4 text-sm" style={{ color: t.muted }}>
             Configures the price charged for recruiter subscriptions and displayed on the recruiter portal.
           </p>
           <div className="grid grid-cols-2 gap-4">
@@ -1244,8 +1244,8 @@ export function SettingsTab({ siteSettings, featureFlags, appSettings, overview 
             <Field label="Meta Description">
               <TextArea rows={2} value={site.meta_description} onChange={(e) => setSite({ ...site, meta_description: e.target.value })} />
             </Field>
-            <div className="flex items-center justify-between border-2 p-3" style={{ borderColor: t.border }}>
-              <span className="fb text-sm" style={{ color: t.text }}>Maintenance mode</span>
+            <div className="flex items-center justify-between rounded-xl border p-3" style={{ borderColor: t.border }}>
+              <span className="text-sm" style={{ color: t.text }}>Maintenance mode</span>
               <Switch on={site.maintenance_mode} onChange={(v) => setSite({ ...site, maintenance_mode: v })} />
             </div>
             <div className="flex justify-end">
@@ -1261,7 +1261,7 @@ export function SettingsTab({ siteSettings, featureFlags, appSettings, overview 
           <SectionLabel color={t.verm}>AI budget guard limit</SectionLabel>
           <div className="mb-4 flex items-center gap-4">
             <RadialGauge value={ai} max={Math.max(aiLimit, ai, 1)} color={t.verm} label="spend" size={92} suffix="$" />
-            <div className="fb text-sm" style={{ color: t.muted }}>
+            <div className="text-sm" style={{ color: t.muted }}>
               Spend this month <b style={{ color: t.verm }}>{usd(ai)}</b> of a <b style={{ color: t.text }}>${aiLimit}</b> monthly ceiling.
             </div>
           </div>
@@ -1280,15 +1280,15 @@ export function SettingsTab({ siteSettings, featureFlags, appSettings, overview 
           <SectionLabel color={t.cob}>feature flags & modules</SectionLabel>
           <div className="space-y-3">
             {(flags || []).map((f: any) => (
-              <div key={f.key} className="flex items-center justify-between border-2 p-3" style={{ borderColor: t.border }}>
+              <div key={f.key} className="flex items-center justify-between rounded-xl border p-3" style={{ borderColor: t.border }}>
                 <div>
-                  <div className="fb text-sm font-semibold" style={{ color: t.text }}>{f.key}</div>
-                  <div className="fb text-xs" style={{ color: t.muted }}>{f.description || "Toggle feature visibility and access"}</div>
+                  <div className="text-sm font-semibold" style={{ color: t.text }}>{f.key}</div>
+                  <div className="text-xs" style={{ color: t.muted }}>{f.description || "Toggle feature visibility and access"}</div>
                 </div>
                 <Switch on={!!f.is_enabled} onChange={(v) => toggleFlag(f.key, v)} />
               </div>
             ))}
-            {(!flags || flags.length === 0) && <p className="fb text-sm" style={{ color: t.faint }}>No feature flags configured.</p>}
+            {(!flags || flags.length === 0) && <p className="text-sm" style={{ color: t.faint }}>No feature flags configured.</p>}
           </div>
         </Card>
       </Reveal>
@@ -1297,7 +1297,7 @@ export function SettingsTab({ siteSettings, featureFlags, appSettings, overview 
       <Reveal delay={120} className="lg:col-span-2">
         <Card className="p-5" accent={t.gold}>
           <SectionLabel color={t.gold}>email / transactional SMTP</SectionLabel>
-          <p className="fb text-sm" style={{ color: t.muted }}>
+          <p className="text-sm" style={{ color: t.muted }}>
             Auth & transactional notifications are sent via Brevo SMTP relay: host <code>smtp-relay.brevo.com</code> · port <code>587</code> · sender <code>auth@cvyon.com</code>.
           </p>
         </Card>
@@ -1368,7 +1368,7 @@ export function PricingTab() {
     <div className="space-y-5">
       <Reveal><Card className="p-5">
         <SectionLabel color={t.gold}>unlock pricing</SectionLabel>
-        <p className="fb mt-1 text-sm" style={{ color: t.muted }}>
+        <p className="mt-1 text-sm" style={{ color: t.muted }}>
           What recruiters pay per contact unlock. Prices go live immediately — the checkout reads them straight from the database.
           Non-USD currencies are charged through Paystack in that currency; USD payouts need international approval on your Paystack dashboard.
         </p>

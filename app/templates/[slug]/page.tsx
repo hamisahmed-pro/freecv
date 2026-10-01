@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { templateSeoEntries, getTemplateSeoEntry } from '@/lib/template-seo';
-import TemplateSeoPage from '@/components/seo/TemplateSeoPage';
+import TemplateSeoPage from './TemplateSeoPage';
 
 // Derived from the data file so new entries (added by the second half of this
 // task) are picked up automatically — no manual list to keep in sync.

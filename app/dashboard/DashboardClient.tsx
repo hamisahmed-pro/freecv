@@ -6,15 +6,9 @@ import { useResumeStore } from '@/store/useResumeStore';
 import { useRouter } from 'next/navigation';
 import { Plus, FileText, Copy, Trash2, Edit2, Loader2, ArrowLeft, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
+import { V3Page, V3Eyebrow } from '@/components/v3/V3Chrome';
 import { RecruiterOptInCard } from '@/components/candidate/RecruiterOptInCard';
 import { RecruiterActivityCard } from '@/components/candidate/RecruiterActivityCard';
-import { Archivo, Archivo_Black, DM_Sans, Space_Mono } from '@/lib/fonts';
-
-const display = Archivo_Black({ subsets: ["latin"], weight: "400", display: "swap" });
-const head = Archivo({ subsets: ["latin"], weight: ["600", "800", "900"], display: "swap" });
-const body = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"], display: "swap" });
-const mono = Space_Mono({ subsets: ["latin"], weight: ["400", "700"], display: "swap" });
 
 export default function DashboardClient() {
   const router = useRouter();
@@ -119,118 +113,103 @@ export default function DashboardClient() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#f6f5ef] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#5548f5]" />
-      </div>
+      <V3Page pageName="dashboard">
+        <div className="flex min-h-[40vh] items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-brand" />
+        </div>
+      </V3Page>
     );
   }
 
   return (
-    <div className={cn("cv-riso relative min-h-screen text-[#151a46] bg-[#f6f5ef] overflow-x-hidden", body.className)}
-      style={{ ["--ink" as any]: "#151a46", ["--verm" as any]: "#ff604b", ["--cob" as any]: "#5548f5", ["--hi" as any]: "#ffd85a", ["--fd" as any]: display.style.fontFamily, ["--fh" as any]: head.style.fontFamily, ["--fb" as any]: body.style.fontFamily, ["--fm" as any]: mono.style.fontFamily }}>
-      <style>{`
-        .cv-riso{font-family:var(--fb)} .cv-riso .fd{font-family:var(--fd)} .cv-riso .fh{font-family:var(--fh)} .cv-riso .fm{font-family:var(--fm)}
-        .cv-riso .hs{box-shadow:7px 7px 0 var(--ink)} .cv-riso .hs-v{box-shadow:7px 7px 0 var(--verm)} .cv-riso .hs-c{box-shadow:6px 6px 0 var(--cob)}
-        .cv-riso .hs-sm{box-shadow:5px 5px 0 var(--ink)}
-        .cv-riso .riso-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: 3px solid var(--ink); background-color: var(--ink); color: #f6f5ef; padding: 0.75rem 1.5rem; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 7px 7px 0 var(--ink); transition: all 0.2s; cursor: pointer; text-decoration: none; }
-        .cv-riso .riso-btn:hover { transform: translate(2px, 2px); box-shadow: none; }
-        .cv-riso .riso-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: 7px 7px 0 var(--ink); }
-        .cv-riso .riso-btn-ghost { background-color: transparent; color: var(--ink); }
-        .cv-riso .riso-card { border: 3px solid var(--ink); background-color: #ffffff; box-shadow: 7px 7px 0 var(--ink); }
-        .cv-riso .riso-input { width: 100%; border: 3px solid var(--ink); background-color: #ffffff; padding: 0.75rem 1rem; font-family: var(--fm); font-size: 0.875rem; color: var(--ink); box-shadow: 4px 4px 0 var(--ink); transition: all 0.2s; outline: none; }
-        .cv-riso .riso-input:focus { box-shadow: none; transform: translate(2px, 2px); border-color: var(--verm); }
-        .cv-riso .riso-label { display: block; font-family: var(--fh); font-size: 0.875rem; font-weight: 800; color: var(--ink); }
-        .cv-riso .riso-chip { display: inline-flex; align-items: center; gap: 0.25rem; border: 2px solid var(--ink); padding: 0.25rem 0.5rem; font-family: var(--fm); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold; color: var(--ink); background: #ffffff; }
-      `}</style>
+    <V3Page pageName="dashboard">
+      <div className="mx-auto max-w-5xl space-y-8">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <Link href="/build" className="mb-4 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-navy/70 transition-colors hover:text-coral">
+              <ArrowLeft size={16} /> Back to Builder
+            </Link>
+            <V3Eyebrow>§ my account</V3Eyebrow>
+            <h1 className="text-4xl font-black tracking-tight text-navy sm:text-5xl">My Resumes</h1>
+            <p className="mt-2 text-[15px] text-muted">Manage, edit, and duplicate your resumes.</p>
+          </div>
+          <button
+            onClick={handleCreateNew}
+            className="inline-flex items-center gap-2 rounded-[10px] bg-coral px-[18px] py-3 text-[12px] font-extrabold uppercase tracking-wider text-white shadow-[0_8px_18px_rgba(255,96,75,0.28)] transition-transform hover:-translate-y-px"
+          >
+            <Plus size={18} />
+            Create New
+          </button>
+        </div>
 
-      <div className="min-h-screen p-6 md:p-12">
-        <div className="max-w-5xl mx-auto space-y-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <Link href="/build" className="fm inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#151a46]/70 hover:text-[#ff604b] mb-4 transition-colors">
-                <ArrowLeft size={16} /> Back to Builder
-              </Link>
-              <h1 className="fd text-4xl tracking-tight">My Resumes</h1>
-              <p className="text-[#151a46]/70 mt-1">Manage, edit, and duplicate your resumes.</p>
+        {fetchError && (
+          <div className="flex items-center gap-3 rounded-2xl border border-coral/40 bg-coral/10 p-4">
+            <AlertTriangle size={20} className="shrink-0 text-coral" />
+            <p className="text-sm font-bold text-navy">{fetchError}</p>
+          </div>
+        )}
+
+        {/* recruiter discovery — opt-in moment #2 */}
+        <RecruiterOptInCard variant="card" />
+
+        {/* candidate transparency: real recruiter activity on their profile */}
+        <RecruiterActivityCard />
+
+        {resumes.length === 0 ? (
+          <div className="rounded-2xl border border-line bg-paper p-12 text-center shadow-[0_8px_22px_rgba(23,27,75,0.08)] flex flex-col items-center">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-lavender text-brand">
+              <FileText size={32} />
             </div>
+            <h3 className="mb-2 text-xl font-extrabold tracking-tight text-navy">No resumes yet</h3>
+            <p className="mb-6 max-w-sm text-[15px] text-muted">Create your first resume to get started building your professional profile.</p>
             <button
               onClick={handleCreateNew}
-              className="riso-btn"
+              className="inline-flex items-center gap-2 rounded-[10px] bg-coral px-[18px] py-3 text-[12px] font-extrabold uppercase tracking-wider text-white shadow-[0_8px_18px_rgba(255,96,75,0.28)] transition-transform hover:-translate-y-px"
             >
-              <Plus size={18} />
-              Create New
+              Build Resume
             </button>
           </div>
-
-          {fetchError && (
-            <div className="flex items-center gap-3 border-[3px] border-[#ff604b] bg-white hs p-4">
-              <AlertTriangle size={20} className="text-[#ff604b] shrink-0" />
-              <p className="text-sm font-bold">{fetchError}</p>
-            </div>
-          )}
-
-          {/* recruiter discovery — opt-in moment #2 */}
-          <RecruiterOptInCard variant="card" />
-
-          {/* candidate transparency: real recruiter activity on their profile */}
-          <RecruiterActivityCard />
-
-          {resumes.length === 0 ? (
-            <div className="riso-card p-12 text-center flex flex-col items-center">
-              <div className="w-16 h-16 bg-[#f6f5ef] text-[#5548f5] border-[3px] border-[#151a46] flex items-center justify-center mb-4">
-                <FileText size={32} />
-              </div>
-              <h3 className="fh text-xl font-extrabold mb-2">No resumes yet</h3>
-              <p className="text-[#151a46]/70 max-w-sm mb-6">Create your first resume to get started building your professional profile.</p>
-              <button
-                onClick={handleCreateNew}
-                className="riso-btn"
-              >
-                Build Resume
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {resumes.map(resume => (
-                <div key={resume.id} className="riso-card p-6 group relative flex flex-col transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
-                  <div className="flex-grow">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="w-12 h-12 bg-[#f6f5ef] flex items-center justify-center text-[#151a46] border-[3px] border-[#151a46]">
-                        <FileText size={24} />
-                      </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {resumes.map(resume => (
+              <div key={resume.id} className="relative flex flex-col rounded-2xl border border-line bg-paper p-6 shadow-[0_8px_22px_rgba(23,27,75,0.08)] transition-transform hover:-translate-y-px">
+                <div className="flex-grow">
+                  <div className="mb-4 flex items-start justify-between">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cream text-navy">
+                      <FileText size={24} />
                     </div>
-                    <h3 className="fh font-extrabold text-lg mb-1 line-clamp-1">{resume.title}</h3>
-                    <p className="fm text-xs text-gray-600 mb-6">Last updated: {new Date(resume.updated_at).toLocaleDateString()}</p>
                   </div>
-
-                  <div className="flex items-center gap-2 pt-4 border-t-[3px] border-[#151a46]/10">
-                    <button
-                      onClick={() => handleEdit(resume)}
-                      className="flex-1 flex items-center justify-center gap-2 border-[3px] border-[#151a46] bg-[#f6f5ef] text-[#151a46] px-3 py-2 fh text-xs font-extrabold uppercase tracking-wider transition-all hover:translate-x-[2px] hover:translate-y-[2px]"
-                    >
-                      <Edit2 size={16} /> Edit
-                    </button>
-                    <button
-                      onClick={() => handleDuplicate(resume)}
-                      className="p-2 border-[3px] border-[#151a46] bg-white text-[#151a46] transition-all hover:translate-x-[2px] hover:translate-y-[2px]"
-                      title="Duplicate"
-                    >
-                      <Copy size={18} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(resume.id)}
-                      className="p-2 border-[3px] border-[#151a46] bg-white text-[#151a46] transition-all hover:bg-[#ff604b] hover:border-[#ff604b] hover:text-white"
-                      title="Delete"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
+                  <h3 className="mb-1 line-clamp-1 text-lg font-extrabold tracking-tight text-navy">{resume.title}</h3>
+                  <p className="mb-6 text-xs text-muted">Last updated: {new Date(resume.updated_at).toLocaleDateString()}</p>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+
+                <div className="flex items-center gap-2 border-t border-line pt-4">
+                  <button
+                    onClick={() => handleEdit(resume)}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-[10px] bg-navy px-3 py-2.5 text-xs font-extrabold uppercase tracking-wider text-white transition-transform hover:-translate-y-px hover:bg-coral"
+                  >
+                    <Edit2 size={16} /> Edit
+                  </button>
+                  <button
+                    onClick={() => handleDuplicate(resume)}
+                    className="grid h-10 w-10 place-items-center rounded-[10px] border border-line bg-paper text-navy transition-all hover:-translate-y-px hover:border-brand hover:text-brand"
+                    title="Duplicate"
+                  >
+                    <Copy size={18} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(resume.id)}
+                    className="grid h-10 w-10 place-items-center rounded-[10px] border border-line bg-paper text-navy transition-all hover:-translate-y-px hover:border-coral hover:bg-coral hover:text-white"
+                    title="Delete"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+    </V3Page>
   );
 }

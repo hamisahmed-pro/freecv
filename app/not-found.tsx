@@ -1,34 +1,44 @@
 import Link from "next/link";
-import { RisoPage } from "@/components/riso/RisoChrome";
+import { ArrowRight, Compass } from "lucide-react";
+import { V3Page, V3Eyebrow } from "@/components/v3/V3Chrome";
 
 export default function NotFound() {
   return (
-    <RisoPage pageName="not_found">
+    <V3Page pageName="not_found">
       <section className="mx-auto flex min-h-[70vh] max-w-3xl flex-col items-center justify-center py-20 text-center">
-        <div className="fm mb-6 flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.22em]">
-          <span className="inline-flex items-center gap-2 border-[3px] border-[#151a46] bg-white px-3 py-1.5 hs">
-            § error 404
-          </span>
+        <V3Eyebrow>§ error 404</V3Eyebrow>
+        <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-lavender">
+          <Compass size={36} className="text-brand" />
         </div>
-        <h1 className="fd text-[22vw] leading-[0.86] tracking-[-0.02em] text-[#151a46] sm:text-8xl">
-          Lost?
+        <h1 className="text-4xl font-black tracking-tight text-navy sm:text-6xl">
+          Lost? Let&apos;s get you back.
         </h1>
-        <p className="mt-6 max-w-md text-lg leading-relaxed text-[#151a46]/70">
-          This page doesn&apos;t exist. It may have been moved, deleted, or you
-          typed the address wrong.
+        <p className="mx-auto mt-5 max-w-md text-[17px] leading-relaxed text-muted">
+          This page doesn&apos;t exist. It may have been moved, deleted, or the
+          address was typed wrong.
         </p>
         <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-          <Link href="/" className="riso-btn">
+          <Link
+            href="/"
+            className="group inline-flex items-center justify-center gap-2 rounded-[10px] bg-navy px-6 py-3.5 text-[12px] font-extrabold uppercase tracking-wider text-white transition-transform hover:-translate-y-px hover:bg-coral"
+          >
             Back home
+            <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
           </Link>
-          <Link href="/build" className="riso-btn riso-btn-ghost">
+          <Link
+            href="/build"
+            className="inline-flex items-center justify-center gap-2 rounded-[10px] border border-line bg-paper px-6 py-3.5 text-[12px] font-extrabold uppercase tracking-wider text-navy transition-transform hover:-translate-y-px hover:border-brand hover:text-brand"
+          >
             Build my resume
           </Link>
-          <Link href="/support" className="riso-btn riso-btn-ghost">
+          <Link
+            href="/support"
+            className="inline-flex items-center justify-center gap-2 rounded-[10px] border border-line bg-paper px-6 py-3.5 text-[12px] font-extrabold uppercase tracking-wider text-navy transition-transform hover:-translate-y-px hover:border-brand hover:text-brand"
+          >
             Contact support
           </Link>
         </div>
       </section>
-    </RisoPage>
+    </V3Page>
   );
 }
