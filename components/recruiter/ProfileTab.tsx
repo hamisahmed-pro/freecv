@@ -46,7 +46,15 @@ export function ProfileTab({ signInEmail }: { signInEmail: string }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [company, setCompany] = useState("");
+  const [contactName, setContactName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [website, setWebsite] = useState("");
+  const [location, setLocation] = useState("");
+  const [country, setCountry] = useState("");
+  const [companySize, setCompanySize] = useState("");
+  const [industry, setIndustry] = useState("");
+  const [notes, setNotes] = useState("");
 
   const [currentPw, setCurrentPw] = useState("");
   const [newPw, setNewPw] = useState("");
@@ -64,7 +72,15 @@ export function ProfileTab({ signInEmail }: { signInEmail: string }) {
         if (cancelled) return;
         setProfile(p);
         setCompany(p.company_name || "");
+        setContactName(p.contact_name || "");
         setContactEmail(p.contact_email || "");
+        setPhone(p.phone || "");
+        setWebsite(p.website || "");
+        setLocation(p.location || "");
+        setCountry(p.country || "");
+        setCompanySize(p.company_size || "");
+        setIndustry(p.industry || "");
+        setNotes(p.notes || "");
       })
       .catch(() => toast.error("Couldn't load your profile."))
       .finally(() => !cancelled && setLoading(false));
@@ -79,7 +95,15 @@ export function ProfileTab({ signInEmail }: { signInEmail: string }) {
     try {
       const p = await updateRecruiterProfile({
         company_name: company.trim(),
+        contact_name: contactName.trim(),
         contact_email: contactEmail.trim(),
+        phone: phone.trim(),
+        website: website.trim(),
+        location: location.trim(),
+        country: country.trim(),
+        company_size: companySize,
+        industry: industry.trim(),
+        notes: notes.trim(),
       });
       setProfile(p);
       toast.success("Profile saved.");
@@ -207,6 +231,90 @@ export function ProfileTab({ signInEmail }: { signInEmail: string }) {
             <p className="mt-1.5 text-[11px] text-navy/50">
               Public contact shown on receipts and shared shortlists — not used for sign-in.
             </p>
+          </div>
+          <div>
+            <label className={labelCls}>Contact name</label>
+            <input
+              className={inputCls}
+              value={contactName}
+              onChange={(e) => setContactName(e.target.value)}
+              placeholder="Jane Doe"
+              maxLength={120}
+            />
+          </div>
+          <div>
+            <label className={labelCls}>Phone</label>
+            <input
+              className={inputCls}
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+1 555 123 4567"
+              maxLength={40}
+            />
+          </div>
+          <div>
+            <label className={labelCls}>Website</label>
+            <input
+              className={inputCls}
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              placeholder="https://company.com"
+              maxLength={200}
+            />
+          </div>
+          <div>
+            <label className={labelCls}>Location</label>
+            <input
+              className={inputCls}
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="City, State"
+              maxLength={120}
+            />
+          </div>
+          <div>
+            <label className={labelCls}>Country</label>
+            <input
+              className={inputCls}
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              placeholder="United States"
+              maxLength={80}
+            />
+          </div>
+          <div>
+            <label className={labelCls}>Company size</label>
+            <select
+              className={inputCls}
+              value={companySize}
+              onChange={(e) => setCompanySize(e.target.value)}
+            >
+              <option value="">—</option>
+              {["1-10", "11-50", "51-200", "201-1000", "1000+"].map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className={labelCls}>Industry</label>
+            <input
+              className={inputCls}
+              value={industry}
+              onChange={(e) => setIndustry(e.target.value)}
+              placeholder="Staffing & recruiting"
+              maxLength={120}
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className={labelCls}>Notes</label>
+            <textarea
+              className={inputCls}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Anything we should know about your hiring needs…"
+              rows={3}
+              maxLength={2000}
+            />
           </div>
           <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-3">
             <p className="text-xs text-navy/50">

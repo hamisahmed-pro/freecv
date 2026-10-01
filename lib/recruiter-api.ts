@@ -212,7 +212,15 @@ export async function checkoutCredits(packId: string): Promise<{ authorization_u
 
 export interface RecruiterProfile {
   company_name: string;
+  contact_name: string;
   contact_email: string;
+  phone: string;
+  website: string;
+  location: string;
+  country: string;
+  company_size: string;
+  industry: string;
+  notes: string;
   status: string | null;
   created_at: string | null;
   sign_in_email: string;
@@ -225,7 +233,15 @@ export async function getRecruiterProfile(): Promise<RecruiterProfile> {
 
 export async function updateRecruiterProfile(patch: {
   company_name?: string;
+  contact_name?: string;
   contact_email?: string;
+  phone?: string;
+  website?: string;
+  location?: string;
+  country?: string;
+  company_size?: string;
+  industry?: string;
+  notes?: string;
 }): Promise<RecruiterProfile> {
   const res = await authed("/api/recruiter/profile", {
     method: "PATCH",
@@ -236,7 +252,15 @@ export async function updateRecruiterProfile(patch: {
     () =>
       ({
         company_name: json.company_name ?? "",
+        contact_name: json.contact_name ?? "",
         contact_email: json.contact_email ?? "",
+        phone: json.phone ?? "",
+        website: json.website ?? "",
+        location: json.location ?? "",
+        country: json.country ?? "",
+        company_size: json.company_size ?? "",
+        industry: json.industry ?? "",
+        notes: json.notes ?? "",
         status: null,
         created_at: null,
         sign_in_email: "",

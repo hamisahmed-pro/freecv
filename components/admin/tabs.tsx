@@ -611,12 +611,17 @@ export function RecruitersTab() {
     if (r.ok) { toast.success("Saved"); setDetail({ ...detail, ...edit }); setEdit(null); load(); } else toast.error(r.error || "Save failed");
   };
   const filtered = recs.filter((r) => `${r.company_name} ${r.contact_email} ${r.contact_name}`.toLowerCase().includes(q.toLowerCase()));
+  /* Account standing comes from the recruiters.status column (active/pending/churned).
+     Subscription state is a separate commercial signal shown in the Plan column. */
+  const statusColor = (s: string) => s === "churned" ? t.verm : s === "active" ? t.green : s === "pending" ? t.gold : t.muted;
+  const statusOf = (r: any) => r.status || "active";
   const statusMix = useMemo(() => {
     let active = 0, pending = 0, churned = 0;
     recs.forEach((r) => {
-      if (r.status === "churned") churned++;
-      else if ((r.subscriptions || []).some((s: any) => s.status === "active")) active++;
-      else pending++;
+      const st = statusOf(r);
+      if (st === "churned") churned++;
+      else if (st === "pending") pending++;
+      else active++;
     });
     return { active, pending, churned };
   }, [recs]);
@@ -645,7 +650,7 @@ export function RecruitersTab() {
           return <Row key={r.id} onClick={() => setDetail(r)}>
             <Cell className="font-semibold">{r.company_name}</Cell>
             <Cell><div>{r.contact_name || "—"}</div><div className="text-[11px]" style={{ color: t.faint }}>{r.contact_email || r.email || "—"}</div></Cell>
-            <Cell><Pill color={r.status === "churned" ? t.verm : active ? t.green : t.gold}>{r.status === "churned" ? "churned" : active ? "active" : "pending"}</Pill></Cell>
+            <Cell><Pill color={statusColor(statusOf(r))}>{statusOf(r)}</Pill></Cell>
             <Cell>{active ? <span className="inline-flex items-center gap-1.5"><Pill color={t.cob}>{activeSub?.tier || "—"}</Pill>{isCompTrial(activeSub) && <Pill color={t.gold}>COMP</Pill>}</span> : <span style={{ color: t.faint }}>—</span>}</Cell>
             <Cell className="text-[11px]">{r.api_calls_count || 0}</Cell>
             <Cell className="text-[11px]" style={{ color: t.faint }}>{(r.created_at || "").slice(0, 10)}</Cell>
@@ -684,7 +689,7 @@ export function RecruitersTab() {
         {detail && !edit && (
           <div className="space-y-6">
             <div className="flex flex-wrap gap-2">
-              <Pill color={detail.status === "churned" ? t.verm : t.green}>{detail.status}</Pill>
+              <Pill color={statusColor(detail.status || "active")}>{detail.status || "active"}</Pill>
               {(detail.subscriptions || []).some((s: any) => s.status === "active") && <Pill color={t.cob}>subscribed</Pill>}
               {detail.country && <Pill><Globe size={11} /> {detail.country}</Pill>}
             </div>
