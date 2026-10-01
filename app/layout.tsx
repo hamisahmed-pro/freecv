@@ -54,6 +54,7 @@ import { AffiliateTracker } from "@/components/AffiliateTracker";
 import { JsonLd } from "@/components/JsonLd";
 import { Suspense } from "react";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 
 export default function RootLayout({
   children,
@@ -91,6 +92,7 @@ export default function RootLayout({
           <Suspense fallback={null}>
             <AffiliateTracker />
           </Suspense>
+          <GoogleAnalytics />
           <Toaster position="top-right" />
           <PWAInstallBanner />
         </AuthProvider>
