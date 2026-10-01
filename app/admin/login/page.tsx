@@ -25,7 +25,7 @@ export default function AdminLogin() {
     });
 
     if (res.ok) {
-      toast.success("Authenticated successfully");
+      toast.success("Signed in successfully");
       router.push('/admin');
       router.refresh();
     } else {
