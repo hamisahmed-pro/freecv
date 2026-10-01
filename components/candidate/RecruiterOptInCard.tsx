@@ -9,6 +9,8 @@ import toast from "react-hot-toast";
 type Status = "loading" | "in" | "out" | "no-session";
 
 const DISMISS_KEY = "cvyon_optin_dismissed";
+/** Re-prompt after 14 days — a permanent dismiss starves the talent pool. */
+const DISMISS_TTL_MS = 14 * 24 * 60 * 60 * 1000;
 
 /**
  * First-class, benefit-framed recruiter-discovery opt-in.
@@ -37,7 +39,18 @@ export function RecruiterOptInCard({
 
   useEffect(() => {
     try {
-      if (localStorage.getItem(DISMISS_KEY)) { setDismissed(true); return; }
+      const raw = localStorage.getItem(DISMISS_KEY);
+      if (raw) {
+        const dismissedAt = Number(raw);
+        // Expire old dismissals: re-ask after 14 days. Non-numeric legacy
+        // values are treated as expired (re-prompt once).
+        if (!Number.isFinite(dismissedAt) || Date.now() - dismissedAt > DISMISS_TTL_MS) {
+          localStorage.removeItem(DISMISS_KEY);
+        } else {
+          setDismissed(true);
+          return;
+        }
+      }
     } catch {}
     refresh();
   }, [refresh]);

@@ -5,7 +5,10 @@ import { requireAdmin, adminFail } from '@/lib/admin-auth';
 export const dynamic = 'force-dynamic';
 // Approx FX to USD — reconcile against your bank/Paystack rates.
 const FX: Record<string, number> = { USD: 1, NGN: 1 / 1550, GBP: 1.27, EUR: 1.08, KES: 0.0077, ZAR: 0.055, GHS: 0.065, INR: 0.012, CAD: 0.73, AUD: 0.66 };
-const toUSD = (minor: number, cur: string, fx?: number) => (minor / 100) * (fx || FX[(cur || 'USD').toUpperCase()] || 1);
+// Number() coercion: a malformed amount_minor/fx_to_usd (truthy non-numeric string)
+// must degrade to 0, never poison the whole sum into NaN (2026-10-01 audit fix).
+const toUSD = (minor: number, cur: string, fx?: number) =>
+  ((Number(minor) || 0) / 100) * (Number(fx) || FX[(cur || 'USD').toUpperCase()] || 1);
 const monthStart = () => new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
 
 export async function GET() {
