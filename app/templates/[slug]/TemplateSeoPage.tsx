@@ -85,7 +85,11 @@ export default function TemplateSeoPage({ entry, more }: { entry: TemplateSeoEnt
         <div>
           <V3Pill><Sparkles size={13} /> Free template</V3Pill>
           <h1 className="mt-[18px] text-4xl font-black leading-[1.05] tracking-tight text-navy sm:text-5xl">
-            {entry.name} <span className="text-coral">resume template</span>
+            {entry.h1 ?? (
+              <>
+                {entry.name} <span className="text-coral">resume template</span>
+              </>
+            )}
           </h1>
           <p className="mt-4 text-lg font-bold text-navy">{entry.tagline}</p>
           <p className="mt-4 max-w-xl leading-relaxed text-muted">{entry.description}</p>

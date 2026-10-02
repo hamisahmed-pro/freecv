@@ -15,6 +15,10 @@ export interface TemplateSeoEntry {
   faqs: { q: string; a: string }[];
   metaTitle: string;
   metaDescription: string;
+  /** Optional H1 override. When set, the template page renders this as the
+   *  H1 instead of the default "{name} resume template". Used when the
+   *  page's top Google query differs from the template name. */
+  h1?: string;
 }
 
 export const templateSeoEntries: TemplateSeoEntry[] = [
@@ -5117,9 +5121,10 @@ export const templateSeoEntries: TemplateSeoEntry[] = [
     id: "Tutor",
     slug: "tutor",
     name: "Tutor",
+    h1: "Tutoring resume example — the free Tutor template",
     tagline: "Clear and encouraging for tutors and coaches.",
     description:
-      "Tutor is built for people who explain things for a living: section titles pair a bold black heading with a thick theme-colored rule running to the right margin, and body text is set large (15px) for effortless reading. Skills appear as clear pills with crisp borders. The design feels encouraging and uncluttered — the visual equivalent of a great explainer.",
+      "Looking for a tutoring resume example you can actually use? Tutor is built for people who explain things for a living — private tutors, academic coaches, corporate trainers. Section titles pair a bold black heading with a thick theme-colored rule running to the right margin, and body text is set large (15px) for effortless reading. Skills appear as clear pills with crisp borders. The design feels encouraging and uncluttered — the visual equivalent of a great explainer, and a strong starting point for any tutoring resume.",
     bestFor: [
       "Private tutors and academic coaches",
       "Corporate trainers",
@@ -5138,6 +5143,18 @@ export const templateSeoEntries: TemplateSeoEntry[] = [
       "Single-column layout with real text and clear headings parses without issues. The decorative rules are lines, not text obstructions.",
     faqs: [
       {
+        q: "What should a tutoring resume include?",
+        a: "Your subjects and the levels you teach, measurable student outcomes (grades improved, exams passed), relevant certifications, and any curriculum or materials you created. Private tutors should also note whether sessions were in-person or online — employers screen for it.",
+      },
+      {
+        q: "How do I write a tutoring resume with no tutoring experience?",
+        a: "Lead with adjacent experience: mentoring, coaching, teaching-assistant work, volunteering, or strong coursework in your subject. A skills-first layout like Tutor's keeps the focus on what you can teach rather than job titles you don't have yet.",
+      },
+      {
+        q: "Is this tutoring resume example ATS-friendly?",
+        a: "Yes — single-column flow, real selectable text, and standard section headings. The decorative rules are lines, not text obstructions, so parsers read every section in order.",
+      },
+      {
         q: "Is the large text okay for a one-page resume?",
         a: "The 15px body type is chosen for readability; if you have a lot of content, another compact template may fit better — Tutor prioritizes clarity over density.",
       },
@@ -5145,14 +5162,10 @@ export const templateSeoEntries: TemplateSeoEntry[] = [
         q: "Can the rule color be changed?",
         a: "Yes — the thick section rules follow your Cvyon theme color.",
       },
-      {
-        q: "Is it ATS-friendly?",
-        a: "Yes — single-column flow, real selectable text, and standard section headings.",
-      },
     ],
-    metaTitle: "Tutor Resume Template — Free Tutoring CV | Cvyon",
+    metaTitle: "Tutoring Resume Example — Free Tutor Template | Cvyon",
     metaDescription:
-      "Free Tutor resume template: a clear, encouraging design for tutors and coaches with bold ruled section titles and highly readable type.",
+      "A tutoring resume example built on Cvyon's free Tutor template — ATS-friendly, no signup, no watermark. Clear, encouraging design for tutors and coaches.",
   },
   {
     id: "Navigator",
