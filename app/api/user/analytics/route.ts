@@ -22,7 +22,7 @@ export async function GET(request: Request) {
     if (error) throw error;
 
     const views = events.filter((e: any) => e.event_type.includes('view') || e.event_type === 'milestone_previewed').length;
-    const downloads = events.filter((e: any) => e.event_type === 'resume_downloaded').length;
+    const downloads = events.filter((e: any) => e.event_type === 'resume_downloaded' || e.event_type === 'milestone_downloaded').length;
     
     // Group by country
     const geoLocations = events.reduce((acc: any, event: any) => {

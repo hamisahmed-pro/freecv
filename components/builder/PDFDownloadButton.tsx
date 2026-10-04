@@ -11,9 +11,10 @@ interface PDFDownloadButtonProps {
   themeColor: string;
   onDownloadComplete?: () => void;
   className?: string;
+  telemetry?: Record<string, any>;
 }
 
-export default function PDFDownloadButton({ TemplateComponent, data, onDownloadComplete, className }: PDFDownloadButtonProps) {
+export default function PDFDownloadButton({ TemplateComponent, data, onDownloadComplete, className, telemetry }: PDFDownloadButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleDownload = async () => {
@@ -34,7 +35,9 @@ export default function PDFDownloadButton({ TemplateComponent, data, onDownloadC
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      trackEvent('resume_downloaded', data.templateId);
+      // Unified funnel event: every completed PDF download (desktop header,
+      // mobile header, mobile preview overlay) reports milestone_downloaded.
+      trackEvent('milestone_downloaded', data.templateId, telemetry);
       if (onDownloadComplete) setTimeout(onDownloadComplete, 500);
     } catch (err: any) {
       toast.error('PDF export failed: ' + err.message);

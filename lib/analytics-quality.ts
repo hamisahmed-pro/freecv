@@ -16,7 +16,8 @@ export const EVT_STARTED = 'milestone_started';
 export const EVT_PREVIEWED = 'milestone_previewed';
 export const EVT_TEMPLATE_SELECTED = 'template_selected';
 /** Download completions: the builder fires milestone_downloaded (docx/pdf) and
- *  PDFDownloadButton fires resume_downloaded. Both mean the user got a file. */
+ *  PDFDownloadButton fires milestone_downloaded too. resume_downloaded is kept
+ *  in DOWNLOAD_EVENTS for historical events. Both mean the user got a file. */
 export const DOWNLOAD_EVENTS = ['milestone_downloaded', 'resume_downloaded'] as const;
 
 // ---- Bot heuristics ----
