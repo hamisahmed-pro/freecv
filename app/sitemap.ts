@@ -13,6 +13,7 @@ export const dynamic = 'force-dynamic';
 const staticRoutes: { path: string; priority: number }[] = [
   { path: '', priority: 1 },
   { path: '/build', priority: 0.9 },
+  { path: '/templates', priority: 0.9 },
   { path: '/ats-grader', priority: 0.8 },
   { path: '/cover-letter', priority: 0.8 },
   { path: '/recruiter', priority: 0.8 },
