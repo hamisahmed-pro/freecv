@@ -755,9 +755,6 @@ export default function FreeCVApp() {
     }
   };
 
-  if (!isHydrated) return null;
-
-
   // ---- Section visibility + ordering (restored from pre-redesign builder) --
   // editorSectionIds: sections as they appear in the editor, in the user's
   // sectionOrder, skipping removed optional sections. Drives the up/down
@@ -771,6 +768,8 @@ export default function FreeCVApp() {
       (id !== 'references' || data.showReferences)
     );
   }, [data.sectionOrder, data.showProjects, data.showCertifications, data.showReferences]);
+
+  if (!isHydrated) return null;
 
   const makeSectionTools = (id: ResumeSectionId) => (
     <SectionHeaderTools
