@@ -1,13 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import Image from 'next/image';
-import { Archivo, Archivo_Black, DM_Sans, Space_Mono } from '@/lib/fonts';
-
-const display = Archivo_Black({ subsets: ['latin'], weight: '400', display: 'swap' });
-const head = Archivo({ subsets: ['latin'], weight: ['800'], display: 'swap' });
-const body = DM_Sans({ subsets: ['latin'], weight: ['400', '500', '700'], display: 'swap' });
-const mono = Space_Mono({ subsets: ['latin'], weight: ['400', '700'], display: 'swap' });
+import { Logo } from '@/components/brand/Logo';
 
 const MIN_INR = 100;
 const MAX_INR = 500000;
@@ -55,78 +49,67 @@ export default function PaymentsPage() {
   }
 
   return (
-    <div className={`${body.className} min-h-screen bg-[#E8E7E1] text-[#141312]`}>
-      <style>{`
-        .pay-dots{background-image:radial-gradient(#14131218 1.2px,transparent 1.2px);background-size:22px 22px}
-        .pay-hs{box-shadow:8px 8px 0 #141312}
-        .pay-hs-sm{box-shadow:5px 5px 0 #141312}
-      `}</style>
-
+    <div className="min-h-screen bg-cream font-brand text-ink antialiased">
       {/* Header */}
-      <header className="border-b-[3px] border-[#141312]">
+      <header className="border-b border-line bg-paper/90">
         <div className="mx-auto flex max-w-[1240px] items-center justify-between px-5 py-4">
-          <Image src="/logo-dark-no-background.png" alt="Cvyon" width={130} height={32} className="h-8 w-auto" />
-          <span className={`${mono.className} border-[3px] border-[#141312] bg-white px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] pay-hs-sm`}>
+          <Logo />
+          <span className="rounded-full border border-line bg-mint px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.14em] text-navy">
             Secure payment
           </span>
         </div>
       </header>
 
       {/* Body */}
-      <main className="pay-dots flex items-center justify-center px-4 py-12 sm:py-16">
+      <main className="flex items-center justify-center px-4 py-12 sm:py-16">
         <div className="w-full max-w-md">
-          <div className="border-[3px] border-[#141312] bg-white pay-hs">
-            <div className="border-b-[3px] border-[#141312] bg-[#FF4326] px-6 py-3">
-              <span className={`${mono.className} text-[11px] font-bold uppercase tracking-[0.25em] text-white`}>
-                Cvyon · Payments
-              </span>
+          <div className="v3-card !p-0 overflow-hidden">
+            <div className="border-b border-line bg-lavender px-6 py-4 sm:px-8">
+              <span className="v3-eyebrow">Cvyon · Payments</span>
             </div>
 
-            <form onSubmit={handlePay} className="p-6 sm:p-8">
-              <h1 className={`${display.className} text-4xl leading-none`}>
-                Pay in<br />rupees.
-              </h1>
-              <p className="mt-3 text-[15px] leading-relaxed text-[#141312]/70">
+            <form onSubmit={handlePay} className="px-6 py-7 sm:px-8">
+              <h1 className="v3-h-display text-[40px]">Pay in rupees.</h1>
+              <p className="mt-3 text-[15px] leading-relaxed text-muted">
                 Enter any amount in Indian Rupees and complete your payment securely through Paystack.
               </p>
 
-              <label htmlFor="pay-email" className={`${mono.className} mt-7 block text-[11px] font-bold uppercase tracking-[0.2em]`}>
-                Email address
-              </label>
-              <input
-                id="pay-email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="mt-2 w-full border-[3px] border-[#141312] bg-[#E8E7E1]/60 px-4 py-3 text-[15px] outline-none placeholder:text-[#141312]/30 focus:bg-white"
-              />
-
-              <label htmlFor="pay-amount" className={`${mono.className} mt-5 block text-[11px] font-bold uppercase tracking-[0.2em]`}>
-                Amount (INR)
-              </label>
-              <div className="relative mt-2">
-                <span className={`${head.className} pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-extrabold text-[#141312]/40`}>₹</span>
+              <div className="v3-field mt-7">
+                <label htmlFor="pay-email">Email address</label>
                 <input
-                  id="pay-amount"
-                  type="number"
+                  id="pay-email"
+                  type="email"
                   required
-                  min={MIN_INR}
-                  max={MAX_INR}
-                  step="0.01"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="20000"
-                  className={`${head.className} w-full border-[3px] border-[#141312] bg-[#E8E7E1]/60 py-3 pl-11 pr-4 text-2xl font-extrabold outline-none placeholder:text-[#141312]/30 focus:bg-white`}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
                 />
               </div>
-              <p className={`${mono.className} mt-2 text-[11px] uppercase tracking-[0.14em] text-[#141312]/50`}>
-                Min {formatINR(MIN_INR)} · Max {formatINR(MAX_INR)}
-              </p>
+
+              <div className="v3-field mt-5">
+                <label htmlFor="pay-amount">Amount (INR)</label>
+                <div className="relative">
+                  <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl font-extrabold text-muted">₹</span>
+                  <input
+                    id="pay-amount"
+                    type="number"
+                    required
+                    min={MIN_INR}
+                    max={MAX_INR}
+                    step="0.01"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder="20000"
+                    className="!pl-10 !text-xl !font-extrabold"
+                  />
+                </div>
+                <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.12em] text-muted">
+                  Min {formatINR(MIN_INR)} · Max {formatINR(MAX_INR)}
+                </p>
+              </div>
 
               {error && (
-                <p className="mt-5 border-[3px] border-[#141312] bg-[#FF4326] px-4 py-3 text-sm font-bold text-white">
+                <p className="mt-5 rounded-[10px] border border-coral bg-[#ffe1dc] px-4 py-3 text-sm font-bold text-navy">
                   {error}
                 </p>
               )}
@@ -134,12 +117,12 @@ export default function PaymentsPage() {
               <button
                 type="submit"
                 disabled={!valid || submitting}
-                className={`${head.className} mt-7 w-full border-[3px] border-[#141312] bg-[#FF4326] px-8 py-4 text-sm font-extrabold uppercase tracking-wider text-white pay-hs-sm transition-all enabled:hover:translate-x-[2px] enabled:hover:translate-y-[2px] enabled:hover:shadow-none disabled:cursor-not-allowed disabled:bg-[#141312]/15 disabled:text-[#141312]/40 disabled:shadow-none`}
+                className="v3-btn v3-btn-primary mt-7 w-full !py-4 text-[15px] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
               >
                 {submitting ? 'Redirecting…' : inr > 0 ? `Pay ${formatINR(inr)}` : 'Pay with Paystack'}
               </button>
 
-              <p className={`${mono.className} mt-5 text-center text-[10px] uppercase tracking-[0.22em] text-[#141312]/40`}>
+              <p className="mt-5 text-center text-[11px] font-bold uppercase tracking-[0.18em] text-muted">
                 Secured by Paystack
               </p>
             </form>
