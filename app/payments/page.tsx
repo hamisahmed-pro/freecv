@@ -2,16 +2,11 @@
 
 import { useMemo, useState } from 'react';
 
-const INR_TO_NGN = 13.82;
 const MIN_INR = 100;
 const MAX_INR = 500000;
 
 function formatINR(n: number) {
   return '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 2 });
-}
-
-function formatNGN(n: number) {
-  return '₦' + n.toLocaleString('en-NG', { maximumFractionDigits: 2 });
 }
 
 export default function PaymentsPage() {
@@ -24,8 +19,6 @@ export default function PaymentsPage() {
     const n = Number(amount);
     return Number.isFinite(n) && n > 0 ? n : 0;
   }, [amount]);
-
-  const ngn = inr * INR_TO_NGN;
 
   const valid =
     inr >= MIN_INR && inr <= MAX_INR && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
@@ -60,7 +53,7 @@ export default function PaymentsPage() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold tracking-tight">Make a Payment</h1>
           <p className="text-white/60 mt-2 text-sm">
-            Enter any amount in Indian Rupees. You&apos;ll be charged the Naira equivalent securely via Paystack.
+            Enter any amount in Indian Rupees and pay securely via Paystack.
           </p>
         </div>
 
@@ -103,16 +96,6 @@ export default function PaymentsPage() {
             Minimum {formatINR(MIN_INR)} · Maximum {formatINR(MAX_INR)}
           </p>
 
-          <div className="rounded-xl bg-indigo-500/10 border border-indigo-400/20 px-4 py-3 mb-6 flex items-center justify-between">
-            <span className="text-sm text-white/60">You will be charged</span>
-            <span className="text-xl font-bold text-indigo-300">
-              {inr > 0 ? formatNGN(ngn) : '₦0.00'}
-            </span>
-          </div>
-          <p className="text-xs text-white/40 -mt-4 mb-6">
-            Converted at 1 INR = ₦{INR_TO_NGN}. Your card is charged in Naira.
-          </p>
-
           {error && (
             <p className="text-sm text-red-300 bg-red-500/10 border border-red-400/20 rounded-xl px-4 py-3 mb-5">
               {error}
@@ -128,7 +111,7 @@ export default function PaymentsPage() {
           </button>
 
           <p className="text-xs text-white/30 text-center mt-4">
-            Secured by Paystack · Card charged in NGN (₦)
+            Secured by Paystack
           </p>
         </form>
       </div>

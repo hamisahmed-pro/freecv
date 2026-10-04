@@ -53,8 +53,7 @@ function VerifyInner() {
               </div>
               <h1 className="text-2xl font-bold">Payment successful</h1>
               <p className="text-white/60 text-sm mt-3">
-                ₹{Number(detail.inr).toLocaleString('en-IN')} received as ₦
-                {Number(detail.ngn).toLocaleString('en-NG')}.
+                ₹{Number(detail.inr).toLocaleString('en-IN')} received. Thank you!
               </p>
               <p className="text-white/30 text-xs mt-4 break-all">Ref: {reference}</p>
             </>
