@@ -262,10 +262,10 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
               <h2 className="v3-h-display mt-3 max-w-[560px] text-[clamp(38px,5vw,61px)]">{dict.grader_section.h2}</h2>
               <p className="mt-5 max-w-[520px] leading-[1.65] text-muted">{dict.grader_section.p}</p>
               <ul className="mt-7 space-y-4">
-                {dict.grader_section.items.map(([t, d]) => (
-                  <li key={t} className="flex gap-4 border-t border-line pt-4">
+                {dict.grader_section.items.map((it) => (
+                  <li key={it.t} className="flex gap-4 border-t border-line pt-4">
                     <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-md bg-navy text-white"><Check size={14} strokeWidth={3} /></span>
-                    <div><div className="text-lg font-extrabold text-navy">{t}</div><div className="text-sm text-muted">{d}</div></div>
+                    <div><div className="text-lg font-extrabold text-navy">{it.t}</div><div className="text-sm text-muted">{it.d}</div></div>
                   </li>
                 ))}
               </ul>
