@@ -10,7 +10,7 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function CoverLetterTab() {
+export function CoverLetterTab({ dict }: { dict: Record<string, string> }) {
   const data = useResumeStore((state) => state.data);
   const [jobDescription, setJobDescription] = useState('');
   const [tone, setTone] = useState('Professional');
@@ -69,33 +69,33 @@ export function CoverLetterTab() {
           <PenTool size={20} />
         </div>
         <div>
-          <h3 className="font-bold text-gray-900">AI Cover Letter Generator</h3>
-          <p className="text-xs text-gray-500">Generate a highly-tailored cover letter in seconds.</p>
+          <h3 className="font-bold text-gray-900">{dict["builder.cover_letter.ai_cover_letter_generator"]}</h3>
+          <p className="text-xs text-gray-500">{dict["builder.cover_letter.generate_a_highly_tailored_cover_letter"]}</p>
         </div>
       </div>
 
       <div className="space-y-4">
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-bold uppercase tracking-wider text-gray-400 ml-1">Target Job Description</label>
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-400 ml-1">{dict["builder.cover_letter.target_job_description"]}</label>
           <textarea
             className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-black focus:border-transparent transition-all outline-none min-h-[120px] resize-y custom-scrollbar"
-            placeholder="Paste the job description here..."
+            placeholder={dict["builder.cover_letter.paste_the_job_description_here"]}
             value={jobDescription}
             onChange={(e) => setJobDescription(e.target.value)}
           />
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-bold uppercase tracking-wider text-gray-400 ml-1">Tone</label>
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-400 ml-1">{dict["builder.cover_letter.tone"]}</label>
           <select
             className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-black focus:border-transparent transition-all outline-none appearance-none"
             value={tone}
             onChange={(e) => setTone(e.target.value)}
           >
-            <option value="Professional">Professional (Default)</option>
-            <option value="Confident & Executive">Confident & Executive</option>
-            <option value="Creative & Passionate">Creative & Passionate</option>
-            <option value="Technical & Analytical">Technical & Analytical</option>
+            <option value="Professional">{dict["builder.cover_letter.professional_default"]}</option>
+            <option value={dict["builder.cover_letter.confident_executive"]}>{dict["builder.cover_letter.confident_executive"]}</option>
+            <option value={dict["builder.cover_letter.creative_passionate"]}>{dict["builder.cover_letter.creative_passionate"]}</option>
+            <option value={dict["builder.technical_analytical"]}>{dict["builder.technical_analytical"]}</option>
           </select>
         </div>
 
@@ -118,7 +118,7 @@ export function CoverLetterTab() {
         {coverLetterText && (
           <div className="mt-6 border-t pt-6 animate-in fade-in duration-300">
             <div className="flex justify-between items-center mb-3">
-              <h4 className="font-bold text-gray-900">Your Tailored Cover Letter</h4>
+              <h4 className="font-bold text-gray-900">{dict["builder.cover_letter.your_tailored_cover_letter"]}</h4>
               <button
                 onClick={copyToClipboard}
                 className="flex items-center gap-1.5 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors"

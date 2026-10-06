@@ -20,7 +20,7 @@ import { calculateAtsScore, AtsScoreResult } from '@/lib/ats-engine';
 import { useResumeStore } from '@/store/useResumeStore';
 import Link from 'next/link';
 
-export function LiveAtsScore() {
+export function LiveAtsScore({ dict }: { dict: Record<string, string> }) {
   const [isOpen, setIsOpen] = useState(false);
   const data = useResumeStore((s) => s.data);
 
@@ -70,8 +70,8 @@ export function LiveAtsScore() {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 bg-[#FFFDF8] hover:bg-white border-2 border-[#151a46] px-2 sm:px-3 py-1.5 transition-all shadow-[2px_2px_0_#151a46] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer select-none"
-        title="Click to view real-time ATS scoring breakdown & suggestions"
-        aria-label="ATS Score Breakdown"
+        title={dict["builder.live_ats.click_to_view_real_time_ats_scoring_brea"]}
+        aria-label={dict["builder.live_ats.ats_score_breakdown"]}
       >
         <div className="flex items-center gap-1.5">
           <ShieldCheck size={16} className={getScoreColor(score)} />
@@ -113,9 +113,7 @@ export function LiveAtsScore() {
                   <h3 className="fh font-extrabold text-sm sm:text-base leading-tight text-[#151a46]">
                     ATS Grader
                   </h3>
-                  <p className="fm text-[10px] font-bold uppercase tracking-[0.16em] text-[#151a46]/50">
-                    Live Enterprise Keyword & Metric Parser
-                  </p>
+                  <p className="fm text-[10px] font-bold uppercase tracking-[0.16em] text-[#151a46]/50">{dict["builder.live_ats.live_enterprise_keyword_metric_parser"]}</p>
                 </div>
               </div>
 
@@ -126,7 +124,7 @@ export function LiveAtsScore() {
                 <button
                   onClick={() => setIsOpen(false)}
                   className="p-1 text-[#151a46]/60 hover:text-[#151a46] hover:bg-[#151a46]/10 transition-colors rounded-none"
-                  aria-label="Close modal"
+                  aria-label={dict["builder.live_ats.close_modal"]}
                 >
                   <X size={18} />
                 </button>
@@ -138,7 +136,7 @@ export function LiveAtsScore() {
               <div className="p-2.5 bg-white border-2 border-[#151a46] hs-sm">
                 <div className="flex items-center gap-1 text-[#2233FF] mb-1">
                   <Zap size={13} />
-                  <span className="fm text-[9px] font-bold uppercase tracking-wider">Action Verbs</span>
+                  <span className="fm text-[9px] font-bold uppercase tracking-wider">{dict["builder.live_ats.action_verbs"]}</span>
                 </div>
                 <div className="fh font-extrabold text-sm text-[#151a46]">
                   {metrics.actionVerbCount} <span className="text-[10px] fm font-normal text-[#151a46]/60">({metrics.actionVerbRatio}%)</span>
@@ -148,7 +146,7 @@ export function LiveAtsScore() {
               <div className="p-2.5 bg-white border-2 border-[#151a46] hs-sm">
                 <div className="flex items-center gap-1 text-[#10B981] mb-1">
                   <BarChart2 size={13} />
-                  <span className="fm text-[9px] font-bold uppercase tracking-wider">Quantified</span>
+                  <span className="fm text-[9px] font-bold uppercase tracking-wider">{dict["builder.live_ats.quantified"]}</span>
                 </div>
                 <div className="fh font-extrabold text-sm text-[#151a46]">
                   {metrics.quantifiableMetricCount} <span className="text-[10px] fm font-normal text-[#151a46]/60">metrics</span>
@@ -158,7 +156,7 @@ export function LiveAtsScore() {
               <div className="p-2.5 bg-white border-2 border-[#151a46] hs-sm">
                 <div className="flex items-center gap-1 text-[#EA580C] mb-1">
                   <Target size={13} />
-                  <span className="fm text-[9px] font-bold uppercase tracking-wider">Keywords</span>
+                  <span className="fm text-[9px] font-bold uppercase tracking-wider">{dict["builder.live_ats.keywords"]}</span>
                 </div>
                 <div className="fh font-extrabold text-sm text-[#151a46]">
                   {breakdown.skills.score} <span className="text-[10px] fm font-normal text-[#151a46]/60">/ {breakdown.skills.max} pts</span>
@@ -168,7 +166,7 @@ export function LiveAtsScore() {
               <div className="p-2.5 bg-white border-2 border-[#151a46] hs-sm">
                 <div className="flex items-center gap-1 text-[#D8362A] mb-1">
                   <AlertOctagon size={13} />
-                  <span className="fm text-[9px] font-bold uppercase tracking-wider">Issues</span>
+                  <span className="fm text-[9px] font-bold uppercase tracking-wider">{dict["builder.live_ats.issues"]}</span>
                 </div>
                 <div className="fh font-extrabold text-sm text-[#151a46]">
                   {metrics.weakPhrasesFound.length + metrics.clichesFound.length + penalties.length} <span className="text-[10px] fm font-normal text-[#151a46]/60">flagged</span>
@@ -178,15 +176,13 @@ export function LiveAtsScore() {
 
             {/* Section Breakdown Bars */}
             <div className="space-y-2.5 bg-white border-2 border-[#151a46] p-3.5 hs-sm">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-[#151a46]/60 fm mb-1">
-                Detailed Pillar Scores
-              </div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-[#151a46]/60 fm mb-1">{dict["builder.live_ats.detailed_pillar_scores"]}</div>
 
               {/* Contact Info */}
               <div>
                 <div className="flex justify-between text-xs font-bold text-[#151a46] mb-1">
                   <div className="flex items-center gap-1.5">
-                    <span>Contact Info & Links</span>
+                    <span>{dict["builder.live_ats.contact_info_links"]}</span>
                     <span className={`text-[9px] px-1 py-0.2 border fm font-black ${getStatusBadge(breakdown.contactInfo.status)}`}>
                       {breakdown.contactInfo.status}
                     </span>
@@ -205,7 +201,7 @@ export function LiveAtsScore() {
               <div>
                 <div className="flex justify-between text-xs font-bold text-[#151a46] mb-1">
                   <div className="flex items-center gap-1.5">
-                    <span>Professional Summary</span>
+                    <span>{dict["builder.live_ats.professional_summary"]}</span>
                     <span className={`text-[9px] px-1 py-0.2 border fm font-black ${getStatusBadge(breakdown.summary.status)}`}>
                       {breakdown.summary.status}
                     </span>
@@ -224,7 +220,7 @@ export function LiveAtsScore() {
               <div>
                 <div className="flex justify-between text-xs font-bold text-[#151a46] mb-1">
                   <div className="flex items-center gap-1.5">
-                    <span>Work Experience & Impact</span>
+                    <span>{dict["builder.live_ats.work_experience_impact"]}</span>
                     <span className={`text-[9px] px-1 py-0.2 border fm font-black ${getStatusBadge(breakdown.experience.status)}`}>
                       {breakdown.experience.status}
                     </span>
@@ -243,7 +239,7 @@ export function LiveAtsScore() {
               <div>
                 <div className="flex justify-between text-xs font-bold text-[#151a46] mb-1">
                   <div className="flex items-center gap-1.5">
-                    <span>Skills & Keyword Match</span>
+                    <span>{dict["builder.live_ats.skills_keyword_match"]}</span>
                     <span className={`text-[9px] px-1 py-0.2 border fm font-black ${getStatusBadge(breakdown.skills.status)}`}>
                       {breakdown.skills.status}
                     </span>
@@ -262,7 +258,7 @@ export function LiveAtsScore() {
               <div>
                 <div className="flex justify-between text-xs font-bold text-[#151a46] mb-1">
                   <div className="flex items-center gap-1.5">
-                    <span>Education & Certifications</span>
+                    <span>{dict["builder.live_ats.education_certifications"]}</span>
                     <span className={`text-[9px] px-1 py-0.2 border fm font-black ${getStatusBadge(breakdown.education.status)}`}>
                       {breakdown.education.status}
                     </span>
@@ -283,7 +279,7 @@ export function LiveAtsScore() {
               <div className="bg-[#FFF0EE] border-2 border-[#D8362A] p-3">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-[#D8362A] mb-1">
                   <AlertTriangle size={14} />
-                  <span>Deductions Applied</span>
+                  <span>{dict["builder.live_ats.deductions_applied"]}</span>
                 </div>
                 <ul className="text-xs text-[#151a46] space-y-1 pl-4 list-disc">
                   {penalties.map((p, idx) => (
@@ -298,7 +294,7 @@ export function LiveAtsScore() {
               <div className="bg-[#FFFBEB] border-2 border-[#D97706] p-3">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-[#D97706] mb-1.5">
                   <AlertTriangle size={14} />
-                  <span>Key ATS Optimizations Needed</span>
+                  <span>{dict["builder.live_ats.key_ats_optimizations_needed"]}</span>
                 </div>
                 <ul className="text-xs text-[#151a46] space-y-1.5 pl-4 list-disc">
                   {suggestions.slice(0, 4).map((sugg, idx) => (
@@ -310,11 +306,9 @@ export function LiveAtsScore() {
               <div className="bg-[#E8F8F0] border-2 border-[#10B981] p-3">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-[#10B981] mb-1">
                   <CheckCircle2 size={14} />
-                  <span>Elite ATS Compliance!</span>
+                  <span>{dict["builder.live_ats.elite_ats_compliance"]}</span>
                 </div>
-                <p className="text-xs text-[#151a46] leading-relaxed">
-                  Your resume demonstrates exceptional action verb variety, quantified business metrics, and high keyword coverage.
-                </p>
+                <p className="text-xs text-[#151a46] leading-relaxed">{dict["builder.live_ats.your_resume_demonstrates_exceptional_act"]}</p>
               </div>
             )}
 
@@ -324,16 +318,13 @@ export function LiveAtsScore() {
                 href="/ats-grader"
                 target="_blank"
                 className="fm text-xs font-bold text-[#2233FF] hover:underline flex items-center gap-1"
-              >
-                Scan with Job Description <ArrowUpRight size={13} />
+              >{dict["builder.live_ats.scan_with_job_description"]}<ArrowUpRight size={13} />
               </Link>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
                 className="fm text-xs font-bold text-[#151a46] bg-[#E8E7E1] hover:bg-[#151a46] hover:text-[#E8E7E1] border-2 border-[#151a46] px-4 py-1.5 transition-colors cursor-pointer"
-              >
-                Done
-              </button>
+              >{dict["builder.live_ats.done"]}</button>
             </div>
           </div>
         </div>,

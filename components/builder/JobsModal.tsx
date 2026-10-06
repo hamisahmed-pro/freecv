@@ -27,7 +27,7 @@ const normMatch = (m: number | string | undefined): number => {
   return 0;
 };
 
-export function JobsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export function JobsModal({ isOpen, onClose, dict }: { isOpen: boolean; onClose: () => void; dict: Record<string, string> } {
   const data = useResumeStore((s) => s.data);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(false);
@@ -136,7 +136,7 @@ export function JobsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label="Jobs matched to your profile"
+      aria-label={dict["builder.jobs.jobs_matched_to_your_profile"]}
     >
       <style>{`
         @keyframes jm-rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
@@ -162,15 +162,14 @@ export function JobsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
         <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b-[3px] border-[#151a46] bg-[#151a46] px-6 py-4 text-[#f6f5ef]">
           <div className="min-w-0">
             <div className="fm flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[#ffd85a]">
-              <Sparkles size={12} /> resume downloaded ✓
-            </div>
+              <Sparkles size={12} />{dict["builder.jobs.resume_downloaded"]}</div>
             <h2 className="fd mt-1 flex items-center gap-2 truncate text-xl tracking-tight sm:text-2xl">
               <Globe2 size={18} className="shrink-0 text-[#ff604b]" />
               {loading ? "Finding roles…" : empty || errored ? "Explore roles" : `Roles in ${country}`}
             </h2>
           </div>
           <button
-            aria-label="Close"
+            aria-label={dict["builder.close"]}
             onClick={onClose}
             className="grid h-9 w-9 shrink-0 place-items-center border-2 border-[#f6f5ef] transition-colors hover:border-[#ff604b] hover:bg-[#ff604b]"
           >
@@ -201,9 +200,7 @@ export function JobsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
           <button
             onClick={() => fetchJobs()}
             className="px-4 py-1.5 bg-[#151a46] text-white fm text-xs font-bold uppercase tracking-wider hover:bg-[#5548f5] transition-colors"
-          >
-            Search
-          </button>
+          >{dict["builder.jobs.search"]}</button>
         </div>
 
         {/* body */}
@@ -218,7 +215,7 @@ export function JobsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
           {!loading && (empty || errored) && (
             <div className="border-[3px] border-dashed border-[#151a46]/35 bg-white/40 p-6 text-center">
               <Briefcase size={34} className="mx-auto mb-3 text-[#151a46]/25" />
-              <p className="fh text-lg font-extrabold">No exact roles for this query right now.</p>
+              <p className="fh text-lg font-extrabold">{dict["builder.jobs.no_exact_roles_for_this_query_right_now"]}</p>
               <p className="mx-auto mt-2 max-w-sm text-sm text-[#151a46]/60 mb-4">
                 Try searching one of these popular roles in {country}:
               </p>

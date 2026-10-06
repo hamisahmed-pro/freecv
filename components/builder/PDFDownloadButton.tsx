@@ -28,7 +28,7 @@ export default function PDFDownloadButton({ TemplateComponent, data, onDownloadC
       const a = document.createElement('a');
       a.href = url;
       const safeName = (data.personalInfo?.fullName || 'My').replace(/[^\w\s-]/g, '').trim();
-      const safeRole = (data.personalInfo?.jobTitle || 'Resume').replace(/[^\w\s-]/g, '').trim();
+      const safeRole = (data.personalInfo?.jobTitle || dict["builder.resume"]).replace(/[^\w\s-]/g, '').trim();
       a.download = `${safeName}_${safeRole}_Resume.pdf`.replace(/\s+/g, '_');
       document.body.appendChild(a);
       a.click();
@@ -49,9 +49,9 @@ export default function PDFDownloadButton({ TemplateComponent, data, onDownloadC
   return (
     <button onClick={handleDownload} disabled={isGenerating} className={className}>
       {isGenerating ? (
-        <><Loader2 size={16} className="animate-spin" /> Generating PDF...</>
+        <><Loader2 size={16} className="animate-spin" />{dict["builder.pdf.generating_pdf"]}</>
       ) : (
-        <><Download size={16} /> PDF</>
+        <><Download size={16} />{dict["builder.pdf.pdf"]}</>
       )}
     </button>
   );
