@@ -1,13 +1,13 @@
 import { notFound } from 'next/navigation';
 import { isLocale, LOCALES, type Locale } from '../../page';
 import LanguageSwitcher from '@/components/landing/LanguageSwitcher';
-// Reuse the English builder UI; localized chrome keeps language context.
-// Full builder string localization is tracked separately.
-import FreeCVApp from '@/app/build/page';
+import dynamic from 'next/dynamic';
 
-export async function generateStaticParams() {
-  return LOCALES.map((locale) => ({ locale }));
-}
+// Dynamic import to avoid static-generation issues with the complex
+// client-side builder (useSearchParams, zustand, etc.)
+const FreeCVApp = dynamic(() => import('@/app/build/page'), { ssr: false });
+
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
