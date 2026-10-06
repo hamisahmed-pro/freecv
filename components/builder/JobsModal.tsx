@@ -27,7 +27,7 @@ const normMatch = (m: number | string | undefined): number => {
   return 0;
 };
 
-export function JobsModal({ isOpen, onClose, dict }: { isOpen: boolean; onClose: () => void; dict: Record<string, string> } {
+export function JobsModal({ isOpen, onClose, dict }: { isOpen: boolean; onClose: () => void; dict: Record<string, string> }) {
   const data = useResumeStore((s) => s.data);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(false);
