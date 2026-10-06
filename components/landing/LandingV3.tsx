@@ -87,6 +87,8 @@ function PreviewSafe({ tmpl: Tmpl, color, sample, label }: { tmpl: any; color: s
 const TOPLINE: string[] = []; // moved to dict.topline
 
 export default function LandingV3({ dict = en }: { dict?: Dict }) {
+  const loc = dict.locale && dict.locale !== "en" ? `/${dict.locale}` : "";
+  const L = (path: string) => `${loc}${path}`;
   const sample = useMemo(() => makeSample(dict), [dict]);
   const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -126,7 +128,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
           </nav>
           <div className="flex items-center gap-3">
             <LanguageSwitcher current={dict.locale} />
-            <Link href="/build" className="v3-btn v3-btn-primary !px-4 !py-2.5 text-[13px]">{dict.nav.build} <ArrowRight size={15} /></Link>
+            <Link href={L("/build")} className="v3-btn v3-btn-primary !px-4 !py-2.5 text-[13px]">{dict.nav.build} <ArrowRight size={15} /></Link>
           </div>
         </div>
       </header>
@@ -146,7 +148,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
                 {dict.hero.sub}
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                <Link href="/build" className="v3-btn v3-btn-primary px-7 py-4 text-[15px]">{dict.hero.cta_build} <ArrowRight size={17} /></Link>
+                <Link href={L("/build")} className="v3-btn v3-btn-primary px-7 py-4 text-[15px]">{dict.hero.cta_build} <ArrowRight size={17} /></Link>
                 <a href="#grader" className="v3-btn v3-btn-light px-7 py-4 text-[15px]">{dict.hero.cta_grader}</a>
               </div>
               <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[11px] font-extrabold text-[#707489]">
@@ -273,7 +275,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
                   </li>
                 ))}
               </ul>
-              <Link href="/ats-grader" className="v3-btn v3-btn-primary mt-8 px-6 py-3.5 text-[14px]">{dict.grader_section.cta} <ArrowUpRight size={16} /></Link>
+              <Link href={L("/ats-grader")} className="v3-btn v3-btn-primary mt-8 px-6 py-3.5 text-[14px]">{dict.grader_section.cta} <ArrowUpRight size={16} /></Link>
             </Reveal>
           </div>
         </section>
@@ -301,7 +303,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
               ))}
             </div>
             <Reveal className="mt-8 text-center">
-              <Link href="/build" className="v3-btn v3-btn-light px-6 py-3 text-[14px]">{dict.templates_section.cta} <ArrowRight size={15} /></Link>
+              <Link href={L("/build")} className="v3-btn v3-btn-light px-6 py-3 text-[14px]">{dict.templates_section.cta} <ArrowRight size={15} /></Link>
             </Reveal>
           </div>
         </section>
@@ -375,7 +377,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
                   <h2 className="v3-h-display !text-white mt-3 max-w-[560px] text-[clamp(36px,4.8vw,60px)]">{dict.final_cta.h2}</h2>
                   <p className="mt-4 max-w-[480px] text-white/70">{dict.final_cta.p}</p>
                 </div>
-                <Link href="/build" className="v3-btn v3-btn-coral relative z-10 shrink-0 px-8 py-4 text-[15px]">{dict.final_cta.button} <ArrowRight size={17} /></Link>
+                <Link href={L("/build")} className="v3-btn v3-btn-coral relative z-10 shrink-0 px-8 py-4 text-[15px]">{dict.final_cta.button} <ArrowRight size={17} /></Link>
               </div>
             </Reveal>
           </div>
@@ -391,9 +393,9 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
               <p className="mt-4 max-w-[220px] text-[12px] leading-relaxed text-muted">{dict.footer.tagline}</p>
             </div>
             {[
-              [dict.footer.col_product, [["Builder", "/build"], ["ATS Grader", "/ats-grader"], ["Templates", "/build"], ["Cover Letter", "/cover-letter"]]],
-              [dict.footer.col_company, [["About", "/about"], ["Career Blog", "/blog"], ["Recruiter Portal", "/recruiter"], ["Support", "/support"]]],
-              [dict.footer.col_legal, [["Privacy", "/privacy"], ["Terms", "/terms"], ["Manage data", "/manage-data"], ["Developers", "/developers"]]],
+              [dict.footer.col_product, [["Builder", L("/build")], ["ATS Grader", L("/ats-grader")], ["Templates", L("/build")], ["Cover Letter", L("/cover-letter")]]],
+              [dict.footer.col_company, [["About", L("/about")], ["Career Blog", L("/blog")], ["Recruiter Portal", L("/recruiter")], ["Support", L("/support")]]],
+              [dict.footer.col_legal, [["Privacy", L("/privacy")], ["Terms", L("/terms")], ["Manage data", "/manage-data"], ["Developers", "/developers"]]],
             ].map(([h, items]) => (
               <div key={h as string}>
                 <h4 className="mb-4 text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#a0a2b1]">{h as string}</h4>
@@ -412,7 +414,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
 
       {/* MOBILE STICKY CTA */}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-cream p-3 md:hidden">
-        <Link href="/build" className="v3-btn v3-btn-dark w-full py-3.5 text-[14px]">{dict.mobile_cta} <ArrowRight size={16} /></Link>
+        <Link href={L("/build")} className="v3-btn v3-btn-dark w-full py-3.5 text-[14px]">{dict.mobile_cta} <ArrowRight size={16} /></Link>
       </div>
       <div className="h-[76px] md:hidden" />
     </div>
