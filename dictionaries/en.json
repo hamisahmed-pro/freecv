@@ -1,0 +1,266 @@
+{
+ "arabic_name": "العربية",
+ "ats_grader": {
+  "actionable_tips": "Actionable tips",
+  "analyze": "Analyze match",
+  "awaiting_input": "Awaiting input",
+  "awaiting_sub": "Your AI-generated scorecard will appear here.",
+  "challenge_beat": "Can you beat it? Upload your resume to find out.",
+  "challenge_scored": "Someone scored {score}/100 on this grader",
+  "copied": "Copied",
+  "copy_link": "Copy link",
+  "cta_fix": "Fix my resume in builder",
+  "drop_resume": "Drag & drop resume",
+  "eyebrow": "§ free ATS grader",
+  "file_replace": "{size} MB • Click to replace",
+  "h1a": "Pass the",
+  "h1b": "bots.",
+  "h1c": "Get the interview.",
+  "jd_placeholder": "Paste the target job description here...",
+  "match_score": "Match score",
+  "missing_keywords": "Missing keywords",
+  "processing": "Processing...",
+  "share": "Share",
+  "share_score": "Share your score",
+  "share_text": "I scored {score}/100 — think you can beat it?",
+  "share_text_full": "My resume scored {score}/100 on Cvyon's free ATS grader. Think yours beats it?",
+  "step_job": "2. Job target",
+  "step_resume": "1. Resume",
+  "strengths": "Strengths",
+  "sub": "Upload your resume (PDF/DOCX) and paste a job description. Our AI analyzes your match score exactly how an ATS would.",
+  "supported": "Supported: PDF, DOCX (max 4MB)",
+  "toast_copied_fail": "Could not copy link.",
+  "toast_copy_unsupported": "Copy not supported in this browser.",
+  "toast_file_size": "File is too large. Maximum size is 4MB.",
+  "toast_file_type": "Only PDF and DOCX files are supported.",
+  "toast_need_file": "Please upload your resume.",
+  "toast_need_jd": "Please paste the job description.",
+  "toast_success": "Analysis complete. See your results below!",
+  "weaknesses": "Weaknesses"
+ },
+ "chinese_name": "中文",
+ "dir": "ltr",
+ "dutch_name": "Nederlands",
+ "faq": {
+  "eyebrow": "Questions, answered",
+  "h2": "Everything people ask before they build.",
+  "items": [
+   {
+    "a": "Genuinely free. You can build, grade, and download a PDF or Word file without creating an account or entering a card. There is no paywall at the download, no watermark to crop out, and no trial that quietly becomes a paid plan. Cvyon is funded by recruiters who pay to reach candidates who choose to opt in — never by charging the people who are looking for work.",
+    "q": "Is Cvyon really free, or is there a paywall waiting at the download?"
+   },
+   {
+    "a": "Every layout is ATS-friendly by construction: real selectable text (never text rendered as an image), standard section headings, a clean reading order, and none of the clever tricks that blind a parser. On top of that, the grader scores your specific résumé against a specific job post, so you can see and close the gaps before you hit apply.",
+    "q": "Will a résumé built here get past applicant-tracking systems?"
+   },
+   {
+    "a": "No. The builder runs in your browser and your draft is saved locally on your own device. An account is purely optional — it only exists so you can keep several résumés and pick them up on another device. You can finish and download your work without ever signing in.",
+    "q": "Do I need to create an account to use it?"
+   },
+   {
+    "a": "When you grade a résumé, your résumé text and the job description are sent to our AI to compute a match score, then they leave the prompt flow. We do not sell your résumé. Joining the talent pool is a separate, explicit choice you can reverse at any time, and you can export or permanently delete everything we hold about you whenever you like.",
+    "q": "How does the AI grader work, and what happens to my data?"
+   },
+   {
+    "a": "Yes. In addition to a pixel-perfect PDF, you can instantly download your résumé as a highly structured, editable .docx file that opens cleanly in Word, Google Docs, and Apple Pages.",
+    "q": "Can I use these templates in Microsoft Word or Google Docs?"
+   }
+  ]
+ },
+ "features": {
+  "cards": [
+   {
+    "d": "Start immediately. Fill the resume section by section while a polished live document updates beside you.",
+    "t": "Build without friction"
+   },
+   {
+    "d": "Paste a job description and see the important keywords, missing signals and areas that deserve attention.",
+    "t": "Grade it against the job"
+   },
+   {
+    "d": "Choose from a deep template library, edit the content yourself and export when the resume is ready.",
+    "t": "Keep control of the document"
+   }
+  ],
+  "eyebrow": "The Cvyon difference",
+  "h2": "A better resume workflow, not another form.",
+  "sub": "Everything revolves around one thing: helping you produce a resume you understand, control and can actually use."
+ },
+ "filipino_name": "Filipino",
+ "final_cta": {
+  "button": "Start building free",
+  "eyebrow": "Your next application",
+  "h2": "Stop polishing the wrong version.",
+  "p": "Build it. Grade it. Improve it. Then send the version you actually believe in."
+ },
+ "footer": {
+  "bottom_tag": "Built for people, not paywalls.",
+  "col_company": "Company",
+  "col_legal": "Legal",
+  "col_product": "Product",
+  "copyright": "© 2026 Cvyon",
+  "tagline": "Free resume building with practical ATS intelligence."
+ },
+ "french_name": "Français",
+ "german_name": "Deutsch",
+ "grader_section": {
+  "cta": "Try the grader",
+  "eyebrow": "The grader",
+  "h2": "Know what the bots are looking for.",
+  "items": [
+   {
+    "d": "Strict and objective, against the real job post.",
+    "t": "Score out of 100"
+   },
+   {
+    "d": "The exact terms the screeners scan for.",
+    "t": "Missing keywords, named"
+   },
+   {
+    "d": "Executive, creative, or technical — your call.",
+    "t": "One-click AI rewrite"
+   }
+  ],
+  "mock": [
+   "Excellent match",
+   "Highly aligned with this role",
+   "Strong action verbs",
+   "Relevant experience",
+   "Add “market research”",
+   "Mention stakeholder management"
+  ],
+  "p": "Cvyon turns a job description into practical feedback: what already matches, what is missing and what you can improve before you send the application."
+ },
+ "hero": {
+  "art_keywords": "4 missing keywords found",
+  "art_rewrite": "One-click rewrite",
+  "art_score_label": "ATS SCORE",
+  "checks": [
+   "No signup to start",
+   "180+ templates",
+   "ATS score",
+   "PDF export"
+  ],
+  "cta_build": "Build my resume — free",
+  "cta_grader": "See the ATS grader",
+  "eyebrow": "Resume builder + ATS intelligence",
+  "h1a": "Your resume should get through",
+  "h1b": "before",
+  "h1c": "it gets judged.",
+  "sub": "Build a polished resume, check how it reads against a real job description, and download it without the usual maze of paywalls and account gates.",
+  "art_score_label_full": "Sample resume in the Swiss template with an ATS score of 92"
+ },
+ "how": {
+  "eyebrow": "The workflow",
+  "h2": "Three steps. One finished resume.",
+  "note": "No fake “10,000+ users” here — we publish real figures the day we earn them.",
+  "stats": [
+   [
+    "0",
+    "Paywall to start"
+   ],
+   [
+    "180+",
+    "Resume templates"
+   ],
+   [
+    "1",
+    "Focused workflow"
+   ],
+   [
+    "∞",
+    "Ways to tailor"
+   ]
+  ],
+  "steps": [
+   [
+    "01",
+    "Build or import",
+    "Start from scratch or bring an existing resume into the builder."
+   ],
+   [
+    "02",
+    "Grade and improve",
+    "Check the job match, find missing keywords and tighten the content."
+   ],
+   [
+    "03",
+    "Download and apply",
+    "Export the finished document and use it wherever you apply."
+   ]
+  ]
+ },
+ "italian_name": "Italiano",
+ "japanese_name": "日本語",
+ "korean_name": "한국어",
+ "latin_name": "Latina",
+ "manifesto": {
+  "eyebrow": "§ the honest part",
+  "h2": "We don't trap you at the download button.",
+  "money_title": "how the money works",
+  "p": "Other builders bait you with “free” and slam a paywall on the PDF. We made the opposite bet: the tool is free because the people who pay are recruiters — and only ever with your permission.",
+  "steps": [
+   [
+    "01",
+    "You build & download",
+    "Every template, every AI feature, every export. No card, ever."
+   ],
+   [
+    "02",
+    "You may opt in",
+    "Recruiters can find you — only if you tick the box. Granular, reversible, yours."
+   ],
+   [
+    "03",
+    "Recruiters pay us",
+    "Recruiters pay for access to the opt-in talent pool — you control whether your profile appears."
+   ]
+  ]
+ },
+ "meta": {
+  "description": "A free premium resume builder with an ATS grader, unlimited downloads, and no sign-up required.",
+  "title": "Cvyon — Free Premium Resume Builder & ATS Grader"
+ },
+ "mobile_cta": "Build free",
+ "nav": {
+  "ats_grader": "ATS Grader",
+  "build": "Build my resume",
+  "features": "Features",
+  "how": "How it works",
+  "templates": "Templates"
+ },
+ "portuguese_name": "Português",
+ "spanish_name": "Español",
+ "templates_section": {
+  "cta": "Browse all 180 templates",
+  "eyebrow": "The library",
+  "h2": "180+ templates. Pick your personality.",
+  "p": "Clean, editorial, technical, corporate, creative — the content stays yours while the presentation changes."
+ },
+ "topline": [
+  "Free to start",
+  "180+ templates",
+  "No watermark",
+  "ATS grader",
+  "Recruiter matching"
+ ],
+ "trust": [
+  [
+   "Start free",
+   "No credit card required"
+  ],
+  [
+   "180+ designs",
+   "Built for different careers"
+  ],
+  [
+   "ATS-aware",
+   "Job-description matching"
+  ],
+  [
+   "Export ready",
+   "Download your finished resume"
+  ]
+ ],
+ "locale": "en"
+}

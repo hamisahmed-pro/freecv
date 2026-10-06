@@ -1,0 +1,266 @@
+{
+ "arabic_name": "العربية",
+ "ats_grader": {
+  "actionable_tips": "Mga praktikal na tip",
+  "analyze": "Suriin ang tugma",
+  "awaiting_input": "Naghihintay ng input",
+  "awaiting_sub": "Ang iyong AI-generated scorecard ay lilitaw dito.",
+  "challenge_beat": "Kaya mo bang higitan? I-upload ang resume mo at alamin.",
+  "challenge_scored": "May nakakuha ng {score}/100 sa grader na ito",
+  "copied": "Nakopya",
+  "copy_link": "Kopyahin ang link",
+  "cta_fix": "Ayusin ang resume ko sa builder",
+  "drop_resume": "I-drag at i-drop ang resume",
+  "eyebrow": "§ libreng ATS grader",
+  "file_replace": "{size} MB • I-click para palitan",
+  "h1a": "Lampasan ang mga",
+  "h1b": "bot.",
+  "h1c": "Kunin ang interview.",
+  "jd_placeholder": "I-paste dito ang target job description...",
+  "match_score": "Match score",
+  "missing_keywords": "Mga nawawalang keyword",
+  "processing": "Pinoproseso...",
+  "share": "I-share",
+  "share_score": "I-share ang iyong score",
+  "share_text": "Nakakuha ako ng {score}/100 — kaya mo bang higitan?",
+  "share_text_full": "Ang resume ko ay nakakuha ng {score}/100 sa libreng ATS grader ng Cvyon. Sa tingin mo kaya mong higitan?",
+  "step_job": "2. Target na trabaho",
+  "step_resume": "1. Resume",
+  "strengths": "Mga kalakasan",
+  "sub": "I-upload ang iyong resume (PDF/DOCX) at i-paste ang job description. Sinusuri ng aming AI ang iyong match score tulad ng gagawin ng ATS.",
+  "supported": "Suportado: PDF, DOCX (max 4MB)",
+  "toast_copied_fail": "Hindi makopya ang link.",
+  "toast_copy_unsupported": "Hindi suportado ang pagkopya sa browser na ito.",
+  "toast_file_size": "Masyadong malaki ang file. Maximum ay 4MB.",
+  "toast_file_type": "PDF at DOCX files lamang ang suportado.",
+  "toast_need_file": "Pakiupload ang iyong resume.",
+  "toast_need_jd": "Pakipaste ang job description.",
+  "toast_success": "Tapos na ang analysis. Tingnan ang results sa ibaba!",
+  "weaknesses": "Mga kahinaan"
+ },
+ "chinese_name": "中文",
+ "dir": "ltr",
+ "dutch_name": "Nederlands",
+ "faq": {
+  "eyebrow": "Mga tanong, sinagot",
+  "h2": "Lahat ng tinatanong bago magsimula.",
+  "items": [
+   {
+    "a": "Tunay na libre. Maaari kang gumawa, mag-grade, at mag-download ng PDF o Word file nang hindi gumagawa ng account o naglalagay ng card. Walang paywall sa download, walang watermark na kailangang i-crop, walang trial na tahimik na nagiging bayad na plano. Ang Cvyon ay pinopondohan ng mga recruiter na nagbabayad para maabot ang mga kandidatong kusang sumasali — hindi kailanman sa paniningil sa mga naghahanap ng trabaho.",
+    "q": "Totoo bang libre ang Cvyon, o may paywall na naghihintay sa download?"
+   },
+   {
+    "a": "Bawat layout ay ATS-friendly sa pagkakagawa: tunay na nase-select na text (hindi kailanman text na image), standard na section headings, malinis na reading order, at wala sa mga tusong trick na bumubulag sa parser. Bukod pa rito, gine-grade ng grader ang iyong partikular na resume laban sa partikular na job post, para makita at maisara mo ang mga gap bago mag-apply.",
+    "q": "Makakalampas ba sa applicant-tracking systems ang resume na ginawa dito?"
+   },
+   {
+    "a": "Hindi. Ang builder ay tumatakbo sa iyong browser at ang draft mo ay naka-save nang lokal sa iyong device. Ang account ay purong opsyonal — umiiral lamang ito para makapagtabi ka ng ilang resume at maipagpatuloy sa ibang device. Maaari mong tapusin at i-download ang gawa mo nang hindi kailanman nagla-login.",
+    "q": "Kailangan ko bang gumawa ng account para magamit ito?"
+   },
+   {
+    "a": "Kapag nag-grade ka ng resume, ang text ng resume mo at ang job description ay ipinapadala sa aming AI para kwentahin ang match score, pagkatapos ay umaalis sila sa flow. Hindi namin ibinebenta ang resume mo. Ang pagsali sa talent pool ay hiwalay at malinaw na pagpipilian na maaari mong bawiin anumang oras, at maaari mong i-export o tuluyang burahin ang lahat ng hawak namin tungkol sa iyo kailan mo man gusto.",
+    "q": "Paano gumagana ang AI grader, at ano ang nangyayari sa data ko?"
+   },
+   {
+    "a": "Oo. Bukod sa pixel-perfect na PDF, maaari mong agad i-download ang resume mo bilang highly structured at editable na .docx file na malinis na nagbubukas sa Word, Google Docs, at Apple Pages.",
+    "q": "Maaari ko bang gamitin ang mga template na ito sa Microsoft Word o Google Docs?"
+   }
+  ]
+ },
+ "features": {
+  "cards": [
+   {
+    "d": "Magsimula agad. Punan ang resume nang section by section habang live na nag-aupdate ang makinis na dokumento sa tabi.",
+    "t": "Gumawa nang walang abala"
+   },
+   {
+    "d": "I-paste ang job description at makita ang mahahalagang keyword, mga nawawalang signal, at mga dapat bigyang-pansin.",
+    "t": "I-grade laban sa trabaho"
+   },
+   {
+    "d": "Pumili mula sa malalim na template library, i-edit mismo ang content, at i-export kapag handa na ang resume.",
+    "t": "Panatilihin ang kontrol sa dokumento"
+   }
+  ],
+  "eyebrow": "Ang kaibahan ng Cvyon",
+  "h2": "Mas mahusay na workflow, hindi isa pang form.",
+  "sub": "Lahat ay umiikot sa isang bagay: tulungan kang makagawa ng resume na naiintindihan mo, kontrolado mo, at talagang magagamit mo."
+ },
+ "filipino_name": "Filipino",
+ "final_cta": {
+  "button": "Magsimula nang libre",
+  "eyebrow": "Ang iyong susunod na aplikasyon",
+  "h2": "Tigilan ang pagpakintab sa maling bersyon.",
+  "p": "Gawin ito. I-grade ito. Pagbutihin ito. Pagkatapos ay ipadala ang bersyong talagang pinaniniwalaan mo."
+ },
+ "footer": {
+  "bottom_tag": "Ginawa para sa mga tao, hindi para sa paywall.",
+  "col_company": "Kumpanya",
+  "col_legal": "Legal",
+  "col_product": "Produkto",
+  "copyright": "© 2026 Cvyon",
+  "tagline": "Libreng paggawa ng resume na may praktikal na ATS intelligence."
+ },
+ "french_name": "Français",
+ "german_name": "Deutsch",
+ "grader_section": {
+  "cta": "Subukan ang grader",
+  "eyebrow": "Ang grader",
+  "h2": "Alamin kung ano ang hinahanap ng mga bot.",
+  "items": [
+   {
+    "d": "Mahigpit at obhetibo, laban sa tunay na job post.",
+    "t": "Score sa 100"
+   },
+   {
+    "d": "Ang eksaktong mga terminong hinahanap ng mga screener.",
+    "t": "Mga nawawalang keyword, pinangalanan"
+   },
+   {
+    "d": "Executive, creative, o technical — ikaw ang pipili.",
+    "t": "One-click AI rewrite"
+   }
+  ],
+  "mock": [
+   "Napakagandang tugma",
+   "Mataas na naka-align sa tungkuling ito",
+   "Malalakas na action verb",
+   "Nauugnay na karanasan",
+   "Idagdag ang “market research”",
+   "Banggitin ang stakeholder management"
+  ],
+  "p": "Ginagawang praktikal na feedback ng Cvyon ang job description: kung ano ang tugma na, kung ano ang kulang, at kung ano ang maaari mong pagbutihin bago ipadala ang aplikasyon."
+ },
+ "hero": {
+  "art_keywords": "4 na nawawalang keyword ang natagpuan",
+  "art_rewrite": "One-click rewrite",
+  "art_score_label": "ATS SCORE",
+  "art_score_label_full": "Sample resume sa Swiss template na may ATS score na 92",
+  "checks": [
+   "Walang signup para magsimula",
+   "180+ template",
+   "ATS score",
+   "PDF export"
+  ],
+  "cta_build": "Gawin ang resume ko — libre",
+  "cta_grader": "Tingnan ang ATS grader",
+  "eyebrow": "Resume builder + ATS intelligence",
+  "h1a": "Dapat makalusot ang resume mo",
+  "h1b": "bago",
+  "h1c": "ito hatulan.",
+  "sub": "Gumawa ng pulidong resume, tingnan kung paano ito babasahin laban sa tunay na job description, at i-download ito nang walang karaniwang maze ng mga paywall at sapilitang account."
+ },
+ "how": {
+  "eyebrow": "Ang workflow",
+  "h2": "Tatlong hakbang. Isang tapos na resume.",
+  "note": "Walang pekeng “10,000+ users” dito — nagpa-publish kami ng tunay na numero sa araw na kitain namin ito.",
+  "stats": [
+   [
+    "0",
+    "Paywall para magsimula"
+   ],
+   [
+    "180+",
+    "Mga resume template"
+   ],
+   [
+    "1",
+    "Nakatuong workflow"
+   ],
+   [
+    "∞",
+    "Mga paraan ng pag-customize"
+   ]
+  ],
+  "steps": [
+   [
+    "01",
+    "Gumawa o mag-import",
+    "Magsimula sa wala o dalhin ang kasalukuyang resume sa builder."
+   ],
+   [
+    "02",
+    "I-grade at pagbutihin",
+    "Tingnan ang job match, hanapin ang nawawalang keyword, at higpitan ang content."
+   ],
+   [
+    "03",
+    "I-download at mag-apply",
+    "I-export ang tapos na dokumento at gamitin ito saan ka man mag-apply."
+   ]
+  ]
+ },
+ "italian_name": "Italiano",
+ "japanese_name": "日本語",
+ "korean_name": "한국어",
+ "latin_name": "Latina",
+ "locale": "fil",
+ "manifesto": {
+  "eyebrow": "§ ang tapat na bahagi",
+  "h2": "Hindi ka namin bibitagin sa download button.",
+  "money_title": "paano umiikot ang pera",
+  "p": "Ang ibang builder ay umaakit sa iyo ng “libre” tapos ay sasampalin ka ng paywall sa PDF. Kami ay tumaya sa kabaligtaran: libre ang tool dahil ang mga recruiter ang nagbabayad — at palaging may pahintulot mo lamang.",
+  "steps": [
+   [
+    "01",
+    "Ikaw ay gagawa at magda-download",
+    "Bawat template, bawat AI feature, bawat export. Hindi kailanman card."
+   ],
+   [
+    "02",
+    "Maaari kang sumali",
+    "Mahahanap ka ng mga recruiter — kung lalagyan mo lang ng check ang box. Granular, nababawi, iyo."
+   ],
+   [
+    "03",
+    "Ang mga recruiter ang nagbabayad sa amin",
+    "Nagbabayad ang mga recruiter para sa access sa opt-in talent pool — ikaw ang kumokontrol kung lilitaw ang profile mo."
+   ]
+  ]
+ },
+ "meta": {
+  "description": "Libreng premium resume builder na may ATS grader, walang limitasyong download, at hindi kailangan ng sign-up.",
+  "title": "Cvyon — Libreng Resume Builder at ATS Grader"
+ },
+ "mobile_cta": "Gumawa nang libre",
+ "nav": {
+  "ats_grader": "ATS Grader",
+  "build": "Gawin ang resume ko",
+  "features": "Mga feature",
+  "how": "Paano ito gumagana",
+  "templates": "Mga template"
+ },
+ "portuguese_name": "Português",
+ "spanish_name": "Español",
+ "templates_section": {
+  "cta": "Tingnan ang 180 template",
+  "eyebrow": "Ang library",
+  "h2": "180+ template. Piliin ang iyong personalidad.",
+  "p": "Malinis, editorial, technical, corporate, creative — sa iyo pa rin ang content habang nagbabago ang presentasyon."
+ },
+ "topline": [
+  "Libre para magsimula",
+  "180+ template",
+  "Walang watermark",
+  "ATS grader",
+  "Recruiter matching"
+ ],
+ "trust": [
+  [
+   "Magsimula nang libre",
+   "Walang credit card na kailangan"
+  ],
+  [
+   "180+ design",
+   "Ginawa para sa bawat propesyon"
+  ],
+  [
+   "ATS-aware",
+   "Tugma sa job description"
+  ],
+  [
+   "Handa nang i-export",
+   "I-download ang tapos mong resume"
+  ]
+ ]
+}

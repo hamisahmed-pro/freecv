@@ -1,0 +1,266 @@
+{
+ "arabic_name": "العربية",
+ "ats_grader": {
+  "actionable_tips": "Consilia actuosa",
+  "analyze": "Congruentiam analiza",
+  "awaiting_input": "Input exspectatur",
+  "awaiting_sub": "Charta punctorum tuorum ab IA generata hic apparebit.",
+  "challenge_beat": "Potesne superare? Curriculum tuum impone et cognosce.",
+  "challenge_scored": "Quidam {score}/100 in hoc correctore obtinuit",
+  "copied": "Exscriptum",
+  "copy_link": "Nexum exscribe",
+  "cta_fix": "Curriculum meum in structore corrige",
+  "drop_resume": "Curriculum tuum huc trahe et demitte",
+  "eyebrow": "§ corrector ATS gratuitus",
+  "file_replace": "{size} MB • Preme ut substituas",
+  "h1a": "Transi",
+  "h1b": "automata.",
+  "h1c": "Colloquium adipiscere.",
+  "jd_placeholder": "Descriptionem muneris hic affige...",
+  "match_score": "Punctum congruentiae",
+  "missing_keywords": "Verba clavis desunt",
+  "processing": "Agitur...",
+  "share": "Share",
+  "share_score": "Punctum tuum share",
+  "share_text": "Ego {score}/100 obtinui — potesne superare?",
+  "share_text_full": "Curriculum meum {score}/100 in correctore ATS gratuito Cvyon obtinuit. Putasne te superare posse?",
+  "step_job": "2. Munus petitum",
+  "step_resume": "1. Curriculum",
+  "strengths": "Vires",
+  "sub": "Curriculum tuum (PDF/DOCX) impone et descriptionem muneris affige. IA nostra punctum tuum prorsus ut ATS analizat.",
+  "supported": "Sustinentur: PDF, DOCX (max 4 MB)",
+  "toast_copied_fail": "Nexus exscribi non potuit.",
+  "toast_copy_unsupported": "Exscriptio in hoc navigatro non sustinetur.",
+  "toast_file_size": "Fasciculus nimis magnus est. Maximum 4 MB.",
+  "toast_file_type": "Soli fasciculi PDF et DOCX sustinentur.",
+  "toast_need_file": "Quaeso curriculum tuum impone.",
+  "toast_need_jd": "Quaeso descriptionem muneris affige.",
+  "toast_success": "Analysis perfecta est. Resultata infra vide!",
+  "weaknesses": "Infirmitates"
+ },
+ "chinese_name": "中文",
+ "dir": "ltr",
+ "dutch_name": "Nederlands",
+ "faq": {
+  "eyebrow": "Quaestiones, responsa",
+  "h2": "Omnia quae rogant antequam incipiant.",
+  "items": [
+   {
+    "a": "Vere gratuitum. Potes PDF vel Word fasciculum struere, corrigere, detrahere sine ratione creanda nec charta inserenda. Nullum paywall in detractione, nullum signum aquaticum resecandum, nulla probatio quae tacite fit consilium solutum. Cvyon a conductoribus fundatur qui solvunt ut candidatos attingant qui eligere participant — numquam ab iis qui opus quaerunt exigendo.",
+    "q": "Estne Cvyon vere gratuitum, an paywall in detractione exspectat?"
+   },
+   {
+    "a": "Omnis dispositio est ATS-amica per constructionem: verus textus eligibilis (numquam textus ut imago), tituli sectionum communes, ordo legendi mundus, nullaeque technicae callidae quae parserem caecant. Insuper corrector curriculum tuum specificum contra nuntium specificum punctuat, ut hiatus videas et claudas antequam petas.",
+    "q": "Curriculum hic structum systemata vestigantia tironum transibitne?"
+   },
+   {
+    "a": "Minime. Structor in navigatro tuo currit et exemplum tuum localiter in machina tua servatur. Ratio est mere optativa — tantum exstat ut plura curricula serves et in alia machina pergas. Potes perficere et detrahere numquam signatus.",
+    "q": "Egene ratione creando ut utar?"
+   },
+   {
+    "a": "Cum curriculum corrigis, textus curriculi tui et descriptio muneris ad IA nostram mittuntur ut punctum congruentiae computetur, deinde fluxum relinquunt. Curriculum tuum non vendimus. Ad piscinam talentorum iungi est electio separata et expressa, quovis tempore reversibilis, et omnia quae de te tenemus exportare vel delere in perpetuum potes cum voles.",
+    "q": "Quomodo corrector IA operatur, et quid de datis meis fit?"
+   },
+   {
+    "a": "Ita. Praeter PDF ad unguem, curriculum tuum statim ut .docx structuratum et edibile detrahere potes, quod munde in Word, Google Docs, Apple Pages aperitur.",
+    "q": "Possumne his formulis in Microsoft Word vel Google Docs uti?"
+   }
+  ]
+ },
+ "features": {
+  "cards": [
+   {
+    "d": "Statim incipe. Curriculum tuum sectionem per sectionem imple dum documentum politum iuxta te vivum renovatur.",
+    "t": "Sine frictione strue"
+   },
+   {
+    "d": "Descriptionem muneris affige et vide verba clavis gravia, signa desunt et quae attentionem merent.",
+    "t": "Contra munus corrige"
+   },
+   {
+    "d": "Ex profunda bibliotheca formularum elige, contenta ipse ede et exporta cum curriculum paratum est.",
+    "t": "Imperium documenti tene"
+   }
+  ],
+  "eyebrow": "Differentia Cvyon",
+  "h2": "Melior fluxus operis, non alia formula.",
+  "sub": "Omnia circa unum versantur: te adiuvare ut curriculum producere quod intellegis, regis et vere uti potes."
+ },
+ "filipino_name": "Filipino",
+ "final_cta": {
+  "button": "Gratis incipe",
+  "eyebrow": "Proxima petitio tua",
+  "h2": "Desine versionem falsam polire.",
+  "p": "Strue. Corrige. Meliora. Tum mitte versionem cui vere credis."
+ },
+ "footer": {
+  "bottom_tag": "Hominibus structum, non paywall.",
+  "col_company": "Societas",
+  "col_legal": "Iuridica",
+  "col_product": "Productum",
+  "copyright": "© 2026 Cvyon",
+  "tagline": "Structio curriculorum gratuita cum intelligentia ATS practica."
+ },
+ "french_name": "Français",
+ "german_name": "Deutsch",
+ "grader_section": {
+  "cta": "Correctorem tenta",
+  "eyebrow": "Corrector",
+  "h2": "Scito quid automata quaerant.",
+  "items": [
+   {
+    "d": "Severum et obiectivum, contra verum nuntium muneris.",
+    "t": "Punctum ex 100"
+   },
+   {
+    "d": "Termini exacti quos colatores quaerunt.",
+    "t": "Verba clavis desunt, nominata"
+   },
+   {
+    "d": "Ducale, creativum vel technicum — tua electio.",
+    "t": "Rescriptio IA uno clic"
+   }
+  ],
+  "mock": [
+   "Optima congruentia",
+   "Fortiter huic muneri aptatum",
+   "Verba actionis valida",
+   "Experientia pertinens",
+   "Adde «investigationem mercatus»",
+   "Mentiona gubernationem partium"
+  ],
+  "p": "Cvyon descriptionem muneris in responsa practica vertit: quid iam congruit, quid deest et quid meliorare potes antequam petitionem mittas."
+ },
+ "hero": {
+  "art_keywords": "4 verba clavis desunt inventa",
+  "art_rewrite": "Rescriptio uno clic",
+  "art_score_label": "PUNCTUM ATS",
+  "art_score_label_full": "Exemplum curriculi in formula Swiss cum puncto ATS 92",
+  "checks": [
+   "Sine signatione incipe",
+   "180+ formulae",
+   "Punctum ATS",
+   "Exporta PDF"
+  ],
+  "cta_build": "Curriculum meum strue — gratis",
+  "cta_grader": "Correctorem ATS vide",
+  "eyebrow": "Structor curriculorum + intelligentia ATS",
+  "h1a": "Curriculum tuum transire debet",
+  "h1b": "antequam",
+  "h1c": "iudicetur.",
+  "sub": "Curriculum politum strue, vide quomodo contra veram descriptionem muneris legatur, et detrahe sine labyrintho solito paywall et rationum coactarum."
+ },
+ "how": {
+  "eyebrow": "Fluxus",
+  "h2": "Tres gradus. Unum curriculum perfectum.",
+  "note": "Nulli falsi «10,000+ usores» hic — numeros veros edimus die quo eos meremur.",
+  "stats": [
+   [
+    "0",
+    "Paywall ut incipias"
+   ],
+   [
+    "180+",
+    "Formulae curriculorum"
+   ],
+   [
+    "1",
+    "Fluxus intentus"
+   ],
+   [
+    "∞",
+    "Modi aptandi"
+   ]
+  ],
+  "steps": [
+   [
+    "01",
+    "Strue vel importa",
+    "Ex nihilo incipe vel curriculum exstans in structorem affer."
+   ],
+   [
+    "02",
+    "Corrige et meliora",
+    "Congruentiam cum munere inspice, verba clavis desunt inveni et contenta stringe."
+   ],
+   [
+    "03",
+    "Detrahe et pete",
+    "Documentum perfectum exporta et utere ubicumque petis."
+   ]
+  ]
+ },
+ "italian_name": "Italiano",
+ "japanese_name": "日本語",
+ "korean_name": "한국어",
+ "latin_name": "Latina",
+ "locale": "la",
+ "manifesto": {
+  "eyebrow": "§ pars honesta",
+  "h2": "Te ad bullam detractionis non capimus.",
+  "money_title": "quomodo pecunia fluit",
+  "p": "Alii structores te «gratuito» inescant et paywall in PDF impingunt. Nos contrariam sponsionem fecimus: instrumentum gratuitum est quia conductores solvunt — et solum semper te permittente.",
+  "steps": [
+   [
+    "01",
+    "Tu struis & detrahis",
+    "Omnes formulae, omnes facultates IA, omnes exportationes. Numquam charta."
+   ],
+   [
+    "02",
+    "Tu optare potes",
+    "Conductores te invenire possunt — solum si capsam signas. Granulare, reversibile, tuum."
+   ],
+   [
+    "03",
+    "Conductores nobis solvunt",
+    "Conductores solvunt pro aditu ad piscinam talentorum opt-in — tu regis num forma tua appareat."
+   ]
+  ]
+ },
+ "meta": {
+  "description": "Structor curriculorum gratuitus praemium cum correctore ATS, detractionibus illimitatis, sine signatione.",
+  "title": "Cvyon — Structor Curriculorum Gratuitus et Corrector ATS"
+ },
+ "mobile_cta": "Gratis strue",
+ "nav": {
+  "ats_grader": "Corrector ATS",
+  "build": "Curriculum meum strue",
+  "features": "Facultates",
+  "how": "Quomodo operatur",
+  "templates": "Formulae"
+ },
+ "portuguese_name": "Português",
+ "spanish_name": "Español",
+ "templates_section": {
+  "cta": "Omnes 180 formulas vide",
+  "eyebrow": "Bibliotheca",
+  "h2": "180+ formulae. Personalitatem tuam elige.",
+  "p": "Mundum, editoriale, technicum, corporativum, creativum — contenta tua manent dum praesentatio mutatur."
+ },
+ "topline": [
+  "Gratis incipe",
+  "180+ formulae",
+  "Sine signo aquatico",
+  "Corrector ATS",
+  "Conductores congruentes"
+ ],
+ "trust": [
+  [
+   "Gratis incipe",
+   "Sine charta credita"
+  ],
+  [
+   "180+ designationes",
+   "Pro omni arte structae"
+  ],
+  [
+   "ATS-conscium",
+   "Congruens descriptioni muneris"
+  ],
+  [
+   "Paratum ad exportandum",
+   "Curriculum tuum perfectum detrahe"
+  ]
+ ]
+}

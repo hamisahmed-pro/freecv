@@ -9,6 +9,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { AnalyticsTracker } from "./AnalyticsTracker";
 import { FaqJsonLd } from "./FaqJsonLd";
 import { FAQS } from "./LandingF_FAQS";
+import { en, type Dict } from "@/dictionaries/en";
+import LanguageSwitcher from "@/components/landing/LanguageSwitcher";
 
 const SAMPLE: any = {
   templateId: "SwissDesign", theme: { color: "#ff604b" },
@@ -79,9 +81,9 @@ function PreviewSafe({ tmpl: Tmpl, color, label }: { tmpl: any; color: string; l
   return <div role="img" aria-label={label} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
-const TOPLINE = ["Free to start", "180+ templates", "No watermark", "ATS grader", "Recruiter matching"];
+const TOPLINE: string[] = []; // moved to dict.topline
 
-export default function LandingV3() {
+export default function LandingV3({ dict = en }: { dict?: Dict }) {
   const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -94,7 +96,7 @@ export default function LandingV3() {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-cream font-brand text-ink antialiased">
       <AnalyticsTracker />
-      <FaqJsonLd faqs={FAQS} />
+      <FaqJsonLd faqs={dict.faq.items} />
       <style>{`
         [data-reveal]{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
         [data-reveal].in{opacity:1;transform:none}
@@ -105,7 +107,7 @@ export default function LandingV3() {
 
       {/* TOPLINE — hidden on mobile to keep the hero immediately visible */}
       <div className="hidden md:flex min-h-[32px] items-center justify-center gap-7 bg-navy px-4 py-2 text-center text-[10px] font-extrabold uppercase tracking-[0.12em] text-white">
-        {TOPLINE.map((t, i) => (<span key={t} className={i === 1 ? "text-teal" : ""}>{t}</span>))}
+        {dict.topline.map((t, i) => (<span key={t} className={i === 1 ? "text-teal" : ""}>{t}</span>))}
       </div>
 
       {/* NAV */}
@@ -113,13 +115,14 @@ export default function LandingV3() {
         <div className="mx-auto flex h-[72px] max-w-[1180px] items-center justify-between px-5 lg:px-7">
           <Link href="/" aria-label="Cvyon home"><Logo /></Link>
           <nav className="hidden items-center gap-7 text-[12px] font-extrabold text-[#5c6076] md:flex">
-            <a href="#features" className="transition-colors hover:text-navy">Features</a>
-            <a href="#grader" className="transition-colors hover:text-navy">ATS Grader</a>
-            <a href="#plates" className="transition-colors hover:text-navy">Templates</a>
-            <a href="#how" className="transition-colors hover:text-navy">How it works</a>
+            <a href="#features" className="transition-colors hover:text-navy">{dict.nav.features}</a>
+            <a href="#grader" className="transition-colors hover:text-navy">{dict.nav.ats_grader}</a>
+            <a href="#plates" className="transition-colors hover:text-navy">{dict.nav.templates}</a>
+            <a href="#how" className="transition-colors hover:text-navy">{dict.nav.how}</a>
           </nav>
           <div className="flex items-center gap-3">
-            <Link href="/build" className="v3-btn v3-btn-primary !px-4 !py-2.5 text-[13px]">Build my resume <ArrowRight size={15} /></Link>
+            <LanguageSwitcher current={dict.locale} />
+            <Link href="/build" className="v3-btn v3-btn-primary !px-4 !py-2.5 text-[13px]">{dict.nav.build} <ArrowRight size={15} /></Link>
           </div>
         </div>
       </header>
@@ -130,20 +133,20 @@ export default function LandingV3() {
           <div className="mx-auto grid max-w-[1180px] items-center gap-14 lg:grid-cols-2">
             <div>
               <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-brand">
-                <span className="h-2 w-2 rounded-full bg-coral shadow-[0_0_0_4px_#ffe1dc]" /> Resume builder + ATS intelligence
+                <span className="h-2 w-2 rounded-full bg-coral shadow-[0_0_0_4px_#ffe1dc]" /> {dict.hero.eyebrow}
               </div>
               <h1 className="v3-h-display mt-4 max-w-[650px] text-[clamp(50px,6.4vw,84px)]">
-                Your resume should get through <em className="relative not-italic text-coral">before<span className="absolute inset-x-0 -bottom-[3px] -z-10 h-[7px] -rotate-1 bg-gold" /></em> it gets judged.
+                {dict.hero.h1a} <em className="relative not-italic text-coral">{dict.hero.h1b}<span className="absolute inset-x-0 -bottom-[3px] -z-10 h-[7px] -rotate-1 bg-gold" /></em> {dict.hero.h1c}
               </h1>
               <p className="mt-6 max-w-[520px] text-[16px] leading-[1.6] text-muted">
-                Build a polished resume, check how it reads against a real job description, and download it without the usual maze of paywalls and account gates.
+                {dict.hero.sub}
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                <Link href="/build" className="v3-btn v3-btn-primary px-7 py-4 text-[15px]">Build my resume — free <ArrowRight size={17} /></Link>
-                <a href="#grader" className="v3-btn v3-btn-light px-7 py-4 text-[15px]">See the ATS grader</a>
+                <Link href="/build" className="v3-btn v3-btn-primary px-7 py-4 text-[15px]">{dict.hero.cta_build} <ArrowRight size={17} /></Link>
+                <a href="#grader" className="v3-btn v3-btn-light px-7 py-4 text-[15px]">{dict.hero.cta_grader}</a>
               </div>
               <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[11px] font-extrabold text-[#707489]">
-                {["No signup to start", "180+ templates", "ATS score", "PDF export"].map((m) => (
+                {dict.hero.checks.map((m) => (
                   <span key={m} className="inline-flex items-center gap-1.5"><Check size={13} className="text-teal" strokeWidth={3.5} />{m}</span>
                 ))}
               </div>
@@ -157,15 +160,15 @@ export default function LandingV3() {
                   <div className="absolute inset-x-0 top-0 h-[10px] bg-[linear-gradient(90deg,#ff604b_0_24%,#5548f5_24%_70%,#24c9bd_70%)]" />
                   <div className="h-full w-full overflow-hidden p-8 pt-10">
                     <div className="origin-top-left" style={{ width: 816, transform: "scale(0.36)", ["--theme-color" as any]: "#ff604b" }}>
-                      <PreviewSafe tmpl={HeroTmpl} color="#ff604b" label="Sample resume in the Swiss template with an ATS score of 92" />
+                      <PreviewSafe tmpl={HeroTmpl} color="#ff604b" label={dict.hero.art_score_label_full} />
                     </div>
                   </div>
                 </div>
                 <div className="floaty absolute -right-7 top-12 z-20 grid h-[92px] w-[92px] place-items-center rounded-full border-[7px] border-coral bg-white text-center text-navy shadow-[7px_8px_0_#151a46]">
-                  <div><div className="text-[25px] font-black leading-none"><Counter to={92} /></div><div className="text-[7px] font-black tracking-widest">ATS SCORE</div></div>
+                  <div><div className="text-[25px] font-black leading-none"><Counter to={92} /></div><div className="text-[7px] font-black tracking-widest">{dict.hero.art_score_label}</div></div>
                 </div>
-                <div className="absolute -bottom-2 right-2 rounded-xl bg-navy px-4 py-3 text-[10px] font-extrabold text-white shadow-[7px_8px_0_#5548f5]">✓ 4 missing keywords found</div>
-                <div className="absolute -bottom-6 left-2 rounded-xl border border-line bg-white px-4 py-3 text-[10px] font-extrabold text-navy shadow-[7px_8px_0_#24c9bd]">✦ One-click rewrite</div>
+                <div className="absolute -bottom-2 right-2 rounded-xl bg-navy px-4 py-3 text-[10px] font-extrabold text-white shadow-[7px_8px_0_#5548f5]">{dict.hero.art_keywords}</div>
+                <div className="absolute -bottom-6 left-2 rounded-xl border border-line bg-white px-4 py-3 text-[10px] font-extrabold text-navy shadow-[7px_8px_0_#24c9bd]">{dict.hero.art_rewrite}</div>
               </div>
             </div>
           </div>
@@ -174,7 +177,7 @@ export default function LandingV3() {
         {/* TRUST STRIP */}
         <section className="border-y border-line bg-white">
           <div className="mx-auto grid max-w-[1180px] grid-cols-2 gap-6 px-5 py-6 lg:grid-cols-4">
-            {[["Start free", "No credit card required"], ["180+ designs", "Built for different careers"], ["ATS-aware", "Job-description matching"], ["Export ready", "Download your finished resume"]].map(([t, d], i) => (
+            {dict.trust.map(([t, d], i) => (
               <div key={t} className={cn("text-[11px] text-[#6f7286] lg:border-r lg:border-line lg:px-6 lg:first:pl-0", i === 3 && "lg:border-0")}>
                 <strong className="mb-1 block text-[14px] text-navy">{t}</strong>{d}
               </div>
@@ -188,18 +191,18 @@ export default function LandingV3() {
             <Reveal>
               <div className="mb-11 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
                 <div>
-                  <div className="v3-eyebrow">The Cvyon difference</div>
-                  <h2 className="v3-h-display mt-3 max-w-[700px] text-[clamp(38px,5vw,61px)]">A better resume workflow, not another form.</h2>
+                  <div className="v3-eyebrow">{dict.features.eyebrow}</div>
+                  <h2 className="v3-h-display mt-3 max-w-[700px] text-[clamp(38px,5vw,61px)]">{dict.features.h2}</h2>
                 </div>
-                <p className="max-w-[370px] leading-[1.6] text-muted">Everything revolves around one thing: helping you produce a resume you understand, control and can actually use.</p>
+                <p className="max-w-[370px] leading-[1.6] text-muted">{dict.features.sub}</p>
               </div>
             </Reveal>
             <div className="grid gap-[18px] md:grid-cols-3">
-              {[
-                ["01", "Build without friction", "Start immediately. Fill the resume section by section while a polished live document updates beside you.", "bg-cream", "bg-navy"],
-                ["02", "Grade it against the job", "Paste a job description and see the important keywords, missing signals and areas that deserve attention.", "bg-lavender", "bg-brand"],
-                ["03", "Keep control of the document", "Choose from a deep template library, edit the content yourself and export when the resume is ready.", "bg-mint", "bg-coral"],
-              ].map(([n, t, d, bg, icon], i) => (
+              {dict.features.cards.map((c, i) => {
+                const meta = [["bg-cream", "bg-navy"], ["bg-lavender", "bg-brand"], ["bg-mint", "bg-coral"]][i];
+                const n = ["01", "02", "03"][i];
+                const [t, d] = [c.t, c.d]; const [bg, icon] = meta;
+                return (
                 <Reveal key={t} delay={i * 90}>
                   <article className={cn("min-h-[250px] rounded-[18px] border border-line p-7", bg)}>
                     <div className={cn("mb-9 grid h-[42px] w-[42px] place-items-center rounded-xl font-black text-white", icon)}>{n}</div>
@@ -207,7 +210,7 @@ export default function LandingV3() {
                     <p className="text-[13px] leading-[1.55] text-muted">{d}</p>
                   </article>
                 </Reveal>
-              ))}
+                );})}
             </div>
           </div>
         </section>
@@ -216,14 +219,14 @@ export default function LandingV3() {
         <section className="bg-navy px-5 py-16 text-white lg:py-24">
           <div className="mx-auto grid max-w-[1180px] gap-12 lg:grid-cols-12">
             <Reveal className="lg:col-span-7">
-              <div className="mb-5 text-[11px] font-extrabold uppercase tracking-[0.25em] text-coral">§ the honest part</div>
-              <h2 className="v3-h-display !text-white max-w-[640px] text-[clamp(36px,4.6vw,60px)]">We don&apos;t trap you at the download button.</h2>
-              <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/70">Other builders bait you with &ldquo;free&rdquo; and slam a paywall on the PDF. We made the opposite bet: the tool is free because the people who pay are recruiters — and only ever with your permission.</p>
+              <div className="mb-5 text-[11px] font-extrabold uppercase tracking-[0.25em] text-coral">{dict.manifesto.eyebrow}</div>
+              <h2 className="v3-h-display !text-white max-w-[640px] text-[clamp(36px,4.6vw,60px)]">{dict.manifesto.h2}</h2>
+              <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/70">{dict.manifesto.p}</p>
             </Reveal>
             <Reveal delay={120} className="lg:col-span-5">
-              <div className="mb-4 text-[11px] font-extrabold uppercase tracking-[0.22em] text-white/50">how the money works</div>
+              <div className="mb-4 text-[11px] font-extrabold uppercase tracking-[0.22em] text-white/50">{dict.manifesto.money_title}</div>
               <ol>
-                {[["01", "You build & download", "Every template, every AI feature, every export. No card, ever."], ["02", "You may opt in", "Recruiters can find you — only if you tick the box. Granular, reversible, yours."], ["03", "Recruiters pay us", "Recruiters pay for access to the opt-in talent pool — you control whether your profile appears."]].map(([n, t, d], i) => (
+                {dict.manifesto.steps.map(([n, t, d], i) => (
                   <li key={n} className={cn("flex gap-5 border-t-2 border-white/20 py-5", i === 2 && "border-b-2")}>
                     <span className="text-3xl font-black leading-none text-coral">{n}</span>
                     <div><div className="text-lg font-extrabold">{t}</div><div className="mt-1 text-sm text-white/60">{d}</div></div>
@@ -243,30 +246,30 @@ export default function LandingV3() {
                 <div className="relative z-10 rounded-[10px] bg-white p-6 shadow-[0_18px_35px_rgba(0,0,0,0.25)]">
                   <div className="flex items-center gap-5 border-b border-line pb-5">
                     <div className="grid h-[78px] w-[78px] shrink-0 place-items-center rounded-full border-[7px] border-coral text-[22px] font-black text-navy"><Counter to={92} /></div>
-                    <div><strong className="text-navy">Excellent match</strong><br /><small className="text-[#8b8ea0]">Highly aligned with this role</small></div>
+                    <div><strong className="text-navy">{dict.grader_section.mock[0]}</strong><br /><small className="text-[#8b8ea0]">{dict.grader_section.mock[1]}</small></div>
                   </div>
                   <div className="mt-4 grid gap-2.5 text-[12px] text-[#5e6276]">
-                    <div><b className="text-teal">✓</b> Strong action verbs</div>
-                    <div><b className="text-teal">✓</b> Relevant experience</div>
-                    <div><b className="text-coral">!</b> Add &ldquo;market research&rdquo;</div>
-                    <div><b className="text-coral">!</b> Mention stakeholder management</div>
+                    <div><b className="text-teal">✓</b> {dict.grader_section.mock[2]}</div>
+                    <div><b className="text-teal">✓</b> {dict.grader_section.mock[3]}</div>
+                    <div><b className="text-coral">!</b> {dict.grader_section.mock[4]}</div>
+                    <div><b className="text-coral">!</b> {dict.grader_section.mock[5]}</div>
                   </div>
                 </div>
               </div>
             </Reveal>
             <Reveal delay={120}>
-              <div className="v3-eyebrow">The grader</div>
-              <h2 className="v3-h-display mt-3 max-w-[560px] text-[clamp(38px,5vw,61px)]">Know what the bots are looking for.</h2>
-              <p className="mt-5 max-w-[520px] leading-[1.65] text-muted">Cvyon turns a job description into practical feedback: what already matches, what is missing and what you can improve before you send the application.</p>
+              <div className="v3-eyebrow">{dict.grader_section.eyebrow}</div>
+              <h2 className="v3-h-display mt-3 max-w-[560px] text-[clamp(38px,5vw,61px)]">{dict.grader_section.h2}</h2>
+              <p className="mt-5 max-w-[520px] leading-[1.65] text-muted">{dict.grader_section.p}</p>
               <ul className="mt-7 space-y-4">
-                {[["Score out of 100", "Strict and objective, against the real job post."], ["Missing keywords, named", "The exact terms the screeners scan for."], ["One-click AI rewrite", "Executive, creative, or technical — your call."]].map(([t, d]) => (
+                {dict.grader_section.items.map(([t, d]) => (
                   <li key={t} className="flex gap-4 border-t border-line pt-4">
                     <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-md bg-navy text-white"><Check size={14} strokeWidth={3} /></span>
                     <div><div className="text-lg font-extrabold text-navy">{t}</div><div className="text-sm text-muted">{d}</div></div>
                   </li>
                 ))}
               </ul>
-              <Link href="/ats-grader" className="v3-btn v3-btn-primary mt-8 px-6 py-3.5 text-[14px]">Try the grader <ArrowUpRight size={16} /></Link>
+              <Link href="/ats-grader" className="v3-btn v3-btn-primary mt-8 px-6 py-3.5 text-[14px]">{dict.grader_section.cta} <ArrowUpRight size={16} /></Link>
             </Reveal>
           </div>
         </section>
@@ -277,10 +280,10 @@ export default function LandingV3() {
             <Reveal>
               <div className="mb-11 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
                 <div>
-                  <div className="v3-eyebrow">The library</div>
-                  <h2 className="v3-h-display mt-3 text-[clamp(38px,5vw,61px)]">180+ templates. Pick your personality.</h2>
+                  <div className="v3-eyebrow">{dict.templates_section.eyebrow}</div>
+                  <h2 className="v3-h-display mt-3 text-[clamp(38px,5vw,61px)]">{dict.templates_section.h2}</h2>
                 </div>
-                <p className="max-w-[370px] leading-[1.6] text-muted">Clean, editorial, technical, corporate, creative — the content stays yours while the presentation changes.</p>
+                <p className="max-w-[370px] leading-[1.6] text-muted">{dict.templates_section.p}</p>
               </div>
             </Reveal>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
@@ -294,7 +297,7 @@ export default function LandingV3() {
               ))}
             </div>
             <Reveal className="mt-8 text-center">
-              <Link href="/build" className="v3-btn v3-btn-light px-6 py-3 text-[14px]">Browse all 180 templates <ArrowRight size={15} /></Link>
+              <Link href="/build" className="v3-btn v3-btn-light px-6 py-3 text-[14px]">{dict.templates_section.cta} <ArrowRight size={15} /></Link>
             </Reveal>
           </div>
         </section>
@@ -303,11 +306,11 @@ export default function LandingV3() {
         <section id="how" className="scroll-mt-24 bg-white px-5 py-20 lg:py-28">
           <div className="mx-auto max-w-[1180px]">
             <Reveal>
-              <div className="v3-eyebrow">The workflow</div>
-              <h2 className="v3-h-display mb-10 mt-3 text-[clamp(38px,5vw,61px)]">Three steps. One finished resume.</h2>
+              <div className="v3-eyebrow">{dict.how.eyebrow}</div>
+              <h2 className="v3-h-display mb-10 mt-3 text-[clamp(38px,5vw,61px)]">{dict.how.h2}</h2>
             </Reveal>
             <div className="border-t-2 border-navy">
-              {[["01", "Build or import", "Start from scratch or bring an existing resume into the builder."], ["02", "Grade and improve", "Check the job match, find missing keywords and tighten the content."], ["03", "Download and apply", "Export the finished document and use it wherever you apply."]].map(([n, t, d]) => (
+              {dict.how.steps.map(([n, t, d]) => (
                 <Reveal key={n}>
                   <div className="grid grid-cols-[64px_1fr_32px] items-center gap-4 border-b-2 border-navy py-7 sm:grid-cols-[120px_1fr_40px]">
                     <div className="text-[30px] font-black text-[#c9cad1] sm:text-[42px]">{n}</div>
@@ -318,7 +321,7 @@ export default function LandingV3() {
               ))}
             </div>
             <div className="mt-14 grid grid-cols-2 gap-3.5 lg:grid-cols-4">
-              {[["0", "Paywall to start"], ["180+", "Resume templates"], ["1", "Focused workflow"], ["∞", "Ways to tailor"]].map(([v, l], i) => (
+              {dict.how.stats.map(([v, l], i) => (
                 <Reveal key={l} delay={i * 70}>
                   <div className="rounded-xl border border-line bg-cream p-5">
                     <strong className="block text-[35px] font-black tracking-[-0.05em] text-navy">{v}</strong>
@@ -327,7 +330,7 @@ export default function LandingV3() {
                 </Reveal>
               ))}
             </div>
-            <p className="mt-6 text-center text-[11px] font-extrabold uppercase tracking-[0.18em] text-muted/70">No fake &ldquo;10,000+ users&rdquo; here — we publish real figures the day we earn them.</p>
+            <p className="mt-6 text-center text-[11px] font-extrabold uppercase tracking-[0.18em] text-muted/70">{dict.how.note}</p>
           </div>
         </section>
 
@@ -335,11 +338,11 @@ export default function LandingV3() {
         <section id="faq" className="scroll-mt-24 px-5 py-20 lg:py-28">
           <div className="mx-auto max-w-[820px]">
             <Reveal>
-              <div className="v3-eyebrow text-center">Questions, answered</div>
-              <h2 className="v3-h-display mt-3 text-center text-[clamp(32px,4.4vw,52px)]">Everything people ask before they build.</h2>
+              <div className="v3-eyebrow text-center">{dict.faq.eyebrow}</div>
+              <h2 className="v3-h-display mt-3 text-center text-[clamp(32px,4.4vw,52px)]">{dict.faq.h2}</h2>
             </Reveal>
             <div className="mt-10 space-y-3">
-              {FAQS.map((f, i) => {
+              {dict.faq.items.map((f, i) => {
                 const open = openFaq === i;
                 return (
                   <Reveal key={f.q} delay={i * 50}>
@@ -364,11 +367,11 @@ export default function LandingV3() {
               <div className="relative flex flex-col gap-10 overflow-hidden rounded-[22px] bg-navy p-10 text-white lg:flex-row lg:items-end lg:justify-between lg:p-14">
                 <div className="absolute -right-[90px] -top-[140px] h-[300px] w-[300px] rounded-full bg-[#292f72]" />
                 <div className="relative z-10">
-                  <div className="v3-eyebrow !text-gold">Your next application</div>
-                  <h2 className="v3-h-display !text-white mt-3 max-w-[560px] text-[clamp(36px,4.8vw,60px)]">Stop polishing the wrong version.</h2>
-                  <p className="mt-4 max-w-[480px] text-white/70">Build it. Grade it. Improve it. Then send the version you actually believe in.</p>
+                  <div className="v3-eyebrow !text-gold">{dict.final_cta.eyebrow}</div>
+                  <h2 className="v3-h-display !text-white mt-3 max-w-[560px] text-[clamp(36px,4.8vw,60px)]">{dict.final_cta.h2}</h2>
+                  <p className="mt-4 max-w-[480px] text-white/70">{dict.final_cta.p}</p>
                 </div>
-                <Link href="/build" className="v3-btn v3-btn-coral relative z-10 shrink-0 px-8 py-4 text-[15px]">Start building free <ArrowRight size={17} /></Link>
+                <Link href="/build" className="v3-btn v3-btn-coral relative z-10 shrink-0 px-8 py-4 text-[15px]">{dict.final_cta.button} <ArrowRight size={17} /></Link>
               </div>
             </Reveal>
           </div>
@@ -381,12 +384,12 @@ export default function LandingV3() {
           <div className="grid grid-cols-2 gap-8 border-b border-line pb-10 md:grid-cols-4">
             <div>
               <Logo size={26} wordSize={20} />
-              <p className="mt-4 max-w-[220px] text-[12px] leading-relaxed text-muted">Free resume building with practical ATS intelligence.</p>
+              <p className="mt-4 max-w-[220px] text-[12px] leading-relaxed text-muted">{dict.footer.tagline}</p>
             </div>
             {[
-              ["Product", [["Builder", "/build"], ["ATS Grader", "/ats-grader"], ["Templates", "/build"], ["Cover Letter", "/cover-letter"]]],
-              ["Company", [["About", "/about"], ["Career Blog", "/blog"], ["Recruiter Portal", "/recruiter"], ["Support", "/support"]]],
-              ["Legal", [["Privacy", "/privacy"], ["Terms", "/terms"], ["Manage data", "/manage-data"], ["Developers", "/developers"]]],
+              [dict.footer.col_product, [["Builder", "/build"], ["ATS Grader", "/ats-grader"], ["Templates", "/build"], ["Cover Letter", "/cover-letter"]]],
+              [dict.footer.col_company, [["About", "/about"], ["Career Blog", "/blog"], ["Recruiter Portal", "/recruiter"], ["Support", "/support"]]],
+              [dict.footer.col_legal, [["Privacy", "/privacy"], ["Terms", "/terms"], ["Manage data", "/manage-data"], ["Developers", "/developers"]]],
             ].map(([h, items]) => (
               <div key={h as string}>
                 <h4 className="mb-4 text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#a0a2b1]">{h as string}</h4>
@@ -397,15 +400,15 @@ export default function LandingV3() {
             ))}
           </div>
           <div className="flex flex-col justify-between gap-3 pt-5 text-[9px] font-extrabold uppercase tracking-[0.1em] text-[#9a9cac] sm:flex-row">
-            <span>© 2026 Cvyon</span>
-            <span className="inline-flex items-center gap-1.5"><Sparkles size={12} className="text-coral" /> Built for people, not paywalls.</span>
+            <span>{dict.footer.copyright}</span>
+            <span className="inline-flex items-center gap-1.5"><Sparkles size={12} className="text-coral" /> {dict.footer.bottom_tag}</span>
           </div>
         </div>
       </footer>
 
       {/* MOBILE STICKY CTA */}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-cream p-3 md:hidden">
-        <Link href="/build" className="v3-btn v3-btn-dark w-full py-3.5 text-[14px]">Build free <ArrowRight size={16} /></Link>
+        <Link href="/build" className="v3-btn v3-btn-dark w-full py-3.5 text-[14px]">{dict.mobile_cta} <ArrowRight size={16} /></Link>
       </div>
       <div className="h-[76px] md:hidden" />
     </div>
