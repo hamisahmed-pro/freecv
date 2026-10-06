@@ -12,16 +12,19 @@ import { FAQS } from "./LandingF_FAQS";
 import { en, type Dict } from "@/dictionaries/en";
 import LanguageSwitcher from "@/components/landing/LanguageSwitcher";
 
-const SAMPLE: any = {
-  templateId: "SwissDesign", theme: { color: "#ff604b" },
-  personalInfo: { fullName: "Amara Okafor", jobTitle: "Senior Software Engineer", email: "amara@cvyon.com", phone: "+234 800 000 0000", location: "Lagos, Nigeria", website: "amara.dev" },
-  summary: "Backend engineer with 6+ years building scalable APIs and payment systems. Shipped services handling 4M+ daily requests at 99.98% uptime.",
-  experience: [{ id: "1", company: "Paystack", role: "Senior Software Engineer", startDate: "2022", endDate: "Present", description: "Led migration of the payouts service to event-driven architecture.\nCut p99 latency 38% across checkout.\nMentored 4 engineers through promotion." }],
-  education: [{ id: "1", school: "University of Lagos", degree: "B.Sc. Computer Science", graduationYear: "2018" }],
-  skills: [{ id: "1", name: "TypeScript" }, { id: "2", name: "Node.js" }, { id: "3", name: "PostgreSQL" }, { id: "4", name: "AWS" }],
-  showProjects: false, projects: [], showCertifications: false, certifications: [], showReferences: false, references: [], customSections: [],
-  consents: { recruiterShare: false, emailJobs: false, analytics: false },
-};
+function makeSample(dict: Dict): any {
+  const sc: any = (dict as any).sample_cv || (en as any).sample_cv;
+  return {
+    templateId: "SwissDesign", theme: { color: "#ff604b" },
+    personalInfo: { fullName: sc.fullName, jobTitle: sc.jobTitle, email: sc.email, phone: sc.phone, location: sc.location, website: sc.website },
+    summary: sc.summary,
+    experience: [{ id: "1", company: "Paystack", role: sc.jobTitle, startDate: "2022", endDate: "Present", description: "Led migration of the payouts service to event-driven architecture.\nCut p99 latency 38% across checkout.\nMentored 4 engineers through promotion." }],
+    education: [{ id: "1", school: "University of Lagos", degree: "B.Sc. Computer Science", graduationYear: "2018" }],
+    skills: [{ id: "1", name: "TypeScript" }, { id: "2", name: "Node.js" }, { id: "3", name: "PostgreSQL" }, { id: "4", name: "AWS" }],
+    showProjects: false, projects: [], showCertifications: false, certifications: [], showReferences: false, references: [], customSections: [],
+    consents: { recruiterShare: false, emailJobs: false, analytics: false },
+  };
+}
 const GALLERY = [
   ["SwissDesign", "Swiss / Grid"], ["TechPro", "Mono / Dev"], ["Marketing", "Bold / Brand"],
   ["CorporateBlue", "Corporate"], ["MinimalistSplit", "Two-Tone"], ["ModernGradient", "Soft / Card"],
@@ -55,12 +58,12 @@ function Reveal({ children, delay = 0, className = "" }: any) {
 }
 
 /* LIVE template miniature (renders the real template component, scaled) */
-function Mini({ k, color, scale = 0.235 }: { k: string; color: string; scale?: number }) {
+function Mini({ k, color, sample, scale = 0.235 }: { k: string; color: string; sample: any; scale?: number }) {
   const Tmpl = (htmlTemplates as any)[k] || (htmlTemplates as any).Executive;
   return (
     <div className="relative overflow-hidden rounded-lg bg-white" style={{ width: 192, height: 250 }}>
       <div className="absolute top-0 left-0 origin-top-left" style={{ width: 816, transform: `scale(${scale})`, ["--theme-color" as any]: color }}>
-        <PreviewSafe tmpl={Tmpl} color={color} label={`Sample resume in the ${k} template`} />
+        <PreviewSafe tmpl={Tmpl} color={color} sample={sample} label={`Sample resume in the ${k} template`} />
       </div>
       <div className="pointer-events-none absolute inset-0 transition-colors group-hover:bg-navy/5" />
     </div>
@@ -73,17 +76,18 @@ function Mini({ k, color, scale = 0.235 }: { k: string; color: string; scale?: n
    render to static markup and demote H1s to divs (styles preserved) at render
    time — this fixes the raw SSR HTML, not just the hydrated DOM. The preview
    is marked as a decorative illustration for assistive tech. */
-function PreviewSafe({ tmpl: Tmpl, color, label }: { tmpl: any; color: string; label: string }) {
+function PreviewSafe({ tmpl: Tmpl, color, sample, label }: { tmpl: any; color: string; sample: any; label: string }) {
   const html = useMemo(() => {
-    const raw = renderToStaticMarkup(<Tmpl data={SAMPLE} themeColor={color} />);
+    const raw = renderToStaticMarkup(<Tmpl data={sample} themeColor={color} />);
     return raw.replace(/<h1(\s|>)/gi, "<div$1").replace(/<\/h1>/gi, "</div>");
-  }, [Tmpl, color]);
+  }, [Tmpl, color, sample]);
   return <div role="img" aria-label={label} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
 const TOPLINE: string[] = []; // moved to dict.topline
 
 export default function LandingV3({ dict = en }: { dict?: Dict }) {
+  const sample = useMemo(() => makeSample(dict), [dict]);
   const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -160,7 +164,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
                   <div className="absolute inset-x-0 top-0 h-[10px] bg-[linear-gradient(90deg,#ff604b_0_24%,#5548f5_24%_70%,#24c9bd_70%)]" />
                   <div className="h-full w-full overflow-hidden p-8 pt-10">
                     <div className="origin-top-left" style={{ width: 816, transform: "scale(0.36)", ["--theme-color" as any]: "#ff604b" }}>
-                      <PreviewSafe tmpl={HeroTmpl} color="#ff604b" label={dict.hero.art_score_label_full} />
+                      <PreviewSafe tmpl={HeroTmpl} color="#ff604b" sample={sample} label={dict.hero.art_score_label_full} />
                     </div>
                   </div>
                 </div>
@@ -290,7 +294,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
               {GALLERY.map(([k, n], i) => (
                 <Reveal key={k} delay={i * 60}>
                   <Link href={`/build?source=seo&template=${k}`} className="group block rounded-xl border border-line bg-white p-2.5 shadow-[0_8px_18px_rgba(21,26,70,0.06)] transition-transform hover:-translate-y-1">
-                    <Mini k={k} color="#ff604b" />
+                    <Mini k={k} color="#ff604b" sample={sample} />
                     <span className="mt-2.5 block px-1 pb-1 text-[9px] font-black uppercase tracking-[0.08em] text-navy">{n}</span>
                   </Link>
                 </Reveal>

@@ -3,13 +3,14 @@ import type { Metadata } from "next";
 import LandingV3 from "@/components/landing/LandingV3";
 import type { Dict } from "@/dictionaries/en";
 
-export const LOCALES = ["ar", "fr", "de", "nl", "zh", "ko", "ja", "la", "pt", "fil", "es", "it"] as const;
+export const LOCALES = ["ar", "fr", "de", "nl", "zh", "ko", "ja", "la", "pt", "fil", "es", "it", "hi", "bn", "mr", "ru", "id", "ur"] as const;
 export type Locale = (typeof LOCALES)[number];
 
 const NATIVE_NAMES: Record<Locale, string> = {
   ar: "العربية", fr: "Français", de: "Deutsch", nl: "Nederlands", zh: "中文",
   ko: "한국어", ja: "日本語", la: "Latina", pt: "Português", fil: "Filipino",
-  es: "Español", it: "Italiano",
+  es: "Español", it: "Italiano", hi: "हिन्दी", bn: "বাংলা", mr: "मराठी",
+  ru: "Русский", id: "Bahasa Indonesia", ur: "اردو",
 };
 export const LOCALE_NAMES = NATIVE_NAMES;
 

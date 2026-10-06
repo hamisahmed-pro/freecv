@@ -1,0 +1,294 @@
+{
+  "ats_grader": {
+    "actionable_tips": "Tips yang bisa langsung diterapkan",
+    "analyze": "Analisis kecocokan",
+    "awaiting_input": "Menunggu input",
+    "awaiting_sub": "Skor hasil AI Anda akan muncul di sini.",
+    "challenge_beat": "Bisa kalahkan? Unggah resume Anda untuk mengetahuinya.",
+    "challenge_scored": "Seseorang mencetak {score}/100 di grader ini",
+    "copied": "Tersalin",
+    "copy_link": "Salin tautan",
+    "cta_fix": "Perbaiki resume saya di builder",
+    "drop_resume": "Seret & letakkan resume",
+    "eyebrow": "§ grader ATS gratis",
+    "file_replace": "{size} MB • Klik untuk mengganti",
+    "h1a": "Lolos dari",
+    "h1b": "bot.",
+    "h1c": "Dapatkan wawancaranya.",
+    "jd_placeholder": "Tempel deskripsi pekerjaan target di sini...",
+    "match_score": "Skor kecocokan",
+    "missing_keywords": "Kata kunci yang hilang",
+    "processing": "Memproses...",
+    "share": "Bagikan",
+    "share_score": "Bagikan skor Anda",
+    "share_text": "Saya mencetak {score}/100 — menurut Anda bisa mengalahkannya?",
+    "share_text_full": "Resume saya mencetak {score}/100 di grader ATS gratis Cvyon. Menurut Anda bisa mengalahkannya?",
+    "step_job": "2. Target pekerjaan",
+    "step_resume": "1. Resume",
+    "strengths": "Kekuatan",
+    "sub": "Unggah resume Anda (PDF/DOCX) dan tempel deskripsi pekerjaan. AI kami menganalisis skor kecocokan Anda persis seperti ATS.",
+    "supported": "Didukung: PDF, DOCX (maks 4MB)",
+    "toast_copied_fail": "Gagal menyalin tautan.",
+    "toast_copy_unsupported": "Penyalinan tidak didukung di browser ini.",
+    "toast_file_size": "File terlalu besar. Ukuran maksimum adalah 4MB.",
+    "toast_file_type": "Hanya file PDF dan DOCX yang didukung.",
+    "toast_need_file": "Silakan unggah resume Anda.",
+    "toast_need_jd": "Silakan tempel deskripsi pekerjaan.",
+    "toast_success": "Analisis selesai. Lihat hasil Anda di bawah!",
+    "weaknesses": "Kelemahan"
+  },
+  "faq": {
+    "eyebrow": "Pertanyaan, terjawab",
+    "h2": "Semua yang orang tanyakan sebelum mereka membuat.",
+    "items": [
+      {
+        "a": "Benar-benar gratis. Anda dapat membuat, menilai, dan mengunduh PDF atau file Word tanpa membuat akun atau memasukkan kartu. Tidak ada paywall saat mengunduh, tidak ada watermark yang harus dipotong, dan tidak ada uji coba yang diam-diam berubah menjadi paket berbayar. Cvyon didanai oleh perekrut yang membayar untuk menjangkau kandidat yang memilih ikut serta — tidak pernah dengan membebani orang yang sedang mencari kerja.",
+        "q": "Apakah Cvyon benar-benar gratis, atau ada paywall yang menunggu saat mengunduh?"
+      },
+      {
+        "a": "Setiap tata letak ramah-ATS sejak awal: teks yang benar-benar dapat dipilih (bukan teks yang dirender sebagai gambar), judul bagian standar, urutan baca yang bersih, dan tanpa trik cerdas yang membutakan parser. Di atas itu, grader menilai resume spesifik Anda terhadap posting pekerjaan spesifik, sehingga Anda dapat melihat dan menutup celah sebelum menekan lamar.",
+        "q": "Apakah resume yang dibuat di sini akan lolos dari sistem pelacakan pelamar?"
+      },
+      {
+        "a": "Tidak. Builder berjalan di browser Anda dan draf Anda disimpan secara lokal di perangkat Anda sendiri. Akun sepenuhnya opsional — akun hanya ada agar Anda dapat menyimpan beberapa resume dan mengaksesnya di perangkat lain. Anda dapat menyelesaikan dan mengunduh pekerjaan Anda tanpa pernah masuk.",
+        "q": "Apakah saya perlu membuat akun untuk menggunakannya?"
+      },
+      {
+        "a": "Saat Anda menilai resume, teks resume dan deskripsi pekerjaan dikirim ke AI kami untuk menghitung skor kecocokan, lalu dihapus dari alur prompt. Kami tidak menjual resume Anda. Bergabung dengan talent pool adalah pilihan terpisah dan eksplisit yang dapat Anda batalkan kapan saja, dan Anda dapat mengekspor atau menghapus permanen semua data yang kami simpan tentang Anda kapan pun Anda mau.",
+        "q": "Bagaimana cara kerja grader AI, dan apa yang terjadi pada data saya?"
+      },
+      {
+        "a": "Ya. Selain PDF yang sempurna secara piksel, Anda dapat langsung mengunduh resume Anda sebagai file .docx yang sangat terstruktur dan dapat diedit, yang terbuka dengan bersih di Word, Google Docs, dan Apple Pages.",
+        "q": "Bisakah saya menggunakan template ini di Microsoft Word atau Google Docs?"
+      }
+    ]
+  },
+  "features": {
+    "cards": [
+      {
+        "d": "Mulai segera. Isi bagian demi bagian sambil dokumen langsung yang rapi diperbarui di samping Anda.",
+        "t": "Bangun tanpa hambatan"
+      },
+      {
+        "d": "Tempel deskripsi pekerjaan dan lihat kata kunci penting, sinyal yang hilang, serta area yang perlu perhatian.",
+        "t": "Nilai terhadap pekerjaan"
+      },
+      {
+        "d": "Pilih dari pustaka template yang lengkap, edit konten sendiri, dan ekspor saat resume siap.",
+        "t": "Kendalikan dokumen"
+      }
+    ],
+    "eyebrow": "Perbedaan Cvyon",
+    "h2": "Alur kerja resume yang lebih baik, bukan sekadar formulir lain.",
+    "sub": "Semuanya berpusat pada satu hal: membantu Anda menghasilkan resume yang Anda pahami, kendalikan, dan benar-benar bisa digunakan."
+  },
+  "grader_section": {
+    "cta": "Coba penilai",
+    "eyebrow": "Penilai",
+    "h2": "Ketahui apa yang dicari oleh bot.",
+    "items": [
+      {
+        "d": "Ketat dan objektif, berdasarkan lowongan kerja yang sebenarnya.",
+        "t": "Skor dari 100"
+      },
+      {
+        "d": "Istilah persis yang dipindai oleh penyaring.",
+        "t": "Kata kunci yang hilang, disebutkan"
+      },
+      {
+        "d": "Eksekutif, kreatif, atau teknis — terserah Anda.",
+        "t": "Tulis ulang AI sekali klik"
+      }
+    ],
+    "mock": [
+      "Kecocokan sangat baik",
+      "Sangat selaras dengan peran ini",
+      "Kata kerja aktif yang kuat",
+      "Pengalaman relevan",
+      "Tambahkan \"riset pasar\"",
+      "Sebutkan manajemen pemangku kepentingan"
+    ],
+    "p": "Cvyon mengubah deskripsi pekerjaan menjadi umpan balik praktis: apa yang sudah cocok, apa yang hilang, dan apa yang bisa Anda perbaiki sebelum mengirim lamaran."
+  },
+  "hero": {
+    "art_keywords": "4 kata kunci yang hilang ditemukan",
+    "art_rewrite": "Tulis ulang sekali klik",
+    "art_score_label": "SKOR ATS",
+    "checks": [
+      "Tanpa pendaftaran untuk memulai",
+      "180+ template",
+      "Skor ATS",
+      "Ekspor PDF"
+    ],
+    "cta_build": "Buat resume saya — gratis",
+    "cta_grader": "Lihat penilai ATS",
+    "eyebrow": "Pembuat resume + kecerdasan ATS",
+    "h1a": "Resume Anda harus lolos",
+    "h1b": "sebelum",
+    "h1c": "dinilai.",
+    "sub": "Buat resume yang rapi, periksa bagaimana ia terbaca terhadap deskripsi pekerjaan nyata, dan unduh tanpa labirin paywall dan gerbang akun yang biasa.",
+    "art_score_label_full": "Contoh resume dengan template Swiss dan skor ATS 92"
+  },
+  "how": {
+    "eyebrow": "Alur kerja",
+    "h2": "Tiga langkah. Satu resume selesai.",
+    "note": "Tidak ada \"10.000+ pengguna\" palsu di sini — kami memublikasikan angka nyata pada hari kami mendapatkannya.",
+    "stats": [
+      [
+        "0",
+        "Paywall untuk memulai"
+      ],
+      [
+        "180+",
+        "Template resume"
+      ],
+      [
+        "1",
+        "Alur kerja terfokus"
+      ],
+      [
+        "∞",
+        "Cara menyesuaikan"
+      ]
+    ],
+    "steps": [
+      [
+        "01",
+        "Bangun atau impor",
+        "Mulai dari nol atau bawa resume yang ada ke dalam pembuat."
+      ],
+      [
+        "02",
+        "Nilai dan tingkatkan",
+        "Periksa kecocokan pekerjaan, temukan kata kunci yang hilang, dan perkencang konten."
+      ],
+      [
+        "03",
+        "Unduh dan lamar",
+        "Ekspor dokumen selesai dan gunakan di mana pun Anda melamar."
+      ]
+    ]
+  },
+  "manifesto": {
+    "eyebrow": "§ bagian jujur",
+    "h2": "Kami tidak menjebak Anda di tombol unduh.",
+    "money_title": "bagaimana uang bekerja",
+    "p": "Pembuat lain memancing Anda dengan \"gratis\" dan memasang paywall di PDF. Kami bertaruh sebaliknya: alat ini gratis karena yang membayar adalah perekrut — dan hanya dengan izin Anda.",
+    "steps": [
+      [
+        "01",
+        "Anda membangun & mengunduh",
+        "Semua template, semua fitur AI, semua ekspor. Tanpa kartu, selamanya."
+      ],
+      [
+        "02",
+        "Anda boleh memilih ikut",
+        "Perekrut dapat menemukan Anda — hanya jika Anda mencentang kotaknya. Terperinci, dapat dibatalkan, milik Anda."
+      ],
+      [
+        "03",
+        "Perekrut membayar kami",
+        "Perekrut membayar untuk akses ke kumpulan bakat yang memilih ikut — Anda mengontrol apakah profil Anda muncul."
+      ]
+    ]
+  },
+  "meta": {
+    "description": "Pembuat resume premium gratis dengan penilai ATS, unduhan tanpa batas, dan tanpa perlu mendaftar.",
+    "title": "Cvyon — Pembuat Resume Premium Gratis & Penilai ATS"
+  },
+  "blog": {
+    "index_eyebrow": "§ Blog karier",
+    "index_h1": "Pusat Karier",
+    "index_sub": "Panduan praktis tentang resume, optimasi ATS, wawancara, dan cara diterima kerja — ditulis untuk pencari kerja, bukan untuk algoritma.",
+    "index_title": "Blog Cvyon - Tips Karier & Resume",
+    "index_empty": "Belum ada artikel yang diterbitkan. Nanti lagi ya!",
+    "back": "Kembali ke blog",
+    "cta_h2": "Terapkan saran ini sekarang",
+    "cta_p": "Buat resume yang ramah ATS dengan pembuat gratis Cvyon — tanpa daftar, tanpa watermark.",
+    "cta_button": "Buat resume saya",
+    "min_read": "menit baca",
+    "read_article": "Baca artikel"
+  },
+  "sample_cv": {
+    "fullName": "Budi Santoso",
+    "jobTitle": "Senior Software Engineer",
+    "email": "budi@cvyon.com",
+    "phone": "+62 812-3456-7890",
+    "location": "Jakarta, Indonesia",
+    "website": "budi.dev",
+    "summary": "Backend engineer dengan pengalaman 6+ tahun membangun API yang skalabel dan sistem pembayaran. Meluncurkan layanan yang menangani 4 juta+ permintaan harian dengan uptime 99,98%."
+  },
+  "final_cta": {
+    "button": "Mulai gratis sekarang",
+    "eyebrow": "Aplikasi berikutnya Anda",
+    "h2": "Berhenti mengutak-atik versi yang salah.",
+    "p": "Buat. Nilai. Perbaiki. Lalu kirim versi yang benar-benar Anda yakini."
+  },
+  "footer": {
+    "bottom_tag": "Dibuat untuk orang, bukan untuk paywall.",
+    "col_company": "Perusahaan",
+    "col_legal": "Legal",
+    "col_product": "Produk",
+    "copyright": "© 2026 Cvyon",
+    "tagline": "Pembuatan resume gratis dengan kecerdasan ATS yang praktis."
+  },
+  "templates_section": {
+    "cta": "Lihat semua 180 template",
+    "eyebrow": "Koleksi",
+    "h2": "180+ template. Pilih yang sesuai kepribadian Anda.",
+    "p": "Bersih, editorial, teknis, korporat, kreatif — konten tetap milik Anda sementara tampilannya berubah."
+  },
+  "topline": [
+    "Gratis untuk memulai",
+    "180+ template",
+    "Tanpa watermark",
+    "Penilai ATS",
+    "Pencocokan rekruter"
+  ],
+  "trust": [
+    [
+      "Mulai gratis",
+      "Tanpa kartu kredit"
+    ],
+    [
+      "180+ desain",
+      "Dibuat untuk berbagai karier"
+    ],
+    [
+      "Sadar ATS",
+      "Pencocokan deskripsi pekerjaan"
+    ],
+    [
+      "Siap unduh",
+      "Unduh resume jadi Anda"
+    ]
+  ],
+  "nav": {
+    "ats_grader": "Penilai ATS",
+    "build": "Buat resume saya",
+    "features": "Fitur",
+    "how": "Cara kerja",
+    "templates": "Template"
+  },
+  "mobile_cta": "Buat gratis",
+  "korean_name": "한국어",
+  "marathi_name": "मराठी",
+  "hindi_name": "हिन्दी",
+  "locale": "id",
+  "japanese_name": "日本語",
+  "russian_name": "Русский",
+  "portuguese_name": "Português",
+  "latin_name": "Latina",
+  "italian_name": "Italiano",
+  "bengali_name": "বাংলা",
+  "chinese_name": "中文",
+  "filipino_name": "Filipino",
+  "arabic_name": "العربية",
+  "urdu_name": "اردو",
+  "french_name": "Français",
+  "german_name": "Deutsch",
+  "dir": "ltr",
+  "dutch_name": "Nederlands",
+  "spanish_name": "Español",
+  "indonesian_name": "Bahasa Indonesia"
+}

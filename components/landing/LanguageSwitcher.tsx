@@ -16,6 +16,12 @@ const LANGS: [string, string, string][] = [
   ["fil", "Filipino", "/fil"],
   ["es", "Español", "/es"],
   ["it", "Italiano", "/it"],
+  ["hi", "हिन्दी", "/hi"],
+  ["bn", "বাংলা", "/bn"],
+  ["mr", "मराठी", "/mr"],
+  ["ru", "Русский", "/ru"],
+  ["id", "Bahasa Indonesia", "/id"],
+  ["ur", "اردو", "/ur"],
 ];
 
 export default function LanguageSwitcher({ current = "en", dark = false }: { current?: string; dark?: boolean }) {

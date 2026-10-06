@@ -1,266 +1,294 @@
 {
- "arabic_name": "العربية",
- "ats_grader": {
-  "actionable_tips": "Consigli pratici",
-  "analyze": "Analizza la compatibilità",
-  "awaiting_input": "In attesa di input",
-  "awaiting_sub": "La tua scheda punteggio generata dall'IA apparirà qui.",
-  "challenge_beat": "Puoi fare di meglio? Carica il tuo CV e scoprilo.",
-  "challenge_scored": "Qualcuno ha ottenuto {score}/100 su questo valutatore",
-  "copied": "Copiato",
-  "copy_link": "Copia link",
-  "cta_fix": "Sistema il mio CV nell'editor",
-  "drop_resume": "Trascina qui il tuo CV",
-  "eyebrow": "§ valutatore ATS gratuito",
-  "file_replace": "{size} MB • Clicca per sostituire",
-  "h1a": "Supera i",
-  "h1b": "bot.",
-  "h1c": "Ottieni il colloquio.",
-  "jd_placeholder": "Incolla qui la descrizione del lavoro...",
-  "match_score": "Punteggio di compatibilità",
-  "missing_keywords": "Parole chiave mancanti",
-  "processing": "Elaborazione...",
-  "share": "Condividi",
-  "share_score": "Condividi il tuo punteggio",
-  "share_text": "Ho ottenuto {score}/100 — sai fare di meglio?",
-  "share_text_full": "Il mio CV ha ottenuto {score}/100 sul valutatore ATS gratuito di Cvyon. Pensi di fare meglio?",
-  "step_job": "2. Lavoro target",
-  "step_resume": "1. CV",
-  "strengths": "Punti di forza",
-  "sub": "Carica il tuo CV (PDF/DOCX) e incolla una descrizione di lavoro. La nostra IA analizza il tuo punteggio esattamente come farebbe un ATS.",
-  "supported": "Supportati: PDF, DOCX (max 4 MB)",
-  "toast_copied_fail": "Impossibile copiare il link.",
-  "toast_copy_unsupported": "Copia non supportata in questo browser.",
-  "toast_file_size": "File troppo grande. Dimensione massima: 4 MB.",
-  "toast_file_type": "Sono supportati solo file PDF e DOCX.",
-  "toast_need_file": "Carica il tuo CV.",
-  "toast_need_jd": "Incolla la descrizione del lavoro.",
-  "toast_success": "Analisi completata. Guarda i risultati qui sotto!",
-  "weaknesses": "Debolezze"
- },
- "chinese_name": "中文",
- "dir": "ltr",
- "dutch_name": "Nederlands",
- "faq": {
-  "eyebrow": "Domande, risposte",
-  "h2": "Tutto ciò che chiedono prima di iniziare.",
-  "items": [
-   {
-    "a": "Davvero gratis. Puoi creare, valutare e scaricare un PDF o un file Word senza creare un account né inserire una carta. Nessun paywall al download, nessuna filigrana da ritagliare, nessuna prova che diventa silenziosamente un piano a pagamento. Cvyon è finanziato dai recruiter che pagano per contattare i candidati che scelgono di partecipare — mai facendo pagare chi cerca lavoro.",
-    "q": "Cvyon è davvero gratis, o c'è un paywall al download?"
-   },
-   {
-    "a": "Ogni layout è compatibile ATS per costruzione: vero testo selezionabile (mai testo come immagine), titoli di sezione standard, ordine di lettura pulito e nessuno dei trucchetti che accecano un parser. In più, il valutatore assegna un punteggio al tuo CV specifico contro un'offerta specifica, così vedi e colmi le lacune prima di candidarti.",
-    "q": "Un CV creato qui supererà i sistemi di tracciamento candidati?"
-   },
-   {
-    "a": "No. L'editor gira nel tuo browser e la bozza è salvata localmente sul tuo dispositivo. Un account è puramente opzionale — serve solo a conservare più CV e riprenderli su un altro dispositivo. Puoi finire e scaricare il tuo lavoro senza mai accedere.",
-    "q": "Devo creare un account per usarlo?"
-   },
-   {
-    "a": "Quando valuti un CV, il testo del tuo CV e la descrizione del lavoro vengono inviati alla nostra IA per calcolare un punteggio, poi escono dal flusso. Non vendiamo il tuo CV. Unirti al bacino di talenti è una scelta separata ed esplicita, reversibile in qualsiasi momento, e puoi esportare o eliminare definitivamente tutto ciò che conserviamo su di te quando vuoi.",
-    "q": "Come funziona il valutatore IA e che fine fanno i miei dati?"
-   },
-   {
-    "a": "Sì. Oltre a un PDF perfetto, puoi scaricare subito il tuo CV come .docx strutturato e modificabile, che si apre pulito in Word, Google Docs e Apple Pages.",
-    "q": "Posso usare questi modelli in Microsoft Word o Google Docs?"
-   }
-  ]
- },
- "features": {
-  "cards": [
-   {
-    "d": "Inizia subito. Compila il CV sezione per sezione mentre un documento elegante si aggiorna dal vivo accanto a te.",
-    "t": "Crea senza attriti"
-   },
-   {
-    "d": "Incolla una descrizione di lavoro e scopri le parole chiave importanti, i segnali mancanti e ciò che merita attenzione.",
-    "t": "Valutalo contro l'offerta"
-   },
-   {
-    "d": "Scegli da una vasta libreria di modelli, modifica tu i contenuti ed esporta quando il CV è pronto.",
-    "t": "Mantieni il controllo del documento"
-   }
+  "arabic_name": "العربية",
+  "ats_grader": {
+    "actionable_tips": "Consigli pratici",
+    "analyze": "Analizza la compatibilità",
+    "awaiting_input": "In attesa di input",
+    "awaiting_sub": "La tua scheda punteggio generata dall'IA apparirà qui.",
+    "challenge_beat": "Puoi fare di meglio? Carica il tuo CV e scoprilo.",
+    "challenge_scored": "Qualcuno ha ottenuto {score}/100 su questo valutatore",
+    "copied": "Copiato",
+    "copy_link": "Copia link",
+    "cta_fix": "Sistema il mio CV nell'editor",
+    "drop_resume": "Trascina qui il tuo CV",
+    "eyebrow": "§ valutatore ATS gratuito",
+    "file_replace": "{size} MB • Clicca per sostituire",
+    "h1a": "Supera i",
+    "h1b": "bot.",
+    "h1c": "Ottieni il colloquio.",
+    "jd_placeholder": "Incolla qui la descrizione del lavoro...",
+    "match_score": "Punteggio di compatibilità",
+    "missing_keywords": "Parole chiave mancanti",
+    "processing": "Elaborazione...",
+    "share": "Condividi",
+    "share_score": "Condividi il tuo punteggio",
+    "share_text": "Ho ottenuto {score}/100 — sai fare di meglio?",
+    "share_text_full": "Il mio CV ha ottenuto {score}/100 sul valutatore ATS gratuito di Cvyon. Pensi di fare meglio?",
+    "step_job": "2. Lavoro target",
+    "step_resume": "1. CV",
+    "strengths": "Punti di forza",
+    "sub": "Carica il tuo CV (PDF/DOCX) e incolla una descrizione di lavoro. La nostra IA analizza il tuo punteggio esattamente come farebbe un ATS.",
+    "supported": "Supportati: PDF, DOCX (max 4 MB)",
+    "toast_copied_fail": "Impossibile copiare il link.",
+    "toast_copy_unsupported": "Copia non supportata in questo browser.",
+    "toast_file_size": "File troppo grande. Dimensione massima: 4 MB.",
+    "toast_file_type": "Sono supportati solo file PDF e DOCX.",
+    "toast_need_file": "Carica il tuo CV.",
+    "toast_need_jd": "Incolla la descrizione del lavoro.",
+    "toast_success": "Analisi completata. Guarda i risultati qui sotto!",
+    "weaknesses": "Debolezze"
+  },
+  "chinese_name": "中文",
+  "dir": "ltr",
+  "dutch_name": "Nederlands",
+  "faq": {
+    "eyebrow": "Domande, risposte",
+    "h2": "Tutto ciò che chiedono prima di iniziare.",
+    "items": [
+      {
+        "a": "Davvero gratis. Puoi creare, valutare e scaricare un PDF o un file Word senza creare un account né inserire una carta. Nessun paywall al download, nessuna filigrana da ritagliare, nessuna prova che diventa silenziosamente un piano a pagamento. Cvyon è finanziato dai recruiter che pagano per contattare i candidati che scelgono di partecipare — mai facendo pagare chi cerca lavoro.",
+        "q": "Cvyon è davvero gratis, o c'è un paywall al download?"
+      },
+      {
+        "a": "Ogni layout è compatibile ATS per costruzione: vero testo selezionabile (mai testo come immagine), titoli di sezione standard, ordine di lettura pulito e nessuno dei trucchetti che accecano un parser. In più, il valutatore assegna un punteggio al tuo CV specifico contro un'offerta specifica, così vedi e colmi le lacune prima di candidarti.",
+        "q": "Un CV creato qui supererà i sistemi di tracciamento candidati?"
+      },
+      {
+        "a": "No. L'editor gira nel tuo browser e la bozza è salvata localmente sul tuo dispositivo. Un account è puramente opzionale — serve solo a conservare più CV e riprenderli su un altro dispositivo. Puoi finire e scaricare il tuo lavoro senza mai accedere.",
+        "q": "Devo creare un account per usarlo?"
+      },
+      {
+        "a": "Quando valuti un CV, il testo del tuo CV e la descrizione del lavoro vengono inviati alla nostra IA per calcolare un punteggio, poi escono dal flusso. Non vendiamo il tuo CV. Unirti al bacino di talenti è una scelta separata ed esplicita, reversibile in qualsiasi momento, e puoi esportare o eliminare definitivamente tutto ciò che conserviamo su di te quando vuoi.",
+        "q": "Come funziona il valutatore IA e che fine fanno i miei dati?"
+      },
+      {
+        "a": "Sì. Oltre a un PDF perfetto, puoi scaricare subito il tuo CV come .docx strutturato e modificabile, che si apre pulito in Word, Google Docs e Apple Pages.",
+        "q": "Posso usare questi modelli in Microsoft Word o Google Docs?"
+      }
+    ]
+  },
+  "features": {
+    "cards": [
+      {
+        "d": "Inizia subito. Compila il CV sezione per sezione mentre un documento elegante si aggiorna dal vivo accanto a te.",
+        "t": "Crea senza attriti"
+      },
+      {
+        "d": "Incolla una descrizione di lavoro e scopri le parole chiave importanti, i segnali mancanti e ciò che merita attenzione.",
+        "t": "Valutalo contro l'offerta"
+      },
+      {
+        "d": "Scegli da una vasta libreria di modelli, modifica tu i contenuti ed esporta quando il CV è pronto.",
+        "t": "Mantieni il controllo del documento"
+      }
+    ],
+    "eyebrow": "La differenza Cvyon",
+    "h2": "Un flusso di lavoro migliore, non un altro modulo.",
+    "sub": "Tutto ruota intorno a una cosa: aiutarti a produrre un CV che capisci, controlli e puoi usare davvero."
+  },
+  "filipino_name": "Filipino",
+  "final_cta": {
+    "button": "Inizia gratis",
+    "eyebrow": "La tua prossima candidatura",
+    "h2": "Smetti di lucidare la versione sbagliata.",
+    "p": "Crealo. Valutalo. Miglioralo. Poi invia la versione in cui credi davvero."
+  },
+  "footer": {
+    "bottom_tag": "Costruito per le persone, non per i paywall.",
+    "col_company": "Azienda",
+    "col_legal": "Legale",
+    "col_product": "Prodotto",
+    "copyright": "© 2026 Cvyon",
+    "tagline": "Creazione CV gratuita con intelligenza ATS pratica."
+  },
+  "french_name": "Français",
+  "german_name": "Deutsch",
+  "grader_section": {
+    "cta": "Prova il valutatore",
+    "eyebrow": "Il valutatore",
+    "h2": "Scopri cosa cercano i bot.",
+    "items": [
+      {
+        "d": "Severo e oggettivo, contro l'offerta reale.",
+        "t": "Punteggio su 100"
+      },
+      {
+        "d": "I termini esatti che i filtri cercano.",
+        "t": "Parole chiave mancanti, nominate"
+      },
+      {
+        "d": "Dirigenziale, creativo o tecnico — a te la scelta.",
+        "t": "Riscrittura IA in un clic"
+      }
+    ],
+    "mock": [
+      "Ottima compatibilità",
+      "Fortemente allineato con questo ruolo",
+      "Verbi d'azione efficaci",
+      "Esperienza pertinente",
+      "Aggiungi «ricerche di mercato»",
+      "Menziona la gestione degli stakeholder"
+    ],
+    "p": "Cvyon trasforma una descrizione di lavoro in feedback pratico: cosa già corrisponde, cosa manca e cosa puoi migliorare prima di inviare la candidatura."
+  },
+  "hero": {
+    "art_keywords": "4 parole chiave mancanti trovate",
+    "art_rewrite": "Riscrittura in un clic",
+    "art_score_label": "PUNTEGGIO ATS",
+    "art_score_label_full": "CV di esempio nel modello Swiss con un punteggio ATS di 92",
+    "checks": [
+      "Nessuna registrazione per iniziare",
+      "Oltre 180 modelli",
+      "Punteggio ATS",
+      "Esporta PDF"
+    ],
+    "cta_build": "Crea il mio CV — gratis",
+    "cta_grader": "Vedi il valutatore ATS",
+    "eyebrow": "Creatore di CV + intelligenza ATS",
+    "h1a": "Il tuo CV dovrebbe passare",
+    "h1b": "prima",
+    "h1c": "di essere giudicato.",
+    "sub": "Crea un CV curato, verifica come si legge contro una vera descrizione di lavoro e scaricalo senza il solito labirinto di paywall e account obbligatori."
+  },
+  "how": {
+    "eyebrow": "Il processo",
+    "h2": "Tre passaggi. Un CV finito.",
+    "note": "Niente finti «10.000+ utenti» qui — pubblichiamo cifre reali il giorno in cui ce le meritiamo.",
+    "stats": [
+      [
+        "0",
+        "Paywall per iniziare"
+      ],
+      [
+        "180+",
+        "Modelli di CV"
+      ],
+      [
+        "1",
+        "Flusso di lavoro mirato"
+      ],
+      [
+        "∞",
+        "Modi di personalizzare"
+      ]
+    ],
+    "steps": [
+      [
+        "01",
+        "Crea o importa",
+        "Parti da zero o importa un CV esistente nell'editor."
+      ],
+      [
+        "02",
+        "Valuta e migliora",
+        "Controlla la compatibilità con l'offerta, trova le parole chiave mancanti e stringi i contenuti."
+      ],
+      [
+        "03",
+        "Scarica e candidati",
+        "Esporta il documento finale e usalo dove ti candidi."
+      ]
+    ]
+  },
+  "italian_name": "Italiano",
+  "japanese_name": "日本語",
+  "korean_name": "한국어",
+  "latin_name": "Latina",
+  "locale": "it",
+  "manifesto": {
+    "eyebrow": "§ la parte onesta",
+    "h2": "Non ti intrappoliamo al pulsante di download.",
+    "money_title": "come girano i soldi",
+    "p": "Altri editor ti adescano con il «gratis» e poi sbattono un paywall sul PDF. Noi abbiamo scommesso al contrario: lo strumento è gratis perché a pagare sono i recruiter — e solo con il tuo permesso.",
+    "steps": [
+      [
+        "01",
+        "Tu crei e scarichi",
+        "Tutti i modelli, tutte le funzioni IA, tutti gli export. Mai una carta."
+      ],
+      [
+        "02",
+        "Tu puoi partecipare",
+        "I recruiter possono trovarti — solo se spunti la casella. Granulare, reversibile, tuo."
+      ],
+      [
+        "03",
+        "I recruiter ci pagano",
+        "I recruiter pagano per accedere al bacino talenti opt-in — tu controlli se il tuo profilo appare."
+      ]
+    ]
+  },
+  "meta": {
+    "description": "Un creatore di CV premium gratuito con valutatore ATS, download illimitati e nessuna registrazione.",
+    "title": "Cvyon — Creatore di CV gratuito e valutatore ATS"
+  },
+  "mobile_cta": "Crea gratis",
+  "nav": {
+    "ats_grader": "Valutatore ATS",
+    "build": "Crea il mio CV",
+    "features": "Funzioni",
+    "how": "Come funziona",
+    "templates": "Modelli"
+  },
+  "portuguese_name": "Português",
+  "spanish_name": "Español",
+  "templates_section": {
+    "cta": "Sfoglia i 180 modelli",
+    "eyebrow": "La libreria",
+    "h2": "Oltre 180 modelli. Scegli la tua personalità.",
+    "p": "Pulito, editoriale, tecnico, aziendale, creativo — i contenuti restano tuoi mentre cambia la presentazione."
+  },
+  "topline": [
+    "Gratis per iniziare",
+    "Oltre 180 modelli",
+    "Senza filigrana",
+    "Valutatore ATS",
+    "Matching recruiter"
   ],
-  "eyebrow": "La differenza Cvyon",
-  "h2": "Un flusso di lavoro migliore, non un altro modulo.",
-  "sub": "Tutto ruota intorno a una cosa: aiutarti a produrre un CV che capisci, controlli e puoi usare davvero."
- },
- "filipino_name": "Filipino",
- "final_cta": {
-  "button": "Inizia gratis",
-  "eyebrow": "La tua prossima candidatura",
-  "h2": "Smetti di lucidare la versione sbagliata.",
-  "p": "Crealo. Valutalo. Miglioralo. Poi invia la versione in cui credi davvero."
- },
- "footer": {
-  "bottom_tag": "Costruito per le persone, non per i paywall.",
-  "col_company": "Azienda",
-  "col_legal": "Legale",
-  "col_product": "Prodotto",
-  "copyright": "© 2026 Cvyon",
-  "tagline": "Creazione CV gratuita con intelligenza ATS pratica."
- },
- "french_name": "Français",
- "german_name": "Deutsch",
- "grader_section": {
-  "cta": "Prova il valutatore",
-  "eyebrow": "Il valutatore",
-  "h2": "Scopri cosa cercano i bot.",
-  "items": [
-   {
-    "d": "Severo e oggettivo, contro l'offerta reale.",
-    "t": "Punteggio su 100"
-   },
-   {
-    "d": "I termini esatti che i filtri cercano.",
-    "t": "Parole chiave mancanti, nominate"
-   },
-   {
-    "d": "Dirigenziale, creativo o tecnico — a te la scelta.",
-    "t": "Riscrittura IA in un clic"
-   }
+  "trust": [
+    [
+      "Inizia gratis",
+      "Senza carta di credito"
+    ],
+    [
+      "Oltre 180 design",
+      "Pensati per ogni professione"
+    ],
+    [
+      "Compatibile ATS",
+      "Allineato alla job description"
+    ],
+    [
+      "Pronto da esportare",
+      "Scarica il tuo CV finale"
+    ]
   ],
-  "mock": [
-   "Ottima compatibilità",
-   "Fortemente allineato con questo ruolo",
-   "Verbi d'azione efficaci",
-   "Esperienza pertinente",
-   "Aggiungi «ricerche di mercato»",
-   "Menziona la gestione degli stakeholder"
-  ],
-  "p": "Cvyon trasforma una descrizione di lavoro in feedback pratico: cosa già corrisponde, cosa manca e cosa puoi migliorare prima di inviare la candidatura."
- },
- "hero": {
-  "art_keywords": "4 parole chiave mancanti trovate",
-  "art_rewrite": "Riscrittura in un clic",
-  "art_score_label": "PUNTEGGIO ATS",
-  "art_score_label_full": "CV di esempio nel modello Swiss con un punteggio ATS di 92",
-  "checks": [
-   "Nessuna registrazione per iniziare",
-   "Oltre 180 modelli",
-   "Punteggio ATS",
-   "Esporta PDF"
-  ],
-  "cta_build": "Crea il mio CV — gratis",
-  "cta_grader": "Vedi il valutatore ATS",
-  "eyebrow": "Creatore di CV + intelligenza ATS",
-  "h1a": "Il tuo CV dovrebbe passare",
-  "h1b": "prima",
-  "h1c": "di essere giudicato.",
-  "sub": "Crea un CV curato, verifica come si legge contro una vera descrizione di lavoro e scaricalo senza il solito labirinto di paywall e account obbligatori."
- },
- "how": {
-  "eyebrow": "Il processo",
-  "h2": "Tre passaggi. Un CV finito.",
-  "note": "Niente finti «10.000+ utenti» qui — pubblichiamo cifre reali il giorno in cui ce le meritiamo.",
-  "stats": [
-   [
-    "0",
-    "Paywall per iniziare"
-   ],
-   [
-    "180+",
-    "Modelli di CV"
-   ],
-   [
-    "1",
-    "Flusso di lavoro mirato"
-   ],
-   [
-    "∞",
-    "Modi di personalizzare"
-   ]
-  ],
-  "steps": [
-   [
-    "01",
-    "Crea o importa",
-    "Parti da zero o importa un CV esistente nell'editor."
-   ],
-   [
-    "02",
-    "Valuta e migliora",
-    "Controlla la compatibilità con l'offerta, trova le parole chiave mancanti e stringi i contenuti."
-   ],
-   [
-    "03",
-    "Scarica e candidati",
-    "Esporta il documento finale e usalo dove ti candidi."
-   ]
-  ]
- },
- "italian_name": "Italiano",
- "japanese_name": "日本語",
- "korean_name": "한국어",
- "latin_name": "Latina",
- "locale": "it",
- "manifesto": {
-  "eyebrow": "§ la parte onesta",
-  "h2": "Non ti intrappoliamo al pulsante di download.",
-  "money_title": "come girano i soldi",
-  "p": "Altri editor ti adescano con il «gratis» e poi sbattono un paywall sul PDF. Noi abbiamo scommesso al contrario: lo strumento è gratis perché a pagare sono i recruiter — e solo con il tuo permesso.",
-  "steps": [
-   [
-    "01",
-    "Tu crei e scarichi",
-    "Tutti i modelli, tutte le funzioni IA, tutti gli export. Mai una carta."
-   ],
-   [
-    "02",
-    "Tu puoi partecipare",
-    "I recruiter possono trovarti — solo se spunti la casella. Granulare, reversibile, tuo."
-   ],
-   [
-    "03",
-    "I recruiter ci pagano",
-    "I recruiter pagano per accedere al bacino talenti opt-in — tu controlli se il tuo profilo appare."
-   ]
-  ]
- },
- "meta": {
-  "description": "Un creatore di CV premium gratuito con valutatore ATS, download illimitati e nessuna registrazione.",
-  "title": "Cvyon — Creatore di CV gratuito e valutatore ATS"
- },
- "mobile_cta": "Crea gratis",
- "nav": {
-  "ats_grader": "Valutatore ATS",
-  "build": "Crea il mio CV",
-  "features": "Funzioni",
-  "how": "Come funziona",
-  "templates": "Modelli"
- },
- "portuguese_name": "Português",
- "spanish_name": "Español",
- "templates_section": {
-  "cta": "Sfoglia i 180 modelli",
-  "eyebrow": "La libreria",
-  "h2": "Oltre 180 modelli. Scegli la tua personalità.",
-  "p": "Pulito, editoriale, tecnico, aziendale, creativo — i contenuti restano tuoi mentre cambia la presentazione."
- },
- "topline": [
-  "Gratis per iniziare",
-  "Oltre 180 modelli",
-  "Senza filigrana",
-  "Valutatore ATS",
-  "Matching recruiter"
- ],
- "trust": [
-  [
-   "Inizia gratis",
-   "Senza carta di credito"
-  ],
-  [
-   "Oltre 180 design",
-   "Pensati per ogni professione"
-  ],
-  [
-   "Compatibile ATS",
-   "Allineato alla job description"
-  ],
-  [
-   "Pronto da esportare",
-   "Scarica il tuo CV finale"
-  ]
- ]
+  "sample_cv": {
+    "fullName": "Mario Rossi",
+    "jobTitle": "Ingegnere Software Senior",
+    "email": "mario@cvyon.com",
+    "phone": "+39 340 123 4567",
+    "location": "Lagos, Nigeria",
+    "website": "mario.dev",
+    "summary": "Ingegnere backend con oltre 6 anni di esperienza nella creazione di API scalabili e sistemi di pagamento. Ho sviluppato servizi che gestiscono oltre 4 milioni di richieste giornaliere con un uptime del 99,98%."
+  },
+  "blog": {
+    "index_eyebrow": "§ Blog di carriera",
+    "index_h1": "The Career Hub",
+    "index_sub": "Guide pratiche su curriculum, ottimizzazione ATS, colloqui e come farsi assumere — scritte per chi cerca lavoro, non per gli algoritmi.",
+    "index_title": "Blog Cvyon - Consigli di carriera e suggerimenti per il curriculum",
+    "index_empty": "Nessun articolo pubblicato finora. Torna presto!",
+    "back": "Torna al blog",
+    "cta_h2": "Metti in pratica questi consigli",
+    "cta_p": "Crea un curriculum ottimizzato per ATS con il builder gratuito di Cvyon — senza registrazione, senza filigrana.",
+    "cta_button": "Crea il mio curriculum",
+    "min_read": "min di lettura",
+    "read_article": "Leggi l'articolo"
+  },
+  "hindi_name": "हिन्दी",
+  "bengali_name": "বাংলা",
+  "marathi_name": "मराठी",
+  "russian_name": "Русский",
+  "indonesian_name": "Bahasa Indonesia",
+  "urdu_name": "اردو"
 }

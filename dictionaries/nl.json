@@ -1,266 +1,294 @@
 {
- "arabic_name": "العربية",
- "ats_grader": {
-  "actionable_tips": "Praktische Tipps",
-  "analyze": "Match analysieren",
-  "awaiting_input": "Wachten op invoer",
-  "awaiting_sub": "Uw door AI gegenereerde scorecard verschijnt hier.",
-  "challenge_beat": "Kun je het verslaan? Upload je cv en ontdek het.",
-  "challenge_scored": "Iemand scoorde {score}/100 op deze grader",
-  "copied": "Gekopieerd",
-  "copy_link": "Link kopiëren",
-  "cta_fix": "Mijn cv repareren in de builder",
-  "drop_resume": "Sleep je cv hierheen",
-  "eyebrow": "§ gratis ATS-grader",
-  "file_replace": "{size} MB • Klik om te vervangen",
-  "h1a": "Versla de",
-  "h1b": "bots.",
-  "h1c": "Krijg het sollicitatiegesprek.",
-  "jd_placeholder": "Plak hier de functiebeschrijving...",
-  "match_score": "Matchscore",
-  "missing_keywords": "Ontbrekende trefwoorden",
-  "processing": "Verwerken...",
-  "share": "Delen",
-  "share_score": "Deel je score",
-  "share_text": "Ik scoorde {score}/100 — kun jij het verslaan?",
-  "share_text_full": "Mijn cv scoorde {score}/100 op de gratis ATS-grader van Cvyon. Denk je dat je het kunt verslaan?",
-  "step_job": "2. Doelfunctie",
-  "step_resume": "1. Cv",
-  "strengths": "Sterke punten",
-  "sub": "Upload je cv (PDF/DOCX) en plak een functiebeschrijving. Onze AI analyseert je matchscore precies zoals een ATS dat zou doen.",
-  "supported": "Ondersteund: PDF, DOCX (max 4 MB)",
-  "toast_copied_fail": "Kon link niet kopiëren.",
-  "toast_copy_unsupported": "Kopiëren niet ondersteund in deze browser.",
-  "toast_file_size": "Bestand te groot. Maximale grootte is 4 MB.",
-  "toast_file_type": "Alleen PDF- en DOCX-bestanden worden ondersteund.",
-  "toast_need_file": "Upload je cv.",
-  "toast_need_jd": "Plak de functiebeschrijving.",
-  "toast_success": "Analyse voltooid. Bekijk je resultaten hieronder!",
-  "weaknesses": "Zwakke punten"
- },
- "chinese_name": "中文",
- "dir": "ltr",
- "dutch_name": "Nederlands",
- "faq": {
-  "eyebrow": "Vragen, beantwoord",
-  "h2": "Alles wat men vraagt vóór het bouwen.",
-  "items": [
-   {
-    "a": "Echt gratis. Je kunt een pdf of Word-bestand bouwen, beoordelen en downloaden zonder account aan te maken of een kaart in te voeren. Geen paywall bij het downloaden, geen watermerk om weg te snijden, geen proefperiode die stilletjes een betaald abonnement wordt. Cvyon wordt gefinancierd door recruiters die betalen om kandidaten te bereiken die zich vrijwillig aanmelden — nooit door de mensen die werk zoeken te laten betalen.",
-    "q": "Is Cvyon echt gratis, of wacht er een paywall bij het downloaden?"
-   },
-   {
-    "a": "Elke lay-out is ATS-vriendelijk door constructie: echte selecteerbare tekst (nooit tekst als afbeelding), standaard sectiekoppen, een schone leesvolgorde en geen van de slimme trucs die een parser blind maken. Bovendien scoort de grader jouw specifieke cv tegen een specifieke vacature, zodat je de hiaten ziet en dicht voordat je solliciteert.",
-    "q": "Komt een hier gebouwd cv door applicant-tracking-systemen?"
-   },
-   {
-    "a": "Nee. De builder draait in je browser en je concept wordt lokaal op je eigen apparaat opgeslagen. Een account is puur optioneel — het bestaat alleen zodat je meerdere cv's kunt bewaren en op een ander apparaat verder kunt gaan. Je kunt afronden en downloaden zonder ooit in te loggen.",
-    "q": "Heb ik een account nodig om het te gebruiken?"
-   },
-   {
-    "a": "Wanneer je een cv beoordeelt, worden je cv-tekst en de functiebeschrijving naar onze AI gestuurd om een matchscore te berekenen, daarna verlaten ze de stroom. We verkopen je cv niet. Deelnemen aan de talentpool is een aparte, expliciete keuze die je altijd kunt terugdraaien, en je kunt alles wat we over je bewaren exporteren of definitief verwijderen wanneer je maar wilt.",
-    "q": "Hoe werkt de AI-grader en wat gebeurt er met mijn gegevens?"
-   },
-   {
-    "a": "Ja. Naast een pixelperfecte pdf download je je cv direct als een goed gestructureerd, bewerkbaar .docx-bestand dat schoon opent in Word, Google Docs en Apple Pages.",
-    "q": "Kan ik deze templates gebruiken in Microsoft Word of Google Docs?"
-   }
-  ]
- },
- "features": {
-  "cards": [
-   {
-    "d": "Begin direct. Vul je cv sectie voor sectie in terwijl ernaast live een verzorgd document wordt bijgewerkt.",
-    "t": "Bouwen zonder frictie"
-   },
-   {
-    "d": "Plak een functiebeschrijving en zie de belangrijke trefwoorden, ontbrekende signalen en punten die aandacht verdienen.",
-    "t": "Beoordeel tegen de vacature"
-   },
-   {
-    "d": "Kies uit een diepe templatebibliotheek, bewerk de inhoud zelf en exporteer wanneer het cv klaar is.",
-    "t": "Houd controle over het document"
-   }
+  "arabic_name": "العربية",
+  "ats_grader": {
+    "actionable_tips": "Praktische Tipps",
+    "analyze": "Match analysieren",
+    "awaiting_input": "Wachten op invoer",
+    "awaiting_sub": "Uw door AI gegenereerde scorecard verschijnt hier.",
+    "challenge_beat": "Kun je het verslaan? Upload je cv en ontdek het.",
+    "challenge_scored": "Iemand scoorde {score}/100 op deze grader",
+    "copied": "Gekopieerd",
+    "copy_link": "Link kopiëren",
+    "cta_fix": "Mijn cv repareren in de builder",
+    "drop_resume": "Sleep je cv hierheen",
+    "eyebrow": "§ gratis ATS-grader",
+    "file_replace": "{size} MB • Klik om te vervangen",
+    "h1a": "Versla de",
+    "h1b": "bots.",
+    "h1c": "Krijg het sollicitatiegesprek.",
+    "jd_placeholder": "Plak hier de functiebeschrijving...",
+    "match_score": "Matchscore",
+    "missing_keywords": "Ontbrekende trefwoorden",
+    "processing": "Verwerken...",
+    "share": "Delen",
+    "share_score": "Deel je score",
+    "share_text": "Ik scoorde {score}/100 — kun jij het verslaan?",
+    "share_text_full": "Mijn cv scoorde {score}/100 op de gratis ATS-grader van Cvyon. Denk je dat je het kunt verslaan?",
+    "step_job": "2. Doelfunctie",
+    "step_resume": "1. Cv",
+    "strengths": "Sterke punten",
+    "sub": "Upload je cv (PDF/DOCX) en plak een functiebeschrijving. Onze AI analyseert je matchscore precies zoals een ATS dat zou doen.",
+    "supported": "Ondersteund: PDF, DOCX (max 4 MB)",
+    "toast_copied_fail": "Kon link niet kopiëren.",
+    "toast_copy_unsupported": "Kopiëren niet ondersteund in deze browser.",
+    "toast_file_size": "Bestand te groot. Maximale grootte is 4 MB.",
+    "toast_file_type": "Alleen PDF- en DOCX-bestanden worden ondersteund.",
+    "toast_need_file": "Upload je cv.",
+    "toast_need_jd": "Plak de functiebeschrijving.",
+    "toast_success": "Analyse voltooid. Bekijk je resultaten hieronder!",
+    "weaknesses": "Zwakke punten"
+  },
+  "chinese_name": "中文",
+  "dir": "ltr",
+  "dutch_name": "Nederlands",
+  "faq": {
+    "eyebrow": "Vragen, beantwoord",
+    "h2": "Alles wat men vraagt vóór het bouwen.",
+    "items": [
+      {
+        "a": "Echt gratis. Je kunt een pdf of Word-bestand bouwen, beoordelen en downloaden zonder account aan te maken of een kaart in te voeren. Geen paywall bij het downloaden, geen watermerk om weg te snijden, geen proefperiode die stilletjes een betaald abonnement wordt. Cvyon wordt gefinancierd door recruiters die betalen om kandidaten te bereiken die zich vrijwillig aanmelden — nooit door de mensen die werk zoeken te laten betalen.",
+        "q": "Is Cvyon echt gratis, of wacht er een paywall bij het downloaden?"
+      },
+      {
+        "a": "Elke lay-out is ATS-vriendelijk door constructie: echte selecteerbare tekst (nooit tekst als afbeelding), standaard sectiekoppen, een schone leesvolgorde en geen van de slimme trucs die een parser blind maken. Bovendien scoort de grader jouw specifieke cv tegen een specifieke vacature, zodat je de hiaten ziet en dicht voordat je solliciteert.",
+        "q": "Komt een hier gebouwd cv door applicant-tracking-systemen?"
+      },
+      {
+        "a": "Nee. De builder draait in je browser en je concept wordt lokaal op je eigen apparaat opgeslagen. Een account is puur optioneel — het bestaat alleen zodat je meerdere cv's kunt bewaren en op een ander apparaat verder kunt gaan. Je kunt afronden en downloaden zonder ooit in te loggen.",
+        "q": "Heb ik een account nodig om het te gebruiken?"
+      },
+      {
+        "a": "Wanneer je een cv beoordeelt, worden je cv-tekst en de functiebeschrijving naar onze AI gestuurd om een matchscore te berekenen, daarna verlaten ze de stroom. We verkopen je cv niet. Deelnemen aan de talentpool is een aparte, expliciete keuze die je altijd kunt terugdraaien, en je kunt alles wat we over je bewaren exporteren of definitief verwijderen wanneer je maar wilt.",
+        "q": "Hoe werkt de AI-grader en wat gebeurt er met mijn gegevens?"
+      },
+      {
+        "a": "Ja. Naast een pixelperfecte pdf download je je cv direct als een goed gestructureerd, bewerkbaar .docx-bestand dat schoon opent in Word, Google Docs en Apple Pages.",
+        "q": "Kan ik deze templates gebruiken in Microsoft Word of Google Docs?"
+      }
+    ]
+  },
+  "features": {
+    "cards": [
+      {
+        "d": "Begin direct. Vul je cv sectie voor sectie in terwijl ernaast live een verzorgd document wordt bijgewerkt.",
+        "t": "Bouwen zonder frictie"
+      },
+      {
+        "d": "Plak een functiebeschrijving en zie de belangrijke trefwoorden, ontbrekende signalen en punten die aandacht verdienen.",
+        "t": "Beoordeel tegen de vacature"
+      },
+      {
+        "d": "Kies uit een diepe templatebibliotheek, bewerk de inhoud zelf en exporteer wanneer het cv klaar is.",
+        "t": "Houd controle over het document"
+      }
+    ],
+    "eyebrow": "Het Cvyon-verschil",
+    "h2": "Een betere workflow, niet weer een formulier.",
+    "sub": "Alles draait om één ding: je helpen een cv te maken dat je begrijpt, beheerst en echt kunt gebruiken."
+  },
+  "filipino_name": "Filipino",
+  "final_cta": {
+    "button": "Gratis starten",
+    "eyebrow": "Je volgende sollicitatie",
+    "h2": "Stop met het polijsten van de verkeerde versie.",
+    "p": "Bouw het. Beoordeel het. Verbeter het. Stuur dan de versie waar je echt in gelooft."
+  },
+  "footer": {
+    "bottom_tag": "Gebouwd voor mensen, niet voor paywalls.",
+    "col_company": "Bedrijf",
+    "col_legal": "Juridisch",
+    "col_product": "Product",
+    "copyright": "© 2026 Cvyon",
+    "tagline": "Gratis cv's bouwen met praktische ATS-intelligentie."
+  },
+  "french_name": "Français",
+  "german_name": "Deutsch",
+  "grader_section": {
+    "cta": "Probeer de grader",
+    "eyebrow": "De grader",
+    "h2": "Weet waar de bots naar zoeken.",
+    "items": [
+      {
+        "d": "Strikt en objectief, tegen de echte vacature.",
+        "t": "Score op 100"
+      },
+      {
+        "d": "De exacte termen waar de filters naar zoeken.",
+        "t": "Ontbrekende trefwoorden, benoemd"
+      },
+      {
+        "d": "Leidinggevend, creatief of technisch — jouw keuze.",
+        "t": "AI-herschrijving met één klik"
+      }
+    ],
+    "mock": [
+      "Uitstekende match",
+      "Sterk afgestemd op deze functie",
+      "Krachtige actiewerkwoorden",
+      "Relevante ervaring",
+      "Voeg “marktonderzoek” toe",
+      "Vermeld stakeholdermanagement"
+    ],
+    "p": "Cvyon verandert een functiebeschrijving in praktische feedback: wat al overeenkomt, wat ontbreekt en wat je kunt verbeteren voordat je je sollicitatie verstuurt."
+  },
+  "hero": {
+    "art_keywords": "4 ontbrekende trefwoorden gevonden",
+    "art_rewrite": "Herschrijving met één klik",
+    "art_score_label": "ATS-SCORE",
+    "art_score_label_full": "Voorbeeld-cv in het Swiss-template met een ATS-score van 92",
+    "checks": [
+      "Geen registratie om te starten",
+      "180+ templates",
+      "ATS-score",
+      "Pdf-export"
+    ],
+    "cta_build": "Bouw mijn cv — gratis",
+    "cta_grader": "Bekijk de ATS-grader",
+    "eyebrow": "Cv-bouwer + ATS-intelligentie",
+    "h1a": "Je cv zou erdoorheen moeten komen",
+    "h1b": "voordat",
+    "h1c": "het wordt beoordeeld.",
+    "sub": "Bouw een verzorgd cv, controleer hoe het leest tegen een echte functiebeschrijving en download het zonder het gebruikelijke doolhof van paywalls en verplichte accounts."
+  },
+  "how": {
+    "eyebrow": "De werkwijze",
+    "h2": "Drie stappen. Eén af cv.",
+    "note": "Geen neppe “10.000+ gebruikers” hier — we publiceren echte cijfers zodra we ze verdienen.",
+    "stats": [
+      [
+        "0",
+        "Paywall om te starten"
+      ],
+      [
+        "180+",
+        "Cv-templates"
+      ],
+      [
+        "1",
+        "Gerichte workflow"
+      ],
+      [
+        "∞",
+        "Manieren om aan te passen"
+      ]
+    ],
+    "steps": [
+      [
+        "01",
+        "Bouw of importeer",
+        "Begin vanaf nul of breng een bestaand cv naar de builder."
+      ],
+      [
+        "02",
+        "Beoordeel en verbeter",
+        "Controleer de match met de vacature, vind ontbrekende trefwoorden en scherp de inhoud aan."
+      ],
+      [
+        "03",
+        "Download en solliciteer",
+        "Exporteer het voltooide document en gebruik het overal waar je solliciteert."
+      ]
+    ]
+  },
+  "italian_name": "Italiano",
+  "japanese_name": "日本語",
+  "korean_name": "한국어",
+  "latin_name": "Latina",
+  "locale": "nl",
+  "manifesto": {
+    "eyebrow": "§ het eerlijke deel",
+    "h2": "We vangen je niet bij de downloadknop.",
+    "money_title": "hoe het geld stroomt",
+    "p": "Andere bouwers lokken je met “gratis” en knallen een paywall op de pdf. Wij deden de omgekeerde weddenschap: de tool is gratis omdat recruiters betalen — en alleen met jouw toestemming.",
+    "steps": [
+      [
+        "01",
+        "Jij bouwt & downloadt",
+        "Elke template, elke AI-functie, elke export. Nooit een kaart."
+      ],
+      [
+        "02",
+        "Jij kiest eventueel",
+        "Recruiters kunnen je vinden — alleen als je het vakje aanvinkt. Granulair, omkeerbaar, van jou."
+      ],
+      [
+        "03",
+        "Recruiters betalen ons",
+        "Recruiters betalen voor toegang tot de opt-in talentpool — jij bepaalt of je profiel verschijnt."
+      ]
+    ]
+  },
+  "meta": {
+    "description": "Een gratis premium cv-bouwer met ATS-grader, onbeperkte downloads en geen registratie vereist.",
+    "title": "Cvyon — Gratis cv-bouwer & ATS-grader"
+  },
+  "mobile_cta": "Gratis bouwen",
+  "nav": {
+    "ats_grader": "ATS-grader",
+    "build": "Bouw mijn cv",
+    "features": "Functies",
+    "how": "Hoe het werkt",
+    "templates": "Templates"
+  },
+  "portuguese_name": "Português",
+  "spanish_name": "Español",
+  "templates_section": {
+    "cta": "Bekijk alle 180 templates",
+    "eyebrow": "De bibliotheek",
+    "h2": "180+ templates. Kies je persoonlijkheid.",
+    "p": "Strak, redactioneel, technisch, zakelijk, creatief — de inhoud blijft van jou terwijl de presentatie verandert."
+  },
+  "topline": [
+    "Gratis starten",
+    "180+ templates",
+    "Geen watermerk",
+    "ATS-grader",
+    "Recruiter-matching"
   ],
-  "eyebrow": "Het Cvyon-verschil",
-  "h2": "Een betere workflow, niet weer een formulier.",
-  "sub": "Alles draait om één ding: je helpen een cv te maken dat je begrijpt, beheerst en echt kunt gebruiken."
- },
- "filipino_name": "Filipino",
- "final_cta": {
-  "button": "Gratis starten",
-  "eyebrow": "Je volgende sollicitatie",
-  "h2": "Stop met het polijsten van de verkeerde versie.",
-  "p": "Bouw het. Beoordeel het. Verbeter het. Stuur dan de versie waar je echt in gelooft."
- },
- "footer": {
-  "bottom_tag": "Gebouwd voor mensen, niet voor paywalls.",
-  "col_company": "Bedrijf",
-  "col_legal": "Juridisch",
-  "col_product": "Product",
-  "copyright": "© 2026 Cvyon",
-  "tagline": "Gratis cv's bouwen met praktische ATS-intelligentie."
- },
- "french_name": "Français",
- "german_name": "Deutsch",
- "grader_section": {
-  "cta": "Probeer de grader",
-  "eyebrow": "De grader",
-  "h2": "Weet waar de bots naar zoeken.",
-  "items": [
-   {
-    "d": "Strikt en objectief, tegen de echte vacature.",
-    "t": "Score op 100"
-   },
-   {
-    "d": "De exacte termen waar de filters naar zoeken.",
-    "t": "Ontbrekende trefwoorden, benoemd"
-   },
-   {
-    "d": "Leidinggevend, creatief of technisch — jouw keuze.",
-    "t": "AI-herschrijving met één klik"
-   }
+  "trust": [
+    [
+      "Gratis starten",
+      "Geen creditcard nodig"
+    ],
+    [
+      "180+ designs",
+      "Gebouwd voor elk vak"
+    ],
+    [
+      "ATS-bewust",
+      "Matching met de vacature"
+    ],
+    [
+      "Exportklaar",
+      "Download je voltooide cv"
+    ]
   ],
-  "mock": [
-   "Uitstekende match",
-   "Sterk afgestemd op deze functie",
-   "Krachtige actiewerkwoorden",
-   "Relevante ervaring",
-   "Voeg “marktonderzoek” toe",
-   "Vermeld stakeholdermanagement"
-  ],
-  "p": "Cvyon verandert een functiebeschrijving in praktische feedback: wat al overeenkomt, wat ontbreekt en wat je kunt verbeteren voordat je je sollicitatie verstuurt."
- },
- "hero": {
-  "art_keywords": "4 ontbrekende trefwoorden gevonden",
-  "art_rewrite": "Herschrijving met één klik",
-  "art_score_label": "ATS-SCORE",
-  "art_score_label_full": "Voorbeeld-cv in het Swiss-template met een ATS-score van 92",
-  "checks": [
-   "Geen registratie om te starten",
-   "180+ templates",
-   "ATS-score",
-   "Pdf-export"
-  ],
-  "cta_build": "Bouw mijn cv — gratis",
-  "cta_grader": "Bekijk de ATS-grader",
-  "eyebrow": "Cv-bouwer + ATS-intelligentie",
-  "h1a": "Je cv zou erdoorheen moeten komen",
-  "h1b": "voordat",
-  "h1c": "het wordt beoordeeld.",
-  "sub": "Bouw een verzorgd cv, controleer hoe het leest tegen een echte functiebeschrijving en download het zonder het gebruikelijke doolhof van paywalls en verplichte accounts."
- },
- "how": {
-  "eyebrow": "De werkwijze",
-  "h2": "Drie stappen. Eén af cv.",
-  "note": "Geen neppe “10.000+ gebruikers” hier — we publiceren echte cijfers zodra we ze verdienen.",
-  "stats": [
-   [
-    "0",
-    "Paywall om te starten"
-   ],
-   [
-    "180+",
-    "Cv-templates"
-   ],
-   [
-    "1",
-    "Gerichte workflow"
-   ],
-   [
-    "∞",
-    "Manieren om aan te passen"
-   ]
-  ],
-  "steps": [
-   [
-    "01",
-    "Bouw of importeer",
-    "Begin vanaf nul of breng een bestaand cv naar de builder."
-   ],
-   [
-    "02",
-    "Beoordeel en verbeter",
-    "Controleer de match met de vacature, vind ontbrekende trefwoorden en scherp de inhoud aan."
-   ],
-   [
-    "03",
-    "Download en solliciteer",
-    "Exporteer het voltooide document en gebruik het overal waar je solliciteert."
-   ]
-  ]
- },
- "italian_name": "Italiano",
- "japanese_name": "日本語",
- "korean_name": "한국어",
- "latin_name": "Latina",
- "locale": "nl",
- "manifesto": {
-  "eyebrow": "§ het eerlijke deel",
-  "h2": "We vangen je niet bij de downloadknop.",
-  "money_title": "hoe het geld stroomt",
-  "p": "Andere bouwers lokken je met “gratis” en knallen een paywall op de pdf. Wij deden de omgekeerde weddenschap: de tool is gratis omdat recruiters betalen — en alleen met jouw toestemming.",
-  "steps": [
-   [
-    "01",
-    "Jij bouwt & downloadt",
-    "Elke template, elke AI-functie, elke export. Nooit een kaart."
-   ],
-   [
-    "02",
-    "Jij kiest eventueel",
-    "Recruiters kunnen je vinden — alleen als je het vakje aanvinkt. Granulair, omkeerbaar, van jou."
-   ],
-   [
-    "03",
-    "Recruiters betalen ons",
-    "Recruiters betalen voor toegang tot de opt-in talentpool — jij bepaalt of je profiel verschijnt."
-   ]
-  ]
- },
- "meta": {
-  "description": "Een gratis premium cv-bouwer met ATS-grader, onbeperkte downloads en geen registratie vereist.",
-  "title": "Cvyon — Gratis cv-bouwer & ATS-grader"
- },
- "mobile_cta": "Gratis bouwen",
- "nav": {
-  "ats_grader": "ATS-grader",
-  "build": "Bouw mijn cv",
-  "features": "Functies",
-  "how": "Hoe het werkt",
-  "templates": "Templates"
- },
- "portuguese_name": "Português",
- "spanish_name": "Español",
- "templates_section": {
-  "cta": "Bekijk alle 180 templates",
-  "eyebrow": "De bibliotheek",
-  "h2": "180+ templates. Kies je persoonlijkheid.",
-  "p": "Strak, redactioneel, technisch, zakelijk, creatief — de inhoud blijft van jou terwijl de presentatie verandert."
- },
- "topline": [
-  "Gratis starten",
-  "180+ templates",
-  "Geen watermerk",
-  "ATS-grader",
-  "Recruiter-matching"
- ],
- "trust": [
-  [
-   "Gratis starten",
-   "Geen creditcard nodig"
-  ],
-  [
-   "180+ designs",
-   "Gebouwd voor elk vak"
-  ],
-  [
-   "ATS-bewust",
-   "Matching met de vacature"
-  ],
-  [
-   "Exportklaar",
-   "Download je voltooide cv"
-  ]
- ]
+  "sample_cv": {
+    "fullName": "Jan Jansen",
+    "jobTitle": "Senior Software Engineer",
+    "email": "jan@cvyon.com",
+    "phone": "+31 6 12345678",
+    "location": "Lagos, Nigeria",
+    "website": "jan.dev",
+    "summary": "Backend engineer met 6+ jaar ervaring in het bouwen van schaalbare API's en betaalsystemen. Leverde diensten die 4M+ dagelijkse verzoeken verwerken met 99,98% uptime."
+  },
+  "blog": {
+    "index_eyebrow": "§ Carrièreblog",
+    "index_h1": "Het Carrièrecentrum",
+    "index_sub": "Praktische handleidingen over cv's, ATS-optimalisatie, sollicitatiegesprekken en aangenomen worden — geschreven voor werkzoekenden, niet voor algoritmes.",
+    "index_title": "Cvyon Blog - Carrièreadvies & CV-tips",
+    "index_empty": "Nog geen artikelen gepubliceerd. Kom snel terug!",
+    "back": "Terug naar blog",
+    "cta_h2": "Pas dit advies toe",
+    "cta_p": "Maak een ATS-vriendelijk cv met de gratis builder van Cvyon — geen aanmelding, geen watermerk.",
+    "cta_button": "Maak mijn cv",
+    "min_read": "min leestijd",
+    "read_article": "Lees artikel"
+  },
+  "hindi_name": "हिन्दी",
+  "bengali_name": "বাংলা",
+  "marathi_name": "मराठी",
+  "russian_name": "Русский",
+  "indonesian_name": "Bahasa Indonesia",
+  "urdu_name": "اردو"
 }

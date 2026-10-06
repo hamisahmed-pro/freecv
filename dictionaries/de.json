@@ -1,266 +1,294 @@
 {
- "arabic_name": "العربية",
- "ats_grader": {
-  "actionable_tips": "Umsetzbare Tipps",
-  "analyze": "Übereinstimmung analysieren",
-  "awaiting_input": "Warte auf Eingabe",
-  "awaiting_sub": "Ihre KI-generierte Scorecard erscheint hier.",
-  "challenge_beat": "Schaffen Sie mehr? Laden Sie Ihren Lebenslauf hoch und finden Sie es heraus.",
-  "challenge_scored": "Jemand hat {score}/100 in diesem Grader erreicht",
-  "copied": "Kopiert",
-  "copy_link": "Link kopieren",
-  "cta_fix": "Lebenslauf im Builder korrigieren",
-  "drop_resume": "Lebenslauf hierher ziehen",
-  "eyebrow": "§ kostenloser ATS-Grader",
-  "file_replace": "{size} MB • Klicken zum Ersetzen",
-  "h1a": "Bestehen Sie die",
-  "h1b": "Bots.",
-  "h1c": "Bekommen Sie das Interview.",
-  "jd_placeholder": "Ziel-Stellenbeschreibung hier einfügen...",
-  "match_score": "Match-Score",
-  "missing_keywords": "Fehlende Keywords",
-  "processing": "Wird verarbeitet...",
-  "share": "Teilen",
-  "share_score": "Teilen Sie Ihren Score",
-  "share_text": "Ich habe {score}/100 erreicht — schaffen Sie mehr?",
-  "share_text_full": "Mein Lebenslauf hat {score}/100 im kostenlosen ATS-Grader von Cvyon erreicht. Schaffen Sie mehr?",
-  "step_job": "2. Zielposition",
-  "step_resume": "1. Lebenslauf",
-  "strengths": "Stärken",
-  "sub": "Laden Sie Ihren Lebenslauf (PDF/DOCX) hoch und fügen Sie eine Stellenbeschreibung ein. Unsere KI analysiert Ihren Match-Score genau so, wie es ein ATS tun würde.",
-  "supported": "Unterstützt: PDF, DOCX (max. 4 MB)",
-  "toast_copied_fail": "Link konnte nicht kopiert werden.",
-  "toast_copy_unsupported": "Kopieren wird in diesem Browser nicht unterstützt.",
-  "toast_file_size": "Datei zu groß. Maximale Größe: 4 MB.",
-  "toast_file_type": "Nur PDF- und DOCX-Dateien werden unterstützt.",
-  "toast_need_file": "Bitte laden Sie Ihren Lebenslauf hoch.",
-  "toast_need_jd": "Bitte fügen Sie die Stellenbeschreibung ein.",
-  "toast_success": "Analyse abgeschlossen. Siehe Ihre Ergebnisse unten!",
-  "weaknesses": "Schwächen"
- },
- "chinese_name": "中文",
- "dir": "ltr",
- "dutch_name": "Nederlands",
- "faq": {
-  "eyebrow": "Fragen, beantwortet",
-  "h2": "Alles, was man vor dem Start fragt.",
-  "items": [
-   {
-    "a": "Wirklich kostenlos. Sie können einen PDF- oder Word-Lebenslauf erstellen, prüfen und herunterladen — ohne Konto und ohne Karte. Kein Paywall beim Download, kein Wasserzeichen zum Wegschneiden, keine Testphase, die heimlich zum Abo wird. Cvyon wird von Recruitern finanziert, die für den Zugang zu Kandidaten zahlen, die sich freiwillig melden — niemals von den Menschen, die Arbeit suchen.",
-    "q": "Ist Cvyon wirklich kostenlos, oder wartet ein Paywall beim Download?"
-   },
-   {
-    "a": "Jedes Layout ist von Grund auf ATS-freundlich: echter selektierbarer Text (niemals Text als Bild), Standard-Abschnittsüberschriften, saubere Lesereihenfolge und keine Tricks, die einen Parser blenden. Zusätzlich bewertet der Grader Ihren konkreten Lebenslauf gegen eine konkrete Stellenausschreibung — so sehen und schließen Sie Lücken, bevor Sie sich bewerben.",
-    "q": "Besteht ein hier erstellter Lebenslauf Applicant-Tracking-Systeme?"
-   },
-   {
-    "a": "Nein. Der Builder läuft in Ihrem Browser, Ihr Entwurf wird lokal auf Ihrem Gerät gespeichert. Ein Konto ist rein optional — es dient nur dazu, mehrere Lebensläufe zu verwalten und auf einem anderen Gerät fortzusetzen. Sie können fertigstellen und herunterladen, ohne sich je anzumelden.",
-    "q": "Brauche ich ein Konto, um es zu nutzen?"
-   },
-   {
-    "a": "Wenn Sie einen Lebenslauf prüfen, werden Ihr Lebenslauftext und die Stellenbeschreibung an unsere KI gesendet, um einen Match-Score zu berechnen — danach verlassen sie den Ablauf. Wir verkaufen Ihren Lebenslauf nicht. Dem Talentpool beizutreten ist eine separate, ausdrückliche Entscheidung, jederzeit umkehrbar; Sie können alles, was wir über Sie speichern, exportieren oder endgültig löschen, wann immer Sie möchten.",
-    "q": "Wie funktioniert der KI-Grader, und was geschieht mit meinen Daten?"
-   },
-   {
-    "a": "Ja. Neben einem pixelgenauen PDF laden Sie Ihren Lebenslauf sofort als hochstrukturierte, editierbare .docx-Datei herunter, die sich sauber in Word, Google Docs und Apple Pages öffnen lässt.",
-    "q": "Kann ich diese Vorlagen in Microsoft Word oder Google Docs nutzen?"
-   }
-  ]
- },
- "features": {
-  "cards": [
-   {
-    "d": "Starten Sie sofort. Füllen Sie den Lebenslauf Abschnitt für Abschnitt aus, während sich daneben ein gepflegtes Dokument live aktualisiert.",
-    "t": "Bauen ohne Reibung"
-   },
-   {
-    "d": "Fügen Sie eine Stellenbeschreibung ein und sehen Sie die wichtigen Keywords, fehlende Signale und Stellen, die Aufmerksamkeit verdienen.",
-    "t": "Prüfen gegen die Stelle"
-   },
-   {
-    "d": "Wählen Sie aus einer tiefen Vorlagenbibliothek, bearbeiten Sie die Inhalte selbst und exportieren Sie, wenn der Lebenslauf fertig ist.",
-    "t": "Behalten Sie die Kontrolle"
-   }
+  "arabic_name": "العربية",
+  "ats_grader": {
+    "actionable_tips": "Umsetzbare Tipps",
+    "analyze": "Übereinstimmung analysieren",
+    "awaiting_input": "Warte auf Eingabe",
+    "awaiting_sub": "Ihre KI-generierte Scorecard erscheint hier.",
+    "challenge_beat": "Schaffen Sie mehr? Laden Sie Ihren Lebenslauf hoch und finden Sie es heraus.",
+    "challenge_scored": "Jemand hat {score}/100 in diesem Grader erreicht",
+    "copied": "Kopiert",
+    "copy_link": "Link kopieren",
+    "cta_fix": "Lebenslauf im Builder korrigieren",
+    "drop_resume": "Lebenslauf hierher ziehen",
+    "eyebrow": "§ kostenloser ATS-Grader",
+    "file_replace": "{size} MB • Klicken zum Ersetzen",
+    "h1a": "Bestehen Sie die",
+    "h1b": "Bots.",
+    "h1c": "Bekommen Sie das Interview.",
+    "jd_placeholder": "Ziel-Stellenbeschreibung hier einfügen...",
+    "match_score": "Match-Score",
+    "missing_keywords": "Fehlende Keywords",
+    "processing": "Wird verarbeitet...",
+    "share": "Teilen",
+    "share_score": "Teilen Sie Ihren Score",
+    "share_text": "Ich habe {score}/100 erreicht — schaffen Sie mehr?",
+    "share_text_full": "Mein Lebenslauf hat {score}/100 im kostenlosen ATS-Grader von Cvyon erreicht. Schaffen Sie mehr?",
+    "step_job": "2. Zielposition",
+    "step_resume": "1. Lebenslauf",
+    "strengths": "Stärken",
+    "sub": "Laden Sie Ihren Lebenslauf (PDF/DOCX) hoch und fügen Sie eine Stellenbeschreibung ein. Unsere KI analysiert Ihren Match-Score genau so, wie es ein ATS tun würde.",
+    "supported": "Unterstützt: PDF, DOCX (max. 4 MB)",
+    "toast_copied_fail": "Link konnte nicht kopiert werden.",
+    "toast_copy_unsupported": "Kopieren wird in diesem Browser nicht unterstützt.",
+    "toast_file_size": "Datei zu groß. Maximale Größe: 4 MB.",
+    "toast_file_type": "Nur PDF- und DOCX-Dateien werden unterstützt.",
+    "toast_need_file": "Bitte laden Sie Ihren Lebenslauf hoch.",
+    "toast_need_jd": "Bitte fügen Sie die Stellenbeschreibung ein.",
+    "toast_success": "Analyse abgeschlossen. Siehe Ihre Ergebnisse unten!",
+    "weaknesses": "Schwächen"
+  },
+  "chinese_name": "中文",
+  "dir": "ltr",
+  "dutch_name": "Nederlands",
+  "faq": {
+    "eyebrow": "Fragen, beantwortet",
+    "h2": "Alles, was man vor dem Start fragt.",
+    "items": [
+      {
+        "a": "Wirklich kostenlos. Sie können einen PDF- oder Word-Lebenslauf erstellen, prüfen und herunterladen — ohne Konto und ohne Karte. Kein Paywall beim Download, kein Wasserzeichen zum Wegschneiden, keine Testphase, die heimlich zum Abo wird. Cvyon wird von Recruitern finanziert, die für den Zugang zu Kandidaten zahlen, die sich freiwillig melden — niemals von den Menschen, die Arbeit suchen.",
+        "q": "Ist Cvyon wirklich kostenlos, oder wartet ein Paywall beim Download?"
+      },
+      {
+        "a": "Jedes Layout ist von Grund auf ATS-freundlich: echter selektierbarer Text (niemals Text als Bild), Standard-Abschnittsüberschriften, saubere Lesereihenfolge und keine Tricks, die einen Parser blenden. Zusätzlich bewertet der Grader Ihren konkreten Lebenslauf gegen eine konkrete Stellenausschreibung — so sehen und schließen Sie Lücken, bevor Sie sich bewerben.",
+        "q": "Besteht ein hier erstellter Lebenslauf Applicant-Tracking-Systeme?"
+      },
+      {
+        "a": "Nein. Der Builder läuft in Ihrem Browser, Ihr Entwurf wird lokal auf Ihrem Gerät gespeichert. Ein Konto ist rein optional — es dient nur dazu, mehrere Lebensläufe zu verwalten und auf einem anderen Gerät fortzusetzen. Sie können fertigstellen und herunterladen, ohne sich je anzumelden.",
+        "q": "Brauche ich ein Konto, um es zu nutzen?"
+      },
+      {
+        "a": "Wenn Sie einen Lebenslauf prüfen, werden Ihr Lebenslauftext und die Stellenbeschreibung an unsere KI gesendet, um einen Match-Score zu berechnen — danach verlassen sie den Ablauf. Wir verkaufen Ihren Lebenslauf nicht. Dem Talentpool beizutreten ist eine separate, ausdrückliche Entscheidung, jederzeit umkehrbar; Sie können alles, was wir über Sie speichern, exportieren oder endgültig löschen, wann immer Sie möchten.",
+        "q": "Wie funktioniert der KI-Grader, und was geschieht mit meinen Daten?"
+      },
+      {
+        "a": "Ja. Neben einem pixelgenauen PDF laden Sie Ihren Lebenslauf sofort als hochstrukturierte, editierbare .docx-Datei herunter, die sich sauber in Word, Google Docs und Apple Pages öffnen lässt.",
+        "q": "Kann ich diese Vorlagen in Microsoft Word oder Google Docs nutzen?"
+      }
+    ]
+  },
+  "features": {
+    "cards": [
+      {
+        "d": "Starten Sie sofort. Füllen Sie den Lebenslauf Abschnitt für Abschnitt aus, während sich daneben ein gepflegtes Dokument live aktualisiert.",
+        "t": "Bauen ohne Reibung"
+      },
+      {
+        "d": "Fügen Sie eine Stellenbeschreibung ein und sehen Sie die wichtigen Keywords, fehlende Signale und Stellen, die Aufmerksamkeit verdienen.",
+        "t": "Prüfen gegen die Stelle"
+      },
+      {
+        "d": "Wählen Sie aus einer tiefen Vorlagenbibliothek, bearbeiten Sie die Inhalte selbst und exportieren Sie, wenn der Lebenslauf fertig ist.",
+        "t": "Behalten Sie die Kontrolle"
+      }
+    ],
+    "eyebrow": "Der Cvyon-Unterschied",
+    "h2": "Ein besserer Workflow, kein weiteres Formular.",
+    "sub": "Alles dreht sich um eines: Ihnen zu helfen, einen Lebenslauf zu erstellen, den Sie verstehen, kontrollieren und wirklich nutzen können."
+  },
+  "filipino_name": "Filipino",
+  "final_cta": {
+    "button": "Kostenlos starten",
+    "eyebrow": "Ihre nächste Bewerbung",
+    "h2": "Hören Sie auf, die falsche Version zu polieren.",
+    "p": "Bauen Sie ihn. Prüfen Sie ihn. Verbessern Sie ihn. Dann senden Sie die Version, an die Sie wirklich glauben."
+  },
+  "footer": {
+    "bottom_tag": "Für Menschen gebaut, nicht für Paywalls.",
+    "col_company": "Unternehmen",
+    "col_legal": "Rechtliches",
+    "col_product": "Produkt",
+    "copyright": "© 2026 Cvyon",
+    "tagline": "Kostenloser Lebenslauf-Builder mit praktischer ATS-Intelligenz."
+  },
+  "french_name": "Français",
+  "german_name": "Deutsch",
+  "grader_section": {
+    "cta": "Grader testen",
+    "eyebrow": "Der Grader",
+    "h2": "Wissen, wonach die Bots suchen.",
+    "items": [
+      {
+        "d": "Streng und objektiv, gegen die echte Stellenausschreibung.",
+        "t": "Score von 100"
+      },
+      {
+        "d": "Die exakten Begriffe, nach denen die Filter suchen.",
+        "t": "Fehlende Keywords, benannt"
+      },
+      {
+        "d": "Führungskraft, kreativ oder technisch — Ihre Wahl.",
+        "t": "KI-Umschreibung per Klick"
+      }
+    ],
+    "mock": [
+      "Exzellente Übereinstimmung",
+      "Stark auf diese Rolle ausgerichtet",
+      "Starke Aktionsverben",
+      "Relevante Erfahrung",
+      "„Marktforschung“ hinzufügen",
+      "Stakeholder-Management erwähnen"
+    ],
+    "p": "Cvyon verwandelt eine Stellenbeschreibung in praktisches Feedback: was bereits passt, was fehlt und was Sie vor dem Absenden verbessern können."
+  },
+  "hero": {
+    "art_keywords": "4 fehlende Keywords gefunden",
+    "art_rewrite": "Umschreibung per Klick",
+    "art_score_label": "ATS-SCORE",
+    "art_score_label_full": "Beispiel-Lebenslauf in der Swiss-Vorlage mit einem ATS-Score von 92",
+    "checks": [
+      "Kein Signup zum Start",
+      "180+ Vorlagen",
+      "ATS-Score",
+      "PDF-Export"
+    ],
+    "cta_build": "Lebenslauf erstellen — kostenlos",
+    "cta_grader": "ATS-Grader ansehen",
+    "eyebrow": "Lebenslauf-Builder + ATS-Intelligenz",
+    "h1a": "Ihr Lebenslauf sollte",
+    "h1b": "vor",
+    "h1c": "der Bewertung bestehen.",
+    "sub": "Erstellen Sie einen gepflegten Lebenslauf, prüfen Sie, wie er sich gegen eine echte Stellenbeschreibung liest, und laden Sie ihn herunter — ohne das übliche Labyrinth aus Paywalls und Kontozwang."
+  },
+  "how": {
+    "eyebrow": "Der Ablauf",
+    "h2": "Drei Schritte. Ein fertiger Lebenslauf.",
+    "note": "Keine erfundenen „10.000+ Nutzer“ hier — wir veröffentlichen echte Zahlen, sobald wir sie verdient haben.",
+    "stats": [
+      [
+        "0",
+        "Paywall zum Start"
+      ],
+      [
+        "180+",
+        "Lebenslauf-Vorlagen"
+      ],
+      [
+        "1",
+        "Fokussierter Workflow"
+      ],
+      [
+        "∞",
+        "Wege zur Anpassung"
+      ]
+    ],
+    "steps": [
+      [
+        "01",
+        "Bauen oder importieren",
+        "Starten Sie von null oder bringen Sie einen bestehenden Lebenslauf in den Builder."
+      ],
+      [
+        "02",
+        "Prüfen und verbessern",
+        "Checken Sie den Job-Match, finden Sie fehlende Keywords und straffen Sie die Inhalte."
+      ],
+      [
+        "03",
+        "Herunterladen und bewerben",
+        "Exportieren Sie das fertige Dokument und nutzen Sie es überall, wo Sie sich bewerben."
+      ]
+    ]
+  },
+  "italian_name": "Italiano",
+  "japanese_name": "日本語",
+  "korean_name": "한국어",
+  "latin_name": "Latina",
+  "locale": "de",
+  "manifesto": {
+    "eyebrow": "§ der ehrliche Teil",
+    "h2": "Wir fangen Sie nicht am Download-Button.",
+    "money_title": "so fließt das Geld",
+    "p": "Andere Builder locken mit „gratis“ und knallen einen Paywall aufs PDF. Wir haben die gegenteilige Wette abgeschlossen: Das Tool ist kostenlos, weil Recruiter zahlen — und nur mit Ihrer Erlaubnis.",
+    "steps": [
+      [
+        "01",
+        "Sie bauen & laden herunter",
+        "Jede Vorlage, jedes KI-Feature, jeder Export. Nie eine Karte."
+      ],
+      [
+        "02",
+        "Sie entscheiden sich ggf.",
+        "Recruiter können Sie finden — nur wenn Sie das Häkchen setzen. Granular, umkehrbar, Ihres."
+      ],
+      [
+        "03",
+        "Recruiter zahlen uns",
+        "Recruiter zahlen für den Zugang zum Opt-in-Talentpool — Sie kontrollieren, ob Ihr Profil erscheint."
+      ]
+    ]
+  },
+  "meta": {
+    "description": "Kostenloser Premium-Lebenslauf-Builder mit ATS-Grader, unbegrenzten Downloads, ganz ohne Anmeldung.",
+    "title": "Cvyon — Kostenloser Lebenslauf-Builder & ATS-Grader"
+  },
+  "mobile_cta": "Gratis bauen",
+  "nav": {
+    "ats_grader": "ATS-Grader",
+    "build": "Lebenslauf erstellen",
+    "features": "Funktionen",
+    "how": "So geht's",
+    "templates": "Vorlagen"
+  },
+  "portuguese_name": "Português",
+  "spanish_name": "Español",
+  "templates_section": {
+    "cta": "Alle 180 Vorlagen ansehen",
+    "eyebrow": "Die Bibliothek",
+    "h2": "180+ Vorlagen. Wählen Sie Ihre Persönlichkeit.",
+    "p": "Clean, redaktionell, technisch, corporate, kreativ — die Inhalte bleiben Ihre, während sich die Präsentation ändert."
+  },
+  "topline": [
+    "Kostenlos starten",
+    "180+ Vorlagen",
+    "Kein Wasserzeichen",
+    "ATS-Grader",
+    "Recruiter-Matching"
   ],
-  "eyebrow": "Der Cvyon-Unterschied",
-  "h2": "Ein besserer Workflow, kein weiteres Formular.",
-  "sub": "Alles dreht sich um eines: Ihnen zu helfen, einen Lebenslauf zu erstellen, den Sie verstehen, kontrollieren und wirklich nutzen können."
- },
- "filipino_name": "Filipino",
- "final_cta": {
-  "button": "Kostenlos starten",
-  "eyebrow": "Ihre nächste Bewerbung",
-  "h2": "Hören Sie auf, die falsche Version zu polieren.",
-  "p": "Bauen Sie ihn. Prüfen Sie ihn. Verbessern Sie ihn. Dann senden Sie die Version, an die Sie wirklich glauben."
- },
- "footer": {
-  "bottom_tag": "Für Menschen gebaut, nicht für Paywalls.",
-  "col_company": "Unternehmen",
-  "col_legal": "Rechtliches",
-  "col_product": "Produkt",
-  "copyright": "© 2026 Cvyon",
-  "tagline": "Kostenloser Lebenslauf-Builder mit praktischer ATS-Intelligenz."
- },
- "french_name": "Français",
- "german_name": "Deutsch",
- "grader_section": {
-  "cta": "Grader testen",
-  "eyebrow": "Der Grader",
-  "h2": "Wissen, wonach die Bots suchen.",
-  "items": [
-   {
-    "d": "Streng und objektiv, gegen die echte Stellenausschreibung.",
-    "t": "Score von 100"
-   },
-   {
-    "d": "Die exakten Begriffe, nach denen die Filter suchen.",
-    "t": "Fehlende Keywords, benannt"
-   },
-   {
-    "d": "Führungskraft, kreativ oder technisch — Ihre Wahl.",
-    "t": "KI-Umschreibung per Klick"
-   }
+  "trust": [
+    [
+      "Gratis starten",
+      "Keine Kreditkarte nötig"
+    ],
+    [
+      "180+ Designs",
+      "Für verschiedene Berufe gebaut"
+    ],
+    [
+      "ATS-bewusst",
+      "Abgleich mit der Stellenbeschreibung"
+    ],
+    [
+      "Exportbereit",
+      "Laden Sie Ihren fertigen Lebenslauf herunter"
+    ]
   ],
-  "mock": [
-   "Exzellente Übereinstimmung",
-   "Stark auf diese Rolle ausgerichtet",
-   "Starke Aktionsverben",
-   "Relevante Erfahrung",
-   "„Marktforschung“ hinzufügen",
-   "Stakeholder-Management erwähnen"
-  ],
-  "p": "Cvyon verwandelt eine Stellenbeschreibung in praktisches Feedback: was bereits passt, was fehlt und was Sie vor dem Absenden verbessern können."
- },
- "hero": {
-  "art_keywords": "4 fehlende Keywords gefunden",
-  "art_rewrite": "Umschreibung per Klick",
-  "art_score_label": "ATS-SCORE",
-  "art_score_label_full": "Beispiel-Lebenslauf in der Swiss-Vorlage mit einem ATS-Score von 92",
-  "checks": [
-   "Kein Signup zum Start",
-   "180+ Vorlagen",
-   "ATS-Score",
-   "PDF-Export"
-  ],
-  "cta_build": "Lebenslauf erstellen — kostenlos",
-  "cta_grader": "ATS-Grader ansehen",
-  "eyebrow": "Lebenslauf-Builder + ATS-Intelligenz",
-  "h1a": "Ihr Lebenslauf sollte",
-  "h1b": "vor",
-  "h1c": "der Bewertung bestehen.",
-  "sub": "Erstellen Sie einen gepflegten Lebenslauf, prüfen Sie, wie er sich gegen eine echte Stellenbeschreibung liest, und laden Sie ihn herunter — ohne das übliche Labyrinth aus Paywalls und Kontozwang."
- },
- "how": {
-  "eyebrow": "Der Ablauf",
-  "h2": "Drei Schritte. Ein fertiger Lebenslauf.",
-  "note": "Keine erfundenen „10.000+ Nutzer“ hier — wir veröffentlichen echte Zahlen, sobald wir sie verdient haben.",
-  "stats": [
-   [
-    "0",
-    "Paywall zum Start"
-   ],
-   [
-    "180+",
-    "Lebenslauf-Vorlagen"
-   ],
-   [
-    "1",
-    "Fokussierter Workflow"
-   ],
-   [
-    "∞",
-    "Wege zur Anpassung"
-   ]
-  ],
-  "steps": [
-   [
-    "01",
-    "Bauen oder importieren",
-    "Starten Sie von null oder bringen Sie einen bestehenden Lebenslauf in den Builder."
-   ],
-   [
-    "02",
-    "Prüfen und verbessern",
-    "Checken Sie den Job-Match, finden Sie fehlende Keywords und straffen Sie die Inhalte."
-   ],
-   [
-    "03",
-    "Herunterladen und bewerben",
-    "Exportieren Sie das fertige Dokument und nutzen Sie es überall, wo Sie sich bewerben."
-   ]
-  ]
- },
- "italian_name": "Italiano",
- "japanese_name": "日本語",
- "korean_name": "한국어",
- "latin_name": "Latina",
- "locale": "de",
- "manifesto": {
-  "eyebrow": "§ der ehrliche Teil",
-  "h2": "Wir fangen Sie nicht am Download-Button.",
-  "money_title": "so fließt das Geld",
-  "p": "Andere Builder locken mit „gratis“ und knallen einen Paywall aufs PDF. Wir haben die gegenteilige Wette abgeschlossen: Das Tool ist kostenlos, weil Recruiter zahlen — und nur mit Ihrer Erlaubnis.",
-  "steps": [
-   [
-    "01",
-    "Sie bauen & laden herunter",
-    "Jede Vorlage, jedes KI-Feature, jeder Export. Nie eine Karte."
-   ],
-   [
-    "02",
-    "Sie entscheiden sich ggf.",
-    "Recruiter können Sie finden — nur wenn Sie das Häkchen setzen. Granular, umkehrbar, Ihres."
-   ],
-   [
-    "03",
-    "Recruiter zahlen uns",
-    "Recruiter zahlen für den Zugang zum Opt-in-Talentpool — Sie kontrollieren, ob Ihr Profil erscheint."
-   ]
-  ]
- },
- "meta": {
-  "description": "Kostenloser Premium-Lebenslauf-Builder mit ATS-Grader, unbegrenzten Downloads, ganz ohne Anmeldung.",
-  "title": "Cvyon — Kostenloser Lebenslauf-Builder & ATS-Grader"
- },
- "mobile_cta": "Gratis bauen",
- "nav": {
-  "ats_grader": "ATS-Grader",
-  "build": "Lebenslauf erstellen",
-  "features": "Funktionen",
-  "how": "So geht's",
-  "templates": "Vorlagen"
- },
- "portuguese_name": "Português",
- "spanish_name": "Español",
- "templates_section": {
-  "cta": "Alle 180 Vorlagen ansehen",
-  "eyebrow": "Die Bibliothek",
-  "h2": "180+ Vorlagen. Wählen Sie Ihre Persönlichkeit.",
-  "p": "Clean, redaktionell, technisch, corporate, kreativ — die Inhalte bleiben Ihre, während sich die Präsentation ändert."
- },
- "topline": [
-  "Kostenlos starten",
-  "180+ Vorlagen",
-  "Kein Wasserzeichen",
-  "ATS-Grader",
-  "Recruiter-Matching"
- ],
- "trust": [
-  [
-   "Gratis starten",
-   "Keine Kreditkarte nötig"
-  ],
-  [
-   "180+ Designs",
-   "Für verschiedene Berufe gebaut"
-  ],
-  [
-   "ATS-bewusst",
-   "Abgleich mit der Stellenbeschreibung"
-  ],
-  [
-   "Exportbereit",
-   "Laden Sie Ihren fertigen Lebenslauf herunter"
-  ]
- ]
+  "sample_cv": {
+    "fullName": "Anna Schmidt",
+    "jobTitle": "Senior Softwareentwickler",
+    "email": "anna@cvyon.com",
+    "phone": "+49 170 1234567",
+    "location": "Lagos, Nigeria",
+    "website": "anna.dev",
+    "summary": "Backend-Entwickler mit über 6 Jahren Erfahrung in der Entwicklung skalierbarer APIs und Zahlungssysteme. Verantwortlich für Dienste, die täglich über 4 Millionen Anfragen mit einer Verfügbarkeit von 99,98 % verarbeiten."
+  },
+  "blog": {
+    "index_eyebrow": "§ Karriere-Blog",
+    "index_h1": "Die Karriere-Zentrale",
+    "index_sub": "Praktische Anleitungen zu Lebensläufen, ATS-Optimierung, Vorstellungsgesprächen und zur Jobsuche – geschrieben für Arbeitssuchende, nicht für Algorithmen.",
+    "index_title": "Cvyon Blog – Karriere-Tipps & Lebenslauf-Ratschläge",
+    "index_empty": "Noch keine Artikel veröffentlicht. Schauen Sie bald wieder vorbei!",
+    "back": "Zurück zum Blog",
+    "cta_h2": "Setzen Sie diese Ratschläge um",
+    "cta_p": "Erstellen Sie einen ATS-freundlichen Lebenslauf mit dem kostenlosen Builder von Cvyon – ohne Anmeldung, ohne Wasserzeichen.",
+    "cta_button": "Lebenslauf erstellen",
+    "min_read": "Min. Lesezeit",
+    "read_article": "Artikel lesen"
+  },
+  "hindi_name": "हिन्दी",
+  "bengali_name": "বাংলা",
+  "marathi_name": "मराठी",
+  "russian_name": "Русский",
+  "indonesian_name": "Bahasa Indonesia",
+  "urdu_name": "اردو"
 }
