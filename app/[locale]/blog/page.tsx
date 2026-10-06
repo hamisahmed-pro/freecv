@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowRight, Calendar, Clock } from 'lucide-react';
 import { V3Page, V3Eyebrow } from '@/components/v3/V3Chrome';
+import LanguageSwitcher from '@/components/landing/LanguageSwitcher';
 import { getLocalizedPosts, readingTimeMinutes, type BlogPost } from '@/lib/blog-i18n';
 import { isLocale, LOCALES, type Locale } from '../page';
 import type { Dict } from '@/dictionaries/en';
@@ -67,10 +68,21 @@ export default async function LocalizedBlogIndex({ params }: { params: Promise<{
   const posts = getLocalizedPosts(locale);
   const featured = posts[0];
   const rest = posts.slice(1);
+  const loc = `/${locale}`;
+  const L = (path: string) => `${loc}${path}`;
 
   return (
     <div dir={rtl ? 'rtl' : 'ltr'} lang={locale}>
-      <V3Page pageName="blog">
+      <V3Page
+        pageName="blog"
+        switcher={<LanguageSwitcher current={locale} />}
+        links={[
+          { href: loc, label: b.nav_home || 'Home' },
+          { href: L('/build'), label: b.nav_builder || 'Builder' },
+          { href: L('/ats-grader'), label: b.nav_grader || 'ATS Grader' },
+        ]}
+        cta={{ label: b.nav_build || 'Build free →', href: L('/build') }}
+      >
         <div className="mx-auto max-w-[1120px]">
           <div className="text-center">
             <V3Eyebrow>{b.index_eyebrow || '§ Career blog'}</V3Eyebrow>

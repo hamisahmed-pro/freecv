@@ -6,6 +6,7 @@ import { V3Page } from '@/components/v3/V3Chrome';
 import { ArticleJsonLd } from '@/components/blog/ArticleJsonLd';
 import { sanitizeHtml } from '@/lib/sanitizeHtml';
 import { getLocalizedPost, blogOrder } from '@/lib/blog-i18n';
+import LanguageSwitcher from '@/components/landing/LanguageSwitcher';
 import { isLocale, LOCALES, type Locale } from '../../page';
 import type { Dict } from '@/dictionaries/en';
 
@@ -60,10 +61,21 @@ export default async function LocalizedBlogPostPage({ params }: { params: Promis
   const dateStr = new Date(post.date_iso + 'T00:00:00').toLocaleDateString(locale, { month: 'long', day: 'numeric', year: 'numeric' });
   const img = post.header_image?.startsWith('http') ? post.header_image : 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=1200&q=80';
   const jsonLdPost = { title: post.title, meta_description: post.meta_description, content: post.content_html, datePublished: post.date_iso, header_image: post.header_image };
+  const loc = `/${locale}`;
+  const L = (path: string) => `${loc}${path}`;
 
   return (
     <div dir={rtl ? 'rtl' : 'ltr'} lang={locale}>
-      <V3Page pageName="blog_article">
+      <V3Page
+        pageName="blog_article"
+        switcher={<LanguageSwitcher current={locale} />}
+        links={[
+          { href: loc, label: b.nav_home || 'Home' },
+          { href: L('/build'), label: b.nav_builder || 'Builder' },
+          { href: L('/ats-grader'), label: b.nav_grader || 'ATS Grader' },
+        ]}
+        cta={{ label: b.nav_build || 'Build free →', href: L('/build') }}
+      >
         <ArticleJsonLd post={jsonLdPost} />
         <div className="mx-auto max-w-[760px]">
           <Link
