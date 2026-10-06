@@ -3,6 +3,10 @@ import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
 import { templateSeoEntries } from '@/lib/template-seo'
 import { compareSeoEntries } from '@/lib/compare-seo'
 import { jobTitleSeoEntries } from '@/lib/job-title-seo'
+import { LOCALES } from '@/lib/locale'
+import { blogOrder } from '@/lib/blog-i18n'
+import fs from 'fs'
+import path from 'path'
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://cvyon.com';
 
@@ -27,6 +31,23 @@ const staticRoutes: { path: string; priority: number }[] = [
   { path: '/manage-data', priority: 0.4 },
 ];
 
+// Localized page routes that exist under app/[locale]/
+const localizedPageRoutes: { path: string; priority: number }[] = [
+  { path: '', priority: 1 },           // /{locale}/ landing
+  { path: '/ats-grader', priority: 0.8 },
+  { path: '/blog', priority: 0.8 },
+  { path: '/privacy', priority: 0.5 },
+  { path: '/terms', priority: 0.5 },
+];
+
+function localizedArticleExists(locale: string, slug: string): boolean {
+  try {
+    return fs.existsSync(path.join(process.cwd(), 'content', 'blog', locale, `${slug}.json`));
+  } catch {
+    return false;
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static routes: no lastmod emitted; they change infrequently.
   const routes: MetadataRoute.Sitemap = staticRoutes.map((r) => ({
@@ -34,6 +55,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'weekly' as const,
     priority: r.priority,
   }));
+
+  // Localized page routes: /{locale}/, /{locale}/ats-grader, /{locale}/blog,
+  // /{locale}/privacy, /{locale}/terms
+  for (const locale of LOCALES) {
+    for (const r of localizedPageRoutes) {
+      routes.push({
+        url: `${baseUrl}/${locale}${r.path}`,
+        changeFrequency: 'weekly' as const,
+        priority: r.priority,
+      });
+    }
+  }
+
+  // Localized blog articles: /{locale}/blog/{slug} for each slug that has
+  // a translated file (falls back to English content where missing, but the
+  // localized URL still renders).
+  const slugs = blogOrder();
+  for (const locale of LOCALES) {
+    for (const slug of slugs) {
+      if (!localizedArticleExists(locale, slug)) continue;
+      routes.push({
+        url: `${baseUrl}/${locale}/blog/${slug}`,
+        changeFrequency: 'weekly' as const,
+        priority: 0.6,
+      });
+    }
+  }
 
   // Per-template SEO landing pages, derived from the data file (180 slugs).
   const templateSlugs = templateSeoEntries.map((e) => e.slug);
