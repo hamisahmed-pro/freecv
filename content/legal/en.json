@@ -1,0 +1,93 @@
+{
+ "locale": "en",
+ "privacy": {
+  "eyebrow": "Privacy & consent",
+  "h1": "Your data. Your choices.",
+  "sub": "A clearer, calmer way to understand how Cvyon handles resume, account and recruiter-matching data.",
+  "s1_eyebrow": "01 · AI data processing",
+  "s1_title": "AI features and your content",
+  "s1_body": "By using Cvyon's AI features (such as ATS Scoring, Rewriting, and Import), you acknowledge that your resume content and job descriptions are processed by {b}Google Gemini AI{/b}. Google's API terms apply. Prompts sent via the API may be retained by Google for up to 30 days for abuse monitoring, but are {b}not{/b} used to train Google's foundation models.",
+  "s2_eyebrow": "02 · Your rights",
+  "s2_title": "GDPR access, export and deletion",
+  "s2_body": "If you are an EU resident, you have the right to access, rectify, export, and erase your personal data. You can request an export or deletion of your data any time via support@cvyon.com.",
+  "cta_delete": "Request data deletion",
+  "cta_export": "Export my data",
+  "s3_eyebrow": "03 · California privacy rights",
+  "s3_title": "CCPA / CPRA",
+  "s3_body": "California residents have the right to opt-out of the \"sale\" or \"sharing\" of their personal information. If you joined the Cvyon Talent Pool, your data may be shared with recruiters.",
+  "toggle_label": "Do not sell my personal information",
+  "toggle_sub": "Opt out of sharing your resume with recruiters.",
+  "s4_eyebrow": "04 · Data retention",
+  "s4_title": "How long we retain data",
+  "s4_body": "We retain analytics events for 12 months. Inactive candidate profiles are automatically anonymized or deleted after 24 months of inactivity.",
+  "s5_eyebrow": "05 · Data protection officer",
+  "s5_title": "Questions about your data?",
+  "s5_body": "If you have any questions about this Privacy Policy, your rights, or how we handle your data, please contact our Data Protection Officer: Cvyon Privacy Team, Email: support@cvyon.com",
+  "back": "Back to Cvyon"
+ },
+ "terms": {
+  "eyebrow": "Legal",
+  "h1": "Terms of Service",
+  "sub": "The terms governing your use of Cvyon.",
+  "updated": "Last updated: September 2026",
+  "sections": [
+   {
+    "n": "01",
+    "title": "The Service",
+    "body": "Cvyon (\"we\", \"us\") provides a free online resume builder, cover-letter builder, ATS grader, and related career tools at cvyon.com (the \"Service\"). The core resume builder is free to use and does not require an account. By accessing or using the Service, you agree to these Terms."
+   },
+   {
+    "n": "02",
+    "title": "Your Content",
+    "body": "You retain full ownership of the resumes, cover letters, and other materials you create with Cvyon (\"Your Content\"). By using the Service you grant us a limited, worldwide license to store, process, and display Your Content solely to operate the Service — for example to render your resume, generate PDF/DOCX exports, and run the AI features you request. We do not sell Your Content."
+   },
+   {
+    "n": "03",
+    "title": "AI Features",
+    "body": "Features such as AI rewriting, ATS scoring, and resume import are powered by third-party AI providers (currently Google Gemini). When you use these features, the content you submit is processed by that provider under their terms. AI output is generated automatically and may be inaccurate — always review it before sending it to employers."
+   },
+   {
+    "n": "04",
+    "title": "Talent Pool & Recruiter Sharing",
+    "body": "Cvyon offers an optional talent pool that lets verified recruiters discover candidates. You are never added to the talent pool by default: sharing happens only if you explicitly opt in through the consent controls in the builder or your {settings_link}settings{/}. You can withdraw that consent at any time from the same place, or via the {data_link}data management{/} page. You can request an export or deletion of your data any time via support@cvyon.com."
+   },
+   {
+    "n": "05",
+    "title": "Acceptable Use",
+    "body": "You agree not to: Upload content you do not own or have no right to use; Submit false, misleading, or impersonating information; Attempt to disrupt, scrape at abusive rates, or gain unauthorized access to the Service; Use the Service for unlawful purposes or to send spam."
+   },
+   {
+    "n": "06",
+    "title": "Accounts",
+    "body": "Some features (saving resumes online, recruiter accounts) require an account. You are responsible for keeping your credentials confidential and for activity under your account. We may suspend accounts that violate these Terms."
+   },
+   {
+    "n": "07",
+    "title": "Intellectual Property",
+    "body": "The Cvyon name, design, templates' layout code, and all site content other than Your Content remain our property or that of our licensors. You may not copy or redistribute the Service's underlying code or designs except as the Service itself allows (e.g. exporting your own resume)."
+   },
+   {
+    "n": "08",
+    "title": "No Employment Guarantee",
+    "body": "Cvyon helps you present yourself well; it does not guarantee interviews, job offers, or any employment outcome. ATS scores and AI suggestions are guidance, not professional career advice."
+   },
+   {
+    "n": "09",
+    "title": "Disclaimers & Limitation of Liability",
+    "body": "The Service is provided \"as is\" without warranties of any kind. To the maximum extent permitted by law, Cvyon is not liable for any indirect, incidental, or consequential damages arising from your use of the Service. Our total liability is limited to the amount you paid us for the Service (the core builder is free, so: zero)."
+   },
+   {
+    "n": "10",
+    "title": "Changes to These Terms",
+    "body": "We may update these Terms from time to time. Material changes will be announced on the site, and continued use of the Service after changes take effect constitutes acceptance."
+   },
+   {
+    "n": "11",
+    "title": "Contact",
+    "body": "Questions about these Terms? Reach us via the {support_link}support page{/} or at support@cvyon.com."
+   }
+  ],
+  "disclaimer": "This is a plain-language summary of our terms prepared for launch. If Cvyon grows to handle significant revenue or sensitive data flows, these terms should be reviewed by qualified legal counsel.",
+  "back": "Back to Cvyon"
+ }
+}

@@ -1,0 +1,93 @@
+{
+ "locale": "nl",
+ "privacy": {
+  "eyebrow": "Privacy en toestemming",
+  "h1": "Jouw gegevens. Jouw keuzes.",
+  "sub": "Een duidelijkere, rustigere manier om te begrijpen hoe Cvyon omgaat met cv-, account- en recruiter-matchinggegevens.",
+  "s1_eyebrow": "01 · AI-gegevensverwerking",
+  "s1_title": "AI-functies en jouw content",
+  "s1_body": "Door gebruik te maken van de AI-functies van Cvyon (zoals ATS Scoring, Rewriting en Import) erken je dat je cv-content en vacatureteksten worden verwerkt door {b}Google Gemini AI{/b}. De API-voorwaarden van Google zijn van toepassing. Prompts die via de API worden verzonden, kunnen tot 30 dagen door Google worden bewaard voor misbruikmonitoring, maar worden {b}niet{/b} gebruikt om de basismodellen van Google te trainen.",
+  "s2_eyebrow": "02 · Jouw rechten",
+  "s2_title": "GDPR-inzage, export en verwijdering",
+  "s2_body": "Als je in de EU woont, heb je het recht om je persoonsgegevens in te zien, te corrigeren, te exporteren en te wissen. Je kunt op elk moment via support@cvyon.com een export of verwijdering van je gegevens aanvragen.",
+  "cta_delete": "Gegevensverwijdering aanvragen",
+  "cta_export": "Mijn gegevens exporteren",
+  "s3_eyebrow": "03 · Privacyrechten in Californië",
+  "s3_title": "CCPA / CPRA",
+  "s3_body": "Inwoners van Californië hebben het recht om zich af te melden voor de “verkoop” of het “delen” van hun persoonlijke gegevens. Als u zich bij de Cvyon Talent Pool hebt aangesloten, kunnen uw gegevens worden gedeeld met recruiters.",
+  "toggle_label": "Verkoop mijn persoonlijke gegevens niet",
+  "toggle_sub": "Meld u af voor het delen van uw cv met recruiters.",
+  "s4_eyebrow": "04 · Gegevensbewaring",
+  "s4_title": "Hoe lang we gegevens bewaren",
+  "s4_body": "We bewaren analytische gebeurtenissen gedurende 12 maanden. Inactieve kandidaatprofielen worden na 24 maanden inactiviteit automatisch geanonimiseerd of verwijderd.",
+  "s5_eyebrow": "05 · Functionaris voor gegevensbescherming",
+  "s5_title": "Vragen over uw gegevens?",
+  "s5_body": "Als u vragen heeft over dit Privacybeleid, uw rechten, of hoe wij met uw gegevens omgaan, neem dan contact op met onze Functionaris voor gegevensbescherming: {b}Cvyon Privacy Team{/b}, E-mail: support@cvyon.com",
+  "back": "← Terug naar Cvyon"
+ },
+ "terms": {
+  "eyebrow": "Juridisch",
+  "h1": "Servicevoorwaarden",
+  "sub": "De voorwaarden die uw gebruik van Cvyon regelen.",
+  "updated": "Laatst bijgewerkt: september 2026",
+  "disclaimer": "Dit is een samenvatting in eenvoudige taal van onze voorwaarden, opgesteld voor de lancering. Als Cvyon uitgroeit tot het verwerken van aanzienlijke inkomsten of gevoelige gegevensstromen, moeten deze voorwaarden door een bevoegde juridisch adviseur worden beoordeeld.",
+  "back": "Terug naar Cvyon",
+  "sections": [
+   {
+    "n": "01",
+    "title": "De Dienst",
+    "body": "Cvyon (“wij”, “ons”) biedt een gratis online cv-maker, sollicitatiebriefmaker, ATS-beoordelingstool en gerelateerde carrièretools op cvyon.com (de “Dienst”). De kern van de cv-maker is gratis te gebruiken en vereist geen account. Door de Dienst te openen of te gebruiken, gaat u akkoord met deze Voorwaarden."
+   },
+   {
+    "n": "02",
+    "title": "Uw inhoud",
+    "body": "U behoudt het volledige eigendom van de cv's, sollicitatiebrieven en andere materialen die u met Cvyon maakt (“Uw Inhoud”). Door de Dienst te gebruiken verleent u ons een beperkte, wereldwijde licentie om Uw Inhoud op te slaan, te verwerken en weer te geven, uitsluitend om de Dienst te exploiteren — bijvoorbeeld om uw cv weer te geven, PDF/DOCX-exporten te genereren en de door u aangevraagde AI-functionaliteiten uit te voeren. Wij verkopen Uw Inhoud niet."
+   },
+   {
+    "n": "03",
+    "title": "AI-functies",
+    "body": "Functies zoals AI-herschrijven, ATS-scoring en cv-import worden mogelijk gemaakt door externe AI-leveranciers (momenteel Google Gemini). Wanneer u deze functies gebruikt, wordt de door u ingediende inhoud door die leverancier verwerkt onder diens voorwaarden. AI-output wordt automatisch gegenereerd en kan onjuist zijn — controleer dit altijd voordat u het naar werkgevers stuurt."
+   },
+   {
+    "n": "04",
+    "title": "Talentpool en delen met recruiters",
+    "body": "Cvyon biedt een optionele talentpool waarmee geverifieerde recruiters kandidaten kunnen ontdekken. U wordt nooit standaard toegevoegd aan de talentpool: delen gebeurt alleen als u expliciet opt-in via de toestemmingsopties in de builder of uw {settings_link}instellingen{/settings_link}. U kunt die toestemming op elk moment intrekken vanaf dezelfde plek, of via de {data_link}gegevensbeheer{/data_link}-pagina. U kunt op elk moment een export of verwijdering van uw gegevens aanvragen via support@cvyon.com."
+   },
+   {
+    "n": "05",
+    "title": "Aanvaardbaar gebruik",
+    "body": "U stemt ermee in dat u niet: inhoud uploadt waarvan u geen eigenaar bent of waarvoor u geen gebruiksrecht heeft; onjuiste, misleidende of zich voordoende als iemand anders informatie verstrekt; probeert de Dienst te verstoren, op misbruikende snelheden te scrapen of zonder toestemming toegang te krijgen; de Dienst gebruikt voor onwettige doeleinden of om spam te verzenden."
+   },
+   {
+    "n": "06",
+    "title": "Accounts",
+    "body": "Voor sommige functies (online cv's opslaan, recruitersaccounts) is een account vereist. U bent verantwoordelijk voor het vertrouwelijk houden van uw inloggegevens en voor activiteiten onder uw account. We kunnen accounts opschorten die deze voorwaarden schenden."
+   },
+   {
+    "n": "07",
+    "title": "Intellectuele eigendom",
+    "body": "De naam Cvyon, het ontwerp, de layoutcode van sjablonen en alle site-inhoud anders dan Uw Inhoud blijven ons eigendom of dat van onze licentiegevers. U mag de onderliggende code of ontwerpen van de Dienst niet kopiëren of herdistribueren, behalve zoals de Dienst zelf toestaat (bijv. het exporteren van uw eigen cv)."
+   },
+   {
+    "n": "08",
+    "title": "Geen banengarantie",
+    "body": "Cvyon helpt u uzelf goed te presenteren; het garandeert geen sollicitatiegesprekken, arbeidsaanbiedingen of enige arbeidsuitkomst. ATS-scores en AI-suggesties zijn richtlijnen, geen professioneel loopbaanadvies."
+   },
+   {
+    "n": "09",
+    "title": "Uitsluitingen & Beperking van Aansprakelijkheid",
+    "body": "De Dienst wordt aangeboden “as is” zonder enige vorm van garanties. Voor zover wettelijk toegestaan, is Cvyon niet aansprakelijk voor indirecte, incidentele of gevolgschade die voortvloeit uit uw gebruik van de Dienst. Onze totale aansprakelijkheid is beperkt tot het bedrag dat u voor de Dienst hebt betaald (de basisbouwer is gratis, dus: nul)."
+   },
+   {
+    "n": "10",
+    "title": "Wijzigingen in deze Voorwaarden",
+    "body": "We kunnen deze Voorwaarden van tijd tot tijd bijwerken. Materiële wijzigingen worden op de site aangekondigd en voortgezet gebruik van de Dienst nadat de wijzigingen van kracht zijn geworden, vormt aanvaarding."
+   },
+   {
+    "n": "11",
+    "title": "Contact",
+    "body": "Vragen over deze Voorwaarden? Neem contact met ons op via de {support_link}supportpagina{/support_link} of via support@cvyon.com."
+   }
+  ]
+ }
+}

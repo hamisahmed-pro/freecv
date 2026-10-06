@@ -1,0 +1,93 @@
+{
+ "locale": "fil",
+ "privacy": {
+  "eyebrow": "Pagkapribado at pahintulot",
+  "h1": "Ang iyong data. Ang iyong mga pagpipilian.",
+  "sub": "Isang mas malinaw at mas kalmadong paraan upang maunawaan kung paano pinangangasiwaan ng Cvyon ang data ng resume, account, at recruiter-matching.",
+  "s1_eyebrow": "01 · Pagproseso ng data ng AI",
+  "s1_title": "Mga tampok ng AI at ang iyong nilalaman",
+  "s1_body": "Sa paggamit ng mga tampok ng AI ng Cvyon (gaya ng ATS Scoring, Rewriting, at Import), kinikilala mo na ang iyong nilalaman ng resume at mga deskripsyon ng trabaho ay pinoproseso ng {b}Google Gemini AI{/b}. Nalalapat ang mga tuntunin ng API ng Google. Ang mga prompt na ipinadala sa pamamagitan ng API ay maaaring panatilihin ng Google nang hanggang 30 araw para sa pagsubaybay sa pang-aabuso, ngunit {b}hindi{/b} ginagamit upang sanayin ang mga foundation model ng Google.",
+  "s2_eyebrow": "02 · Ang iyong mga karapatan",
+  "s2_title": "GDPR access, export at deletion",
+  "s2_body": "Kung ikaw ay isang residente ng EU, may karapatan kang i-access, itama, i-export, at burahin ang iyong personal na data. Maaari kang humiling ng pag-export o pagbura ng iyong data anumang oras sa pamamagitan ng support@cvyon.com.",
+  "cta_delete": "Hilingin ang pagtanggal ng data",
+  "cta_export": "I-export ang aking data",
+  "s3_eyebrow": "03 · Mga karapatan sa pribasiya ng California",
+  "s3_title": "CCPA / CPRA",
+  "s3_body": "Ang mga residente ng California ay may karapatang mag-opt out sa “pagbebenta” o “pagbabahagi” ng kanilang personal na impormasyon. Kung sumali kayo sa Cvyon Talent Pool, maaaring ibahagi ang inyong data sa mga recruiter.",
+  "toggle_label": "Huwag ibenta ang aking personal na impormasyon",
+  "toggle_sub": "Mag-opt out sa pagbabahagi ng inyong resume sa mga recruiter.",
+  "s4_eyebrow": "04 · Pagpapanatili ng data",
+  "s4_title": "Gaano katagal namin itinatago ang data",
+  "s4_body": "Nag-iimbak kami ng mga analytics event sa loob ng 12 buwan. Ang mga hindi aktibong profile ng kandidato ay awtomatikong ina-anonymize o tinatanggal pagkatapos ng 24 na buwan ng kawalan ng aktibidad.",
+  "s5_eyebrow": "05 · Opisyal ng proteksyon ng data",
+  "s5_title": "Mga tanong tungkol sa inyong data?",
+  "s5_body": "Kung mayroon kayong mga tanong tungkol sa Patakaran sa Privacy na ito, sa inyong mga karapatan, o sa kung paano namin hinahawakan ang inyong data, mangyaring makipag-ugnayan sa aming Opisyal ng Proteksyon ng Data: {b}Cvyon Privacy Team{/b}, Email: support@cvyon.com",
+  "back": "← Bumalik sa Cvyon"
+ },
+ "terms": {
+  "eyebrow": "Legal",
+  "h1": "Mga Tuntunin ng Serbisyo",
+  "sub": "Ang mga tuntuning namamahala sa iyong paggamit ng Cvyon.",
+  "updated": "Huling na-update: Setyembre 2026",
+  "disclaimer": "Ito ay isang buod ng aming mga tuntunin sa payak na wika na inihanda para sa paglulunsad. Kung ang Cvyon ay lumaki upang humawak ng malaking kita o sensitibong daloy ng data, ang mga tuntuning ito ay dapat suriin ng kwalipikadong legal na tagapayo.",
+  "back": "Bumalik sa Cvyon",
+  "sections": [
+   {
+    "n": "01",
+    "title": "Ang Serbisyo",
+    "body": "Ang Cvyon (“kami”, “amin”) ay nagbibigay ng libreng online resume builder, cover-letter builder, ATS grader, at mga kaugnay na kasangkapan sa karera sa cvyon.com (ang “Serbisyo”). Ang pangunahing resume builder ay libreng gamitin at hindi nangangailangan ng account. Sa pag-access o paggamit ng Serbisyo, sumasang-ayon ka sa mga Tuntuning ito."
+   },
+   {
+    "n": "02",
+    "title": "Ang Iyong Nilalaman",
+    "body": "Pinanatili mo ang buong pagmamay-ari ng mga resume, cover letter, at iba pang materyal na iyong nililikha gamit ang Cvyon (“Ang Iyong Nilalaman”). Sa paggamit ng Serbisyo, binibigyan mo kami ng limitado, pandaigdigang lisensya upang iimbak, iproseso, at ipakita ang Iyong Nilalaman para lamang sa pagpapatakbo ng Serbisyo — halimbawa, upang i-render ang iyong resume, makalikha ng mga PDF/DOCX export, at patakbuhin ang mga AI feature na iyong hinihiling. Hindi namin ibinebenta ang Iyong Nilalaman."
+   },
+   {
+    "n": "03",
+    "title": "Mga Tampok na AI",
+    "body": "Ang mga feature tulad ng AI rewriting, ATS scoring, at resume import ay pinapagana ng mga third-party AI provider (kasalukuyang Google Gemini). Kapag ginamit mo ang mga feature na ito, ang nilalamang iyong isinumite ay pinoproseso ng provider na iyon alinsunod sa kanilang mga tuntunin. Ang AI output ay awtomatikong nalilikha at maaaring hindi tumpak — palaging suriin ito bago ipadala sa mga employer."
+   },
+   {
+    "n": "04",
+    "title": "Talent Pool & Pagbabahagi sa Recruiter",
+    "body": "Nag-aalok ang Cvyon ng opsyonal na talent pool na nagpapahintulot sa mga verified recruiter na matuklasan ang mga kandidato. Hindi ka kailanman idinaragdag sa talent pool bilang default: ang pagbabahagi ay nangyayari lamang kung ikaw ay tahasang mag-o-opt in sa pamamagitan ng mga kontrol sa pahintulot sa builder o sa iyong {settings_link}mga setting{/settings_link}. Maaari mong bawiin ang pahintulot na iyon anumang oras mula sa parehong lugar, o sa pamamagitan ng {data_link}pamamahala ng data{/data_link} na pahina. Maaari kang humiling ng export o pagbura ng iyong data anumang oras sa pamamagitan ng support@cvyon.com."
+   },
+   {
+    "n": "05",
+    "title": "Katanggap-tanggap na Paggamit",
+    "body": "Sumasang-ayon kang huwag: Mag-upload ng nilalaman na hindi mo pag-aari o wala kang karapatang gamitin; Magsumite ng mali, mapanlinlang, o nagpapanggap na impormasyon; Magtangkang gambalain, i-scrape sa labis na bilis, o makakuha ng hindi awtorisadong pag-access sa Serbisyo; Gamitin ang Serbisyo para sa mga labag sa batas na layunin o para magpadala ng spam."
+   },
+   {
+    "n": "06",
+    "title": "Mga Account",
+    "body": "Ang ilang mga tampok (pag-save ng resume online, mga account ng recruiter) ay nangangailangan ng account. Ikaw ang may pananagutan sa pagpapanatiling kumpidensyal ng iyong mga kredensyal at sa mga aktibidad sa ilalim ng iyong account. Maaari naming i-suspend ang mga account na lumalabag sa mga Tuntuning ito."
+   },
+   {
+    "n": "07",
+    "title": "Intelektwal na Ari-arian",
+    "body": "Ang pangalan ng Cvyon, disenyo, layout code ng mga template, at lahat ng nilalaman ng site maliban sa Iyong Nilalaman ay mananatiling pag-aari namin o ng aming mga nagbibigay-lisensya. Hindi mo maaaring kopyahin o ipamahagi muli ang pinagbabatayang code o mga disenyo ng Serbisyo maliban kung pinapayagan ito ng Serbisyo mismo (hal. pag-export ng iyong sariling resume)."
+   },
+   {
+    "n": "08",
+    "title": "Walang Garantiya sa Trabaho",
+    "body": "Tinutulungan ka ng Cvyon na maiharap nang maayos ang iyong sarili; hindi nito ginagarantiyahan ang mga panayam, mga alok ng trabaho, o anumang resulta ng empleyo. Ang mga marka ng ATS at mga mungkahi ng AI ay gabay, hindi propesyonal na payo sa karera."
+   },
+   {
+    "n": "09",
+    "title": "Mga Pagtatanggi at Limitasyon ng Pananagutan",
+    "body": "Ang Serbisyo ay ibinigay “as is” nang walang anumang warranty. Sa pinakamataas na lawak na pinapayagan ng batas, ang Cvyon ay hindi mananagot sa anumang hindi direkta, aksidental, o bunga na mga pinsala na magmumula sa iyong paggamit ng Serbisyo. Ang aming kabuuang pananagutan ay limitado sa halagang binayad mo sa amin para sa Serbisyo (ang pangunahing builder ay libre, kaya: zero)."
+   },
+   {
+    "n": "10",
+    "title": "Mga Pagbabago sa mga Tuntuning Ito",
+    "body": "Maaari naming i-update ang mga Tuntuning ito paminsan-minsan. Ang mga mahahalagang pagbabago ay iaanunsyo sa site, at ang patuloy na paggamit ng Serbisyo pagkatapos magkabisa ang mga pagbabago ay katumbas ng pagtanggap."
+   },
+   {
+    "n": "11",
+    "title": "Makipag-ugnayan",
+    "body": "Mga tanong tungkol sa mga Tuntuning ito? Makipag-ugnayan sa amin sa pamamagitan ng {support_link}pahina ng suporta{/support_link} o sa support@cvyon.com."
+   }
+  ]
+ }
+}

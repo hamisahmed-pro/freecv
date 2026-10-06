@@ -1,0 +1,93 @@
+{
+ "locale": "id",
+ "privacy": {
+  "eyebrow": "Privasi & persetujuan",
+  "h1": "Data Anda. Pilihan Anda.",
+  "sub": "Cara yang lebih jelas dan tenang untuk memahami bagaimana Cvyon menangani data resume, akun, dan pencocokan perekrut.",
+  "s1_eyebrow": "01 · Pemrosesan data AI",
+  "s1_title": "Fitur AI dan konten Anda",
+  "s1_body": "Dengan menggunakan fitur AI Cvyon (seperti ATS Scoring, Rewriting, dan Import), Anda menyetujui bahwa konten resume dan deskripsi pekerjaan Anda diproses oleh {b}Google Gemini AI{/b}. Ketentuan API Google berlaku. Prompt yang dikirim melalui API dapat disimpan oleh Google hingga 30 hari untuk pemantauan penyalahgunaan, namun {b}tidak{/b} digunakan untuk melatih model dasar Google.",
+  "s2_eyebrow": "02 · Hak Anda",
+  "s2_title": "Akses, ekspor, dan penghapusan GDPR",
+  "s2_body": "Jika Anda adalah penduduk UE, Anda berhak untuk mengakses, memperbaiki, mengekspor, dan menghapus data pribadi Anda. Anda dapat meminta ekspor atau penghapusan data Anda kapan saja melalui support@cvyon.com.",
+  "cta_delete": "Minta penghapusan data",
+  "cta_export": "Ekspor data saya",
+  "s3_eyebrow": "03 · Hak privasi California",
+  "s3_title": "CCPA / CPRA",
+  "s3_body": "Penduduk California memiliki hak untuk menolak “penjualan” atau “pembagian” informasi pribadi mereka. Jika Anda bergabung dengan Cvyon Talent Pool, data Anda dapat dibagikan dengan perekrut.",
+  "toggle_label": "Jangan jual informasi pribadi saya",
+  "toggle_sub": "Pilih untuk tidak membagikan resume Anda kepada perekrut.",
+  "s4_eyebrow": "04 · Retensi data",
+  "s4_title": "Berapa lama kami menyimpan data",
+  "s4_body": "Kami menyimpan peristiwa analitik selama 12 bulan. Profil kandidat yang tidak aktif secara otomatis dianonimkan atau dihapus setelah 24 bulan tidak ada aktivitas.",
+  "s5_eyebrow": "05 · Petugas perlindungan data",
+  "s5_title": "Pertanyaan tentang data Anda?",
+  "s5_body": "Jika Anda memiliki pertanyaan tentang Kebijakan Privasi ini, hak Anda, atau bagaimana kami menangani data Anda, silakan hubungi Petugas Perlindungan Data kami: {b}Cvyon Privacy Team{/b}, Email: support@cvyon.com",
+  "back": "← Kembali ke Cvyon"
+ },
+ "terms": {
+  "eyebrow": "Hukum",
+  "h1": "Ketentuan Layanan",
+  "sub": "Ketentuan yang mengatur penggunaan Anda atas Cvyon.",
+  "updated": "Terakhir diperbarui: September 2026",
+  "sections": [
+   {
+    "n": "01",
+    "title": "Layanan",
+    "body": "Cvyon (“kami”) menyediakan pembuat resume online gratis, pembuat surat lamaran, penilai ATS, dan alat karier terkait di cvyon.com (“Layanan”). Pembuat resume inti gratis digunakan dan tidak memerlukan akun. Dengan mengakses atau menggunakan Layanan, Anda menyetujui Ketentuan ini."
+   },
+   {
+    "n": "02",
+    "title": "Konten Anda",
+    "body": "Anda mempertahankan kepemilikan penuh atas resume, surat lamaran, dan materi lain yang Anda buat dengan Cvyon (“Konten Anda”). Dengan menggunakan Layanan, Anda memberi kami lisensi terbatas di seluruh dunia untuk menyimpan, memproses, dan menampilkan Konten Anda semata-mata untuk mengoperasikan Layanan — misalnya untuk merender resume Anda, menghasilkan ekspor PDF/DOCX, dan menjalankan fitur AI yang Anda minta. Kami tidak menjual Konten Anda."
+   },
+   {
+    "n": "03",
+    "title": "Fitur AI",
+    "body": "Fitur seperti penulisan ulang AI, penilaian ATS, dan impor resume didukung oleh penyedia AI pihak ketiga (saat ini Google Gemini). Saat Anda menggunakan fitur ini, konten yang Anda kirimkan diproses oleh penyedia tersebut berdasarkan ketentuan mereka. Output AI dihasilkan secara otomatis dan mungkin tidak akurat — selalu tinjau sebelum mengirimkannya ke pemberi kerja."
+   },
+   {
+    "n": "04",
+    "title": "Talent Pool & Berbagi dengan Perekrut",
+    "body": "Cvyon menawarkan talent pool opsional yang memungkinkan perekrut terverifikasi menemukan kandidat. Anda tidak pernah ditambahkan ke talent pool secara default: berbagi hanya terjadi jika Anda secara eksplisit memilih melalui kontrol persetujuan di pembuat atau {settings_link}pengaturan{/settings_link} Anda. Anda dapat menarik persetujuan tersebut kapan saja dari tempat yang sama, atau melalui halaman {data_link}manajemen data{/data_link}. Anda dapat meminta ekspor atau penghapusan data Anda kapan saja melalui support@cvyon.com."
+   },
+   {
+    "n": "05",
+    "title": "Penggunaan yang Dapat Diterima",
+    "body": "Anda setuju untuk tidak: Mengunggah konten yang tidak Anda miliki atau tidak berhak gunakan; Mengirimkan informasi palsu, menyesatkan, atau meniru orang lain; Mencoba mengganggu, mengikis dengan tingkat yang tidak wajar, atau mendapatkan akses tidak sah ke Layanan; Menggunakan Layanan untuk tujuan yang melanggar hukum atau untuk mengirim spam."
+   },
+   {
+    "n": "06",
+    "title": "Akun",
+    "body": "Beberapa fitur (menyimpan resume online, akun perekrut) memerlukan akun. Anda bertanggung jawab untuk menjaga kerahasiaan kredensial Anda dan atas aktivitas di bawah akun Anda. Kami dapat menangguhkan akun yang melanggar Ketentuan ini."
+   },
+   {
+    "n": "07",
+    "title": "Kekayaan Intelektual",
+    "body": "Nama Cvyon, desain, kode tata letak templat, dan semua konten situs selain Konten Anda tetap menjadi milik kami atau milik pemberi lisensi kami. Anda tidak boleh menyalin atau mendistribusikan kode atau desain dasar Layanan kecuali sebagaimana diizinkan oleh Layanan itu sendiri (misalnya mengekspor resume Anda sendiri)."
+   },
+   {
+    "n": "08",
+    "title": "Tanpa Jaminan Kerja",
+    "body": "Cvyon membantu Anda menampilkan diri dengan baik; ini tidak menjamin wawancara, tawaran kerja, atau hasil pekerjaan apa pun. Skor ATS dan saran AI adalah panduan, bukan nasihat karier profesional."
+   },
+   {
+    "n": "09",
+    "title": "Penyangkalan & Pembatasan Tanggung Jawab",
+    "body": "Layanan disediakan “sebagaimana adanya” tanpa jaminan apa pun. Sejauh maksimum yang diizinkan oleh hukum, Cvyon tidak bertanggung jawab atas kerusakan tidak langsung, insidental, atau konsekuensial yang timbul dari penggunaan Anda atas Layanan. Tanggung jawab total kami terbatas pada jumlah yang Anda bayarkan kepada kami untuk Layanan (pembuat inti gratis, jadi: nol)."
+   },
+   {
+    "n": "10",
+    "title": "Perubahan pada Ketentuan Ini",
+    "body": "Kami dapat memperbarui Ketentuan ini dari waktu ke waktu. Perubahan material akan diumumkan di situs, dan penggunaan Layanan yang berkelanjutan setelah perubahan berlaku merupakan penerimaan."
+   },
+   {
+    "n": "11",
+    "title": "Kontak",
+    "body": "Pertanyaan tentang Ketentuan ini? Hubungi kami melalui {support_link}halaman dukungan{/support_link} atau di support@cvyon.com."
+   }
+  ],
+  "disclaimer": "Ini adalah ringkasan bahasa sederhana dari ketentuan kami yang disiapkan untuk peluncuran. Jika Cvyon tumbuh untuk menangani pendapatan signifikan atau aliran data sensitif, ketentuan ini harus ditinjau oleh penasihat hukum yang berkualifikasi.",
+  "back": "Kembali ke Cvyon"
+ }
+}

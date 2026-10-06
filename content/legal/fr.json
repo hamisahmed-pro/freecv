@@ -1,0 +1,93 @@
+{
+ "locale": "fr",
+ "privacy": {
+  "eyebrow": "Confidentialité et consentement",
+  "h1": "Vos données. Vos choix.",
+  "sub": "Une façon plus claire et plus sereine de comprendre comment Cvyon traite les données de CV, de compte et de mise en relation avec les recruteurs.",
+  "s1_eyebrow": "01 · Traitement des données par l'IA",
+  "s1_title": "Fonctionnalités IA et votre contenu",
+  "s1_body": "En utilisant les fonctionnalités IA de Cvyon (telles que la notation ATS, la réécriture et l'importation), vous reconnaissez que le contenu de votre CV et les descriptions de poste sont traités par {b}Google Gemini AI{/b}. Les conditions d'utilisation de l'API de Google s'appliquent. Les invites envoyées via l'API peuvent être conservées par Google pendant 30 jours maximum à des fins de surveillance des abus, mais ne sont {b}pas{/b} utilisées pour entraîner les modèles de fondation de Google.",
+  "s2_eyebrow": "02 · Vos droits",
+  "s2_title": "Accès, exportation et suppression (GDPR)",
+  "s2_body": "Si vous êtes un résident de l'UE, vous avez le droit d'accéder à vos données personnelles, de les rectifier, de les exporter et de les effacer. Vous pouvez demander l'exportation ou la suppression de vos données à tout moment via support@cvyon.com.",
+  "cta_delete": "Demander la suppression des données",
+  "cta_export": "Exporter mes données",
+  "s3_eyebrow": "03 · Droits de confidentialité en Californie",
+  "s3_title": "CCPA / CPRA",
+  "s3_body": "Les résidents de Californie ont le droit de refuser la « vente » ou le « partage » de leurs informations personnelles. Si vous avez rejoint le vivier de talents Cvyon, vos données peuvent être partagées avec des recruteurs.",
+  "toggle_label": "Ne vendez pas mes informations personnelles",
+  "toggle_sub": "Refusez le partage de votre CV avec des recruteurs.",
+  "s4_eyebrow": "04 · Conservation des données",
+  "s4_title": "Durée de conservation des données",
+  "s4_body": "Nous conservons les événements analytiques pendant 12 mois. Les profils de candidats inactifs sont automatiquement anonymisés ou supprimés après 24 mois d'inactivité.",
+  "s5_eyebrow": "05 · Délégué à la protection des données",
+  "s5_title": "Des questions sur vos données ?",
+  "s5_body": "Si vous avez des questions concernant cette politique de confidentialité, vos droits ou la manière dont nous traitons vos données, veuillez contacter notre délégué à la protection des données : {b}Équipe confidentialité de Cvyon{/b}, E-mail : support@cvyon.com",
+  "back": "← Retour à Cvyon"
+ },
+ "terms": {
+  "eyebrow": "Juridique",
+  "h1": "Conditions d'utilisation",
+  "sub": "Les conditions régissant votre utilisation de Cvyon.",
+  "updated": "Dernière mise à jour : septembre 2026",
+  "disclaimer": "Ceci est un résumé en langage clair de nos conditions, préparé pour le lancement. Si Cvyon en vient à traiter des flux de revenus importants ou des données sensibles, ces conditions devraient être revues par un conseiller juridique qualifié.",
+  "back": "Retour à Cvyon",
+  "sections": [
+   {
+    "n": "01",
+    "title": "Le Service",
+    "body": "Cvyon (« nous ») fournit un générateur de CV en ligne gratuit, un générateur de lettres de motivation, un évaluateur ATS et des outils de carrière associés sur cvyon.com (le « Service »). Le générateur de CV principal est gratuit et ne nécessite pas de compte. En accédant au Service ou en l'utilisant, vous acceptez les présentes Conditions."
+   },
+   {
+    "n": "02",
+    "title": "Vos Contenus",
+    "body": "Vous conservez l'entière propriété des CV, lettres de motivation et autres documents que vous créez avec Cvyon (« Vos Contenus »). En utilisant le Service, vous nous accordez une licence limitée, mondiale, pour stocker, traiter et afficher Vos Contenus uniquement afin d'exploiter le Service — par exemple pour générer votre CV, produire des exports PDF/DOCX et exécuter les fonctionnalités d'IA que vous demandez. Nous ne vendons pas Vos Contenus."
+   },
+   {
+    "n": "03",
+    "title": "Fonctionnalités d'IA",
+    "body": "Des fonctionnalités telles que la réécriture par IA, le score ATS et l'import de CV sont propulsées par des fournisseurs d'IA tiers (actuellement Google Gemini). Lorsque vous utilisez ces fonctionnalités, le contenu que vous soumettez est traité par ce fournisseur conformément à ses conditions. Les résultats de l'IA sont générés automatiquement et peuvent être inexacts — vérifiez-les toujours avant de les envoyer à des employeurs."
+   },
+   {
+    "n": "04",
+    "title": "Vivier de talents et partage avec les recruteurs",
+    "body": "Cvyon propose un vivier de talents facultatif qui permet aux recruteurs vérifiés de découvrir des candidats. Vous n'êtes jamais ajouté au vivier de talents par défaut : le partage n'a lieu que si vous y consentez explicitement via les contrôles de consentement dans le générateur ou vos {settings_link}réglages{/settings_link}. Vous pouvez retirer ce consentement à tout moment au même endroit, ou via la page {data_link}gestion des données{/data_link}. Vous pouvez demander l'exportation ou la suppression de vos données à tout moment via support@cvyon.com."
+   },
+   {
+    "n": "05",
+    "title": "Utilisation acceptable",
+    "body": "Vous acceptez de ne pas : Téléverser du contenu que vous ne possédez pas ou dont vous n'avez pas le droit d'utiliser ; Soumettre des informations fausses, trompeuses ou usurpant une identité ; Tenter de perturber le Service, d'extraire des données à des taux abusifs ou d'obtenir un accès non autorisé ; Utiliser le Service à des fins illégales ou pour envoyer du spam."
+   },
+   {
+    "n": "06",
+    "title": "Comptes",
+    "body": "Certaines fonctionnalités (enregistrement des CV en ligne, comptes recruteurs) nécessitent un compte. Vous êtes responsable de la confidentialité de vos identifiants et de l'activité effectuée sous votre compte. Nous pouvons suspendre les comptes qui enfreignent les présentes Conditions."
+   },
+   {
+    "n": "07",
+    "title": "Propriété intellectuelle",
+    "body": "Le nom Cvyon, le design, le code de mise en page des modèles et tout le contenu du site autre que votre contenu demeurent notre propriété ou celle de nos concédants de licence. Vous ne pouvez pas copier ou redistribuer le code sous-jacent ou les conceptions du Service, sauf si le Service lui-même le permet (par exemple, en exportant votre propre CV)."
+   },
+   {
+    "n": "08",
+    "title": "Aucune garantie d'emploi",
+    "body": "Cvyon vous aide à bien vous présenter ; il ne garantit ni entretiens, ni offres d'emploi, ni aucun résultat professionnel. Les scores ATS et les suggestions d'IA sont des orientations, et non des conseils de carrière professionnels."
+   },
+   {
+    "n": "09",
+    "title": "Avertissements et limitation de responsabilité",
+    "body": "Le Service est fourni « en l'état » sans garantie d'aucune sorte. Dans toute la mesure permise par la loi, Cvyon n'est pas responsable des dommages indirects, accessoires ou consécutifs découlant de votre utilisation du Service. Notre responsabilité totale est limitée au montant que vous nous avez payé pour le Service (le créateur de base est gratuit, donc : zéro)."
+   },
+   {
+    "n": "10",
+    "title": "Modifications des présentes Conditions",
+    "body": "Nous pouvons mettre à jour les présentes Conditions de temps à autre. Les modifications importantes seront annoncées sur le site, et l'utilisation continue du Service après l'entrée en vigueur des modifications vaut acceptation."
+   },
+   {
+    "n": "11",
+    "title": "Contact",
+    "body": "Des questions sur ces Conditions ? Contactez-nous via la {support_link}page d'assistance{/support_link} ou à support@cvyon.com."
+   }
+  ]
+ }
+}

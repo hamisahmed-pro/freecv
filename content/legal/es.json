@@ -1,0 +1,93 @@
+{
+ "locale": "es",
+ "privacy": {
+  "eyebrow": "Privacidad y consentimiento",
+  "h1": "Tus datos. Tus decisiones.",
+  "sub": "Una forma más clara y tranquila de entender cómo Cvyon gestiona los datos del currículum, de la cuenta y del emparejamiento con reclutadores.",
+  "s1_eyebrow": "01 · Procesamiento de datos de IA",
+  "s1_title": "Funciones de IA y tu contenido",
+  "s1_body": "Al utilizar las funciones de IA de Cvyon (como ATS Scoring, Rewriting e Import), reconoces que el contenido de tu currículum y las descripciones de empleo son procesados por {b}Google Gemini AI{/b}. Se aplican los términos de la API de Google. Las indicaciones enviadas a través de la API pueden ser conservadas por Google hasta 30 días para la supervisión de abusos, pero {b}no{/b} se utilizan para entrenar los modelos fundamentales de Google.",
+  "s2_eyebrow": "02 · Tus derechos",
+  "s2_title": "Acceso, exportación y eliminación según el GDPR",
+  "s2_body": "Si resides en la UE, tienes derecho a acceder, rectificar, exportar y eliminar tus datos personales. Puedes solicitar la exportación o eliminación de tus datos en cualquier momento a través de support@cvyon.com.",
+  "cta_delete": "Solicitar la eliminación de datos",
+  "cta_export": "Exportar mis datos",
+  "s3_eyebrow": "03 · Derechos de privacidad de California",
+  "s3_title": "CCPA / CPRA",
+  "s3_body": "Los residentes de California tienen derecho a optar por no participar en la “venta” o el “uso compartido” de su información personal. Si te uniste a la Bolsa de Talentos de Cvyon, tus datos pueden compartirse con reclutadores.",
+  "toggle_label": "No vender mi información personal",
+  "toggle_sub": "Opta por no compartir tu currículum con reclutadores.",
+  "s4_eyebrow": "04 · Retención de datos",
+  "s4_title": "Cuánto tiempo conservamos los datos",
+  "s4_body": "Conservamos los eventos de analítica durante 12 meses. Los perfiles de candidatos inactivos se anonimizan o eliminan automáticamente después de 24 meses de inactividad.",
+  "s5_eyebrow": "05 · Delegado de protección de datos",
+  "s5_title": "¿Preguntas sobre tus datos?",
+  "s5_body": "Si tienes alguna pregunta sobre esta Política de Privacidad, tus derechos o cómo manejamos tus datos, contacta con nuestro Delegado de Protección de Datos: {b}Equipo de Privacidad de Cvyon{/b}, Correo electrónico: support@cvyon.com",
+  "back": "← Volver a Cvyon"
+ },
+ "terms": {
+  "eyebrow": "Legal",
+  "h1": "Términos del Servicio",
+  "sub": "Los términos que rigen su uso de Cvyon.",
+  "updated": "Última actualización: septiembre de 2026",
+  "disclaimer": "Este es un resumen en lenguaje sencillo de nuestros términos preparado para el lanzamiento. Si Cvyon crece hasta manejar ingresos significativos o flujos de datos sensibles, estos términos deberían ser revisados por asesoría legal calificada.",
+  "back": "Volver a Cvyon",
+  "sections": [
+   {
+    "n": "01",
+    "title": "El Servicio",
+    "body": "Cvyon (“nosotros”) ofrece un creador de currículums en línea gratuito, un creador de cartas de presentación, un evaluador de ATS y herramientas profesionales relacionadas en cvyon.com (el “Servicio”). El creador de currículums principal es gratuito y no requiere una cuenta. Al acceder o utilizar el Servicio, aceptas estos Términos."
+   },
+   {
+    "n": "02",
+    "title": "Tu Contenido",
+    "body": "Conservas la propiedad total de los currículums, cartas de presentación y otros materiales que crees con Cvyon (“Tu Contenido”). Al utilizar el Servicio, nos otorgas una licencia limitada y mundial para almacenar, procesar y mostrar Tu Contenido únicamente para operar el Servicio — por ejemplo, para mostrar tu currículum, generar exportaciones en PDF/DOCX y ejecutar las funciones de IA que solicites. No vendemos Tu Contenido."
+   },
+   {
+    "n": "03",
+    "title": "Funciones de IA",
+    "body": "Funciones como la reescritura con IA, la puntuación ATS y la importación de currículums funcionan con proveedores de IA de terceros (actualmente Google Gemini). Cuando utilizas estas funciones, el contenido que envías es procesado por dicho proveedor según sus términos. La salida de la IA se genera automáticamente y puede ser inexacta: revísala siempre antes de enviarla a empleadores."
+   },
+   {
+    "n": "04",
+    "title": "Bolsa de talentos y uso compartido con reclutadores",
+    "body": "Cvyon ofrece una bolsa de talentos opcional que permite a reclutadores verificados descubrir candidatos. Nunca se te añade a la bolsa de talentos por defecto: solo se comparte tu perfil si te apuntas explícitamente mediante los controles de consentimiento en el creador o en tus {settings_link}ajustes{/settings_link}. Puedes retirar ese consentimiento en cualquier momento desde el mismo lugar, o a través de la página de {data_link}gestión de datos{/data_link}. Puedes solicitar una exportación o eliminación de tus datos en cualquier momento a través de support@cvyon.com."
+   },
+   {
+    "n": "05",
+    "title": "Uso Aceptable",
+    "body": "Usted acepta no: Subir contenido que no le pertenezca o sobre el que no tenga derecho de uso; Enviar información falsa, engañosa o que suplante a otra persona; Intentar interrumpir el Servicio, realizar scraping a ritmos abusivos u obtener acceso no autorizado; Usar el Servicio para fines ilícitos o para enviar spam."
+   },
+   {
+    "n": "06",
+    "title": "Cuentas",
+    "body": "Algunas funciones (guardar currículums en línea, cuentas de reclutadores) requieren una cuenta. Usted es responsable de mantener la confidencialidad de sus credenciales y de la actividad realizada con su cuenta. Podemos suspender las cuentas que infrinjan estos Términos."
+   },
+   {
+    "n": "07",
+    "title": "Propiedad Intelectual",
+    "body": "El nombre de Cvyon, el diseño, el código de maquetación de las plantillas y todo el contenido del sitio, salvo Su Contenido, siguen siendo de nuestra propiedad o de la de nuestros licenciantes. No puede copiar ni redistribuir el código o los diseños subyacentes del Servicio, salvo que el propio Servicio lo permita (por ejemplo, exportando su propio currículum)."
+   },
+   {
+    "n": "08",
+    "title": "Sin Garantía de Empleo",
+    "body": "Cvyon le ayuda a presentarse bien; no garantiza entrevistas, ofertas de trabajo ni ningún resultado laboral. Las puntuaciones de ATS y las sugerencias de IA son orientación, no asesoramiento profesional en materia de carrera."
+   },
+   {
+    "n": "09",
+    "title": "Renuncias y limitación de responsabilidad",
+    "body": "El Servicio se proporciona «tal cual» sin garantías de ningún tipo. En la máxima medida permitida por la ley, Cvyon no será responsable por daños indirectos, incidentales o consecuentes que surjan del uso del Servicio. Nuestra responsabilidad total se limita al importe que nos hayas pagado por el Servicio (el creador principal es gratuito, por lo tanto: cero)."
+   },
+   {
+    "n": "10",
+    "title": "Cambios en estos Términos",
+    "body": "Podemos actualizar estos Términos de vez en cuando. Los cambios sustanciales se anunciarán en el sitio, y el uso continuado del Servicio después de que los cambios entren en vigor constituye la aceptación."
+   },
+   {
+    "n": "11",
+    "title": "Contacto",
+    "body": "¿Preguntas sobre estos Términos? Contáctanos a través de la {support_link}página de soporte{/support_link} o en support@cvyon.com."
+   }
+  ]
+ }
+}

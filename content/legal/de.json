@@ -1,0 +1,93 @@
+{
+ "locale": "de",
+ "privacy": {
+  "eyebrow": "Datenschutz & Einwilligung",
+  "h1": "Ihre Daten. Ihre Entscheidungen.",
+  "sub": "Eine klarere, ruhigere Möglichkeit zu verstehen, wie Cvyon Lebenslauf-, Konto- und Recruiter-Matching-Daten verarbeitet.",
+  "s1_eyebrow": "01 · KI-Datenverarbeitung",
+  "s1_title": "KI-Funktionen und Ihre Inhalte",
+  "s1_body": "Durch die Nutzung der KI-Funktionen von Cvyon (wie ATS-Scoring, Umschreiben und Import) erkennen Sie an, dass Ihre Lebenslaufinhalte und Stellenbeschreibungen von {b}Google Gemini AI{/b} verarbeitet werden. Die API-Bedingungen von Google gelten. Über die API gesendete Prompts können von Google bis zu 30 Tage lang zur Missbrauchsüberwachung aufbewahrt werden, werden jedoch {b}nicht{/b} zum Training der Basismodelle von Google verwendet.",
+  "s2_eyebrow": "02 · Ihre Rechte",
+  "s2_title": "Zugriff, Export und Löschung gemäß DSGVO",
+  "s2_body": "Wenn Sie in der EU ansässig sind, haben Sie das Recht, auf Ihre personenbezogenen Daten zuzugreifen, sie zu berichtigen, zu exportieren und zu löschen. Sie können jederzeit eine Exportierung oder Löschung Ihrer Daten über support@cvyon.com beantragen.",
+  "cta_delete": "Datenlöschung beantragen",
+  "cta_export": "Meine Daten exportieren",
+  "s3_eyebrow": "03 · Datenschutzrechte in Kalifornien",
+  "s3_title": "CCPA / CPRA",
+  "s3_body": "Einwohner Kaliforniens haben das Recht, dem „Verkauf“ oder der „Weitergabe“ ihrer personenbezogenen Daten zu widersprechen. Wenn Sie dem Cvyon-Talentpool beigetreten sind, können Ihre Daten an Recruiter weitergegeben werden.",
+  "toggle_label": "Meine personenbezogenen Daten nicht verkaufen",
+  "toggle_sub": "Widersprechen Sie der Weitergabe Ihres Lebenslaufs an Recruiter.",
+  "s4_eyebrow": "04 · Datenspeicherung",
+  "s4_title": "Wie lange wir Daten speichern",
+  "s4_body": "Wir speichern Analyseereignisse für 12 Monate. Inaktive Kandidatenprofile werden nach 24 Monaten Inaktivität automatisch anonymisiert oder gelöscht.",
+  "s5_eyebrow": "05 · Datenschutzbeauftragter",
+  "s5_title": "Fragen zu Ihren Daten?",
+  "s5_body": "Wenn Sie Fragen zu dieser Datenschutzrichtlinie, Ihren Rechten oder zum Umgang mit Ihren Daten haben, wenden Sie sich bitte an unseren Datenschutzbeauftragten: {b}Cvyon-Datenschutzteam{/b}, E-Mail: support@cvyon.com",
+  "back": "← Zurück zu Cvyon"
+ },
+ "terms": {
+  "eyebrow": "Rechtliches",
+  "h1": "Nutzungsbedingungen",
+  "sub": "Die Bedingungen für Ihre Nutzung von Cvyon.",
+  "updated": "Zuletzt aktualisiert: September 2026",
+  "disclaimer": "Dies ist eine allgemeinverständliche Zusammenfassung unserer Bedingungen, die für den Start vorbereitet wurde. Wenn Cvyon wächst und erhebliche Einnahmen oder sensible Datenströme verarbeitet, sollten diese Bedingungen von qualifizierten Rechtsberatern geprüft werden.",
+  "back": "Zurück zu Cvyon",
+  "sections": [
+   {
+    "n": "01",
+    "title": "Der Dienst",
+    "body": "Cvyon („wir“, „uns“) bietet unter cvyon.com (der „Dienst“) einen kostenlosen Online-Lebenslauf-Generator, Anschreiben-Generator, ATS-Bewertungstool und verwandte Karriere-Tools an. Die Nutzung des zentralen Lebenslauf-Generators ist kostenlos und erfordert kein Konto. Durch den Zugriff auf oder die Nutzung des Dienstes stimmen Sie diesen Nutzungsbedingungen zu."
+   },
+   {
+    "n": "02",
+    "title": "Ihre Inhalte",
+    "body": "Sie behalten das vollständige Eigentum an den Lebensläufen, Anschreiben und anderen Materialien, die Sie mit Cvyon erstellen („Ihre Inhalte“). Durch die Nutzung des Dienstes gewähren Sie uns eine beschränkte, weltweite Lizenz, Ihre Inhalte ausschließlich zum Betrieb des Dienstes zu speichern, zu verarbeiten und anzuzeigen – beispielsweise um Ihren Lebenslauf darzustellen, PDF/DOCX-Exporte zu erstellen und die von Ihnen angeforderten KI-Funktionen auszuführen. Wir verkaufen Ihre Inhalte nicht."
+   },
+   {
+    "n": "03",
+    "title": "KI-Funktionen",
+    "body": "Funktionen wie KI-Textumschreibung, ATS-Bewertung und Lebenslauf-Import werden von KI-Anbietern Dritter bereitgestellt (derzeit Google Gemini). Wenn Sie diese Funktionen nutzen, werden die von Ihnen übermittelten Inhalte von diesem Anbieter gemäß dessen Bedingungen verarbeitet. KI-Ausgaben werden automatisch generiert und können ungenau sein – prüfen Sie sie stets, bevor Sie sie an Arbeitgeber senden."
+   },
+   {
+    "n": "04",
+    "title": "Talentpool & Weitergabe an Recruiter",
+    "body": "Cvyon bietet einen optionalen Talentpool an, über den verifizierte Recruiter Kandidaten entdecken können. Sie werden niemals standardmäßig zum Talentpool hinzugefügt: Eine Weitergabe erfolgt nur, wenn Sie ausdrücklich über die Einwilligungssteuerung im Builder oder in Ihren {settings_link}Einstellungen{/settings_link} einwilligen. Sie können diese Einwilligung jederzeit an derselben Stelle oder über die Seite {data_link}Datenverwaltung{/data_link} widerrufen. Sie können jederzeit über support@cvyon.com einen Export oder die Löschung Ihrer Daten beantragen."
+   },
+   {
+    "n": "05",
+    "title": "Zulässige Nutzung",
+    "body": "Sie erklären sich damit einverstanden, keine Inhalte hochzuladen, die Sie nicht besitzen oder zu deren Nutzung Sie nicht berechtigt sind; keine falschen, irreführenden oder sich als andere Person ausgebenden Informationen zu übermitteln; nicht zu versuchen, den Dienst zu stören, Daten in missbräuchlichem Umfang zu scrapen oder unbefugten Zugriff auf den Dienst zu erlangen; den Dienst nicht für rechtswidrige Zwecke oder zum Versenden von Spam zu nutzen."
+   },
+   {
+    "n": "06",
+    "title": "Konten",
+    "body": "Einige Funktionen (Online-Speichern von Lebensläufen, Recruiter-Konten) erfordern ein Konto. Sie sind dafür verantwortlich, Ihre Zugangsdaten vertraulich zu behandeln und für Aktivitäten unter Ihrem Konto. Wir können Konten sperren, die gegen diese Bedingungen verstoßen."
+   },
+   {
+    "n": "07",
+    "title": "Geistiges Eigentum",
+    "body": "Der Name Cvyon, das Design, der Layout-Code der Vorlagen und alle Website-Inhalte außer Ihren Inhalten bleiben unser Eigentum oder das unserer Lizenzgeber. Sie dürfen den zugrunde liegenden Code oder die Designs des Dienstes nicht kopieren oder weiterverbreiten, außer soweit der Dienst selbst dies erlaubt (z. B. beim Export Ihres eigenen Lebenslaufs)."
+   },
+   {
+    "n": "08",
+    "title": "Keine Beschäftigungsgarantie",
+    "body": "Cvyon hilft Ihnen, sich gut zu präsentieren; es garantiert jedoch keine Vorstellungsgespräche, Arbeitsangebote oder sonstige Beschäftigungsergebnisse. ATS-Bewertungen und KI-Vorschläge sind Orientierungshilfen und keine professionelle Karriereberatung."
+   },
+   {
+    "n": "09",
+    "title": "Haftungsausschluss & Haftungsbeschränkung",
+    "body": "Der Dienst wird „wie besehen“ ohne jegliche Gewährleistung bereitgestellt. Soweit gesetzlich zulässig, haftet Cvyon nicht für mittelbare, zufällige oder Folgeschäden, die aus Ihrer Nutzung des Dienstes entstehen. Unsere Gesamthaftung ist auf den Betrag beschränkt, den Sie für den Dienst bezahlt haben (der Basiseditor ist kostenlos, also: null)."
+   },
+   {
+    "n": "10",
+    "title": "Änderungen dieser Bedingungen",
+    "body": "Wir können diese Bedingungen von Zeit zu Zeit aktualisieren. Wesentliche Änderungen werden auf der Website angekündigt, und die weitere Nutzung des Dienstes nach Inkrafttreten der Änderungen gilt als Zustimmung."
+   },
+   {
+    "n": "11",
+    "title": "Kontakt",
+    "body": "Fragen zu diesen Bedingungen? Kontaktieren Sie uns über die {support_link}Support-Seite{/support_link} oder unter support@cvyon.com."
+   }
+  ]
+ }
+}
