@@ -34,6 +34,7 @@ const staticRoutes: { path: string; priority: number }[] = [
 // Localized page routes that exist under app/[locale]/
 const localizedPageRoutes: { path: string; priority: number }[] = [
   { path: '', priority: 1 },           // /{locale}/ landing
+  { path: '/build', priority: 0.9 },
   { path: '/ats-grader', priority: 0.8 },
   { path: '/blog', priority: 0.8 },
   { path: '/privacy', priority: 0.5 },
