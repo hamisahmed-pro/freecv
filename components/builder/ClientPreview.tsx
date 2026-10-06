@@ -11,7 +11,8 @@ import 'react-pdf/dist/Page/TextLayer.css';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;
 
-export default function ClientPreview({ dict }: { dict: Record<string, string> }) {
+export default function ClientPreview({ dict }: { dict?: Record<string, string> }) {
+  const t = (k: string) => dict?.[k] || k;
   const searchParams = useSearchParams();
   const templateParam = searchParams.get('template') as TemplateKey;
   const data = useResumeStore(state => state.data);
@@ -37,8 +38,8 @@ export default function ClientPreview({ dict }: { dict: Record<string, string> }
     return (
       <div className="flex min-h-screen items-center justify-center bg-cream px-4 font-brand">
         <div className="max-w-sm rounded-2xl border border-line bg-paper p-8 text-center shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
-          <p className="text-lg font-extrabold tracking-tight text-navy">{dict["builder.preview.invalid_template"]}</p>
-          <p className="mt-2 text-sm leading-relaxed text-muted">{dict["builder.preview.this_preview_link_doesn_apos_t_point_to"]}</p>
+          <p className="text-lg font-extrabold tracking-tight text-navy">{t("builder.preview.invalid_template")}</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted">{t("builder.preview.this_preview_link_doesn_apos_t_point_to")}</p>
         </div>
       </div>
     );
@@ -48,7 +49,7 @@ export default function ClientPreview({ dict }: { dict: Record<string, string> }
     <div id="pdf-generating" className="flex min-h-screen items-center justify-center bg-cream px-4 font-brand">
       <div className="flex items-center gap-3 rounded-2xl border border-line bg-paper px-6 py-5 shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
         <span className="h-5 w-5 animate-spin rounded-full border-2 border-line border-t-brand" aria-hidden="true" />
-        <p className="text-sm font-bold text-navy">{dict["builder.preview.generating_pdf"]}</p>
+        <p className="text-sm font-bold text-navy">{t("builder.preview.generating_pdf")}</p>
       </div>
     </div>
   );
