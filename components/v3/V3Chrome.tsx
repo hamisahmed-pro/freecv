@@ -48,10 +48,12 @@ export function V3Nav({
   logoSub,
   links = DEFAULT_LINKS,
   cta = { label: "Build free →", href: "/build" },
+  switcher,
 }: {
   logoSub?: string;
   links?: V3NavLink[];
   cta?: { label: string; href: string };
+  switcher?: React.ReactNode;
 }) {
   const pathname = usePathname() || "";
   const [open, setOpen] = useState(false);
@@ -83,6 +85,7 @@ export function V3Nav({
             ))}
           </nav>
           <div className="flex items-center gap-2.5">
+            {switcher}
             <Link
               href={cta.href}
               className="hidden items-center gap-2 rounded-[10px] bg-brand px-[18px] py-3 text-[12px] font-extrabold text-white shadow-[0_8px_18px_rgba(85,72,245,0.22)] transition-transform hover:-translate-y-px sm:inline-flex"
@@ -188,6 +191,7 @@ export function V3Page({
   cta,
   children,
   wide = false,
+  switcher,
 }: {
   pageName: string;
   logoSub?: string;
@@ -195,11 +199,12 @@ export function V3Page({
   cta?: { label: string; href: string };
   children: React.ReactNode;
   wide?: boolean;
+  switcher?: React.ReactNode;
 }) {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-cream font-brand text-navy antialiased">
       <AnalyticsTracker />
-      <V3Nav logoSub={logoSub} links={links} cta={cta} />
+      <V3Nav logoSub={logoSub} links={links} cta={cta} switcher={switcher} />
       <main className={cn("mx-auto px-5 py-14", wide ? "max-w-[1120px]" : "max-w-[1120px]")}>
         {children}
       </main>
