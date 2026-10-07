@@ -2,9 +2,25 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Eye, Download, MapPin, Monitor, ArrowLeft, Loader2, TrendingUp } from 'lucide-react';
+import { Eye, Download, MapPin, Monitor, ArrowLeft, Loader2, TrendingUp, Link2, Megaphone, Target } from 'lucide-react';
 import { V3Page, V3Eyebrow, V3Pill } from '@/components/v3/V3Chrome';
 import { trackEvent } from '@/lib/analytics';
+
+function SourceList({ items, emptyText }: { items: any[]; emptyText: string }) {
+  if (!items || items.length === 0) {
+    return <p className="py-8 text-center text-sm font-bold uppercase tracking-[0.14em] text-muted">{emptyText}</p>;
+  }
+  return (
+    <div className="space-y-4">
+      {items.map((item: any, i: number) => (
+        <div key={i} className="flex items-center justify-between border-b border-line pb-3 last:border-0 last:pb-0">
+          <span className="truncate text-[16px] font-bold text-navy">{item.name}</span>
+          <span className="ml-3 shrink-0 rounded-full bg-navy px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white">{item.count}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function AnalyticsDashboard() {
   const [data, setData] = useState<any>(null);
@@ -84,6 +100,33 @@ export default function AnalyticsDashboard() {
           </div>
         </div>
 
+        {/* Traffic Sources */}
+        <div className="mb-10">
+          <h2 className="mb-5 flex items-center gap-2 text-xl font-extrabold tracking-tight text-navy">
+            <Link2 size={22} className="text-teal" /> Traffic Sources
+          </h2>
+          <div className="grid gap-8 lg:grid-cols-3">
+            <div className="rounded-2xl border border-line bg-paper p-6 shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
+              <h3 className="mb-4 flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-[0.14em] text-muted">
+                <Link2 size={16} className="text-brand" /> Top Referrers
+              </h3>
+              <SourceList items={data?.topReferrers} emptyText="No referrer data yet." />
+            </div>
+            <div className="rounded-2xl border border-line bg-paper p-6 shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
+              <h3 className="mb-4 flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-[0.14em] text-muted">
+                <Megaphone size={16} className="text-coral" /> Top UTM Sources
+              </h3>
+              <SourceList items={data?.topUtmSources} emptyText="No UTM data yet. Tag your links with ?utm_source=…" />
+            </div>
+            <div className="rounded-2xl border border-line bg-paper p-6 shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
+              <h3 className="mb-4 flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-[0.14em] text-muted">
+                <Target size={16} className="text-teal" /> Top UTM Campaigns
+              </h3>
+              <SourceList items={data?.topUtmCampaigns} emptyText="No campaign data yet." />
+            </div>
+          </div>
+        </div>
+
         <div className="grid gap-8 lg:grid-cols-2">
           {/* Geolocation Data */}
           <div>
@@ -123,6 +166,8 @@ export default function AnalyticsDashboard() {
                         <p className="font-bold">{ev.event_type.replace(/_/g, ' ').toUpperCase()}</p>
                         <p className="mt-1 text-xs font-medium uppercase tracking-[0.12em] text-white/50">
                           {new Date(ev.created_at).toLocaleString()} • {ev.device_type || 'Desktop'} • {ev.country || 'Unknown'}
+                          {ev.utm_source ? ` • ${ev.utm_source}` : ''}
+                          {ev.referrer && ev.referrer !== 'direct' ? ` • ${ev.referrer}` : ''}
                         </p>
                       </div>
                     </div>

@@ -69,6 +69,75 @@ function getReferrer(): string {
   }
 }
 
+// ---- UTM Attribution ----
+// Reads utm_* params from the URL on first visit and persists them in
+// localStorage so they survive across page navigations within the session.
+// A later visit with NEW utm params overwrites the stored ones (last-touch).
+export interface UTMParams {
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  utm_term: string | null;
+  utm_content: string | null;
+}
+
+const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'] as const;
+const UTM_STORAGE_KEY = 'cvyon_utm_params';
+
+export function getUTMParams(): UTMParams {
+  const empty: UTMParams = {
+    utm_source: null,
+    utm_medium: null,
+    utm_campaign: null,
+    utm_term: null,
+    utm_content: null,
+  };
+  if (typeof window === 'undefined') return empty;
+
+  // 1. Check the current URL for fresh UTM params
+  let fresh: Partial<UTMParams> = {};
+  let hasFresh = false;
+  try {
+    const search = new URLSearchParams(window.location.search);
+    for (const key of UTM_KEYS) {
+      const val = search.get(key);
+      if (val) {
+        (fresh as any)[key] = val;
+        hasFresh = true;
+      }
+    }
+  } catch {
+    // URL parsing failed; fall through to stored
+  }
+
+  // 2. If fresh params exist, persist them (last-touch attribution)
+  if (hasFresh) {
+    try {
+      localStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(fresh));
+    } catch {
+      // storage unavailable; still return fresh values
+    }
+    return { ...empty, ...fresh };
+  }
+
+  // 3. Otherwise return previously stored params (if any)
+  try {
+    const stored = localStorage.getItem(UTM_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      const result = { ...empty };
+      for (const key of UTM_KEYS) {
+        if (typeof parsed[key] === 'string') (result as any)[key] = parsed[key];
+      }
+      return result;
+    }
+  } catch {
+    // fall through
+  }
+
+  return empty;
+}
+
 // ---- Geo Data (cached per session) ----
 interface GeoData {
   country: string;
@@ -90,7 +159,7 @@ async function getGeoData(): Promise<GeoData> {
     const timeout = setTimeout(() => controller.abort(), 3000);
     const res = await fetch('https://ipapi.co/json/', { signal: controller.signal });
     clearTimeout(timeout);
-    
+
     if (res.ok) {
       const data = await res.json();
       if (data.country_name) {
@@ -109,7 +178,7 @@ async function getGeoData(): Promise<GeoData> {
     const timeout = setTimeout(() => controller.abort(), 3000);
     const res = await fetch('/api/geo', { signal: controller.signal });
     clearTimeout(timeout);
-    
+
     if (res.ok) {
       const data = await res.json();
       const geo = { country: data.country || '', city: data.city || '' };
@@ -127,6 +196,7 @@ async function getGeoData(): Promise<GeoData> {
 export const trackEvent = async (eventType: string, templateId?: string, metadata?: Record<string, any>) => {
   try {
     const geo = await getGeoData();
+    const utm = getUTMParams();
 
     await supabase.from('analytics_events').insert([{
       event_type: eventType,
@@ -138,6 +208,11 @@ export const trackEvent = async (eventType: string, templateId?: string, metadat
       browser: getBrowser(),
       os: getOS(),
       referrer: getReferrer(),
+      utm_source: utm.utm_source,
+      utm_medium: utm.utm_medium,
+      utm_campaign: utm.utm_campaign,
+      utm_term: utm.utm_term,
+      utm_content: utm.utm_content,
       page_url: typeof window !== 'undefined' ? window.location.pathname : null,
       screen_width: typeof window !== 'undefined' ? window.innerWidth : null,
       metadata: metadata || null
