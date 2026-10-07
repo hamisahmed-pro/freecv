@@ -28,7 +28,6 @@ const staticRoutes: { path: string; priority: number }[] = [
   { path: '/support', priority: 0.6 },
   { path: '/privacy', priority: 0.5 },
   { path: '/terms', priority: 0.5 },
-  { path: '/manage-data', priority: 0.4 },
 ];
 
 // Localized page routes that exist under app/[locale]/
