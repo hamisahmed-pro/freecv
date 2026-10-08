@@ -6,7 +6,8 @@ export type Mode = "dark" | "light";
 
 export interface Tokens {
   mode: Mode;
-  bg: string; rail: string; surface: string; surface2: string; inset: string;
+  bg: string; rail: string; railBorder: string; onRail: string; onRailMuted: string; onRailFaint: string; railInset: string;
+  surface: string; surface2: string; inset: string;
   border: string; borderStrong: string;
   text: string; muted: string; faint: string;
   verm: string; cob: string; green: string; gold: string; hi: string;
@@ -19,7 +20,8 @@ export interface Tokens {
 export const T: Record<Mode, Tokens> = {
   dark: {
     mode: "dark",
-    bg: "#151a46", rail: "#10143a", surface: "#1c2154", surface2: "#252b66", inset: "#0f1233",
+    bg: "#151a46", rail: "#10143a", railBorder: "#2e3577", onRail: "#F2ECE1", onRailMuted: "#a3a7c8", onRailFaint: "#6e74a3", railInset: "#0f1233",
+    surface: "#1c2154", surface2: "#252b66", inset: "#0f1233",
     border: "#2e3577", borderStrong: "#f6f5ef",
     text: "#F2ECE1", muted: "#a3a7c8", faint: "#6e74a3",
     verm: "#ff604b", cob: "#5548f5", green: "#24c9bd", gold: "#ffd85a", hi: "#ffd85a",
@@ -28,7 +30,8 @@ export const T: Record<Mode, Tokens> = {
   },
   light: {
     mode: "light",
-    bg: "#ffffff", rail: "#f7f7fc", surface: "#ffffff", surface2: "#f4f5fb", inset: "#f0f1f8",
+    bg: "#ffffff", rail: "#151a46", railBorder: "#2e3577", onRail: "#f6f5ef", onRailMuted: "#b9bdd6", onRailFaint: "#7e84a8", railInset: "#1c2154",
+    surface: "#ffffff", surface2: "#f4f5fb", inset: "#f0f1f8",
     border: "#e4e5ef", borderStrong: "#151a46",
     text: "#151a46", muted: "#5f6379", faint: "#a8abc0",
     verm: "#ff604b", cob: "#5548f5", green: "#0ea5a0", gold: "#d9a021", hi: "#ffd85a",
