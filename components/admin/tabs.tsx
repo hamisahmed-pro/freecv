@@ -29,6 +29,18 @@ function groupBy(events: any[], key: string, fallback = "Unknown") {
   return events.reduce((acc: Record<string, number>, x) => { const v = x[key] || fallback; acc[v] = (acc[v] || 0) + 1; return acc; }, {});
 }
 const topN = (o: Record<string, number>, n = 7) => Object.entries(o).sort((a, b) => b[1] - a[1]).slice(0, n);
+// Traffic sources: normalize a raw referrer URL to a hostname, treating
+// empty and self-referrals as direct traffic.
+function referrerHost(ref: string): string {
+  if (!ref) return "direct";
+  try {
+    const u = new URL(ref.startsWith("http") ? ref : `https://${ref}`);
+    const host = u.hostname.replace(/^www\./, "");
+    return host === "cvyon.com" ? "direct" : host;
+  } catch {
+    return ref.slice(0, 40) || "direct";
+  }
+}
 // Event types that genuinely carry a template context (template_id is a real
 // template key on these). Template-less events (page views, landing, ATS
 // grader, cover letter) must not inflate the "templates used" breakdown.
@@ -151,6 +163,31 @@ export function AnalyticsTab({ analytics }: { analytics: any[] }) {
     [human]
   );
   const browsers = useMemo(() => topN(groupBy(human, "browser"), 6), [human]);
+  const referrers = useMemo(() => {
+    const counts: Record<string, number> = {};
+    human.forEach((e) => {
+      const host = referrerHost(e.referrer || "");
+      counts[host] = (counts[host] || 0) + 1;
+    });
+    return topN(counts, 8);
+  }, [human]);
+  const utmSources = useMemo(() => {
+    const counts: Record<string, number> = {};
+    human.forEach((e) => {
+      if (e.utm_source) counts[e.utm_source] = (counts[e.utm_source] || 0) + 1;
+    });
+    return topN(counts, 8);
+  }, [human]);
+  const utmCampaigns = useMemo(() => {
+    const counts: Record<string, number> = {};
+    human.forEach((e) => {
+      if (e.utm_campaign) {
+        const label = e.utm_source ? `${e.utm_source} / ${e.utm_campaign}` : e.utm_campaign;
+        counts[label] = (counts[label] || 0) + 1;
+      }
+    });
+    return topN(counts, 8);
+  }, [human]);
 
   const heat = useMemo(() => {
     const g = Array.from({ length: 7 }, () => [0, 0, 0, 0]);
@@ -182,6 +219,21 @@ export function AnalyticsTab({ analytics }: { analytics: any[] }) {
           <Bars data={templates.map(([k, v]) => ({ label: k, value: v }))} color={t.gold} /></Card></Reveal>
         <Reveal delay={80}><Card className="p-5"><SectionLabel color={t.cob}>browsers</SectionLabel>
           <Bars data={browsers.map(([k, v]) => ({ label: k, value: v }))} color={t.cob} /></Card></Reveal>
+      </div>
+
+      <Reveal><SectionLabel color={t.verm}>traffic sources · where visitors came from</SectionLabel>
+        <p className="pb-2 text-[11px]" style={{ color: t.faint }}>Referrer hostnames plus UTM-tagged campaigns (human sessions only)</p></Reveal>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <Reveal><Card className="p-5"><SectionLabel>top referrers</SectionLabel>
+          <Bars data={referrers.map(([k, v]) => ({ label: k, value: v }))} color={t.verm} /></Card></Reveal>
+        <Reveal delay={80}><Card className="p-5"><SectionLabel>utm sources</SectionLabel>
+          {utmSources.length > 0
+            ? <Bars data={utmSources.map(([k, v]) => ({ label: k, value: v }))} color={t.cob} />
+            : <p className="text-[11px]" style={{ color: t.faint }}>No UTM-tagged visits yet — tag shared links with ?utm_source=… to track them here.</p>}</Card></Reveal>
+        <Reveal delay={160}><Card className="p-5"><SectionLabel>utm campaigns</SectionLabel>
+          {utmCampaigns.length > 0
+            ? <Bars data={utmCampaigns.map(([k, v]) => ({ label: k, value: v }))} color={t.gold} />
+            : <p className="text-[11px]" style={{ color: t.faint }}>No campaigns tracked yet.</p>}</Card></Reveal>
       </div>
     </div>
   );
