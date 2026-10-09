@@ -19,6 +19,33 @@ const MAX_TEXT_CHARS = 30000;
 // zero Gemini quota.
 const IMPORT_CACHE_TTL_SECONDS = 30 * 24 * 3600;
 
+// Vercel kills this function at maxDuration (60s) and answers with a
+// plain-text 504 ("An error occurred with your deployment...") that the
+// client cannot parse as JSON. Time-box the AI work so we always return a
+// JSON error ourselves before that happens.
+const AI_DEADLINE_MS = 48_000;
+
+class AiTimeoutError extends Error {
+  constructor() {
+    super('AI_TIMEOUT');
+    this.name = 'AiTimeoutError';
+  }
+}
+
+async function withAiDeadline<T>(promise: Promise<T>): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new AiTimeoutError()), AI_DEADLINE_MS);
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
 function getImportCache(): Redis | null {
   try {
     if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
@@ -240,7 +267,7 @@ JSON Schema to match:
 
     if (resumeText.length >= MIN_TEXT_CHARS) {
       const prompt = `${schemaBlock}\n\nRESUME TEXT:\n${resumeText.substring(0, MAX_TEXT_CHARS)}`;
-      const parsedData = await generateContentWithRetry(prompt, systemInstruction, 8192, true, [], 'import_resume');
+      const parsedData = await withAiDeadline(generateContentWithRetry(prompt, systemInstruction, 8192, true, [], 'import_resume'));
       await storeInCache(parsedData);
       return NextResponse.json(parsedData, { headers: { 'X-Cache': 'MISS' } });
     }
@@ -256,10 +283,16 @@ JSON Schema to match:
       }
     }];
     const fallbackPrompt = `${schemaBlock}\n\nThe resume is attached as a PDF document. Read it and extract the details.`;
-    const parsedData = await generateContentWithRetry(fallbackPrompt, systemInstruction, 8192, true, mediaParts, 'import_resume_pdf');
+    const parsedData = await withAiDeadline(generateContentWithRetry(fallbackPrompt, systemInstruction, 8192, true, mediaParts, 'import_resume_pdf'));
     await storeInCache(parsedData);
     return NextResponse.json(parsedData, { headers: { 'X-Cache': 'MISS' } });
   } catch (error: any) {
+    if (error instanceof AiTimeoutError) {
+      return NextResponse.json(
+        { error: 'The AI service is taking too long right now. Please try again in a minute.', code: 'AI_TIMEOUT' },
+        { status: 503 }
+      );
+    }
     if (error instanceof AiQuotaExhaustedError) {
       return NextResponse.json({ error: error.message, code: 'AI_UNAVAILABLE' }, { status: 503 });
     }
