@@ -37,7 +37,7 @@ async function friendlyErrorMessage(res: Response): Promise<string> {
   }
 }
 
-export function ImportResume() {
+export function ImportResume({ dict }: { dict: Record<string, string> }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -184,18 +184,14 @@ export function ImportResume() {
         onClick={() => setIsOpen(true)}
         className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-blue-700 font-semibold rounded-xl border border-blue-200 transition-all mb-6"
       >
-        <UploadCloud size={18} />
-        Import Existing Resume (PDF)
-      </button>
+        <UploadCloud size={18} />{dict["builder.import.import_existing_resume_pdf"]}</button>
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
             <div className="p-4 border-b flex justify-between items-center bg-gray-50">
               <h3 className="font-bold flex items-center gap-2">
-                <FileText size={18} className="text-blue-600" />
-                Import from PDF
-              </h3>
+                <FileText size={18} className="text-blue-600" />{dict["builder.import.import_from_pdf"]}</h3>
               <button 
                 onClick={() => setIsOpen(false)}
                 className="p-1.5 rounded-full hover:bg-gray-200 text-gray-500 transition-colors"
@@ -206,9 +202,7 @@ export function ImportResume() {
             </div>
             
             <div className="p-6">
-              <p className="text-sm text-gray-600 mb-6 text-center">
-                Upload your old resume and our AI will instantly extract your details and populate the builder.
-              </p>
+              <p className="text-sm text-gray-600 mb-6 text-center">{dict["builder.import.upload_your_old_resume_and_our_ai_will_i"]}</p>
 
               <div
                 onDragOver={handleDragOver}
@@ -232,14 +226,14 @@ export function ImportResume() {
                 {isUploading ? (
                   <div className="flex flex-col items-center text-blue-600">
                     <Loader2 size={32} className="animate-spin mb-3" />
-                    <span className="font-medium">Extracting data...</span>
-                    <span className="text-xs text-blue-400 mt-1">This usually takes about 5 seconds</span>
+                    <span className="font-medium">{dict["builder.import.extracting_data"]}</span>
+                    <span className="text-xs text-blue-400 mt-1">{dict["builder.import.this_usually_takes_about_5_seconds"]}</span>
                   </div>
                 ) : (
                   <>
                     <UploadCloud size={32} className={cn("mb-3", isDragging ? "text-blue-500" : "text-gray-400")} />
-                    <span className="font-semibold text-gray-700">Click to upload or drag and drop</span>
-                    <span className="text-xs text-gray-500 mt-1">PDF only (max 5MB)</span>
+                    <span className="font-semibold text-gray-700">{dict["builder.import.click_to_upload_or_drag_and_drop"]}</span>
+                    <span className="text-xs text-gray-500 mt-1">{dict["builder.import.pdf_only_max_5mb"]}</span>
                   </>
                 )}
               </div>
