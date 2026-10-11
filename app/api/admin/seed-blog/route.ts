@@ -60,7 +60,7 @@ async function seedOne(dir: string, file: string): Promise<Record<string, unknow
 export async function GET(request: Request) {
   const url = new URL(request.url);
   if (url.searchParams.get('key') !== SEED_KEY) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized', v: 'key-v2' }, { status: 401 });
   }
   const only = url.searchParams.get('slug');
   const dir = path.join(process.cwd(), 'seed-data', 'blog-posts');
