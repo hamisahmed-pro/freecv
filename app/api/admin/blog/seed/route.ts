@@ -1,93 +1,57 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { requireAdmin, adminFail } from '@/lib/admin-auth';
-import { readFile } from 'fs/promises';
-import path from 'path';
 
 export const dynamic = 'force-dynamic';
 
-// One-time seeder for the 8 SEO articles (Oct 2026 batch).
-// Reads bundled JSON from the filesystem and inserts into blog_posts via the
-// service-role client. Posts are processed IN PARALLEL to stay well under the
-// serverless execution timeout. ?slug=<slug> seeds a single post.
-// Safe to re-run: existing slugs are skipped.
-// DELETE THIS ROUTE after the seed run.
-const FILES = [
-  'free-ats-resume-checker.json',
-  'nigerian-cv-format-guide.json',
-  'customer-service-resume-example.json',
-  'how-to-beat-applicant-tracking-systems.json',
-  'software-developer-resume-example.json',
-  'data-analyst-resume-example.json',
-  'what-is-applicant-tracking-system.json',
-  'free-ats-resume-test.json',
-];
+// DIAGNOSTIC seeder — returns a progress marker after each step so we can
+// see exactly where the authenticated path dies. ?step=N controls how far it
+// goes: 1=auth only, 2=+list dir, 3=+read one file, 4=+select, 5=+insert.
+// DELETE THIS ROUTE after diagnosing.
+import { readdir, readFile } from 'fs/promises';
+import path from 'path';
 
-async function seedOne(dir: string, file: string): Promise<Record<string, unknown>> {
-  try {
-    const raw = await readFile(path.join(dir, file), 'utf8');
-    const d = JSON.parse(raw);
-    const slug = String(d.slug || '').trim();
-    if (!slug || !d.title || !d.content_html) {
-      return { file, status: 'skipped', reason: 'missing slug/title/content' };
-    }
-
-    const { data: existing, error: selErr } = await supabaseAdmin
-      .from('blog_posts')
-      .select('id')
-      .eq('slug', slug)
-      .maybeSingle();
-    if (selErr) return { slug, status: 'error', error: `select: ${selErr.message}` };
-    if (existing?.id) return { slug, status: 'exists' };
-
-    const { data, error } = await supabaseAdmin
-      .from('blog_posts')
-      .insert([
-        {
-          title: d.title,
-          slug,
-          content: d.content_html,
-          meta_description: d.meta_description || null,
-          header_image: d.header_image || null,
-          is_published: true,
-        },
-      ])
-      .select('id, slug')
-      .single();
-
-    if (error) return { slug, status: 'error', error: `insert: ${error.message}` };
-    return { slug, status: 'created', id: data.id };
-  } catch (e: any) {
-    return { file, status: 'error', error: e?.message || 'unknown' };
-  }
-}
-
-async function runSeed(request: Request) {
+async function run(request: Request) {
+  const step = parseInt(new URL(request.url).searchParams.get('step') || '5', 10);
+  const log: string[] = [];
   try {
     await requireAdmin();
   } catch {
     return adminFail();
   }
+  log.push('auth-ok');
+  if (step <= 1) return NextResponse.json({ log });
 
-  const dir = path.join(process.cwd(), 'seed-data', 'blog-posts');
-  const only = new URL(request.url).searchParams.get('slug');
-  const files = only
-    ? FILES.filter((f) => f.replace(/\.json$/, '') === only)
-    : FILES;
-  if (only && files.length === 0) {
-    return NextResponse.json({ error: `unknown slug: ${only}` }, { status: 400 });
+  try {
+    const dir = path.join(process.cwd(), 'seed-data', 'blog-posts');
+    log.push('cwd=' + process.cwd());
+    const files = await readdir(dir);
+    log.push('readdir-ok:' + files.length);
+    if (step <= 2) return NextResponse.json({ log });
+
+    const raw = await readFile(path.join(dir, files[0]), 'utf8');
+    const d = JSON.parse(raw);
+    log.push('read-ok:' + d.slug);
+    if (step <= 3) return NextResponse.json({ log });
+
+    const { data: existing, error: selErr } = await supabaseAdmin
+      .from('blog_posts')
+      .select('id')
+      .eq('slug', d.slug)
+      .maybeSingle();
+    log.push('select-ok:' + (selErr ? 'err=' + selErr.message : 'found=' + !!existing?.id));
+    if (step <= 4) return NextResponse.json({ log });
+
+    return NextResponse.json({ log, note: 'insert step skipped in diagnostic' });
+  } catch (e: any) {
+    log.push('THREW:' + (e?.message || String(e)));
+    return NextResponse.json({ log }, { status: 500 });
   }
-
-  const results = await Promise.all(files.map((f) => seedOne(dir, f)));
-  return NextResponse.json({ results });
 }
 
-export async function POST(request: Request) {
-  return runSeed(request);
-}
-
-// GET also triggers the seed (for browser navigation without JS execution).
-// Same admin guard. DELETE THIS ROUTE after the seed run.
 export async function GET(request: Request) {
-  return runSeed(request);
+  return run(request);
+}
+export async function POST(request: Request) {
+  return run(request);
 }
