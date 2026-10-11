@@ -508,8 +508,9 @@ export default function BlogManager({ blogPosts, isDarkMode }: { blogPosts: any[
         </button>
       </div>
 
-      <div className={cn("rounded-xl border shadow-sm overflow-hidden transition-colors", isDarkMode ? "bg-[#0A0A0A] border-gray-800" : "bg-white border-gray-200")}>
-        <table className="w-full text-left text-sm whitespace-nowrap">
+      <div className={cn("rounded-xl border shadow-sm transition-colors", isDarkMode ? "bg-[#0A0A0A] border-gray-800" : "bg-white border-gray-200")}>
+        <div className="overflow-x-auto rounded-xl">
+        <table className="w-full text-left text-sm whitespace-nowrap min-w-[640px]">
           <thead className={cn("text-xs uppercase font-semibold border-b transition-colors tracking-wider", isDarkMode ? "bg-gray-900/50 text-gray-400 border-gray-800" : "bg-gray-50 text-gray-500 border-gray-200")}>
             <tr>
               <th className="px-6 py-4">Post Title & Slug</th>
@@ -573,6 +574,7 @@ export default function BlogManager({ blogPosts, isDarkMode }: { blogPosts: any[
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );
@@ -655,7 +657,7 @@ const TiptapEditor = ({ content, onChange, onReady, onFocus, isDarkMode }: { con
 
   return (
     <div className={cn("flex flex-col h-full", isDarkMode ? "bg-gray-900" : "bg-white")}>
-      <style>{`.ProseMirror img{max-width:100%;height:auto;border:3px solid #151a46;margin:0.75em 0;display:block;}`}</style>
+      <style>{`.ProseMirror img{max-width:100%;height:auto;border:3px solid #141312;margin:0.75em 0;display:block;}`}</style>
       <MenuBar editor={editor} isDarkMode={isDarkMode} />
       <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
     </div>
