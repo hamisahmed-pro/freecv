@@ -22,6 +22,16 @@ const FILES = [
 ];
 
 export async function POST() {
+  return runSeed();
+}
+
+// GET also triggers the seed (for browser navigation without JS execution).
+// Same admin guard. DELETE THIS ROUTE after the seed run.
+export async function GET() {
+  return runSeed();
+}
+
+async function runSeed() {
   try {
     await requireAdmin();
   } catch {
