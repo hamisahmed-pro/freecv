@@ -22,6 +22,7 @@ const ALLOWED_TAGS = new Set([
   'span', 'div',
   'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td',
   'img', 'figure', 'figcaption',
+  'video', 'source',
 ]);
 
 const GLOBAL_ATTRS = new Set(['title', 'class']);
@@ -29,6 +30,8 @@ const GLOBAL_ATTRS = new Set(['title', 'class']);
 const TAG_ATTRS: Record<string, Set<string>> = {
   a: new Set(['href', 'title', 'target', 'rel']),
   img: new Set(['src', 'alt', 'title', 'width', 'height', 'loading']),
+  video: new Set(['controls', 'preload', 'poster', 'playsinline', 'aria-label', 'class', 'width', 'height']),
+  source: new Set(['src', 'type']),
 };
 
 const VOID_TAGS = new Set(['br', 'hr', 'img']);
