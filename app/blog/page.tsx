@@ -3,13 +3,21 @@ import Link from 'next/link';
 import { supabaseAdmin } from '@/lib/supabase';
 import { ArrowRight, ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { V3Page, V3Eyebrow } from '@/components/v3/V3Chrome';
+import { LOCALES } from '@/lib/locale';
 
 export const revalidate = 60;
 
 export const metadata = {
   title: 'Cvyon Blog - Career Advice & Resume Tips',
   description: 'Expert advice on resume building, job hunting, and career advancement to help you land your dream job.',
-  alternates: { canonical: 'https://cvyon.com/blog' },
+  alternates: {
+    canonical: 'https://cvyon.com/blog',
+    languages: Object.fromEntries([
+      ['en', 'https://cvyon.com/blog'],
+      ['x-default', 'https://cvyon.com/blog'],
+      ...LOCALES.map((l) => [l, `https://cvyon.com/${l}/blog`]),
+    ]),
+  },
 };
 
 const POSTS_PER_PAGE = 9;

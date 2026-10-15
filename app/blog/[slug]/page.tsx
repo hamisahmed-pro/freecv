@@ -8,6 +8,7 @@ import { ArrowLeft, Calendar } from 'lucide-react';
 import { Archivo, Archivo_Black, DM_Sans, Space_Mono } from '@/lib/fonts';
 import { ArticleJsonLd } from '@/components/blog/ArticleJsonLd';
 import { ContentJsonLd } from '@/components/blog/ContentJsonLd';
+import { LOCALES } from '@/lib/locale';
 
 const display = Archivo_Black({ subsets: ["latin"], weight: "400", display: "swap" });
 const head = Archivo({ subsets: ["latin"], weight: ["600", "800", "900"], display: "swap" });
@@ -50,7 +51,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${post.title} | Cvyon Blog`,
     description,
-    alternates: { canonical: `https://cvyon.com/blog/${resolvedParams.slug}` },
+    alternates: {
+      canonical: `https://cvyon.com/blog/${resolvedParams.slug}`,
+      languages: Object.fromEntries([
+        ['en', `https://cvyon.com/blog/${resolvedParams.slug}`],
+        ['x-default', `https://cvyon.com/blog/${resolvedParams.slug}`],
+        ...LOCALES.map((l) => [l, `https://cvyon.com/${l}/blog/${resolvedParams.slug}`]),
+      ]),
+    },
     openGraph: {
       title: post.title,
       description,

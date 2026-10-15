@@ -27,6 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       canonical: `https://cvyon.com/${locale}/build`,
       languages: Object.fromEntries([
         ['en', 'https://cvyon.com/build'],
+        ['x-default', 'https://cvyon.com/build'],
         ...LOCALES.map((l) => [l, `https://cvyon.com/${l}/build`]),
       ]),
     },

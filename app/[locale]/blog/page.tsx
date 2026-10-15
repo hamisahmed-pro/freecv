@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const b = (dict as any).blog || {};
   const title = b.index_title || 'Cvyon Blog - Career Advice & Resume Tips';
   const description = b.index_sub || 'Expert advice on resume building, job hunting, and career advancement.';
-  const languages: Record<string, string> = { en: 'https://cvyon.com/blog' };
+  const languages: Record<string, string> = { en: 'https://cvyon.com/blog', 'x-default': 'https://cvyon.com/blog' };
   for (const l of LOCALES) languages[l] = `https://cvyon.com/${l}/blog`;
   return {
     title,

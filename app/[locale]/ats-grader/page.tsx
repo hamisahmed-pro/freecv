@@ -20,7 +20,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title: `${dict.ats_grader.eyebrow.replace("§ ", "")} — Cvyon`,
     description: dict.ats_grader.sub,
-    alternates: { canonical: `https://cvyon.com/${locale}/ats-grader` },
+    alternates: {
+      canonical: `https://cvyon.com/${locale}/ats-grader`,
+      languages: Object.fromEntries([
+        ["en", "https://cvyon.com/ats-grader"],
+        ["x-default", "https://cvyon.com/ats-grader"],
+        ...LOCALES.map((l) => [l, `https://cvyon.com/${l}/ats-grader`]),
+      ]),
+    },
   };
 }
 

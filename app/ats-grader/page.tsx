@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import ClientAtsGrader from './ClientAtsGrader';
+import { LOCALES } from '@/lib/locale';
 
 export const metadata: Metadata = {
   title: 'Free ATS Resume Grader — Score Your Resume | Cvyon',
@@ -18,7 +19,14 @@ export const metadata: Metadata = {
     description: 'Get an instant AI match score for your resume against any job description. Free, no signup. Think you can beat my score?',
     images: ['https://cvyon.com/og-image.jpg'],
   },
-  alternates: { canonical: 'https://cvyon.com/ats-grader' },
+  alternates: {
+    canonical: 'https://cvyon.com/ats-grader',
+    languages: Object.fromEntries([
+      ['en', 'https://cvyon.com/ats-grader'],
+      ['x-default', 'https://cvyon.com/ats-grader'],
+      ...LOCALES.map((l) => [l, `https://cvyon.com/${l}/ats-grader`]),
+    ]),
+  },
 };
 
 export default function AtsGraderPage() {

@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const dict = await getDict(locale);
-  const languages: Record<string, string> = { en: "https://cvyon.com" };
+  const languages: Record<string, string> = { en: "https://cvyon.com", "x-default": "https://cvyon.com" };
   for (const l of LOCALES) languages[l] = `https://cvyon.com/${l}`;
   return {
     title: dict.meta.title,

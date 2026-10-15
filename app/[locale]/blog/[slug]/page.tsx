@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   if (!isLocale(locale)) return {};
   const post = getLocalizedPost(locale, slug);
   if (!post) return { title: 'Post Not Found' };
-  const languages: Record<string, string> = { en: `https://cvyon.com/blog/${slug}` };
+  const languages: Record<string, string> = { en: `https://cvyon.com/blog/${slug}`, 'x-default': `https://cvyon.com/blog/${slug}` };
   for (const l of LOCALES) languages[l] = `https://cvyon.com/${l}/blog/${slug}`;
   const canonical = `https://cvyon.com/${locale}/blog/${slug}`;
   const ogImage = post.header_image?.startsWith('http')
