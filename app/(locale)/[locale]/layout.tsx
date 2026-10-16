@@ -1,6 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import "./globals.css";
+import "../../../globals.css";
+import { LOCALES, isLocale } from "@/lib/locale";
+import { notFound } from "next/navigation";
 
+export async function generateStaticParams() {
+  return LOCALES.map((locale) => ({ locale }));
+}
+
+// Mirrors the main root layout's head metadata so localized pages keep the
+// same defaults (icons, og:image, verification). Page-level generateMetadata
+// overrides title/description/canonical per locale.
 export const metadata: Metadata = {
   verification: {
     google: "Yg_Y3Iu-WAx7l6TkcVEehUCuSbEAVS7DkFBLGkWg78A",
@@ -8,7 +17,6 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://cvyon.com'),
   title: "Cvyon | Build a Premium, ATS-Friendly Resume for Free",
   description: "A free premium resume builder with an ATS grader, unlimited downloads, and no sign-up required.",
-  keywords: ["Free Resume Builder", "ATS Friendly Resume Builder", "No Sign Up Resume Maker", "Free PDF Resume Creator", "No Hidden Fees Resume Builder"],
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -56,14 +64,22 @@ import { Suspense } from "react";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 
-export default function RootLayout({
+const RTL_LOCALES = new Set(["ar", "ur"]);
+
+export default async function LocaleRootLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const dir = RTL_LOCALES.has(locale) ? "rtl" : "ltr";
   return (
     <html
-      lang="en"
+      lang={locale}
+      dir={dir}
       className="h-full antialiased font-sans"
     >
       <head>
@@ -80,7 +96,7 @@ export default function RootLayout({
         />
         <script
           dangerouslySetInnerHTML={{
-            __html: `if('serviceWorker' in navigator){var hadController=!!navigator.serviceWorker.controller;window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js');if(hadController){var reloaded=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloaded)return;reloaded=true;window.location.reload();});}})}`
+            __html: `if('serviceWorker' in navigator){var hadController=!!navigator.serviceWorker.controller;window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js');if(hadController){var reloaded=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloaded)return;reloaded=true;window.location.reload();}});}})}`
           }}
         />
       </head>

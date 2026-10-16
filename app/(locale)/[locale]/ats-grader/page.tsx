@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import ClientAtsGrader from "@/app/ats-grader/ClientAtsGrader";
+import ClientAtsGrader from "@/app/(main)/ats-grader/ClientAtsGrader";
 import { isLocale, LOCALES } from "../page";
 import type { Dict } from "@/dictionaries/en";
 
