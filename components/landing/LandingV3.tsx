@@ -393,8 +393,8 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
               <p className="mt-4 max-w-[220px] text-[12px] leading-relaxed text-muted">{dict.footer.tagline}</p>
             </div>
             {[
-              [dict.footer.col_product, [["Builder", L("/build")], ["ATS Grader", L("/ats-grader")], ["Templates", L("/build")], ["Cover Letter", L("/cover-letter")]]],
-              [dict.footer.col_company, [["About", L("/about")], ["Career Blog", L("/blog")], ["Recruiter Portal", L("/recruiter")], ["Support", L("/support")]]],
+              [dict.footer.col_product, [["Builder", L("/build")], ["ATS Grader", L("/ats-grader")], ["Templates", L("/build")], ["Cover Letter", L("/cover-letter")], ["Pricing", L("/pricing")], ["Embed Badge", L("/embed")]]],
+              [dict.footer.col_company, [["About", L("/about")], ["Career Blog", L("/blog")], ["Recruiter Portal", L("/recruiter")], ["Support", L("/support")], ["Zety Alternative", "/alternatives/zety-alternative"], ["Resume.io Alternative", "/alternatives/resume-io-alternative"], ["Novoresume Alternative", "/alternatives/novoresume-alternative"]]],
               [dict.footer.col_legal, [["Privacy", L("/privacy")], ["Terms", L("/terms")], ["Manage data", "/manage-data"], ["Developers", "/developers"]]],
             ].map(([h, items]) => (
               <div key={h as string}>

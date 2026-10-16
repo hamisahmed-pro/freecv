@@ -8,7 +8,6 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://cvyon.com'),
   title: "Cvyon | Build a Premium, ATS-Friendly Resume for Free",
   description: "A free premium resume builder with an ATS grader, unlimited downloads, and no sign-up required.",
-  keywords: ["Free Resume Builder", "ATS Friendly Resume Builder", "No Sign Up Resume Maker", "Free PDF Resume Creator", "No Hidden Fees Resume Builder"],
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },

@@ -8,6 +8,8 @@ import { ArrowLeft, Calendar } from 'lucide-react';
 import { Archivo, Archivo_Black, DM_Sans, Space_Mono } from '@/lib/fonts';
 import { ArticleJsonLd } from '@/components/blog/ArticleJsonLd';
 import { ContentJsonLd } from '@/components/blog/ContentJsonLd';
+import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
+import { AuthorBio } from '@/components/blog/AuthorBio';
 import { LOCALES } from '@/lib/locale';
 
 const display = Archivo_Black({ subsets: ["latin"], weight: "400", display: "swap" });
@@ -119,6 +121,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         {/* Header */}
         <header className="bg-[#141312] text-[#E8E7E1] pt-24 pb-20 px-6 relative overflow-hidden">
           <div className="max-w-3xl mx-auto relative z-10">
+            <Breadcrumbs
+              items={[
+                { label: 'Home', href: '/' },
+                { label: 'Blog', href: '/blog' },
+                { label: post.title },
+              ]}
+              className="mb-6 text-[#E8E7E1]"
+            />
             <Link href="/blog" className="fm inline-flex items-center gap-2 text-[#E8E7E1]/70 hover:text-[#FF4326] font-bold tracking-[0.2em] text-xs uppercase mb-8 transition-colors">
               <ArrowLeft size={14} /> Back to Blog
             </Link>
@@ -138,10 +148,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             {/* Header Image */}
             {post.header_image && (
               <div className="w-full aspect-[2/1] relative border-b-[3px] border-[#141312]">
-                <img
+                <Image
                   src={post.header_image}
                   alt={post.title}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 768px"
+                  className="object-cover"
+                  priority
                 />
               </div>
             )}
@@ -154,6 +167,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               />
             </div>
           </article>
+
+          {/* Author bio (E-E-A-T) */}
+          <div className="mx-auto max-w-3xl px-6">
+            <AuthorBio />
+          </div>
         </main>
 
         {/* Blog content styles - since @tailwindcss/typography is not installed */}

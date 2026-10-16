@@ -20,6 +20,10 @@ for (const envVar of requiredEnvVars) {
 }
 
 const nextConfig: NextConfig = {
+  // Serve modern image formats (AVIF first, WebP fallback) via next/image.
+  images: {
+    formats: ['image/avif', 'image/webp'],
+  },
   // pdfjs-dist must run from node_modules (not bundled) so its worker file
   // resolves correctly at runtime for server-side PDF text extraction.
   serverExternalPackages: ['pdfjs-dist'],

@@ -10,9 +10,15 @@ import path from 'path'
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://cvyon.com';
 
-// Render on every request so newly published blog posts appear in the
-// sitemap immediately instead of waiting for the next full redeploy.
-export const dynamic = 'force-dynamic';
+// Cache the sitemap for 1 hour (ISR) instead of hitting Supabase on every
+// request. Newly published posts appear within the hour — fast enough for
+// crawlers, cheap enough for the database.
+export const revalidate = 3600;
+
+// Last-modified for code-driven routes (static pages, templates, comparisons,
+// job-title guides). Bump when site content changes; articles use their own
+// file/DB timestamps below.
+const CODE_LAST_MODIFIED = new Date('2026-10-16T00:00:00Z');
 
 const staticRoutes: { path: string; priority: number }[] = [
   { path: '', priority: 1 },
@@ -28,6 +34,7 @@ const staticRoutes: { path: string; priority: number }[] = [
   { path: '/support', priority: 0.6 },
   { path: '/privacy', priority: 0.5 },
   { path: '/terms', priority: 0.5 },
+  { path: '/embed', priority: 0.5 },
 ];
 
 // Localized page routes that exist under app/[locale]/
@@ -48,10 +55,19 @@ function localizedArticleExists(locale: string, slug: string): boolean {
   }
 }
 
+function localizedArticleMtime(locale: string, slug: string): Date {
+  try {
+    const st = fs.statSync(path.join(process.cwd(), 'content', 'blog', locale, `${slug}.json`));
+    return st.mtime;
+  } catch {
+    return CODE_LAST_MODIFIED;
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Static routes: no lastmod emitted; they change infrequently.
   const routes: MetadataRoute.Sitemap = staticRoutes.map((r) => ({
     url: `${baseUrl}${r.path}`,
+    lastModified: CODE_LAST_MODIFIED,
     changeFrequency: 'weekly' as const,
     priority: r.priority,
   }));
@@ -62,6 +78,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const r of localizedPageRoutes) {
       routes.push({
         url: `${baseUrl}/${locale}${r.path}`,
+        lastModified: CODE_LAST_MODIFIED,
         changeFrequency: 'weekly' as const,
         priority: r.priority,
       });
@@ -77,6 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       if (!localizedArticleExists(locale, slug)) continue;
       routes.push({
         url: `${baseUrl}/${locale}/blog/${slug}`,
+        lastModified: localizedArticleMtime(locale, slug),
         changeFrequency: 'weekly' as const,
         priority: 0.6,
       });
@@ -88,6 +106,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const slug of templateSlugs) {
     routes.push({
       url: `${baseUrl}/templates/${slug}`,
+      lastModified: CODE_LAST_MODIFIED,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     });
@@ -97,6 +116,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const slug of compareSeoEntries.map((e) => e.slug)) {
     routes.push({
       url: `${baseUrl}/alternatives/${slug}`,
+      lastModified: CODE_LAST_MODIFIED,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     });
@@ -106,6 +126,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const slug of jobTitleSeoEntries.map((e) => e.slug)) {
     routes.push({
       url: `${baseUrl}/resume-for/${slug}`,
+      lastModified: CODE_LAST_MODIFIED,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     });

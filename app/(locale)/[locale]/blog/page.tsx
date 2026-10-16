@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ArrowRight, Calendar, Clock } from 'lucide-react';
 import { V3Page, V3Eyebrow } from '@/components/v3/V3Chrome';
@@ -38,7 +39,7 @@ function Card({ post, locale, b, featured }: { post: BlogPost; locale: string; b
     <Link href={`/${locale}/blog/${post.slug}`} className="group block">
       <article className={`flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_8px_22px_rgba(23,27,75,0.08)] transition-all hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(23,27,75,0.13)] ${featured ? 'md:grid md:grid-cols-2' : ''}`}>
         <div className={`relative w-full overflow-hidden ${featured ? 'aspect-[16/10]' : 'aspect-[16/9]'}`}>
-          <img src={img} alt={post.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <Image src={img} alt={post.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
         </div>
         <div className="flex flex-1 flex-col p-6">
           <div className="mb-3 flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.12em] text-muted">

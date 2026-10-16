@@ -1,9 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Calendar } from 'lucide-react';
 import { V3Page } from '@/components/v3/V3Chrome';
 import { ArticleJsonLd } from '@/components/blog/ArticleJsonLd';
+import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { sanitizeHtml } from '@/lib/sanitizeHtml';
 import { getLocalizedPost, blogOrder } from '@/lib/blog-i18n';
 import { isLocale, LOCALES, type Locale } from '../../page';
@@ -66,6 +68,14 @@ export default async function LocalizedBlogPostPage({ params }: { params: Promis
       <V3Page pageName="blog_article">
         <ArticleJsonLd post={jsonLdPost} />
         <div className="mx-auto max-w-[760px]">
+          <Breadcrumbs
+            items={[
+              { label: 'Home', href: `/${locale}` },
+              { label: b.title || 'Blog', href: `/${locale}/blog` },
+              { label: post.title },
+            ]}
+            className="mb-4"
+          />
           <Link
             href={`/${locale}/blog`}
             className="inline-flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[0.12em] text-muted transition-colors hover:text-brand"
@@ -82,8 +92,8 @@ export default async function LocalizedBlogPostPage({ params }: { params: Promis
           </div>
 
           <article className="mt-8 overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
-            <div className="aspect-[2/1] w-full overflow-hidden border-b border-line">
-              <img src={img} alt={post.title} className="h-full w-full object-cover" />
+            <div className="relative aspect-[2/1] w-full overflow-hidden border-b border-line">
+              <Image src={img} alt={post.title} fill sizes="(max-width: 768px) 100vw, 768px" className="object-cover" priority />
             </div>
             <div className="px-6 py-8 sm:px-10 sm:py-10">
               <div className="blog-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content_html) }} />

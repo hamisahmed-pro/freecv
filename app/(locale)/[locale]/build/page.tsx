@@ -21,8 +21,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
+  const dict = await getBuilderDict(locale);
   return {
     title: 'Resume Builder — Cvyon',
+    description: dict["builder.free_resume_builder_create_edit_and_down"],
     alternates: {
       canonical: `https://cvyon.com/${locale}/build`,
       languages: Object.fromEntries([
@@ -41,6 +43,7 @@ export default async function LocalizedBuildPage({ params }: { params: Promise<{
   const rtl = locale === 'ar' || locale === 'ur';
   return (
     <div lang={locale} dir={rtl ? 'rtl' : 'ltr'} className="relative">
+      <h1 className="sr-only">{dict["builder.free_resume_builder_create_edit_and_down"]}</h1>
       <div className="fixed right-4 top-4 z-50 rounded-xl border border-line bg-cream/95 shadow-lg backdrop-blur-md">
         <LanguageSwitcher current={locale} />
       </div>

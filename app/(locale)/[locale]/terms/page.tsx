@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   if (!isLocale(locale)) notFound();
   return {
     title: 'Terms of Service — Cvyon',
+    description: 'The terms governing your use of Cvyon\u2019s free resume builder, ATS grader, and related services.',
     alternates: {
       canonical: `https://cvyon.com/${locale}/terms`,
       languages: Object.fromEntries([

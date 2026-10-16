@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { V3Page, V3Eyebrow } from '@/components/v3/V3Chrome';
 
 const SNIPPET = `<a href="https://cvyon.com/ats-grader?utm_source=embed&utm_medium=badge">
@@ -43,8 +44,7 @@ export default function EmbedClient() {
           <p className="mb-4 text-[11px] font-extrabold uppercase tracking-[0.12em] text-muted">
             Live preview
           </p>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src="/embed/ats-badge.svg"
             alt="Free ATS resume grader by Cvyon"
             width={300}

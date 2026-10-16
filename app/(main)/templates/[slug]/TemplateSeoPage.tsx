@@ -7,6 +7,7 @@ import { templates as htmlTemplates } from '@/components/html_templates';
 import { initialData } from '@/store/useResumeStore';
 import type { ResumeData } from '@/store/useResumeStore';
 import { FaqJsonLd } from '@/components/landing/FaqJsonLd';
+import { BreadcrumbJsonLd } from '@/components/seo/Breadcrumbs';
 import type { TemplateSeoEntry } from '@/lib/template-seo';
 import { V3Page, V3Pill } from '@/components/v3/V3Chrome';
 
@@ -72,6 +73,10 @@ export default function TemplateSeoPage({ entry, more }: { entry: TemplateSeoEnt
   return (
     <V3Page pageName={`template_${entry.id}`}>
       <FaqJsonLd faqs={entry.faqs} />
+      <BreadcrumbJsonLd items={[
+        { label: 'Home', href: '/' },
+        { label: `${entry.name} template` },
+      ]} />
 
       {/* BREADCRUMB */}
       <nav className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-muted">

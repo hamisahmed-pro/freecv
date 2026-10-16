@@ -17,5 +17,10 @@ export const metadata: Metadata = {
 };
 
 export default function BuildPage() {
-  return <BuilderClient dict={builderDict} locale="en" />;
+  return (
+    <>
+      <h1 className="sr-only">{builderDict["builder.free_resume_builder_create_edit_and_down"]}</h1>
+      <BuilderClient dict={builderDict} locale="en" />
+    </>
+  );
 }

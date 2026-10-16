@@ -1171,7 +1171,7 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
 
   return (
     <main className="v3-builder print:block print:h-auto print:overflow-visible">
-      <h1 className="sr-only">{dict["builder.free_resume_builder_create_edit_and_down"]}</h1>
+      <p className="sr-only">{dict["builder.free_resume_builder_create_edit_and_down"]}</p>
 
       {/* ===== TOP BAR (v3 concept) ===== */}
       <header className="v3-top print:hidden">

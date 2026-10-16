@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   if (!isLocale(locale)) notFound();
   return {
     title: 'Privacy Policy — Cvyon',
+    description: 'How Cvyon collects, uses, and protects your data. No account required to build your resume; your documents stay yours.',
     alternates: {
       canonical: `https://cvyon.com/${locale}/privacy`,
       languages: Object.fromEntries([

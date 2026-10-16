@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { supabaseAdmin } from '@/lib/supabase';
 import { ArrowRight, ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { V3Page, V3Eyebrow } from '@/components/v3/V3Chrome';
@@ -105,11 +106,13 @@ export default async function BlogIndex({
                 <article className="overflow-hidden rounded-3xl border border-line bg-paper shadow-[0_12px_32px_rgba(23,27,75,0.10)] transition-all hover:shadow-[0_20px_48px_rgba(23,27,75,0.14)]">
                   <div className="grid md:grid-cols-2">
                     <div className="relative aspect-[16/10] overflow-hidden md:aspect-auto md:min-h-[320px]">
-                      <img
+                      <Image
                         src={getImage(featured, 0)}
                         alt={featured.title}
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        loading="eager"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        priority
                       />
                       <div className="absolute left-5 top-5">
                         <span className="rounded-full bg-coral px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.14em] text-white">
@@ -150,11 +153,12 @@ export default async function BlogIndex({
                 <Link key={post.id} href={`/blog/${post.slug}`} className="group block">
                   <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_8px_22px_rgba(23,27,75,0.08)] transition-all hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(23,27,75,0.13)]">
                     <div className="relative aspect-[16/9] w-full overflow-hidden">
-                      <img
+                      <Image
                         src={getImage(post, startIdx + i + (featured ? 1 : 0))}
                         alt={post.title}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
                     <div className="flex flex-1 flex-col p-6">

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, BadgeCheck, Check, ScanSearch, Sparkles, X } from 'lucide-react';
 import { FaqJsonLd } from '@/components/landing/FaqJsonLd';
+import { BreadcrumbJsonLd } from '@/components/seo/Breadcrumbs';
 import { V3Pill } from '@/components/v3/V3Chrome';
 import type { CompareSeoEntry } from '@/lib/compare-seo';
 
@@ -13,6 +14,11 @@ export default function CompareSeoPage({ entry, more }: { entry: CompareSeoEntry
   return (
     <div className="min-h-screen text-navy">
       <FaqJsonLd faqs={entry.faqs} />
+      <BreadcrumbJsonLd items={[
+        { label: 'Home', href: '/' },
+        { label: 'Alternatives' },
+        { label: `${entry.competitor} alternative` },
+      ]} />
 
       {/* BREADCRUMB */}
       <nav className="flex items-center gap-2 pt-2 text-[11px] font-black uppercase tracking-[0.13em] text-muted">
