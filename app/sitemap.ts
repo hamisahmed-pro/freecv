@@ -88,6 +88,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Localized blog articles: /{locale}/blog/{slug} for each slug that has
   // a translated file (falls back to English content where missing, but the
   // localized URL still renders).
+  // blogOrder() covers both the original JSON set and the ATS/seed set
+  // (order.json includes all 19 slugs).
   const slugs = blogOrder();
   for (const locale of LOCALES) {
     for (const slug of slugs) {
