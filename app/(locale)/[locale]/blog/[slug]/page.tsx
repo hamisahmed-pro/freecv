@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Calendar } from 'lucide-react';
 import { V3Page } from '@/components/v3/V3Chrome';
 import { ArticleJsonLd } from '@/components/blog/ArticleJsonLd';
+import { ContentJsonLd } from '@/components/blog/ContentJsonLd';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { sanitizeHtml } from '@/lib/sanitizeHtml';
 import { getLocalizedPost, blogOrder } from '@/lib/blog-i18n';
@@ -67,6 +68,7 @@ export default async function LocalizedBlogPostPage({ params }: { params: Promis
     <div dir={rtl ? 'rtl' : 'ltr'} lang={locale}>
       <V3Page pageName="blog_article">
         <ArticleJsonLd post={jsonLdPost} />
+        <ContentJsonLd content={post.content_html} />
         <div className="mx-auto max-w-[760px]">
           <Breadcrumbs
             items={[
