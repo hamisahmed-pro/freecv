@@ -11,7 +11,7 @@ Cvyon (https://cvyon.com) helps job seekers build resumes that pass Applicant Tr
 - [Resume Builder](https://cvyon.com/build): build a resume section by section; section visibility and reordering supported.
 - [Resume Templates](https://cvyon.com/templates): free ATS-friendly resume templates.
 - [Cover Letter Builder](https://cvyon.com/cover-letter): free cover letter builder.
-- [Blog](https://cvyon.com/blog): resume guides, including ATS explainers and job-title-specific resume guides (e.g. accountant resume, teacher resume, nursing resume, tutoring resume).
+- [Blog](https://cvyon.com/blog): resume guides, including ATS explainers and job-title-specific resume guides (e.g. accountant resume, content writer resume, teacher resume, nursing resume, tutoring resume).
 - [Resume guides by job title](https://cvyon.com/resume-for): resume examples and guides organized by profession.
 - [ATS-friendly resume checker guide](https://cvyon.com/blog/free-ats-resume-checker): what free ATS checkers do and how to use one.
 - [What is an Applicant Tracking System](https://cvyon.com/blog/what-is-applicant-tracking-system): how ATS software parses and ranks resumes.
