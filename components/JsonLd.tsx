@@ -31,6 +31,7 @@ export function JsonLd({
       name: 'Cvyon',
       url: 'https://cvyon.com',
       logo: 'https://cvyon.com/logo.png',
+      sameAs: ['https://www.instagram.com/cvyon_resume'],
     },
   };
 
