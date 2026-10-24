@@ -48,10 +48,14 @@ export default async function AdminPage() {
     throw new Error('Failed to load candidate profiles: ' + (lastError?.message || 'database unreachable'));
   };
 
+  // 2026-10-24 fix: the "30D" dashboard labels are only honest if the event
+  // fetch is date-bounded. Previously the latest 5000 events were pulled with
+  // no date filter, so the labels silently went stale as volume grew.
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   const [candidatesList, profilesList, analytics, aiLogs, siteSettings, featureFlags, blogPosts, appSettingsRes] = await Promise.all([
     fetchCandidates(),
     fetchProfiles(),
-    supabaseAdmin.from('analytics_events').select('*').order('created_at', { ascending: false }).limit(5000),
+    supabaseAdmin.from('analytics_events').select('*').gte('created_at', thirtyDaysAgo).order('created_at', { ascending: false }).limit(5000),
     supabaseAdmin.from('ai_usage_logs').select('*').order('created_at', { ascending: false }).limit(3000),
     supabaseAdmin.from('site_settings').select('*').maybeSingle(),
     supabaseAdmin.from('feature_flags').select('*').order('key'),

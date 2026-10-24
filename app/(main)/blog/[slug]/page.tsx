@@ -19,6 +19,14 @@ const mono = Space_Mono({ subsets: ["latin"], weight: ["400", "700"], display: "
 
 export const revalidate = 60; // Revalidate every minute
 
+// 2026-10-24 fix: article bodies begin with their own <h1>{title}</h1>, while
+// the template also renders a styled <h1> — pages shipped with two H1s. Strip
+// only the LEADING h1 (allowing leading HTML comments/whitespace, e.g. the
+// image-suggestion comment) so the template H1 is the single H1. Covers all
+// already-published posts without a DB migration.
+const stripLeadingH1 = (html: string): string =>
+  html.replace(/^\s*(?:<!--[\s\S]*?-->\s*)*<h1[^>]*>[\s\S]*?<\/h1>/i, '');
+
 // Generate dynamic metadata for SEO + OpenGraph
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
@@ -163,7 +171,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <div className="p-8 sm:p-12">
               <div
                 className="blog-content leading-relaxed text-lg"
-                dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(stripLeadingH1(post.content)) }}
               />
             </div>
           </article>
@@ -200,3 +208,4 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     </div>
   );
 }
+

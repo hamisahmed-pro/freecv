@@ -24,6 +24,12 @@ export const DOWNLOAD_EVENTS = ['milestone_downloaded', 'resume_downloaded'] as 
 // Tuned 2026-10-01 from observed scripted bursts (one session: ~250 back-to-back
 // recruiter events; another: ~300 back-to-back build-page events on 2026-09-30).
 // Deliberately conservative — a real human session never approaches these volumes.
+// 2026-10-24 lesson: the dominant bot shape is the OPPOSITE of a burst —
+// JS-capable crawlers that render one page, fire ~1 event, and never return
+// (262 bot-browser events across 241 sessions, 1.09/session, Oct 4–24). Volume
+// rules can never catch those, so the per-event UA signal ('Bot' browser bucket
+// from getBrowser()) is now a flagging signal too. Raw events are still never
+// dropped from storage — filtering stays at read/aggregate time.
 export const BOT_MAX_EVENTS_PER_SESSION = 100;
 export const BOT_MAX_REPEAT_EVENT = 30;
 
@@ -39,16 +45,21 @@ export interface QualityReport {
 const sidOf = (e: any): string => e?.session_id || 'unknown';
 
 export function analyzeSessionQuality(events: any[]): QualityReport {
-  const perSession = new Map<string, { total: number; byType: Map<string, number> }>();
+  const perSession = new Map<string, { total: number; byType: Map<string, number>; hasBotBrowser: boolean }>();
   for (const e of events) {
     const sid = sidOf(e);
     let s = perSession.get(sid);
-    if (!s) { s = { total: 0, byType: new Map() }; perSession.set(sid, s); }
+    if (!s) { s = { total: 0, byType: new Map(), hasBotBrowser: false }; perSession.set(sid, s); }
     s.total += 1;
     s.byType.set(e.event_type, (s.byType.get(e.event_type) || 0) + 1);
+    if (e.browser === 'Bot') s.hasBotBrowser = true;
   }
   const botSessions = new Set<string>();
   for (const [sid, s] of perSession) {
+    // UA signal: any bot-browser event flags the session. The 'unknown' bucket
+    // (events without a session_id) is exempt — it mixes unrelated events, and
+    // volume rules still apply to it.
+    if (sid !== 'unknown' && s.hasBotBrowser) { botSessions.add(sid); continue; }
     if (s.total > BOT_MAX_EVENTS_PER_SESSION) { botSessions.add(sid); continue; }
     for (const n of s.byType.values()) {
       if (n > BOT_MAX_REPEAT_EVENT) { botSessions.add(sid); break; }
@@ -99,3 +110,4 @@ export function computeFunnel(events: any[]): Funnel {
     downloadRate: st ? dl / st : 0,
   };
 }
+

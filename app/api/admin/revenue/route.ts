@@ -33,7 +33,11 @@ export async function GET() {
   // speculative (month-to-date / day-of-month × 30) annualization was removed.
   
   const byCountry: Record<string, { clicks: number; usd: number }> = {};
-  (allClicks.data || []).forEach((c: any) => {
+  // 2026-10-24 fix: build by-country rows from the SAME month-to-date set as
+  // the header (clicksMonth). Previously they were built from allClicks (all
+  // time, latest 2000), so the panel labeled "(mtd)" showed all-time rows —
+  // e.g. header "0 clicks MTD" beside a "US · 1 click" row from before October.
+  (clicksMonth).forEach((c: any) => {
     const k = c.country || 'UNKNOWN';
     (byCountry[k] ||= { clicks: 0, usd: 0 }).clicks++;
     byCountry[k].usd += Number(c.cpc_value) || 0;

@@ -52,6 +52,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
+// 2026-10-24 fix: locale article bodies begin with their own <h1>{title}</h1>
+// while the template also renders a styled <h1> — pages shipped with two H1s.
+// Strip only the LEADING h1 (allowing leading HTML comments/whitespace) so the
+// template H1 is the single H1. Covers all published locale posts without a
+// DB migration.
+const stripLeadingH1 = (html: string): string =>
+  html.replace(/^\s*(?:<!--[\s\S]*?-->\s*)*<h1[^>]*>[\s\S]*?<\/h1>/i, '');
+
 export default async function LocalizedBlogPostPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
@@ -98,7 +106,7 @@ export default async function LocalizedBlogPostPage({ params }: { params: Promis
               <Image src={img} alt={post.title} fill sizes="(max-width: 768px) 100vw, 768px" className="object-cover" priority />
             </div>
             <div className="px-6 py-8 sm:px-10 sm:py-10">
-              <div className="blog-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content_html) }} />
+              <div className="blog-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(stripLeadingH1(post.content_html)) }} />
             </div>
           </article>
 
@@ -132,3 +140,4 @@ export default async function LocalizedBlogPostPage({ params }: { params: Promis
     </div>
   );
 }
+
