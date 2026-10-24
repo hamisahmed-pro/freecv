@@ -11,7 +11,7 @@ import { useAdminTheme } from "./admin/theme";
 import { cn, CountUp, Reveal } from "./admin/motion";
 import { Card, Kpi, Pill, Btn, Field, Input, TextArea, Select, Switch, Modal, Drawer, Table, Row, Cell, SectionLabel, EmptyState, Spinner } from "./admin/ui";
 import { LineChart, RadialGauge, Donut, Heatmap, Bars, Sparkline } from "./admin/charts";
-import { analyzeSessionQuality, computeFunnel } from "@/lib/analytics-quality";
+import { analyzeSessionQuality, computeFunnel, computeBuilderFunnel } from "@/lib/analytics-quality";
 
 const api = (u: string, o?: RequestInit) =>
   fetch(u, { ...o, headers: { "Content-Type": "application/json", ...(o?.headers || {}) } })
@@ -72,12 +72,17 @@ export function OverviewTab({ candidates, analytics, aiLogs }: { candidates: any
   // raw events — one session can contribute at most 1 per stage. Download stage
   // accepts both milestone_downloaded (builder docx/pdf) and resume_downloaded.
   const funnel = useMemo(() => computeFunnel(human), [human]);
+  // 2026-10-24: builder-scoped funnel alongside the site-wide one — the
+  // site-wide denominator (every page) understates builder conversion.
+  const builderFunnel = useMemo(() => computeBuilderFunnel(human), [human]);
   // 2026-10-24 fix: count only recruiter-consented candidates. Counting every
   // merged candidate overstated the sellable pool (16 vs 7 consented).
   const optIns = candidates.filter(c => c.consent_recruiter_share).length;
   const optConv = funnel.sessions ? Math.round((optIns / funnel.sessions) * 100) : 0;
   const dlConv = Math.round(funnel.downloadRate * 100);
   const startConv = Math.round(funnel.startRate * 100);
+  const builderStartConv = Math.round(builderFunnel.startRate * 100);
+  const builderDlConv = Math.round(builderFunnel.downloadRate * 100);
 
   const optSpark = useMemo(() => {
     const m: Record<string, number> = {};
@@ -127,7 +132,8 @@ export function OverviewTab({ candidates, analytics, aiLogs }: { candidates: any
                 </div>
               ))}
             </div>
-            <p className="pt-3 text-[10px]" style={{ color: t.faint }}>Unique sessions per stage · {quality.botSessionCount} bot-like sessions excluded</p>
+            <p className="pt-3 text-[10px]" style={{ color: t.faint }}>Builder funnel (sessions that reached /build) · {builderFunnel.sessions.toLocaleString()} entrants → {builderFunnel.started.toLocaleString()} started ({builderStartConv}%) → {builderFunnel.downloaded.toLocaleString()} downloaded ({builderDlConv}% of starters)</p>
+            <p className="pt-1 text-[10px]" style={{ color: t.faint }}>Unique sessions per stage · {quality.botSessionCount} bot-like sessions excluded</p>
           </Card>
         </Reveal>
       </div>
@@ -1103,8 +1109,10 @@ export function SettingsTab({ siteSettings, featureFlags, appSettings, overview 
   const [flags, setFlags] = useState<any[]>(featureFlags || []);
   const [site, setSite] = useState({
     site_name: siteSettings?.site_name || "Cvyon",
-    meta_title: siteSettings?.meta_title || "",
-    meta_description: siteSettings?.meta_description || "",
+    // 2026-10-24: meta_title / meta_description removed from this form — no
+    // public page reads site_settings (layouts hardcode metadata, blog pages
+    // use per-post generateMetadata), so the fields were a dead control that
+    // implied edits would change the site. DB values left untouched.
     maintenance_mode: !!siteSettings?.maintenance_mode
   });
   
@@ -1329,12 +1337,6 @@ export function SettingsTab({ siteSettings, featureFlags, appSettings, overview 
             <Field label="Site Name">
               <Input value={site.site_name} onChange={(e) => setSite({ ...site, site_name: e.target.value })} />
             </Field>
-            <Field label="Meta Title">
-              <Input value={site.meta_title} onChange={(e) => setSite({ ...site, meta_title: e.target.value })} />
-            </Field>
-            <Field label="Meta Description">
-              <TextArea rows={2} value={site.meta_description} onChange={(e) => setSite({ ...site, meta_description: e.target.value })} />
-            </Field>
             <div className="flex items-center justify-between rounded-xl border p-3" style={{ borderColor: t.border }}>
               <span className="text-sm" style={{ color: t.text }}>Maintenance mode</span>
               <Switch on={site.maintenance_mode} onChange={(v) => setSite({ ...site, maintenance_mode: v })} />
@@ -1497,4 +1499,5 @@ export function PricingTab() {
     </div>
   );
 }
+
 

@@ -111,3 +111,42 @@ export function computeFunnel(events: any[]): Funnel {
   };
 }
 
+/** Builder-scoped funnel: the site-wide funnel's denominator is every session
+ *  on any page, which understates builder conversion (Oct 2026: site-wide
+ *  96 → 5 = 5%, builder-scoped ≈51 → 5 = 10%). Stages count unique sessions
+ *  among builder entrants only — a session that reached the builder via a
+ *  page_view with metadata.page 'build' (or page_url '/build'). Shown
+ *  alongside the site-wide funnel, never replacing it. */
+export function computeBuilderFunnel(events: any[]): Funnel {
+  const builderSessions = new Set<string>();
+  for (const e of events) {
+    if (e.event_type !== EVT_PAGE_VIEW) continue;
+    let meta: any = (e as any).metadata;
+    if (typeof meta === 'string') {
+      try { meta = JSON.parse(meta); } catch { meta = {}; }
+    }
+    if ((meta && meta.page === 'build') || (e as any).page_url === '/build') {
+      builderSessions.add(sidOf(e));
+    }
+  }
+  const started = new Set<string>();
+  const downloaded = new Set<string>();
+  for (const e of events) {
+    const sid = sidOf(e);
+    if (!builderSessions.has(sid)) continue;
+    if (e.event_type === EVT_STARTED) started.add(sid);
+    else if ((DOWNLOAD_EVENTS as readonly string[]).includes(e.event_type)) downloaded.add(sid);
+  }
+  const s = builderSessions.size;
+  const st = started.size;
+  const dl = downloaded.size;
+  return {
+    sessions: s,
+    started: st,
+    downloaded: dl,
+    startRate: s ? st / s : 0,
+    downloadRate: st ? dl / st : 0,
+  };
+}
+
+

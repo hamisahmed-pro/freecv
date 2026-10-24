@@ -8,7 +8,7 @@ import { ArticleJsonLd } from '@/components/blog/ArticleJsonLd';
 import { ContentJsonLd } from '@/components/blog/ContentJsonLd';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { sanitizeHtml } from '@/lib/sanitizeHtml';
-import { getLocalizedPost, blogOrder } from '@/lib/blog-i18n';
+import { getLocalizedPost, getEnglishVideoObject, blogOrder } from '@/lib/blog-i18n';
 import { isLocale, LOCALES, type Locale } from '../../page';
 import type { Dict } from '@/dictionaries/en';
 
@@ -72,11 +72,24 @@ export default async function LocalizedBlogPostPage({ params }: { params: Promis
   const img = post.header_image?.startsWith('http') ? post.header_image : 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=1200&q=80';
   const jsonLdPost = { title: post.title, meta_description: post.meta_description, content: post.content_html, datePublished: post.date_iso, header_image: post.header_image };
 
+  // 2026-10-24 fix: emit the EN post's VideoObject when the locale body
+  // actually renders a <video> tag. Without this, locale video pages show
+  // the video but carry no VideoObject ("Video isn't on a watch page").
+  // Gated on the <video> tag so a translation that drops the video never
+  // gains schema for a video that isn't on the page.
+  const videoObject = post.content_html.includes('<video') ? getEnglishVideoObject(slug) : null;
+
   return (
     <div dir={rtl ? 'rtl' : 'ltr'} lang={locale}>
       <V3Page pageName="blog_article">
         <ArticleJsonLd post={jsonLdPost} />
         <ContentJsonLd content={post.content_html} />
+        {videoObject && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: videoObject.replace(/</g, '\\u003c') }}
+          />
+        )}
         <div className="mx-auto max-w-[760px]">
           <Breadcrumbs
             items={[
@@ -140,4 +153,5 @@ export default async function LocalizedBlogPostPage({ params }: { params: Promis
     </div>
   );
 }
+
 
