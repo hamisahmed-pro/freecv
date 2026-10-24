@@ -472,6 +472,13 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
       summary: summary && (!data.summary || data.summary === initialData.summary) ? summary : data.summary,
       skills: nextSkills
     });
+    // 2026-10-24 fix: the started-effect above snapshots its baseline BEFORE
+    // this prefill runs, so without this reset the prefill itself registers
+    // as the user's first edit (a false milestone_started on every
+    // ?source=seo arrival). Clearing the baseline makes the started-effect
+    // re-capture post-prefill state on the next render, so only real edits
+    // after the prefill count as starting.
+    initialDataRef.current = null;
     onboardingAppliedRef.current = true;
     // Close the SEO-flow tracking gap: users arriving from /templates/[slug]
     // silently get this template applied — record it like a gallery selection.
@@ -1870,3 +1877,4 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
     </main>
   );
 }
+

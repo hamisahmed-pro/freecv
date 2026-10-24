@@ -45,6 +45,31 @@ export function getLocalizedPost(locale: string, slug: string): BlogPost | null 
   };
 }
 
+// 2026-10-24 fix: locale video pages render a <video> tag but emit no
+// VideoObject (the 29 "Video isn't on a watch page" items in Search Console),
+// because the translated JSONs carry no embedded VideoObject script. Return
+// the EN post's embedded VideoObject block verbatim (same video file, same
+// uploadDate) so the locale template can emit it. Returns null when the EN
+// post has no VideoObject or the block is unparseable — never emit broken
+// schema.
+export function getEnglishVideoObject(slug: string): string | null {
+  const en = readJson(path.join(ROOT, 'en', `${slug}.json`));
+  const html = String(en?.content_html || '');
+  const re = /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script\s*>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html)) !== null) {
+    try {
+      const parsed = JSON.parse(m[1].trim());
+      const items = Array.isArray(parsed) ? parsed : [parsed];
+      const video = items.find((p: any) => p && p['@type'] === 'VideoObject');
+      if (video) return JSON.stringify(video);
+    } catch {
+      // Skip broken blocks; a later block may still be valid.
+    }
+  }
+  return null;
+}
+
 export function getLocalizedPosts(locale: string): BlogPost[] {
   return blogOrder()
     .map((slug) => getLocalizedPost(locale, slug))
@@ -55,3 +80,4 @@ export function readingTimeMinutes(html: string): number {
   const words = html.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length;
   return Math.max(2, Math.round(words / 200));
 }
+
