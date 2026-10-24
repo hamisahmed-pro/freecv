@@ -72,7 +72,9 @@ export function OverviewTab({ candidates, analytics, aiLogs }: { candidates: any
   // raw events — one session can contribute at most 1 per stage. Download stage
   // accepts both milestone_downloaded (builder docx/pdf) and resume_downloaded.
   const funnel = useMemo(() => computeFunnel(human), [human]);
-  const optIns = candidates.length;
+  // 2026-10-24 fix: count only recruiter-consented candidates. Counting every
+  // merged candidate overstated the sellable pool (16 vs 7 consented).
+  const optIns = candidates.filter(c => c.consent_recruiter_share).length;
   const optConv = funnel.sessions ? Math.round((optIns / funnel.sessions) * 100) : 0;
   const dlConv = Math.round(funnel.downloadRate * 100);
   const startConv = Math.round(funnel.startRate * 100);
@@ -874,7 +876,7 @@ export function RevenueTab() {
             <p className="text-sm" style={{ color: t.faint }}>No job referrals recorded yet this month.</p>
           ) : (
             <div className="space-y-3">
-              <Bars data={r.referralsByCountry.slice(0, 8).map((c: any) => ({ label: `${c.country} · ${c.clicks} clicks`, value: Math.round(c.cpcEst * 100) }))} color={t.gold} />
+              <Bars data={r.referralsByCountry.slice(0, 8).map((c: any) => ({ label: `${c.country} · ${c.clicks} clicks`, value: c.clicks }))} color={t.gold} />
               <p className="text-[10px]" style={{ color: t.faint }}>CPC values are estimates for telemetry — not revenue.</p>
             </div>
           )}
@@ -1495,3 +1497,4 @@ export function PricingTab() {
     </div>
   );
 }
+
