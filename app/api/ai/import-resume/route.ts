@@ -22,8 +22,10 @@ const IMPORT_CACHE_TTL_SECONDS = 30 * 24 * 3600;
 // Vercel kills this function at maxDuration (60s) and answers with a
 // plain-text 504 ("An error occurred with your deployment...") that the
 // client cannot parse as JSON. Time-box the AI work so we always return a
-// JSON error ourselves before that happens.
-const AI_DEADLINE_MS = 48_000;
+// JSON error ourselves before that happens. 55s (not 60s) so the JSON
+// error still has room to be returned; 48s was too tight once the pool
+// must rotate past a hanging model before reaching a healthy one.
+const AI_DEADLINE_MS = 55_000;
 
 class AiTimeoutError extends Error {
   constructor() {
@@ -267,7 +269,13 @@ JSON Schema to match:
 
     if (resumeText.length >= MIN_TEXT_CHARS) {
       const prompt = `${schemaBlock}\n\nRESUME TEXT:\n${resumeText.substring(0, MAX_TEXT_CHARS)}`;
-      const parsedData = await withAiDeadline(generateContentWithRetry(prompt, systemInstruction, 8192, true, [], 'import_resume'));
+      // Preferred models first + per-attempt timeout: on 2026-10-24
+      // gemini-3.8-flash hung 30s+ and gemini-3.7-flash 503'd, while
+      // 3.5/3.6-flash answered instantly. The 25s cap turns a hang into
+      // an overload strike (rotate) instead of eating the 55s deadline.
+      // If the preferred models saturate later, the pool still falls
+      // back to the rest of GEMINI_MODELS.
+      const parsedData = await withAiDeadline(generateContentWithRetry(prompt, systemInstruction, 8192, true, [], 'import_resume', ['gemini-3.5-flash', 'gemini-3.6-flash'], 25_000));
       await storeInCache(parsedData);
       return NextResponse.json(parsedData, { headers: { 'X-Cache': 'MISS' } });
     }
@@ -283,7 +291,7 @@ JSON Schema to match:
       }
     }];
     const fallbackPrompt = `${schemaBlock}\n\nThe resume is attached as a PDF document. Read it and extract the details.`;
-    const parsedData = await withAiDeadline(generateContentWithRetry(fallbackPrompt, systemInstruction, 8192, true, mediaParts, 'import_resume_pdf'));
+    const parsedData = await withAiDeadline(generateContentWithRetry(fallbackPrompt, systemInstruction, 8192, true, mediaParts, 'import_resume_pdf', ['gemini-3.5-flash', 'gemini-3.6-flash'], 25_000));
     await storeInCache(parsedData);
     return NextResponse.json(parsedData, { headers: { 'X-Cache': 'MISS' } });
   } catch (error: any) {

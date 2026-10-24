@@ -367,7 +367,18 @@ export async function generateContentWithRetry<T = unknown>(
   maxTokens: number = 2000,
   forceJson: boolean = true,
   mediaParts: MediaPart[] = [],
-  endpointName: string = 'unknown'
+  endpointName: string = 'unknown',
+  // Preferred models, tried first (import passes the models that probed
+  // healthy on 2026-10-24). When given, the start combo is deterministic
+  // (first preferred) instead of random, so a hanging model cannot burn
+  // the route deadline before a healthy model is tried. Fallback to the
+  // rest of the pool still applies when preferred models fail or are out.
+  preferredModels: string[] = [],
+  // Per-attempt cap in ms (0 = disabled). A model that hangs (3.8-flash
+  // proved to hang 30s+ on 2026-10-24) must not eat the route's whole
+  // deadline: the timeout throws a 503-class error so the pool counts it
+  // as an overload strike and rotates, exactly like a fast 503.
+  attemptTimeoutMs: number = 0
 ): Promise<T | string> {
   // 1. Check Circuit Breaker
   try {
@@ -396,8 +407,23 @@ export async function generateContentWithRetry<T = unknown>(
     throw new AiQuotaExhaustedError();
   }
 
-  // Randomize the starting combo so concurrent requests spread across keys.
-  let ci = Math.floor(Math.random() * combos.length);
+  // Preferred-model ordering: within each key, preferred models come
+  // first, so the first attempts go to known-healthy models instead of a
+  // random combo that may hang. The cap filter above already ran, so an
+  // at-cap preferred combo is simply absent from this list.
+  if (preferredModels.length > 0) {
+    const rank = (m: string) => {
+      const i = preferredModels.indexOf(m);
+      return i === -1 ? preferredModels.length : i;
+    };
+    combos = [...combos].sort((a, b) =>
+      a.keyIndex !== b.keyIndex ? a.keyIndex - b.keyIndex : rank(a.model) - rank(b.model)
+    );
+  }
+
+  // Randomize the starting combo so concurrent requests spread across keys,
+  // unless a preferred order was given (then start at the first preferred).
+  let ci = preferredModels.length > 0 ? 0 : Math.floor(Math.random() * combos.length);
   const maxAttempts = Math.min(Math.max(combos.length + 2, 4), 16);
   let attempts = 0;
   let rateLimitStreak = 0;
@@ -415,7 +441,7 @@ export async function generateContentWithRetry<T = unknown>(
 
       const ai = new GoogleGenAI({ apiKey: combo.apiKey });
 
-      const response = await ai.models.generateContent({
+      const sdkPromise = ai.models.generateContent({
         model: combo.model,
         contents: [{ role: 'user', parts: parts as any }], // GenAI SDK internal type mismatch
         config: {
@@ -424,6 +450,21 @@ export async function generateContentWithRetry<T = unknown>(
           responseMimeType: forceJson ? 'application/json' : 'text/plain'
         }
       });
+      // Silence the orphaned SDK promise: when the race below times out,
+      // a late rejection from the abandoned call must not surface as an
+      // unhandled rejection. Its result is ignored either way.
+      sdkPromise.catch(() => {});
+      const response = attemptTimeoutMs > 0
+        ? await Promise.race([
+            sdkPromise,
+            delay(attemptTimeoutMs).then(() => {
+              throw Object.assign(
+                new Error(`Gemini request timed out after ${attemptTimeoutMs}ms (model overloaded)`),
+                { status: 503 }
+              );
+            }),
+          ])
+        : await sdkPromise;
 
       await recordComboUse(combo, false);
       rateLimitStreak = 0;
