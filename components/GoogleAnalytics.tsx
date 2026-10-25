@@ -16,6 +16,11 @@ declare global {
 /**
  * Google Analytics 4 via Consent Mode v2.
  * - gtag loads with analytics_storage denied by default (GDPR-friendly).
+ * - 2026-10-25 perf round 2: the gtag.js loader is lazyOnload (idle-time)
+ *   so the 181KB download no longer competes with first paint. The inline
+ *   stub below stays afterInteractive, so gtag()/dataLayer queueing and the
+ *   consent defaults exist from hydration; queued events drain in order
+ *   once gtag.js arrives. Nothing is removed: GA still loads on every page.
  * - Storage is only granted after the user accepts analytics in the consent popup
  *   (ConsentManager -> data.consents.analytics).
  * - Renders nothing until NEXT_PUBLIC_GA_MEASUREMENT_ID is configured.
@@ -40,7 +45,7 @@ export function GoogleAnalytics() {
     <>
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-        strategy="afterInteractive"
+        strategy="lazyOnload"
       />
       <Script id="ga-consent-init" strategy="afterInteractive">
         {`

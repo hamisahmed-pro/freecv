@@ -1,4 +1,3 @@
-import { supabase } from './supabase';
 
 // ---- Session ID ----
 const getSessionId = () => {
@@ -198,6 +197,12 @@ export const trackEvent = async (eventType: string, templateId?: string, metadat
     const geo = await getGeoData();
     const utm = getUTMParams();
 
+    // 2026-10-25 perf round 2: supabase-js was statically imported by this
+    // module, pulling ~100KB+ into /build's first chunk although the only
+    // call (this insert) runs after mount, after the geo fetch above, inside
+    // try/catch. Loaded on demand instead; events are preserved, just
+    // inserted after a fast same-origin chunk fetch.
+    const { supabase } = await import('./supabase');
     await supabase.from('analytics_events').insert([{
       event_type: eventType,
       session_id: getSessionId(),
