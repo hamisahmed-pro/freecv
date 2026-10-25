@@ -130,21 +130,38 @@ const HTMLThumbnail = ({ Tmpl, data }: { Tmpl: any, data: any }) => {
   );
 };
 
-const HTMLPreview = ({ Tmpl, data }: { Tmpl: any, data: any }) => {
+const HTMLPreview = ({ Tmpl, data, autoHeight, onPaperHeight }: { Tmpl: any, data: any, autoHeight?: boolean, onPaperHeight?: (h: number) => void }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const paperRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  const [paperH, setPaperH] = useState(1056);
   useEffect(() => {
     if (!containerRef.current) return;
     const observer = new ResizeObserver((entries) => { setScale(Math.min(1.5, entries[0].contentRect.width / 816)); });
     observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, []);
+  // Report the paper's layout height so a host frame (mobile overlay) can
+  // size itself to the full content instead of assuming one 1056px page.
+  useEffect(() => {
+    if (!paperRef.current || !onPaperHeight) return;
+    const observer = new ResizeObserver((entries) => {
+      const h = entries[0].contentRect.height;
+      setPaperH(h);
+      onPaperHeight(h);
+    });
+    observer.observe(paperRef.current);
+    return () => observer.disconnect();
+  }, [onPaperHeight]);
   return (
     <div ref={containerRef} className="w-full h-full bg-[#f6f5ef] flex justify-center overflow-auto p-4 sm:p-8 cv-riso custom-scrollbar">
       <div
+        ref={paperRef}
         data-cvyon-template-stage
         className={cn("bg-white shadow-[0_12px_40px_rgba(21,26,70,.14)] rounded-lg overflow-hidden flex-shrink-0 relative border border-[#dddde5]", data.density === 'compact' && "density-compact")}
-        style={{ width: '816px', height: '1056px', transform: `scale(${scale})`, transformOrigin: 'top center', marginBottom: `-${1056 * (1 - scale)}px`, '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
+        style={autoHeight
+          ? { width: '816px', minHeight: '1056px', height: 'auto', transform: `scale(${scale})`, transformOrigin: 'top center', marginBottom: `-${paperH * (1 - scale)}px`, '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties
+          : { width: '816px', height: '1056px', transform: `scale(${scale})`, transformOrigin: 'top center', marginBottom: `-${1056 * (1 - scale)}px`, '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
       >
         <Tmpl data={data} themeColor={data.theme?.color || '#2563eb'} />
       </div>
@@ -214,6 +231,10 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [mobileZoom, setMobileZoom] = useState(false);
   const [mobilePreviewMetrics, setMobilePreviewMetrics] = useState({ scale: 1, width: 816, height: 1056 });
+  // Full content height of the mobile preview paper (one page = 1056).
+  // The mobile frame sizes itself from this, so multi-page resumes scroll
+  // instead of clipping at page one. Reported by HTMLPreview's observer.
+  const [mobilePaperHeight, setMobilePaperHeight] = useState(1056);
   const [isATSOpen, setIsATSOpen] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
@@ -1488,14 +1509,14 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
           <div className="v3-canvas">
             <div
               className="preview-scale-frame shrink-0"
-              style={{ width: mobilePreviewMetrics.width, height: mobilePreviewMetrics.height }}
+              style={{ width: mobilePreviewMetrics.width, height: Math.ceil(mobilePaperHeight * mobilePreviewMetrics.scale) }}
             >
               <div
                 className="w-[816px] origin-top-left shrink-0 bg-white"
                 style={{ transform: mobilePreviewMetrics.scale !== 1 ? `scale(${mobilePreviewMetrics.scale})` : undefined, '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
               >
                 <ErrorBoundary fallbackTitle="Resume Preview Error" fallbackMessage="Could not render the current template. Try selecting another template or verifying your text inputs.">
-                  <HTMLPreview Tmpl={htmlTemplates[data.templateId as keyof typeof htmlTemplates]} data={previewData} />
+                  <HTMLPreview Tmpl={htmlTemplates[data.templateId as keyof typeof htmlTemplates]} data={previewData} autoHeight onPaperHeight={setMobilePaperHeight} />
                 </ErrorBoundary>
               </div>
             </div>
@@ -1877,4 +1898,5 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
     </main>
   );
 }
+
 
