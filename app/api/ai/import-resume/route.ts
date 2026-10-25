@@ -112,6 +112,31 @@ async function extractPdfText(buffer: Buffer): Promise<string> {
   }
 }
 
+/**
+ * Defense in depth against model placeholder leakage (observed live
+ * 2026-10-25: every imported company came back as "[Company Name]").
+ * A string that is nothing but a bracketed phrase is a placeholder by
+ * construction, never a real value — blank it in place rather than
+ * letting it reach the builder. Mutates and returns nothing; safe to
+ * call on the const parsed object.
+ */
+function stripPlaceholders(value: unknown): void {
+  if (Array.isArray(value)) {
+    value.forEach(stripPlaceholders);
+    return;
+  }
+  if (value !== null && typeof value === 'object') {
+    const obj = value as Record<string, unknown>;
+    for (const [k, v] of Object.entries(obj)) {
+      if (typeof v === 'string') {
+        if (/^\[.*\]$/.test(v.trim())) obj[k] = '';
+      } else {
+        stripPlaceholders(v);
+      }
+    }
+  }
+}
+
 export async function POST(req: Request) {
   const rateLimitResponse = await checkRateLimit(req);
   if (rateLimitResponse) return rateLimitResponse;
@@ -144,8 +169,11 @@ export async function POST(req: Request) {
     }
 
     // Content-hash cache: identical bytes => identical parse. Skip Gemini.
+    // v2 prefix (2026-10-25): v1 cached parses predate the placeholder
+    // scrub below, so a re-import of the same file must NOT return a
+    // stale "[Company Name]" parse.
     const fingerprint = createHash('sha256').update(buffer).digest('hex');
-    const cacheKey = `cvyon:import-cache:${fingerprint}`;
+    const cacheKey = `cvyon:import-cache:v2:${fingerprint}`;
     const cache = getImportCache();
     if (cache) {
       try {
@@ -179,6 +207,8 @@ Rules:
 5. Return ONLY RAW valid JSON. Do NOT include markdown code blocks or backticks.
 6. Make sure all strings are properly escaped. Do not use unescaped newlines in JSON values.
 7. If the resume contains information that does not fit into standard sections, map them into the "customSections" array.
+8. NEVER output bracketed placeholders such as "[Company Name]", "[Your Name]", or "[Date]". If a value cannot be found in the resume, use an empty string ("") or an empty array ([]) — never fill the slot with a placeholder.
+9. Extract the education section completely: every institution with its degree/qualification and years, even if the section is titled differently (e.g. "Academic Background", "Qualifications", "Training"). Education belongs in the "education" array, never in "customSections".
 
 JSON Schema to match:
 {
@@ -276,6 +306,7 @@ JSON Schema to match:
       // If the preferred models saturate later, the pool still falls
       // back to the rest of GEMINI_MODELS.
       const parsedData = await withAiDeadline(generateContentWithRetry(prompt, systemInstruction, 8192, true, [], 'import_resume', ['gemini-3.5-flash', 'gemini-3.6-flash'], 25_000));
+      stripPlaceholders(parsedData);
       await storeInCache(parsedData);
       return NextResponse.json(parsedData, { headers: { 'X-Cache': 'MISS' } });
     }
@@ -292,6 +323,7 @@ JSON Schema to match:
     }];
     const fallbackPrompt = `${schemaBlock}\n\nThe resume is attached as a PDF document. Read it and extract the details.`;
     const parsedData = await withAiDeadline(generateContentWithRetry(fallbackPrompt, systemInstruction, 8192, true, mediaParts, 'import_resume_pdf', ['gemini-3.5-flash', 'gemini-3.6-flash'], 25_000));
+    stripPlaceholders(parsedData);
     await storeInCache(parsedData);
     return NextResponse.json(parsedData, { headers: { 'X-Cache': 'MISS' } });
   } catch (error: any) {
@@ -313,3 +345,4 @@ JSON Schema to match:
     return apiError('import-resume', error);
   }
 }
+
