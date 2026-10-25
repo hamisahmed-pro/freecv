@@ -14,25 +14,401 @@ import {
   BarChart3, RefreshCw, Undo2, Redo2, ChevronDown, ChevronUp, ZoomIn, ZoomOut, Upload, Share2,
   Pipette, Check, ArrowLeft, ArrowRight, FileDown, Target
 } from 'lucide-react';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import confetti from 'canvas-confetti';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/lib/supabase';
 
-import { templates, TemplateKey } from '@/components/templates';
-import { templates as htmlTemplates } from '@/components/html_templates';
-import NewsletterCapture from '@/components/NewsletterCapture';
 import { Logo } from '@/components/brand/Logo';
 import dynamic from 'next/dynamic';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { captureTemplateHtml } from '@/lib/docx/capture-template-html';
 
 const ImportResume = dynamic(() => import('@/components/builder/ImportResume').then(m => m.ImportResume), { ssr: false });
 const JobsModal = dynamic(() => import('@/components/builder/JobsModal').then(m => m.JobsModal), { ssr: false });
 const PDFPreview = dynamic(() => import('@/components/builder/PDFPreview'), { ssr: false });
 const LiveAtsScore = dynamic(() => import('@/components/builder/LiveAtsScore').then(m => m.LiveAtsScore), { ssr: false });
+// 2026-10-25 perf: the two template catalogues (~180 React-PDF templates +
+// ~180 HTML templates) were statically imported into the first chunk although
+// only one template renders on first paint. Each template is now its own
+// chunk, loaded only when rendered: the selected template for preview/print/
+// PDF, and the full set when the gallery opens. Every catalogue key stays
+// reachable; nothing was dropped from either catalogue. The type-only import
+// below is erased at build time and pulls no JavaScript.
+import type { TemplateKey } from '@/components/templates';
+type TemplateComponent = React.ComponentType<{ data: ResumeData }>;
+const ReactTemplates: Record<TemplateKey, TemplateComponent> = {
+  Academic: dynamic(() => import('@/components/templates/Academic'), { ssr: true }),
+  AcademicJournal: dynamic(() => import('@/components/templates/AcademicJournal'), { ssr: true }),
+  Advocate: dynamic(() => import('@/components/templates/Advocate'), { ssr: true }),
+  Anchor: dynamic(() => import('@/components/templates/Anchor'), { ssr: true }),
+  Aperture: dynamic(() => import('@/components/templates/Aperture'), { ssr: true }),
+  Arsenal: dynamic(() => import('@/components/templates/Arsenal'), { ssr: true }),
+  Atelier: dynamic(() => import('@/components/templates/Atelier'), { ssr: true }),
+  Bandwidth: dynamic(() => import('@/components/templates/Bandwidth'), { ssr: true }),
+  Bare: dynamic(() => import('@/components/templates/Bare'), { ssr: true }),
+  Barrister: dynamic(() => import('@/components/templates/Barrister'), { ssr: true }),
+  Beacon: dynamic(() => import('@/components/templates/Beacon'), { ssr: true }),
+  Bichrome: dynamic(() => import('@/components/templates/Bichrome'), { ssr: true }),
+  Bifocal: dynamic(() => import('@/components/templates/Bifocal'), { ssr: true }),
+  Billboard: dynamic(() => import('@/components/templates/Billboard'), { ssr: true }),
+  Blank: dynamic(() => import('@/components/templates/Blank'), { ssr: true }),
+  Breakwater: dynamic(() => import('@/components/templates/Breakwater'), { ssr: true }),
+  Brief: dynamic(() => import('@/components/templates/Brief'), { ssr: true }),
+  Byline: dynamic(() => import('@/components/templates/Byline'), { ssr: true }),
+  Cache: dynamic(() => import('@/components/templates/Cache'), { ssr: true }),
+  Caliber: dynamic(() => import('@/components/templates/Caliber'), { ssr: true }),
+  Calligraphy: dynamic(() => import('@/components/templates/Calligraphy'), { ssr: true }),
+  Calm: dynamic(() => import('@/components/templates/Calm'), { ssr: true }),
+  Canvas: dynamic(() => import('@/components/templates/Canvas'), { ssr: true }),
+  Capsule: dynamic(() => import('@/components/templates/Capsule'), { ssr: true }),
+  Cascade: dynamic(() => import('@/components/templates/Cascade'), { ssr: true }),
+  Chancellor: dynamic(() => import('@/components/templates/Chancellor'), { ssr: true }),
+  Checkpoint: dynamic(() => import('@/components/templates/Checkpoint'), { ssr: true }),
+  Chevron: dynamic(() => import('@/components/templates/Chevron'), { ssr: true }),
+  Clarity: dynamic(() => import('@/components/templates/Clarity'), { ssr: true }),
+  Classic: dynamic(() => import('@/components/templates/Classic'), { ssr: true }),
+  Clearance: dynamic(() => import('@/components/templates/Clearance'), { ssr: true }),
+  Clinician: dynamic(() => import('@/components/templates/Clinician'), { ssr: true }),
+  Collage: dynamic(() => import('@/components/templates/Collage'), { ssr: true }),
+  Column: dynamic(() => import('@/components/templates/Column'), { ssr: true }),
+  Compass: dynamic(() => import('@/components/templates/Compass'), { ssr: true }),
+  Condensed: dynamic(() => import('@/components/templates/Condensed'), { ssr: true }),
+  Consul: dynamic(() => import('@/components/templates/Consul'), { ssr: true }),
+  Cornerstone: dynamic(() => import('@/components/templates/Cornerstone'), { ssr: true }),
+  CorporateBlue: dynamic(() => import('@/components/templates/CorporateBlue'), { ssr: true }),
+  Counsel: dynamic(() => import('@/components/templates/Counsel'), { ssr: true }),
+  Covenant: dynamic(() => import('@/components/templates/Covenant'), { ssr: true }),
+  Crimson: dynamic(() => import('@/components/templates/Crimson'), { ssr: true }),
+  Density: dynamic(() => import('@/components/templates/Density'), { ssr: true }),
+  Deploy: dynamic(() => import('@/components/templates/Deploy'), { ssr: true }),
+  Diplomat: dynamic(() => import('@/components/templates/Diplomat'), { ssr: true }),
+  Docket: dynamic(() => import('@/components/templates/Docket'), { ssr: true }),
+  Draft: dynamic(() => import('@/components/templates/Draft'), { ssr: true }),
+  Drift: dynamic(() => import('@/components/templates/Drift'), { ssr: true }),
+  Duotone: dynamic(() => import('@/components/templates/Duotone'), { ssr: true }),
+  Elegant: dynamic(() => import('@/components/templates/Elegant'), { ssr: true }),
+  ElegantEditorial: dynamic(() => import('@/components/templates/ElegantEditorial'), { ssr: true }),
+  Ember: dynamic(() => import('@/components/templates/Ember'), { ssr: true }),
+  Engine: dynamic(() => import('@/components/templates/Engine'), { ssr: true }),
+  Ensign: dynamic(() => import('@/components/templates/Ensign'), { ssr: true }),
+  Estuary: dynamic(() => import('@/components/templates/Estuary'), { ssr: true }),
+  Executive: dynamic(() => import('@/components/templates/Executive'), { ssr: true }),
+  ExecutiveSplit: dynamic(() => import('@/components/templates/ExecutiveSplit'), { ssr: true }),
+  Flagship: dynamic(() => import('@/components/templates/Flagship'), { ssr: true }),
+  Folio: dynamic(() => import('@/components/templates/Folio'), { ssr: true }),
+  Forest: dynamic(() => import('@/components/templates/Forest'), { ssr: true }),
+  Forge: dynamic(() => import('@/components/templates/Forge'), { ssr: true }),
+  Founder: dynamic(() => import('@/components/templates/Founder'), { ssr: true }),
+  Framework: dynamic(() => import('@/components/templates/Framework'), { ssr: true }),
+  Frontline: dynamic(() => import('@/components/templates/Frontline'), { ssr: true }),
+  Gallery: dynamic(() => import('@/components/templates/Gallery'), { ssr: true }),
+  Gateway: dynamic(() => import('@/components/templates/Gateway'), { ssr: true }),
+  Gauge: dynamic(() => import('@/components/templates/Gauge'), { ssr: true }),
+  Gigfolio: dynamic(() => import('@/components/templates/Gigfolio'), { ssr: true }),
+  Gilt: dynamic(() => import('@/components/templates/Gilt'), { ssr: true }),
+  Glyph: dynamic(() => import('@/components/templates/Glyph'), { ssr: true }),
+  Gutter: dynamic(() => import('@/components/templates/Gutter'), { ssr: true }),
+  Harbor: dynamic(() => import('@/components/templates/Harbor'), { ssr: true }),
+  Headland: dynamic(() => import('@/components/templates/Headland'), { ssr: true }),
+  Hush: dynamic(() => import('@/components/templates/Hush'), { ssr: true }),
+  Inscription: dynamic(() => import('@/components/templates/Inscription'), { ssr: true }),
+  Interface: dynamic(() => import('@/components/templates/Interface'), { ssr: true }),
+  Jumbotron: dynamic(() => import('@/components/templates/Jumbotron'), { ssr: true }),
+  Kernel: dynamic(() => import('@/components/templates/Kernel'), { ssr: true }),
+  Kerning: dynamic(() => import('@/components/templates/Kerning'), { ssr: true }),
+  Keystone: dynamic(() => import('@/components/templates/Keystone'), { ssr: true }),
+  Kindred: dynamic(() => import('@/components/templates/Kindred'), { ssr: true }),
+  Ladder: dynamic(() => import('@/components/templates/Ladder'), { ssr: true }),
+  Launchpad: dynamic(() => import('@/components/templates/Launchpad'), { ssr: true }),
+  Laurel: dynamic(() => import('@/components/templates/Laurel'), { ssr: true }),
+  Ledger: dynamic(() => import('@/components/templates/Ledger'), { ssr: true }),
+  Lighthouse: dynamic(() => import('@/components/templates/Lighthouse'), { ssr: true }),
+  Lucid: dynamic(() => import('@/components/templates/Lucid'), { ssr: true }),
+  Lumen: dynamic(() => import('@/components/templates/Lumen'), { ssr: true }),
+  Magistrate: dynamic(() => import('@/components/templates/Magistrate'), { ssr: true }),
+  Mainframe: dynamic(() => import('@/components/templates/Mainframe'), { ssr: true }),
+  Maitre: dynamic(() => import('@/components/templates/Maitre'), { ssr: true }),
+  Manuscript: dynamic(() => import('@/components/templates/Manuscript'), { ssr: true }),
+  Marginalia: dynamic(() => import('@/components/templates/Marginalia'), { ssr: true }),
+  Marketing: dynamic(() => import('@/components/templates/Marketing'), { ssr: true }),
+  Marquee: dynamic(() => import('@/components/templates/Marquee'), { ssr: true }),
+  Masthead: dynamic(() => import('@/components/templates/Masthead'), { ssr: true }),
+  Meadow: dynamic(() => import('@/components/templates/Meadow'), { ssr: true }),
+  Mentor: dynamic(() => import('@/components/templates/Mentor'), { ssr: true }),
+  Meridian: dynamic(() => import('@/components/templates/Meridian'), { ssr: true }),
+  Merit: dynamic(() => import('@/components/templates/Merit'), { ssr: true }),
+  MinimalistSplit: dynamic(() => import('@/components/templates/MinimalistSplit'), { ssr: true }),
+  ModernGradient: dynamic(() => import('@/components/templates/ModernGradient'), { ssr: true }),
+  Mono: dynamic(() => import('@/components/templates/Mono'), { ssr: true }),
+  Mosaic: dynamic(() => import('@/components/templates/Mosaic'), { ssr: true }),
+  Navigator: dynamic(() => import('@/components/templates/Navigator'), { ssr: true }),
+  Navy: dynamic(() => import('@/components/templates/Navy'), { ssr: true }),
+  NightShift: dynamic(() => import('@/components/templates/NightShift'), { ssr: true }),
+  Noir: dynamic(() => import('@/components/templates/Noir'), { ssr: true }),
+  Nomad: dynamic(() => import('@/components/templates/Nomad'), { ssr: true }),
+  Northstar: dynamic(() => import('@/components/templates/Northstar'), { ssr: true }),
+  Ochre: dynamic(() => import('@/components/templates/Ochre'), { ssr: true }),
+  OpEd: dynamic(() => import('@/components/templates/OpEd'), { ssr: true }),
+  Overclock: dynamic(() => import('@/components/templates/Overclock'), { ssr: true }),
+  Palette: dynamic(() => import('@/components/templates/Palette'), { ssr: true }),
+  Paper: dynamic(() => import('@/components/templates/Paper'), { ssr: true }),
+  Paragon: dynamic(() => import('@/components/templates/Paragon'), { ssr: true }),
+  Parchment: dynamic(() => import('@/components/templates/Parchment'), { ssr: true }),
+  Parse: dynamic(() => import('@/components/templates/Parse'), { ssr: true }),
+  ParsePerfect: dynamic(() => import('@/components/templates/ParsePerfect'), { ssr: true }),
+  Pedagogue: dynamic(() => import('@/components/templates/Pedagogue'), { ssr: true }),
+  Pivot: dynamic(() => import('@/components/templates/Pivot'), { ssr: true }),
+  Pixel: dynamic(() => import('@/components/templates/Pixel'), { ssr: true }),
+  Podium: dynamic(() => import('@/components/templates/Podium'), { ssr: true }),
+  Polyglot: dynamic(() => import('@/components/templates/Polyglot'), { ssr: true }),
+  Portrait: dynamic(() => import('@/components/templates/Portrait'), { ssr: true }),
+  Practitioner: dynamic(() => import('@/components/templates/Practitioner'), { ssr: true }),
+  Protocol: dynamic(() => import('@/components/templates/Protocol'), { ssr: true }),
+  Pullquote: dynamic(() => import('@/components/templates/Pullquote'), { ssr: true }),
+  Quarto: dynamic(() => import('@/components/templates/Quarto'), { ssr: true }),
+  Rail: dynamic(() => import('@/components/templates/Rail'), { ssr: true }),
+  Rainmaker: dynamic(() => import('@/components/templates/Rainmaker'), { ssr: true }),
+  Reentry: dynamic(() => import('@/components/templates/Reentry'), { ssr: true }),
+  Regent: dynamic(() => import('@/components/templates/Regent'), { ssr: true }),
+  Rucksack: dynamic(() => import('@/components/templates/Rucksack'), { ssr: true }),
+  Satchel: dynamic(() => import('@/components/templates/Satchel'), { ssr: true }),
+  Scanner: dynamic(() => import('@/components/templates/Scanner'), { ssr: true }),
+  Senate: dynamic(() => import('@/components/templates/Senate'), { ssr: true }),
+  Sepia: dynamic(() => import('@/components/templates/Sepia'), { ssr: true }),
+  Showcase: dynamic(() => import('@/components/templates/Showcase'), { ssr: true }),
+  Slate: dynamic(() => import('@/components/templates/Slate'), { ssr: true }),
+  Sonnet: dynamic(() => import('@/components/templates/Sonnet'), { ssr: true }),
+  Sovereign: dynamic(() => import('@/components/templates/Sovereign'), { ssr: true }),
+  Split: dynamic(() => import('@/components/templates/Split'), { ssr: true }),
+  Spotlight: dynamic(() => import('@/components/templates/Spotlight'), { ssr: true }),
+  Spread: dynamic(() => import('@/components/templates/Spread'), { ssr: true }),
+  Squeeze: dynamic(() => import('@/components/templates/Squeeze'), { ssr: true }),
+  Stack: dynamic(() => import('@/components/templates/Stack'), { ssr: true }),
+  Standard: dynamic(() => import('@/components/templates/Standard'), { ssr: true }),
+  Still: dynamic(() => import('@/components/templates/Still'), { ssr: true }),
+  Studio: dynamic(() => import('@/components/templates/Studio'), { ssr: true }),
+  Summit: dynamic(() => import('@/components/templates/Summit'), { ssr: true }),
+  SwissDesign: dynamic(() => import('@/components/templates/SwissDesign'), { ssr: true }),
+  SwissGrid: dynamic(() => import('@/components/templates/SwissGrid'), { ssr: true }),
+  SwissMinimal: dynamic(() => import('@/components/templates/SwissMinimal'), { ssr: true }),
+  Syntax: dynamic(() => import('@/components/templates/Syntax'), { ssr: true }),
+  Tandem: dynamic(() => import('@/components/templates/Tandem'), { ssr: true }),
+  Teal: dynamic(() => import('@/components/templates/Teal'), { ssr: true }),
+  TechPro: dynamic(() => import('@/components/templates/TechPro'), { ssr: true }),
+  Teller: dynamic(() => import('@/components/templates/Teller'), { ssr: true }),
+  Tenure: dynamic(() => import('@/components/templates/Tenure'), { ssr: true }),
+  Throttle: dynamic(() => import('@/components/templates/Throttle'), { ssr: true }),
+  Timeline: dynamic(() => import('@/components/templates/Timeline'), { ssr: true }),
+  Trellis: dynamic(() => import('@/components/templates/Trellis'), { ssr: true }),
+  Triad: dynamic(() => import('@/components/templates/Triad'), { ssr: true }),
+  Tribunal: dynamic(() => import('@/components/templates/Tribunal'), { ssr: true }),
+  Trifold: dynamic(() => import('@/components/templates/Trifold'), { ssr: true }),
+  Tutor: dynamic(() => import('@/components/templates/Tutor'), { ssr: true }),
+  TypographyFirst: dynamic(() => import('@/components/templates/TypographyFirst'), { ssr: true }),
+  Uplink: dynamic(() => import('@/components/templates/Uplink'), { ssr: true }),
+  Valor: dynamic(() => import('@/components/templates/Valor'), { ssr: true }),
+  Vector: dynamic(() => import('@/components/templates/Vector'), { ssr: true }),
+  Vellum: dynamic(() => import('@/components/templates/Vellum'), { ssr: true }),
+  Vitrine: dynamic(() => import('@/components/templates/Vitrine'), { ssr: true }),
+  Vivid: dynamic(() => import('@/components/templates/Vivid'), { ssr: true }),
+  Warden: dynamic(() => import('@/components/templates/Warden'), { ssr: true }),
+  Waypoint: dynamic(() => import('@/components/templates/Waypoint'), { ssr: true }),
+  Whisper: dynamic(() => import('@/components/templates/Whisper'), { ssr: true }),
+  Workshop: dynamic(() => import('@/components/templates/Workshop'), { ssr: true }),
+  ZenJapanese: dynamic(() => import('@/components/templates/ZenJapanese'), { ssr: true }),
+  Zigzag: dynamic(() => import('@/components/templates/Zigzag'), { ssr: true }),
+};
+const HtmlTemplates: Record<TemplateKey, TemplateComponent> = {
+  Academic: dynamic(() => import('@/components/html_templates/Academic'), { ssr: true }),
+  AcademicJournal: dynamic(() => import('@/components/html_templates/AcademicJournal'), { ssr: true }),
+  Advocate: dynamic(() => import('@/components/html_templates/Advocate'), { ssr: true }),
+  Anchor: dynamic(() => import('@/components/html_templates/Anchor'), { ssr: true }),
+  Aperture: dynamic(() => import('@/components/html_templates/Aperture'), { ssr: true }),
+  Arsenal: dynamic(() => import('@/components/html_templates/Arsenal'), { ssr: true }),
+  Atelier: dynamic(() => import('@/components/html_templates/Atelier'), { ssr: true }),
+  Bandwidth: dynamic(() => import('@/components/html_templates/Bandwidth'), { ssr: true }),
+  Bare: dynamic(() => import('@/components/html_templates/Bare'), { ssr: true }),
+  Barrister: dynamic(() => import('@/components/html_templates/Barrister'), { ssr: true }),
+  Beacon: dynamic(() => import('@/components/html_templates/Beacon'), { ssr: true }),
+  Bichrome: dynamic(() => import('@/components/html_templates/Bichrome'), { ssr: true }),
+  Bifocal: dynamic(() => import('@/components/html_templates/Bifocal'), { ssr: true }),
+  Billboard: dynamic(() => import('@/components/html_templates/Billboard'), { ssr: true }),
+  Blank: dynamic(() => import('@/components/html_templates/Blank'), { ssr: true }),
+  Breakwater: dynamic(() => import('@/components/html_templates/Breakwater'), { ssr: true }),
+  Brief: dynamic(() => import('@/components/html_templates/Brief'), { ssr: true }),
+  Byline: dynamic(() => import('@/components/html_templates/Byline'), { ssr: true }),
+  Cache: dynamic(() => import('@/components/html_templates/Cache'), { ssr: true }),
+  Caliber: dynamic(() => import('@/components/html_templates/Caliber'), { ssr: true }),
+  Calligraphy: dynamic(() => import('@/components/html_templates/Calligraphy'), { ssr: true }),
+  Calm: dynamic(() => import('@/components/html_templates/Calm'), { ssr: true }),
+  Canvas: dynamic(() => import('@/components/html_templates/Canvas'), { ssr: true }),
+  Capsule: dynamic(() => import('@/components/html_templates/Capsule'), { ssr: true }),
+  Cascade: dynamic(() => import('@/components/html_templates/Cascade'), { ssr: true }),
+  Chancellor: dynamic(() => import('@/components/html_templates/Chancellor'), { ssr: true }),
+  Checkpoint: dynamic(() => import('@/components/html_templates/Checkpoint'), { ssr: true }),
+  Chevron: dynamic(() => import('@/components/html_templates/Chevron'), { ssr: true }),
+  Clarity: dynamic(() => import('@/components/html_templates/Clarity'), { ssr: true }),
+  Classic: dynamic(() => import('@/components/html_templates/Classic'), { ssr: true }),
+  Clearance: dynamic(() => import('@/components/html_templates/Clearance'), { ssr: true }),
+  Clinician: dynamic(() => import('@/components/html_templates/Clinician'), { ssr: true }),
+  Collage: dynamic(() => import('@/components/html_templates/Collage'), { ssr: true }),
+  Column: dynamic(() => import('@/components/html_templates/Column'), { ssr: true }),
+  Compass: dynamic(() => import('@/components/html_templates/Compass'), { ssr: true }),
+  Condensed: dynamic(() => import('@/components/html_templates/Condensed'), { ssr: true }),
+  Consul: dynamic(() => import('@/components/html_templates/Consul'), { ssr: true }),
+  Cornerstone: dynamic(() => import('@/components/html_templates/Cornerstone'), { ssr: true }),
+  CorporateBlue: dynamic(() => import('@/components/html_templates/CorporateBlue'), { ssr: true }),
+  Counsel: dynamic(() => import('@/components/html_templates/Counsel'), { ssr: true }),
+  Covenant: dynamic(() => import('@/components/html_templates/Covenant'), { ssr: true }),
+  Crimson: dynamic(() => import('@/components/html_templates/Crimson'), { ssr: true }),
+  Density: dynamic(() => import('@/components/html_templates/Density'), { ssr: true }),
+  Deploy: dynamic(() => import('@/components/html_templates/Deploy'), { ssr: true }),
+  Diplomat: dynamic(() => import('@/components/html_templates/Diplomat'), { ssr: true }),
+  Docket: dynamic(() => import('@/components/html_templates/Docket'), { ssr: true }),
+  Draft: dynamic(() => import('@/components/html_templates/Draft'), { ssr: true }),
+  Drift: dynamic(() => import('@/components/html_templates/Drift'), { ssr: true }),
+  Duotone: dynamic(() => import('@/components/html_templates/Duotone'), { ssr: true }),
+  Elegant: dynamic(() => import('@/components/html_templates/Elegant'), { ssr: true }),
+  ElegantEditorial: dynamic(() => import('@/components/html_templates/ElegantEditorial'), { ssr: true }),
+  Ember: dynamic(() => import('@/components/html_templates/Ember'), { ssr: true }),
+  Engine: dynamic(() => import('@/components/html_templates/Engine'), { ssr: true }),
+  Ensign: dynamic(() => import('@/components/html_templates/Ensign'), { ssr: true }),
+  Estuary: dynamic(() => import('@/components/html_templates/Estuary'), { ssr: true }),
+  Executive: dynamic(() => import('@/components/html_templates/Executive'), { ssr: true }),
+  ExecutiveSplit: dynamic(() => import('@/components/html_templates/ExecutiveSplit'), { ssr: true }),
+  Flagship: dynamic(() => import('@/components/html_templates/Flagship'), { ssr: true }),
+  Folio: dynamic(() => import('@/components/html_templates/Folio'), { ssr: true }),
+  Forest: dynamic(() => import('@/components/html_templates/Forest'), { ssr: true }),
+  Forge: dynamic(() => import('@/components/html_templates/Forge'), { ssr: true }),
+  Founder: dynamic(() => import('@/components/html_templates/Founder'), { ssr: true }),
+  Framework: dynamic(() => import('@/components/html_templates/Framework'), { ssr: true }),
+  Frontline: dynamic(() => import('@/components/html_templates/Frontline'), { ssr: true }),
+  Gallery: dynamic(() => import('@/components/html_templates/Gallery'), { ssr: true }),
+  Gateway: dynamic(() => import('@/components/html_templates/Gateway'), { ssr: true }),
+  Gauge: dynamic(() => import('@/components/html_templates/Gauge'), { ssr: true }),
+  Gigfolio: dynamic(() => import('@/components/html_templates/Gigfolio'), { ssr: true }),
+  Gilt: dynamic(() => import('@/components/html_templates/Gilt'), { ssr: true }),
+  Glyph: dynamic(() => import('@/components/html_templates/Glyph'), { ssr: true }),
+  Gutter: dynamic(() => import('@/components/html_templates/Gutter'), { ssr: true }),
+  Harbor: dynamic(() => import('@/components/html_templates/Harbor'), { ssr: true }),
+  Headland: dynamic(() => import('@/components/html_templates/Headland'), { ssr: true }),
+  Hush: dynamic(() => import('@/components/html_templates/Hush'), { ssr: true }),
+  Inscription: dynamic(() => import('@/components/html_templates/Inscription'), { ssr: true }),
+  Interface: dynamic(() => import('@/components/html_templates/Interface'), { ssr: true }),
+  Jumbotron: dynamic(() => import('@/components/html_templates/Jumbotron'), { ssr: true }),
+  Kernel: dynamic(() => import('@/components/html_templates/Kernel'), { ssr: true }),
+  Kerning: dynamic(() => import('@/components/html_templates/Kerning'), { ssr: true }),
+  Keystone: dynamic(() => import('@/components/html_templates/Keystone'), { ssr: true }),
+  Kindred: dynamic(() => import('@/components/html_templates/Kindred'), { ssr: true }),
+  Ladder: dynamic(() => import('@/components/html_templates/Ladder'), { ssr: true }),
+  Launchpad: dynamic(() => import('@/components/html_templates/Launchpad'), { ssr: true }),
+  Laurel: dynamic(() => import('@/components/html_templates/Laurel'), { ssr: true }),
+  Ledger: dynamic(() => import('@/components/html_templates/Ledger'), { ssr: true }),
+  Lighthouse: dynamic(() => import('@/components/html_templates/Lighthouse'), { ssr: true }),
+  Lucid: dynamic(() => import('@/components/html_templates/Lucid'), { ssr: true }),
+  Lumen: dynamic(() => import('@/components/html_templates/Lumen'), { ssr: true }),
+  Magistrate: dynamic(() => import('@/components/html_templates/Magistrate'), { ssr: true }),
+  Mainframe: dynamic(() => import('@/components/html_templates/Mainframe'), { ssr: true }),
+  Maitre: dynamic(() => import('@/components/html_templates/Maitre'), { ssr: true }),
+  Manuscript: dynamic(() => import('@/components/html_templates/Manuscript'), { ssr: true }),
+  Marginalia: dynamic(() => import('@/components/html_templates/Marginalia'), { ssr: true }),
+  Marketing: dynamic(() => import('@/components/html_templates/Marketing'), { ssr: true }),
+  Marquee: dynamic(() => import('@/components/html_templates/Marquee'), { ssr: true }),
+  Masthead: dynamic(() => import('@/components/html_templates/Masthead'), { ssr: true }),
+  Meadow: dynamic(() => import('@/components/html_templates/Meadow'), { ssr: true }),
+  Mentor: dynamic(() => import('@/components/html_templates/Mentor'), { ssr: true }),
+  Meridian: dynamic(() => import('@/components/html_templates/Meridian'), { ssr: true }),
+  Merit: dynamic(() => import('@/components/html_templates/Merit'), { ssr: true }),
+  MinimalistSplit: dynamic(() => import('@/components/html_templates/MinimalistSplit'), { ssr: true }),
+  ModernGradient: dynamic(() => import('@/components/html_templates/ModernGradient'), { ssr: true }),
+  Mono: dynamic(() => import('@/components/html_templates/Mono'), { ssr: true }),
+  Mosaic: dynamic(() => import('@/components/html_templates/Mosaic'), { ssr: true }),
+  Navigator: dynamic(() => import('@/components/html_templates/Navigator'), { ssr: true }),
+  Navy: dynamic(() => import('@/components/html_templates/Navy'), { ssr: true }),
+  NightShift: dynamic(() => import('@/components/html_templates/NightShift'), { ssr: true }),
+  Noir: dynamic(() => import('@/components/html_templates/Noir'), { ssr: true }),
+  Nomad: dynamic(() => import('@/components/html_templates/Nomad'), { ssr: true }),
+  Northstar: dynamic(() => import('@/components/html_templates/Northstar'), { ssr: true }),
+  Ochre: dynamic(() => import('@/components/html_templates/Ochre'), { ssr: true }),
+  OpEd: dynamic(() => import('@/components/html_templates/OpEd'), { ssr: true }),
+  Overclock: dynamic(() => import('@/components/html_templates/Overclock'), { ssr: true }),
+  Palette: dynamic(() => import('@/components/html_templates/Palette'), { ssr: true }),
+  Paper: dynamic(() => import('@/components/html_templates/Paper'), { ssr: true }),
+  Paragon: dynamic(() => import('@/components/html_templates/Paragon'), { ssr: true }),
+  Parchment: dynamic(() => import('@/components/html_templates/Parchment'), { ssr: true }),
+  Parse: dynamic(() => import('@/components/html_templates/Parse'), { ssr: true }),
+  ParsePerfect: dynamic(() => import('@/components/html_templates/ParsePerfect'), { ssr: true }),
+  Pedagogue: dynamic(() => import('@/components/html_templates/Pedagogue'), { ssr: true }),
+  Pivot: dynamic(() => import('@/components/html_templates/Pivot'), { ssr: true }),
+  Pixel: dynamic(() => import('@/components/html_templates/Pixel'), { ssr: true }),
+  Podium: dynamic(() => import('@/components/html_templates/Podium'), { ssr: true }),
+  Polyglot: dynamic(() => import('@/components/html_templates/Polyglot'), { ssr: true }),
+  Portrait: dynamic(() => import('@/components/html_templates/Portrait'), { ssr: true }),
+  Practitioner: dynamic(() => import('@/components/html_templates/Practitioner'), { ssr: true }),
+  Protocol: dynamic(() => import('@/components/html_templates/Protocol'), { ssr: true }),
+  Pullquote: dynamic(() => import('@/components/html_templates/Pullquote'), { ssr: true }),
+  Quarto: dynamic(() => import('@/components/html_templates/Quarto'), { ssr: true }),
+  Rail: dynamic(() => import('@/components/html_templates/Rail'), { ssr: true }),
+  Rainmaker: dynamic(() => import('@/components/html_templates/Rainmaker'), { ssr: true }),
+  Reentry: dynamic(() => import('@/components/html_templates/Reentry'), { ssr: true }),
+  Regent: dynamic(() => import('@/components/html_templates/Regent'), { ssr: true }),
+  Rucksack: dynamic(() => import('@/components/html_templates/Rucksack'), { ssr: true }),
+  Satchel: dynamic(() => import('@/components/html_templates/Satchel'), { ssr: true }),
+  Scanner: dynamic(() => import('@/components/html_templates/Scanner'), { ssr: true }),
+  Senate: dynamic(() => import('@/components/html_templates/Senate'), { ssr: true }),
+  Sepia: dynamic(() => import('@/components/html_templates/Sepia'), { ssr: true }),
+  Showcase: dynamic(() => import('@/components/html_templates/Showcase'), { ssr: true }),
+  Slate: dynamic(() => import('@/components/html_templates/Slate'), { ssr: true }),
+  Sonnet: dynamic(() => import('@/components/html_templates/Sonnet'), { ssr: true }),
+  Sovereign: dynamic(() => import('@/components/html_templates/Sovereign'), { ssr: true }),
+  Split: dynamic(() => import('@/components/html_templates/Split'), { ssr: true }),
+  Spotlight: dynamic(() => import('@/components/html_templates/Spotlight'), { ssr: true }),
+  Spread: dynamic(() => import('@/components/html_templates/Spread'), { ssr: true }),
+  Squeeze: dynamic(() => import('@/components/html_templates/Squeeze'), { ssr: true }),
+  Stack: dynamic(() => import('@/components/html_templates/Stack'), { ssr: true }),
+  Standard: dynamic(() => import('@/components/html_templates/Standard'), { ssr: true }),
+  Still: dynamic(() => import('@/components/html_templates/Still'), { ssr: true }),
+  Studio: dynamic(() => import('@/components/html_templates/Studio'), { ssr: true }),
+  Summit: dynamic(() => import('@/components/html_templates/Summit'), { ssr: true }),
+  SwissDesign: dynamic(() => import('@/components/html_templates/SwissDesign'), { ssr: true }),
+  SwissGrid: dynamic(() => import('@/components/html_templates/SwissGrid'), { ssr: true }),
+  SwissMinimal: dynamic(() => import('@/components/html_templates/SwissMinimal'), { ssr: true }),
+  Syntax: dynamic(() => import('@/components/html_templates/Syntax'), { ssr: true }),
+  Tandem: dynamic(() => import('@/components/html_templates/Tandem'), { ssr: true }),
+  Teal: dynamic(() => import('@/components/html_templates/Teal'), { ssr: true }),
+  TechPro: dynamic(() => import('@/components/html_templates/TechPro'), { ssr: true }),
+  Teller: dynamic(() => import('@/components/html_templates/Teller'), { ssr: true }),
+  Tenure: dynamic(() => import('@/components/html_templates/Tenure'), { ssr: true }),
+  Throttle: dynamic(() => import('@/components/html_templates/Throttle'), { ssr: true }),
+  Timeline: dynamic(() => import('@/components/html_templates/Timeline'), { ssr: true }),
+  Trellis: dynamic(() => import('@/components/html_templates/Trellis'), { ssr: true }),
+  Triad: dynamic(() => import('@/components/html_templates/Triad'), { ssr: true }),
+  Tribunal: dynamic(() => import('@/components/html_templates/Tribunal'), { ssr: true }),
+  Trifold: dynamic(() => import('@/components/html_templates/Trifold'), { ssr: true }),
+  Tutor: dynamic(() => import('@/components/html_templates/Tutor'), { ssr: true }),
+  TypographyFirst: dynamic(() => import('@/components/html_templates/TypographyFirst'), { ssr: true }),
+  Uplink: dynamic(() => import('@/components/html_templates/Uplink'), { ssr: true }),
+  Valor: dynamic(() => import('@/components/html_templates/Valor'), { ssr: true }),
+  Vector: dynamic(() => import('@/components/html_templates/Vector'), { ssr: true }),
+  Vellum: dynamic(() => import('@/components/html_templates/Vellum'), { ssr: true }),
+  Vitrine: dynamic(() => import('@/components/html_templates/Vitrine'), { ssr: true }),
+  Vivid: dynamic(() => import('@/components/html_templates/Vivid'), { ssr: true }),
+  Warden: dynamic(() => import('@/components/html_templates/Warden'), { ssr: true }),
+  Waypoint: dynamic(() => import('@/components/html_templates/Waypoint'), { ssr: true }),
+  Whisper: dynamic(() => import('@/components/html_templates/Whisper'), { ssr: true }),
+  Workshop: dynamic(() => import('@/components/html_templates/Workshop'), { ssr: true }),
+  ZenJapanese: dynamic(() => import('@/components/html_templates/ZenJapanese'), { ssr: true }),
+  Zigzag: dynamic(() => import('@/components/html_templates/Zigzag'), { ssr: true }),
+};
+// Editor extras, split out of the first chunk in the same dynamic style as
+// ImportResume/JobsModal/PDFPreview/LiveAtsScore above. Drag-and-drop only
+// powers section reordering (the editor lists render once this chunk loads;
+// the resume preview, which is the LCP element, is unaffected). The
+// newsletter form lives in the desktop-only footer, below the fold.
+const DragDropContext = dynamic(() => import('@hello-pangea/dnd').then(m => m.DragDropContext), { ssr: false });
+const Droppable = dynamic(() => import('@hello-pangea/dnd').then(m => m.Droppable), { ssr: false });
+const Draggable = dynamic(() => import('@hello-pangea/dnd').then(m => m.Draggable), { ssr: false });
+const NewsletterCapture = dynamic(() => import('@/components/NewsletterCapture'), { ssr: false });
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -365,7 +741,7 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
       try {
         await setRecruiterConsent(true);
         setConsents({ ...(data.consents || {}), recruiterShare: true });
-        confetti({ particleCount: 90, spread: 70, origin: { y: 0.2 }, colors: ["#ff604b", "#ffd85a", "#5548f5"] });
+        (await import('canvas-confetti')).default({ particleCount: 90, spread: 70, origin: { y: 0.2 }, colors: ["#ff604b", "#ffd85a", "#5548f5"] });
         toast.success(dict["builder.you_re_discoverable_recruiters_can_now_f"]);
       } catch (e: any) {
         toast.error(e?.message || "Couldn't save your preference.");
@@ -480,7 +856,7 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
     const jobTitle = params.get('jobTitle');
     const summary = params.get('summary');
     const skills = (params.get('skills') || '').split('|').map(skill => skill.trim()).filter(Boolean);
-    const templateId = template && templates[template] ? template : data.templateId;
+    const templateId = template && ReactTemplates[template] ? template : data.templateId;
     const shouldReplaceDefaultSkills = data.skills.length === initialData.skills.length && data.skills.every((skill, index) => skill.name === initialData.skills[index]?.name);
     const nextSkills = skills.length > 0
       ? (shouldReplaceDefaultSkills
@@ -503,14 +879,14 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
     onboardingAppliedRef.current = true;
     // Close the SEO-flow tracking gap: users arriving from /templates/[slug]
     // silently get this template applied — record it like a gallery selection.
-    if (template && templates[template]) {
+    if (template && ReactTemplates[template]) {
       trackEvent('template_selected', template, { source: 'seo' });
     }
     window.history.replaceState({}, '', window.location.pathname);
   }, [isHydrated, data, setAllData]);
 
   useEffect(() => {
-    if (!isHydrated || templates[data.templateId]) return;
+    if (!isHydrated || ReactTemplates[data.templateId]) return;
     setTemplateId('Executive');
   }, [isHydrated, data.templateId, setTemplateId]);
 
@@ -559,7 +935,7 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
       }
       const resData = await res.json();
       setAtsResult(resData);
-      if (resData.score >= 85) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#0E8A4B', '#5548f5', '#ff604b'] });
+      if (resData.score >= 85) (await import('canvas-confetti')).default({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#0E8A4B', '#5548f5', '#ff604b'] });
     } catch (err: any) { toast.error('ATS Grading failed: ' + err.message); }
     setIsATSLoading(false);
   };
@@ -684,6 +1060,7 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
       // the capture path and the generic fallback stay consistent.
       let body: any = previewData;
       try {
+        const { captureTemplateHtml } = await import('@/lib/docx/capture-template-html');
         const templateHtml = captureTemplateHtml();
         if (templateHtml) {
           body = { data: previewData, templateHtml, templateId: data.templateId };
@@ -751,7 +1128,7 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
     setIsGeneratingPdf(true);
     try {
       const { pdf } = await import('@react-pdf/renderer');
-      const PdfTemplate = templates[data.templateId as TemplateKey];
+      const PdfTemplate = ReactTemplates[data.templateId as TemplateKey];
       if (!PdfTemplate) throw new Error('PDF template not available for ' + data.templateId);
       const blob = await pdf(<PdfTemplate data={previewData} />).toBlob();
       if (!blob || blob.size < 1000) throw new Error('Generated PDF is unexpectedly small');
@@ -1452,7 +1829,7 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
                 style={{ '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
               >
                 <ErrorBoundary fallbackTitle="Resume Preview Error" fallbackMessage="Could not render the current template. Try selecting another template or verifying your text inputs.">
-                  <HTMLPreview Tmpl={htmlTemplates[data.templateId as keyof typeof htmlTemplates]} data={previewData} />
+                  <HTMLPreview Tmpl={HtmlTemplates[data.templateId as TemplateKey]} data={previewData} />
                 </ErrorBoundary>
               </div>
             </div>
@@ -1469,7 +1846,7 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
             style={{ '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
           >
             {(() => {
-              const PrintTmpl = htmlTemplates[data.templateId as keyof typeof htmlTemplates];
+              const PrintTmpl = HtmlTemplates[data.templateId as TemplateKey];
               return <PrintTmpl data={previewData} />;
             })()}
           </div>
@@ -1516,7 +1893,7 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
                 style={{ transform: mobilePreviewMetrics.scale !== 1 ? `scale(${mobilePreviewMetrics.scale})` : undefined, '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
               >
                 <ErrorBoundary fallbackTitle="Resume Preview Error" fallbackMessage="Could not render the current template. Try selecting another template or verifying your text inputs.">
-                  <HTMLPreview Tmpl={htmlTemplates[data.templateId as keyof typeof htmlTemplates]} data={previewData} autoHeight onPaperHeight={setMobilePaperHeight} />
+                  <HTMLPreview Tmpl={HtmlTemplates[data.templateId as TemplateKey]} data={previewData} autoHeight onPaperHeight={setMobilePaperHeight} />
                 </ErrorBoundary>
               </div>
             </div>
@@ -1548,7 +1925,7 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
             <div className="flex justify-between items-center gap-4">
               <div>
                 <h2 className="font-brand text-3xl font-black uppercase tracking-tight leading-none text-[#151a46]">{dict["builder.template_gallery"]}</h2>
-                <p className="font-brand text-[10px] font-bold uppercase tracking-widest text-[#151a46]/55 mt-2">See your exact resume in {Object.keys(templates).length} ATS-optimized styles</p>
+                <p className="font-brand text-[10px] font-bold uppercase tracking-widest text-[#151a46]/55 mt-2">See your exact resume in {Object.keys(ReactTemplates).length} ATS-optimized styles</p>
               </div>
               <button onClick={() => setIsGalleryOpen(false)} className="p-3 bg-white border border-[#dddde5] hover:bg-[#151a46] hover:text-white rounded-xl transition-colors shrink-0">
                 <X size={24} />
@@ -1571,7 +1948,7 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
           </div>
           <div className="flex-1 overflow-y-auto p-6 lg:p-12 custom-scrollbar bg-[#f6f5ef]">
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 max-w-[1600px] mx-auto">
-              {(Object.keys(templates) as TemplateKey[]).map((key) => {
+              {(Object.keys(ReactTemplates) as TemplateKey[]).map((key) => {
                 const isActive = data.templateId === key;
                 const selectTemplate = () => { trackEvent('template_selected', key); setTemplateId(key); setIsGalleryOpen(false); };
                 return (
@@ -1584,7 +1961,7 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
                     }}
                     className={cn("flex flex-col text-left group bg-white border rounded-xl overflow-hidden transition-all relative cursor-pointer", isActive ? "border-[#5548f5] shadow-[0_8px_24px_rgba(85,72,245,.25)] scale-[1.02]" : "border-[#dddde5] hover:border-[#151a46] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(21,26,70,.1)]")}
                     style={{ contentVisibility: 'auto', containIntrinsicSize: '300px 400px' }}>
-                    <HTMLThumbnail Tmpl={htmlTemplates[key as keyof typeof htmlTemplates]} data={data} />
+                    <HTMLThumbnail Tmpl={HtmlTemplates[key as TemplateKey]} data={data} />
                     {isActive && (
                       <div className="absolute top-4 right-4 bg-[#5548f5] text-white px-3 py-1.5 font-brand text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg z-10 flex items-center gap-1">
                         <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />{dict["builder.active"]}
@@ -1898,5 +2275,6 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
     </main>
   );
 }
+
 
 
