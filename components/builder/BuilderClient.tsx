@@ -17,7 +17,6 @@ import {
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { trackEvent } from '@/lib/analytics';
-import { supabase } from '@/lib/supabase';
 
 import { Logo } from '@/components/brand/Logo';
 import dynamic from 'next/dynamic';
@@ -735,6 +734,9 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
     try { pending = sessionStorage.getItem("cvyon_pending_optin") === "1"; } catch {}
     if (!pending) return;
     (async () => {
+      // 2026-10-25 perf round 2: supabase-js loaded on demand (OAuth-return
+      // opt-in only) instead of statically into the first chunk.
+      const { supabase } = await import('@/lib/supabase');
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
       try { sessionStorage.removeItem("cvyon_pending_optin"); } catch {}

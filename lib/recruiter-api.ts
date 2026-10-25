@@ -19,7 +19,6 @@
  * Auth: recruiter/candidate Supabase Bearer token. All responses are rendered
  * exactly as returned — anonymization is absolute pre-unlock.
  */
-import { supabase } from "@/lib/supabase";
 
 /* ------------------------------ types ------------------------------ */
 
@@ -140,6 +139,7 @@ export class ApiError extends Error {
 }
 
 export async function authed(path: string, init: RequestInit = {}): Promise<Response> {
+  const { supabase } = await import("@/lib/supabase");
   const { data: { session } } = await supabase.auth.getSession();
   const headers: Record<string, string> = {
     ...(init.headers as Record<string, string> | undefined),
@@ -354,6 +354,7 @@ export async function getProfileViews(): Promise<ProfileViews | null> {
 
 export async function getRecruiterConsent(): Promise<{ optedIn: boolean; at?: string } | null> {
   try {
+    const { supabase } = await import("@/lib/supabase");
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return null;
     const res = await fetch("/api/user/consent", {
@@ -370,6 +371,7 @@ export async function getRecruiterConsent(): Promise<{ optedIn: boolean; at?: st
 }
 
 export async function setRecruiterConsent(allow: boolean): Promise<boolean> {
+  const { supabase } = await import("@/lib/supabase");
   const { data: { session } } = await supabase.auth.getSession();
   if (!session?.user?.email) throw new ApiError("Sign in to save this preference.", 401, "auth");
   const res = await fetch("/api/user/consent", {
