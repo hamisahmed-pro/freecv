@@ -40,6 +40,9 @@ const staticRoutes: { path: string; priority: number }[] = [
   // watch page, so these two URLs are the indexable home for Cvyon's videos.
   { path: '/videos/what-is-ats-explainer', priority: 0.6 },
   { path: '/videos/how-to-check-ats-score', priority: 0.6 },
+  // 2026-10-29 staged comparison page (branch preview only — goes live
+  // only on a publish decision, after a clean Cvyon production re-run).
+  { path: '/best-ats-resume-checkers', priority: 0.7 },
 ];
 
 // Localized page routes that exist under app/[locale]/
