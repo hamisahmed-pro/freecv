@@ -2,33 +2,32 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { V3Page } from '@/components/v3/V3Chrome';
 
-// Staged 2026-10-29, NOT published to production yet.
+// Published 2026-10-29 after the production re-run below.
 // Comparison page built only from the dated test runs of 2026-10-24
 // (hidden_files/comparison-test-run-20261024.md,
 // comparison-test-run2-20261024.md, and the 2026-10-24 preview verification
-// log). No score, price, gate or "best" claim on this page comes from
+// log) plus the Cvyon production re-run of 2026-10-29 (92/100, third
+// attempt after two silent fallbacks — stated on the page itself).
+// No score, price, gate or "best" claim on this page comes from
 // anywhere else. Binding rules, from the test assets file:
 // - No tool here runs an employer's actual ATS parser. Every tool
 //   "simulates how an ATS parses" a resume.
 // - Disclosure in paragraph 1: this is Cvyon's own comparison.
 // - "Best for X" verdicts only where the test supports them, including
 //   where Cvyon loses.
-// - The Cvyon score is NOT a clean production result: in the formal
-//   24 Oct run Cvyon's grader returned NO score (overload fallbacks);
-//   93/100 was observed only on a preview deployment, after a retry,
-//   on the same fictional resume. That distinction is stated on the
-//   page itself, and the page must not be published until a clean
-//   production Cvyon re-run exists.
+// - The 24 Oct formal run returned NO Cvyon score; the 24 Oct preview
+//   93/100 is superseded by the 29 Oct production 92/100 and is not
+//   presented as the page's Cvyon result.
 
 export const metadata: Metadata = {
   title: 'Best ATS Resume Checkers (2026): What We Tested, Without an Account | Cvyon',
   description:
-    'We tested 9 ATS resume checkers on the same fictional resume on 24 October 2026, without creating an account or paying. Only one returned a free score. Here is what each tool actually did, what it gated, and what it costs.',
+    'We tested 9 ATS resume checkers on the same fictional resume on 24 October 2026, without creating an account or paying. Only one returned a free score in that formal run; Cvyon scored 92/100 on a production re-run on 29 October, on the third attempt. Here is what each tool actually did, what it gated, and what it costs.',
   alternates: { canonical: 'https://cvyon.com/best-ats-resume-checkers' },
   openGraph: {
     title: 'Best ATS Resume Checkers (2026): What We Tested, Without an Account',
     description:
-      'We tested 9 ATS resume checkers on the same fictional resume on 24 October 2026, without creating an account or paying. Only one returned a free score.',
+      'We tested 9 ATS resume checkers on the same fictional resume on 24 October 2026, without creating an account or paying. Only one returned a free score in that formal run; Cvyon scored 92/100 on a production re-run on 29 October, on the third attempt.',
     url: 'https://cvyon.com/best-ats-resume-checkers',
     siteName: 'Cvyon',
     type: 'website',
@@ -158,20 +157,39 @@ export default function BestAtsResumeCheckersPage() {
           </table>
         </div>
 
-        <h2 className="mt-10 text-xl font-extrabold">About the Cvyon score you may see elsewhere</h2>
+        <h2 className="mt-10 text-xl font-extrabold">Cvyon, on production: 92/100 — but read the attempt count</h2>
         <p className="mt-4 leading-relaxed">
-          Separately from the formal run, on the same day and the same
-          fictional resume, Cvyon&apos;s grader did return <strong>93/100 on
-          a preview deployment after a retry</strong> (the first attempt
-          showed the same overload message as the formal run). That score is
-          <strong>not</strong> a clean production result, it was not produced
-          under the formal run&apos;s conditions, and it is not comparable
-          with Enhancv&apos;s 80/100 as if both came from the same test. We
-          are not publishing this page as a score ranking until Cvyon&apos;s
-          grader produces a clean score on production itself. If you try the
-          grader today and it shows the overload fallback, that is the current
-          production behaviour we still need to fix — not a contradiction of
-          this page, but the reason it is held from publication.
+          The formal 24 October run returned no Cvyon score, so we re-ran the
+          grader on production itself on 29 October 2026 with the same
+          fictional resume and posting. It scored <strong>92/100</strong>
+          (panel heading &ldquo;MATCH SCORE&rdquo;), but only on the{' '}
+          <strong>third attempt</strong>: attempts 1 and 2 each showed
+          PROCESSING, then reverted to ANALYZE MATCH with the panel still
+          &ldquo;AWAITING INPUT&rdquo; and no error message shown. That
+          flakiness is part of the result, not hidden from it — a visitor
+          may need to retry, and that reliability problem is still open.
+        </p>
+        <p className="mt-4 leading-relaxed">
+          Production score detail (29 October 2026): strengths — quantified
+          impact across experience bullets (p95 latency 900ms to 210ms);
+          clean single-column layout with standard ATS-friendly headings and
+          clear contact information in body text; highly relevant core
+          backend skill set (Python, Go, PostgreSQL, Redis, REST APIs).
+          Weaknesses — Experience lacks explicit NoSQL or asynchronous
+          message-broker detail; Summary does not mention cloud platforms or
+          software development methodologies. Missing keywords — System
+          Architecture; NoSQL; GraphQL; Message Queues. Tips shown — add
+          specific AWS cloud services under the Northwind Logistics section;
+          add system design and asynchronous messaging concepts (Kafka or
+          RabbitMQ) to Skills.
+        </p>
+        <p className="mt-4 leading-relaxed">
+          For completeness: an earlier 93/100 was observed on 24 October on a
+          preview deployment after a retry, on the same resume. That preview
+          score is superseded by the 92/100 production score above and is not
+          used as this page&apos;s Cvyon result. Enhancv&apos;s 80/100 and
+          Cvyon&apos;s 92/100 still come from different days and different
+          conditions, so this page is not a head-to-head score ranking.
         </p>
 
         <h2 className="mt-10 text-xl font-extrabold">What this test does not prove</h2>
@@ -199,13 +217,14 @@ export default function BestAtsResumeCheckersPage() {
 
         <h2 className="mt-10 text-xl font-extrabold">If you want a score without an account</h2>
         <p className="mt-4 leading-relaxed">
-          On the evidence of this test alone, Enhancv was the only tool that
-          showed a score free and ungated. Cvyon&apos;s grader is free and
-          ungated too — it asks for no account — but on test day it did not
-          return a score in the formal run, so we cannot honestly recommend
-          it on the basis of this test until the production re-run lands.
-          Try it yourself and judge it on what it returns for your resume,
-          not on this page&apos;s claims.
+          On the evidence of the formal test alone, Enhancv was the only tool
+          that showed a score free and ungated. Cvyon&apos;s grader is free
+          and ungated too — it asks for no account — and it has now returned
+          a production score (92/100, 29 October 2026), but only on the third
+          attempt after two silent fallbacks. Try it yourself and judge it on
+          what it returns for your resume, not on this page&apos;s claims —
+          and if it falls back on your first try, that is the flakiness
+          described above, not proof the tool cannot score.
         </p>
 
         <div className="mt-10 flex flex-col gap-3 sm:flex-row">
@@ -230,12 +249,13 @@ export default function BestAtsResumeCheckersPage() {
         </div>
 
         <p className="mt-10 text-sm text-[#565a70]">
-          Test date: 24 October 2026. Test resume: fictional, &ldquo;Alex
-          Morgan&rdquo;, mid-level backend software engineer. Test posting:
-          fictional mid-level backend role (Python/Go, REST APIs, PostgreSQL,
-          Redis, Docker, CI/CD). No accounts created, nothing paid. Page
-          prepared 29 October 2026; held from production publication pending
-          a clean Cvyon production re-run.
+          Test dates: formal run 24 October 2026; Cvyon production re-run 29
+          October 2026 (92/100, third attempt). Test resume: fictional,
+          &ldquo;Alex Morgan&rdquo;, mid-level backend software engineer.
+          Test posting: fictional mid-level backend role (Python/Go, REST
+          APIs, PostgreSQL, Redis, Docker, CI/CD). No accounts created,
+          nothing paid. Published 29 October 2026. We plan to re-run this
+          test quarterly and update this page with the new date.
         </p>
       </main>
     </V3Page>
