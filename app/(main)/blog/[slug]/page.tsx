@@ -176,6 +176,25 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </div>
           </article>
 
+          {/* 2026-10-29 GSC fix: point the two video articles at their
+              dedicated watch pages. The article embeds stay untouched; this
+              box only fires for the two slugs that have a watch page, so no
+              other article gains a link it should not have. */}
+          {resolvedParams.slug === 'what-is-applicant-tracking-system' && (
+            <div className="mx-auto max-w-3xl px-6 mt-8">
+              <Link href="/videos/what-is-ats-explainer" className="block border-[3px] border-[#141312] bg-white p-5 font-bold hover:text-[#FF4326]">
+                Watch the video: What Is an ATS? →
+              </Link>
+            </div>
+          )}
+          {resolvedParams.slug === 'free-ats-resume-test' && (
+            <div className="mx-auto max-w-3xl px-6 mt-8">
+              <Link href="/videos/how-to-check-ats-score" className="block border-[3px] border-[#141312] bg-white p-5 font-bold hover:text-[#FF4326]">
+                Watch the video: How to Check Your Resume ATS Score for Free →
+              </Link>
+            </div>
+          )}
+
           {/* Author bio (E-E-A-T) */}
           <div className="mx-auto max-w-3xl px-6">
             <AuthorBio />

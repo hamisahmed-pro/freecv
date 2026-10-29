@@ -35,6 +35,11 @@ const staticRoutes: { path: string; priority: number }[] = [
   { path: '/privacy', priority: 0.5 },
   { path: '/terms', priority: 0.5 },
   { path: '/embed', priority: 0.5 },
+  // 2026-10-29 GSC fix: dedicated video watch pages (see
+  // app/(main)/videos/[slug]/page.tsx). Google only indexes a video on a
+  // watch page, so these two URLs are the indexable home for Cvyon's videos.
+  { path: '/videos/what-is-ats-explainer', priority: 0.6 },
+  { path: '/videos/how-to-check-ats-score', priority: 0.6 },
 ];
 
 // Localized page routes that exist under app/[locale]/
