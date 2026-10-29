@@ -123,8 +123,13 @@ export async function POST(req: Request) {
     try {
       // Bound the rubric-extraction call: on slowness it falls back fast so
       // the scoring call keeps almost the whole 60s function budget.
+      // 2026-10-29 fix: mirror the import-resume fix (2026-10-24) — the
+      // grader previously used a random starting combo with no per-attempt
+      // cap, so a hanging model could eat the route deadline and the user
+      // saw only a silent fallback. Healthy-models-first + 25s per-attempt
+      // cap so a hang rotates instead of eating the deadline.
       jdAnalysis = await withTimeout(
-        generateContentWithRetry(jdPrompt, jdSysInstruction, 500, false, [], 'ats_score_jd'),
+        generateContentWithRetry(jdPrompt, jdSysInstruction, 500, false, [], 'ats_score_jd', ['gemini-3.5-flash', 'gemini-3.6-flash'], 25_000),
         JD_BUDGET_MS,
         'JD_TIMEOUT'
       );
@@ -159,7 +164,7 @@ export async function POST(req: Request) {
       const remainingMs = Math.max(8000, HARD_STOP_MS - elapsedMs);
       try {
         result = await withTimeout(
-          generateContentWithRetry(actualPrompt, scoringSysInstruction, 4000, true, filesArray, 'standalone_ats_score'),
+          generateContentWithRetry(actualPrompt, scoringSysInstruction, 4000, true, filesArray, 'standalone_ats_score', ['gemini-3.5-flash', 'gemini-3.6-flash'], 25_000),
           remainingMs,
           'SCORING_TIMEOUT'
         );
