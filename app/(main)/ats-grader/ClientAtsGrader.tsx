@@ -27,6 +27,12 @@ export default function ClientAtsGrader({ dict = en }: { dict?: Dict }) {
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AtsResult | null>(null);
+  // 2026-10-29 fix: a failed grade used to leave only a transient toast
+  // and the panel back on "AWAITING INPUT", which reads as a silent
+  // failure (the 29 Oct production re-run needed 3 attempts with no
+  // visible error on the first two). Keep the failure message on screen
+  // in the results panel until the next attempt.
+  const [gradeError, setGradeError] = useState<string | null>(null);
   const [challengeScore, setChallengeScore] = useState<number | null>(null);
   const [bannerVisible, setBannerVisible] = useState(false);
   const [canNativeShare, setCanNativeShare] = useState(false);
@@ -150,6 +156,7 @@ export default function ClientAtsGrader({ dict = en }: { dict?: Dict }) {
 
     setIsLoading(true);
     setResult(null);
+    setGradeError(null);
 
     const formData = new FormData();
     formData.append("file", file);
@@ -183,6 +190,7 @@ export default function ClientAtsGrader({ dict = en }: { dict?: Dict }) {
         toast.success(dict.ats_grader.toast_success);
       }
     } catch (err: any) {
+      setGradeError(err.message || "An error occurred.");
       toast.error(err.message);
     } finally {
       setIsLoading(false);
@@ -282,11 +290,20 @@ export default function ClientAtsGrader({ dict = en }: { dict?: Dict }) {
           {/* RIGHT: Results */}
           <div className="relative flex min-h-[500px] flex-col rounded-2xl bg-navy p-6 text-white shadow-[0_16px_38px_rgba(23,27,75,0.22)] sm:p-8">
             {!result ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center opacity-60">
-                <Target size={56} className="mb-6 opacity-30" />
-                <p className="mb-2 text-xl font-extrabold uppercase tracking-wide">{dict.ats_grader.awaiting_input}</p>
-                <p className="text-xs font-bold uppercase tracking-widest text-white/60">{dict.ats_grader.awaiting_sub}</p>
-              </div>
+              gradeError ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
+                  <AlertCircle size={56} className="mb-6 text-coral" />
+                  <p className="mb-2 text-xl font-extrabold uppercase tracking-wide">Grading failed — please try again</p>
+                  <p className="max-w-md text-sm leading-relaxed text-white/80">{gradeError}</p>
+                  <p className="mt-4 text-xs font-bold uppercase tracking-widest text-white/60">Your file and job description are still in place — click Analyze again.</p>
+                </div>
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center opacity-60">
+                  <Target size={56} className="mb-6 opacity-30" />
+                  <p className="mb-2 text-xl font-extrabold uppercase tracking-wide">{dict.ats_grader.awaiting_input}</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-white/60">{dict.ats_grader.awaiting_sub}</p>
+                </div>
+              )
             ) : (
               <div className="flex h-full flex-col animate-in fade-in zoom-in-95 duration-500">
                 <div className="mb-8 border-b border-white/15 pb-8 text-center">
@@ -303,7 +320,7 @@ export default function ClientAtsGrader({ dict = en }: { dict?: Dict }) {
                 <div className="mb-8 rounded-xl border border-gold/40 bg-gold/10 p-5 text-center sm:p-6">
                   <p className="mb-3 text-xs font-bold uppercase tracking-widest text-gold">{dict.ats_grader.share_score}</p>
                   <p className="mb-5 text-sm font-bold leading-relaxed sm:text-base">
-                    {(() => { const parts = dict.ats_grader.share_text.split("{score}"); return (<>{parts[0]}<span className="text-gold">{scoreInt}/100</span>{parts[1] || ""}</>); })()}
+                    {(() => { const parts = dict.ats_grader.share_text.split("{score}"); /* 2026-10-29 fix: share_text already contains "/100" after {score} in every locale, so do NOT append another "/100" here — the old code rendered "92/100/100". */ return (<>{parts[0]}<span className="text-gold">{scoreInt}</span>{parts[1] || ""}</>); })()}
                   </p>
                   {canNativeShare ? (
                     <button
