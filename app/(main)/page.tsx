@@ -7,11 +7,11 @@ import type { Metadata } from "next";
 // context, meta, Open Graph, and schema all name the same entity and offer.
 export const metadata: Metadata = {
   title: "Cvyon — Free Premium Resume Builder & ATS Grader",
-  description: "Cvyon is a free resume builder and ATS grader: build an ATS-friendly resume from 180+ templates, check it against a real job description, and download it — no sign-up required.",
+  description: "Cvyon is a free resume builder and ATS grader: build an ATS-friendly resume from 180+ templates, check it against a job posting, and download it free, no sign-up.",
   alternates: { canonical: "https://cvyon.com" },
   openGraph: {
     title: "Cvyon — Free Premium Resume Builder & ATS Grader",
-    description: "Cvyon is a free resume builder and ATS grader: build an ATS-friendly resume from 180+ templates, check it against a real job description, and download it — no sign-up required.",
+    description: "Cvyon is a free resume builder and ATS grader: build an ATS-friendly resume from 180+ templates, check it against a job posting, and download it free, no sign-up.",
     url: "https://cvyon.com",
     siteName: "Cvyon",
     type: "website",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Cvyon — Free Premium Resume Builder & ATS Grader",
-    description: "Cvyon is a free resume builder and ATS grader: build an ATS-friendly resume from 180+ templates, check it against a real job description, and download it — no sign-up required.",
+    description: "Cvyon is a free resume builder and ATS grader: build an ATS-friendly resume from 180+ templates, check it against a job posting, and download it free, no sign-up.",
     images: ["https://cvyon.com/og-image.jpg"],
   },
 };

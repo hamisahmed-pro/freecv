@@ -15,7 +15,7 @@ export function HomeJsonLd() {
         url: 'https://cvyon.com',
         name: 'Cvyon',
         description:
-          'Cvyon is a free resume builder and ATS grader: build an ATS-friendly resume from 180+ templates, check it against a real job description, and download it — no sign-up required.',
+          'Cvyon is a free resume builder and ATS grader: build an ATS-friendly resume from 180+ templates, check it against a job posting, and download it free, no sign-up.',
         inLanguage: 'en',
         publisher: { '@id': 'https://cvyon.com/#organization' },
       },
@@ -25,7 +25,7 @@ export function HomeJsonLd() {
         url: 'https://cvyon.com',
         name: 'Cvyon — Free Premium Resume Builder & ATS Grader',
         description:
-          'Cvyon is a free resume builder and ATS grader: build an ATS-friendly resume from 180+ templates, check it against a real job description, and download it — no sign-up required.',
+          'Cvyon is a free resume builder and ATS grader: build an ATS-friendly resume from 180+ templates, check it against a job posting, and download it free, no sign-up.',
         inLanguage: 'en',
         isPartOf: { '@id': 'https://cvyon.com/#website' },
         about: { '@id': 'https://cvyon.com/#application' },
