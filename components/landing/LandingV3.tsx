@@ -146,7 +146,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
                 <span className="h-2 w-2 rounded-full bg-coral shadow-[0_0_0_4px_#ffe1dc]" /> {dict.hero.eyebrow}
               </div>
               <h1 className="v3-h-display mt-4 max-w-[650px] text-[clamp(44px,5vw,60px)]">
-                {dict.hero.h1a} <em className="relative not-italic text-coral">{dict.hero.h1b}<span className="absolute inset-x-0 -bottom-[3px] -z-10 h-[7px] -rotate-1 bg-gold" /></em> {dict.hero.h1c}
+                {dict.hero.h1a} <em className="relative not-italic text-[#d63c28]">{dict.hero.h1b}<span className="absolute inset-x-0 -bottom-[3px] -z-10 h-[7px] -rotate-1 bg-gold" /></em> {dict.hero.h1c}
               </h1>
               <p className="mt-6 max-w-[520px] text-[16px] leading-[1.6] text-muted">
                 {dict.hero.sub}
@@ -155,7 +155,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
                 <Link href={L("/build")} className="v3-btn v3-btn-primary px-7 py-4 text-[15px]">{dict.hero.cta_build} <ArrowRight size={17} /></Link>
                 <a href="#grader" className="v3-btn v3-btn-light px-7 py-4 text-[15px]">{dict.hero.cta_grader}</a>
               </div>
-              <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[11px] font-extrabold text-[#707489]">
+              <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[11px] font-extrabold text-[#6a6d81]">
                 {dict.hero.checks.map((m) => (
                   <span key={m} className="inline-flex items-center gap-1.5"><Check size={13} className="text-teal" strokeWidth={3.5} />{m}</span>
                 ))}
@@ -256,7 +256,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
                 <div className="relative z-10 rounded-[10px] bg-white p-6 shadow-[0_18px_35px_rgba(0,0,0,0.25)]">
                   <div className="flex items-center gap-5 border-b border-line pb-5">
                     <div className="grid h-[78px] w-[78px] shrink-0 place-items-center rounded-full border-[7px] border-coral text-[22px] font-black text-navy"><Counter to={92} /></div>
-                    <div><strong className="text-navy">{dict.grader_section.mock[0]}</strong><br /><small className="text-[#8b8ea0]">{dict.grader_section.mock[1]}</small></div>
+                    <div><strong className="text-navy">{dict.grader_section.mock[0]}</strong><br /><small className="text-[#6a6d81]">{dict.grader_section.mock[1]}</small></div>
                   </div>
                   <div className="mt-4 grid gap-2.5 text-[12px] text-[#5e6276]">
                     <div><b className="text-teal">✓</b> {dict.grader_section.mock[2]}</div>
@@ -323,7 +323,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
               {dict.how.steps.map(([n, t, d]) => (
                 <Reveal key={n}>
                   <div className="grid grid-cols-[64px_1fr_32px] items-center gap-4 border-b-2 border-navy py-7 sm:grid-cols-[120px_1fr_40px]">
-                    <div className="text-[30px] font-black text-[#c9cad1] sm:text-[42px]">{n}</div>
+                    <div className="text-[30px] font-black text-[#767a8f] sm:text-[42px]">{n}</div>
                     <div><h3 className="mb-1 text-[19px] font-bold text-navy">{t}</h3><p className="m-0 text-[13px] text-muted">{d}</p></div>
                     <ArrowRight size={22} className="text-navy" />
                   </div>
@@ -335,12 +335,12 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
                 <Reveal key={l} delay={i * 70}>
                   <div className="rounded-xl border border-line bg-cream p-5">
                     <strong className="block text-[35px] font-black tracking-[-0.05em] text-navy">{v}</strong>
-                    <span className="text-[9px] font-black uppercase tracking-[0.12em] text-[#808397]">{l}</span>
+                    <span className="text-[9px] font-black uppercase tracking-[0.12em] text-[#6a6d81]">{l}</span>
                   </div>
                 </Reveal>
               ))}
             </div>
-            <p className="mt-6 text-center text-[11px] font-extrabold uppercase tracking-[0.18em] text-muted/70">{dict.how.note}</p>
+            <p className="mt-6 text-center text-[11px] font-extrabold uppercase tracking-[0.18em] text-muted">{dict.how.note}</p>
           </div>
         </section>
 
@@ -405,14 +405,14 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
                 {/* h3, not h4: the previous section ends on h2, and an h2→h4
                     jump is an axe heading-order violation. Visual size is
                     unchanged — the 10px class below sets the look. */}
-                <h3 className="mb-4 text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#a0a2b1]">{h as string}</h3>
+                <h3 className="mb-4 text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#6a6d81]">{h as string}</h3>
                 {(items as [string, string][]).map(([label, href]) => (
                   <Link key={label} href={href} className="mb-2.5 block text-[12px] text-[#6d7184] transition-colors hover:text-navy">{label}</Link>
                 ))}
               </div>
             ))}
           </div>
-          <div className="flex flex-col justify-between gap-3 pt-5 text-[9px] font-extrabold uppercase tracking-[0.1em] text-[#9a9cac] sm:flex-row">
+          <div className="flex flex-col justify-between gap-3 pt-5 text-[9px] font-extrabold uppercase tracking-[0.1em] text-[#6a6d81] sm:flex-row">
             <span>{dict.footer.copyright}</span>
             <span className="inline-flex items-center gap-1.5"><Sparkles size={12} className="text-coral" /> {dict.footer.bottom_tag}</span>
           </div>

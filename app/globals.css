@@ -15,7 +15,7 @@
   --color-cream: #f6f5ef;
   --color-paper: #ffffff;
   --color-ink: #171a2b;
-  --color-muted: #73778c;
+  --color-muted: #6a6d81;
   --color-line: #dddde5;
   --color-lavender: #eeecff;
   --color-mint: #e6faf7;
@@ -33,7 +33,7 @@
   --v3-gold: #ffd85a;
   --v3-cream: #f6f5ef;
   --v3-ink: #171a2b;
-  --v3-muted: #73778c;
+  --v3-muted: #6a6d81;
   --v3-line: #dddde5;
 }
 
@@ -49,7 +49,7 @@
 .v3-btn-primary:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--v3-navy); }
 .v3-btn-dark { background: var(--v3-navy); color: #fff; }
 .v3-btn-dark:hover { background: #232a63; }
-.v3-btn-coral { background: var(--v3-coral); color: #fff; box-shadow: 5px 5px 0 #fff; }
+.v3-btn-coral { background: var(--v3-coral); color: var(--v3-navy); /* white on coral was 2.99:1; navy on coral is 5.54:1 */ box-shadow: 5px 5px 0 #fff; }
 .v3-btn-light { background: #fff; border-color: var(--v3-line); color: var(--v3-navy); }
 .v3-btn-light:hover { border-color: var(--v3-brand); }
 .v3-card {
