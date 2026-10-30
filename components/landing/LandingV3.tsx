@@ -16,7 +16,7 @@ import LanguageSwitcher from "@/components/landing/LanguageSwitcher";
 function makeSample(dict: Dict): any {
   const sc: any = (dict as any).sample_cv || (en as any).sample_cv;
   return {
-    templateId: "SwissDesign", theme: { color: "#ff604b" },
+    templateId: "SwissDesign", theme: { color: "#CB4D3C" },
     personalInfo: { fullName: sc.fullName, jobTitle: sc.jobTitle, email: sc.email, phone: sc.phone, location: sc.location, website: sc.website },
     summary: sc.summary,
     experience: [{ id: "1", company: "Paystack", role: sc.jobTitle, startDate: "2022", endDate: "Present", description: "Led migration of the payouts service to event-driven architecture.\nCut p99 latency 38% across checkout.\nMentored 4 engineers through promotion." }],
@@ -167,10 +167,10 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
               <div className="absolute right-0 top-0 h-[470px] w-[470px] rounded-full bg-[#e8e6ff]" />
               <div className="relative mx-auto w-fit" style={{ transform: `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`, transition: "transform .25s ease-out" }}>
                 <div className="relative rotate-[-2.2deg] border-2 border-navy bg-white shadow-[14px_16px_0_#151a46]" style={{ width: 350, height: 455 }}>
-                  <div className="absolute inset-x-0 top-0 h-[10px] bg-[linear-gradient(90deg,#ff604b_0_24%,#5548f5_24%_70%,#24c9bd_70%)]" />
+                  <div className="absolute inset-x-0 top-0 h-[10px] bg-[linear-gradient(90deg,#CB4D3C_0_24%,#5548f5_24%_70%,#24c9bd_70%)]" />
                   <div className="h-full w-full overflow-hidden p-8 pt-10">
-                    <div className="origin-top-left" style={{ width: 816, transform: "scale(0.36)", ["--theme-color" as any]: "#ff604b" }}>
-                      <PreviewSafe tmpl={HeroTmpl} color="#ff604b" sample={sample} label={dict.hero.art_score_label_full} />
+                    <div className="origin-top-left" style={{ width: 816, transform: "scale(0.36)", ["--theme-color" as any]: "#CB4D3C" }}>
+                      <PreviewSafe tmpl={HeroTmpl} color="#CB4D3C" sample={sample} label={dict.hero.art_score_label_full} />
                     </div>
                   </div>
                 </div>
@@ -300,7 +300,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
               {GALLERY.map(([k, n], i) => (
                 <Reveal key={k} delay={i * 60}>
                   <Link href={`/build?source=seo&template=${k}`} className="group block rounded-xl border border-line bg-white p-2.5 shadow-[0_8px_18px_rgba(21,26,70,0.06)] transition-transform hover:-translate-y-1">
-                    <Mini k={k} color="#ff604b" sample={sample} />
+                    <Mini k={k} color="#CB4D3C" sample={sample} />
                     <span className="mt-2.5 block px-1 pb-1 text-[9px] font-black uppercase tracking-[0.08em] text-navy">{n}</span>
                   </Link>
                 </Reveal>
