@@ -8,6 +8,7 @@ import { Logo } from "@/components/brand/Logo";
 import { renderToStaticMarkup } from "react-dom/server";
 import { AnalyticsTracker } from "./AnalyticsTracker";
 import { FaqJsonLd } from "./FaqJsonLd";
+import { HomeJsonLd } from "./HomeJsonLd";
 import { FAQS } from "./LandingF_FAQS";
 import { en, type Dict } from "@/dictionaries/en";
 import LanguageSwitcher from "@/components/landing/LanguageSwitcher";
@@ -102,6 +103,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-cream font-brand text-ink antialiased">
       <AnalyticsTracker />
+      <HomeJsonLd />
       <FaqJsonLd faqs={dict.faq.items} />
       <style>{`
         [data-reveal]{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
@@ -111,10 +113,12 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
         @media (prefers-reduced-motion:reduce){.floaty{animation:none!important}}
       `}</style>
 
-      {/* TOPLINE — hidden on mobile to keep the hero immediately visible */}
-      <div className="hidden md:flex min-h-[32px] items-center justify-center gap-7 bg-navy px-4 py-2 text-center text-[10px] font-extrabold uppercase tracking-[0.12em] text-white">
+      {/* TOPLINE — hidden on mobile to keep the hero immediately visible.
+          A named section is a region landmark, so this visible strip is no
+          longer content sitting outside every landmark (axe "region"). */}
+      <section aria-label="Cvyon at a glance" className="hidden md:flex min-h-[32px] items-center justify-center gap-7 bg-navy px-4 py-2 text-center text-[10px] font-extrabold uppercase tracking-[0.12em] text-white">
         {dict.topline.map((t, i) => (<span key={t} className={i === 1 ? "text-teal" : ""}>{t}</span>))}
-      </div>
+      </section>
 
       {/* NAV */}
       <header className="sticky top-0 z-40 border-b border-line bg-cream/92 backdrop-blur-md">
@@ -141,7 +145,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
               <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-brand">
                 <span className="h-2 w-2 rounded-full bg-coral shadow-[0_0_0_4px_#ffe1dc]" /> {dict.hero.eyebrow}
               </div>
-              <h1 className="v3-h-display mt-4 max-w-[650px] text-[clamp(50px,6.4vw,84px)]">
+              <h1 className="v3-h-display mt-4 max-w-[650px] text-[clamp(44px,5vw,60px)]">
                 {dict.hero.h1a} <em className="relative not-italic text-coral">{dict.hero.h1b}<span className="absolute inset-x-0 -bottom-[3px] -z-10 h-[7px] -rotate-1 bg-gold" /></em> {dict.hero.h1c}
               </h1>
               <p className="mt-6 max-w-[520px] text-[16px] leading-[1.6] text-muted">
@@ -398,7 +402,10 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
               [dict.footer.col_legal, [["Privacy", L("/privacy")], ["Terms", L("/terms")], ["Manage data", "/manage-data"], ["Developers", "/developers"]]],
             ].map(([h, items]) => (
               <div key={h as string}>
-                <h4 className="mb-4 text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#a0a2b1]">{h as string}</h4>
+                {/* h3, not h4: the previous section ends on h2, and an h2→h4
+                    jump is an axe heading-order violation. Visual size is
+                    unchanged — the 10px class below sets the look. */}
+                <h3 className="mb-4 text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#a0a2b1]">{h as string}</h3>
                 {(items as [string, string][]).map(([label, href]) => (
                   <Link key={label} href={href} className="mb-2.5 block text-[12px] text-[#6d7184] transition-colors hover:text-navy">{label}</Link>
                 ))}
@@ -412,10 +419,11 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
         </div>
       </footer>
 
-      {/* MOBILE STICKY CTA */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-cream p-3 md:hidden">
+      {/* MOBILE STICKY CTA — a nav landmark, so this visible bar is not
+          content sitting outside every landmark (axe "region"). */}
+      <nav aria-label="Build your resume" className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-cream p-3 md:hidden">
         <Link href={L("/build")} className="v3-btn v3-btn-dark w-full py-3.5 text-[14px]">{dict.mobile_cta} <ArrowRight size={16} /></Link>
-      </div>
+      </nav>
       <div className="h-[76px] md:hidden" />
     </div>
   );

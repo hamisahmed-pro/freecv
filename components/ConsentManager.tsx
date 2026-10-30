@@ -83,8 +83,12 @@ export function ConsentManager() {
     return null;
   }
 
+  // An aside landmark wraps the dialog: the banner renders in the layout,
+  // outside <main>/<footer>, and visible content outside every landmark is
+  // an axe "region" violation on first-visit renders.
   return (
-    <div className="fixed bottom-3 left-3 z-[400] print:hidden max-w-[280px] w-full" role="dialog" aria-label="Privacy and Data Preferences">
+    <aside aria-label="Privacy and data preferences" className="fixed bottom-3 left-3 z-[400] print:hidden max-w-[280px] w-full">
+    <div role="dialog" aria-label="Privacy and Data Preferences">
       <div className="bg-white/95 backdrop-blur-md text-gray-800 rounded-xl border border-gray-200 shadow-xl overflow-hidden animate-in slide-in-from-bottom-2 fade-in duration-300">
         <div className="p-3">
           <div className="flex justify-between items-center mb-2">
@@ -194,5 +198,6 @@ export function ConsentManager() {
         </div>
       </div>
     </div>
+    </aside>
   );
 }

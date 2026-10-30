@@ -50,8 +50,12 @@ export function PWAInstallBanner() {
     localStorage.setItem("pwa-dismissed", "1");
   };
 
+  // An aside landmark: like the consent banner, this fixed bar renders
+  // outside <main>/<footer>, and visible content outside every landmark is
+  // an axe "region" violation when it shows.
   return (
-    <div
+    <aside
+      aria-label="Install Cvyon"
       data-pwa-banner
       className={`fixed bottom-0 left-0 right-0 z-50 border-t-2 border-[#f6f5ef]/20 bg-[#151a46] text-white px-4 py-3 transition-transform duration-300 ${
         visible && !consentOpen ? "translate-y-0" : "translate-y-full pointer-events-none"
@@ -78,6 +82,6 @@ export function PWAInstallBanner() {
           </button>
         </div>
       </div>
-    </div>
+    </aside>
   );
 }
