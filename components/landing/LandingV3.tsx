@@ -145,7 +145,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
               <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-brand">
                 <span className="h-2 w-2 rounded-full bg-coral shadow-[0_0_0_4px_#ffe1dc]" /> {dict.hero.eyebrow}
               </div>
-              <h1 className="v3-h-display mt-4 max-w-[650px] text-[clamp(40px,4.5vw,48px)]">
+              <h1 className="v3-h-display mt-4 max-w-[650px] text-[clamp(44px,5vw,60px)]">
                 {dict.hero.h1a} <em className="relative not-italic text-coral">{dict.hero.h1b}<span className="absolute inset-x-0 -bottom-[3px] -z-10 h-[7px] -rotate-1 bg-gold" /></em> {dict.hero.h1c}
               </h1>
               <p className="mt-6 max-w-[520px] text-[16px] leading-[1.6] text-muted">
