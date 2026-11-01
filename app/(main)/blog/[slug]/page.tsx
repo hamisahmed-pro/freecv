@@ -1,4 +1,6 @@
 import React from 'react';
+import fs from 'fs';
+import path from 'path';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -18,6 +20,28 @@ const body = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"], displa
 const mono = Space_Mono({ subsets: ["latin"], weight: ["400", "700"], display: "swap" });
 
 export const revalidate = 60; // Revalidate every minute
+
+// Preview-only staging fallback (2026-11-01): on Vercel preview deployments,
+// a staged article has content/blog/en/<slug>.json but no Supabase row yet
+// (the row is created only at publish). Without this, /blog/<slug> 404s on
+// preview while /<locale>/blog/<slug> serves the file-backed content.
+// Gated on VERCEL_ENV === 'preview' so production behavior is unchanged:
+// on production, a missing/unpublished row still 404s exactly as before.
+function getPreviewFilePost(slug: string): any | null {
+  if (process.env.VERCEL_ENV !== 'preview') return null;
+  try {
+    const file = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'content', 'blog', 'en', `${slug}.json`), 'utf8'));
+    if (file?.slug !== slug) return null;
+    return {
+      ...file,
+      content: file.content_html,
+      created_at: file.date_iso ? `${file.date_iso}T00:00:00Z` : new Date().toISOString(),
+      is_published: true,
+    };
+  } catch {
+    return null;
+  }
+}
 
 // 2026-10-24 fix: article bodies begin with their own <h1>{title}</h1>, while
 // the template also renders a styled <h1> — pages shipped with two H1s. Strip
@@ -41,6 +65,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   } catch {
     post = null;
   }
+
+  if (!post) post = getPreviewFilePost(resolvedParams.slug);
 
   if (!post) {
     return { title: 'Post Not Found' };
@@ -87,6 +113,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   let post: any = null;
+  let dbFailed = false;
   try {
     const { data, error } = await supabaseAdmin
       .from('blog_posts')
@@ -96,12 +123,19 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     if (error) throw error;
     post = data;
   } catch {
-    // Database/network failure: let the error boundary render a friendly page
-    // instead of a raw 500.
-    throw new Error('Failed to load this article. Please try again.');
+    // Database/network failure: try the preview file fallback first; only
+    // throw (error boundary) when there is no file to render either.
+    dbFailed = true;
   }
 
   if (!post || !post.is_published) {
+    post = getPreviewFilePost(resolvedParams.slug);
+  }
+
+  if (!post) {
+    if (dbFailed) {
+      throw new Error('Failed to load this article. Please try again.');
+    }
     notFound();
   }
 
