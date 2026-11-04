@@ -23,6 +23,15 @@ const nextConfig: NextConfig = {
   // Serve modern image formats (AVIF first, WebP fallback) via next/image.
   images: {
     formats: ['image/avif', 'image/webp'],
+    // Blog covers are absolute remote URLs (cvyon.com itself, Unsplash
+    // fallbacks, Supabase storage). Without remotePatterns, next/image
+    // refuses every one of them, which broke all blog images.
+    remotePatterns: [
+      { protocol: 'https', hostname: 'cvyon.com' },
+      { protocol: 'https', hostname: 'www.cvyon.com' },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: '*.supabase.co' },
+    ],
   },
   // pdfjs-dist must run from node_modules (not bundled) so its worker file
   // resolves correctly at runtime for server-side PDF text extraction.
