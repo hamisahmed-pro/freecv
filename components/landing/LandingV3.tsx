@@ -397,9 +397,9 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
               <p className="mt-4 max-w-[220px] text-[12px] leading-relaxed text-muted">{dict.footer.tagline}</p>
             </div>
             {[
-              [dict.footer.col_product, [["Builder", L("/build")], ["ATS Grader", L("/ats-grader")], ["Templates", L("/build")], ["Cover Letter", L("/cover-letter")], ["Pricing", L("/pricing")], ["Embed Badge", L("/embed")]]],
-              [dict.footer.col_company, [["About", L("/about")], ["Career Blog", L("/blog")], ["Recruiter Portal", L("/recruiter")], ["Support", L("/support")], ["Zety Alternative", "/alternatives/zety-alternative"], ["Resume.io Alternative", "/alternatives/resume-io-alternative"], ["Novoresume Alternative", "/alternatives/novoresume-alternative"]]],
-              [dict.footer.col_legal, [["Privacy", L("/privacy")], ["Terms", L("/terms")], ["Manage data", "/manage-data"], ["Developers", "/developers"]]],
+              [dict.footer.col_product, [[dict.footer.link_builder, L("/build")], [dict.footer.link_ats_grader, L("/ats-grader")], [dict.footer.link_templates, L("/build")], [dict.footer.link_cover_letter, L("/cover-letter")], [dict.footer.link_pricing, L("/pricing")], [dict.footer.link_embed_badge, L("/embed")]]],
+              [dict.footer.col_company, [[dict.footer.link_about, L("/about")], [dict.footer.link_career_blog, L("/blog")], [dict.footer.link_recruiter_portal, L("/recruiter")], [dict.footer.link_support, L("/support")], [dict.footer.link_zety_alt, L("/alternatives/zety-alternative")], [dict.footer.link_resumeio_alt, L("/alternatives/resume-io-alternative")], [dict.footer.link_novoresume_alt, L("/alternatives/novoresume-alternative")]]],
+              [dict.footer.col_legal, [[dict.footer.link_privacy, L("/privacy")], [dict.footer.link_terms, L("/terms")], [dict.footer.link_manage_data, L("/manage-data")], [dict.footer.link_developers, L("/developers")]]],
             ].map(([h, items]) => (
               <div key={h as string}>
                 {/* h3, not h4: the previous section ends on h2, and an h2→h4
