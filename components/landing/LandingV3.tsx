@@ -308,7 +308,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
             </div>
             <Reveal className="mt-8 flex flex-wrap items-center justify-center gap-3 text-center">
               <Link href={L("/build")} className="v3-btn v3-btn-light px-6 py-3 text-[14px]">{dict.templates_section.cta} <ArrowRight size={15} /></Link>
-              <Link href="/templates" className="v3-btn px-6 py-3 text-[14px] underline underline-offset-4">Browse all 180 templates <ArrowUpRight size={15} /></Link>
+              <Link href="/templates" className="v3-btn px-6 py-3 text-[14px] underline underline-offset-4">{dict.locale === "en" ? "Browse all 180 templates" : dict.footer.link_templates} <ArrowUpRight size={15} /></Link>
             </Reveal>
           </div>
         </section>
