@@ -93,7 +93,7 @@ function TemplateThumbnail({ entry }: { entry: TemplateSeoEntry }) {
     const data = getTemplatePreviewData(entry.id as ResumeData['templateId']);
     const themeColor = data.theme?.color || '#2563eb';
     const html = renderToStaticMarkup(<Tmpl data={data} themeColor={themeColor} />)
-      .replace(/<(\\/?)h[1-6](?=[\\s>])/gi, '<$1div');
+      .replace(/<(\/?)h[1-6](?=[\s>])/gi, '<$1div');
     return { html, themeColor };
   }, [Tmpl, entry.id]);
 
