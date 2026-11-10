@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { ArrowRight, BadgeCheck, FileText, ScanSearch, Search, Sparkles } from 'lucide-react';
 import { templates as htmlTemplates } from '@/components/html_templates';
 import { getTemplatePreviewData } from '@/lib/template-preview-data';
@@ -83,7 +84,20 @@ function TemplateThumbnail({ entry }: { entry: TemplateSeoEntry }) {
     return () => observer.disconnect();
   }, []);
 
-  if (!Tmpl) {
+  // The original resume designs use semantic headings for the exported CV.
+  // Their miniature previews are illustrations, not sections of this gallery:
+  // strip heading semantics in the SSR markup without touching the templates.
+  // The homepage uses the same render-to-static-markup approach.
+  const preview = useMemo(() => {
+    if (!Tmpl) return null;
+    const data = getTemplatePreviewData(entry.id as ResumeData['templateId']);
+    const themeColor = data.theme?.color || '#2563eb';
+    const html = renderToStaticMarkup(<Tmpl data={data} themeColor={themeColor} />)
+      .replace(/<(\\/?)h[1-6](?=[\\s>])/gi, '<$1div');
+    return { html, themeColor };
+  }, [Tmpl, entry.id]);
+
+  if (!preview) {
     return (
       <div className="aspect-[8.5/11] w-full bg-white flex items-center justify-center border-b-[3px] border-[#141312]">
         <p className="fm text-xs font-bold uppercase tracking-[0.2em] text-[#141312]/60 px-4 text-center">
@@ -93,9 +107,6 @@ function TemplateThumbnail({ entry }: { entry: TemplateSeoEntry }) {
     );
   }
 
-  const data = getTemplatePreviewData(entry.id as ResumeData['templateId']);
-  const themeColor = data.theme?.color || '#2563eb';
-
   return (
     <div
       ref={containerRef}
@@ -103,9 +114,13 @@ function TemplateThumbnail({ entry }: { entry: TemplateSeoEntry }) {
     >
       <div
         className="absolute top-0 left-0 w-[816px] h-[1056px] origin-top-left bg-white"
-        style={{ transform: `scale(${scale})`, '--theme-color': themeColor } as React.CSSProperties}
+        style={{ transform: `scale(${scale})`, '--theme-color': preview.themeColor } as React.CSSProperties}
       >
-        <Tmpl data={data} themeColor={themeColor} />
+        <div
+          role="img"
+          aria-label={`Sample resume in the ${entry.name} template`}
+          dangerouslySetInnerHTML={{ __html: preview.html }}
+        />
       </div>
     </div>
   );
