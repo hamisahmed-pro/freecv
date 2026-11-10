@@ -21,9 +21,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
+  const { terms } = await getLegal(locale);
   return {
-    title: 'Terms of Service — Cvyon',
-    description: 'The terms governing your use of Cvyon\u2019s free resume builder, ATS grader, and related services.',
+    title: `${terms.h1} — Cvyon`,
+    description: terms.sub,
     alternates: {
       canonical: `https://cvyon.com/${locale}/terms`,
       languages: Object.fromEntries([
