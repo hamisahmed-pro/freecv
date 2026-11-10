@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, BadgeCheck, FileText, ScanSearch, Search, Sparkles } from 'lucide-react';
 import { templates as htmlTemplates } from '@/components/html_templates';
-import { initialData } from '@/store/useResumeStore';
+import { getTemplatePreviewData } from '@/lib/template-preview-data';
 import type { ResumeData } from '@/store/useResumeStore';
 import { templateSeoEntries, type TemplateSeoEntry } from '@/lib/template-seo';
 import { display, head, body, mono } from '@/lib/fonts';
@@ -12,20 +12,6 @@ import { FaqJsonLd } from '@/components/landing/FaqJsonLd';
 
 type HtmlTemplate = React.ComponentType<{ data: ResumeData; themeColor?: string }>;
 
-// Sample person shown in the live thumbnails — same sample used on the
-// per-template SEO pages, so the gallery matches what users see there.
-const sampleData = {
-  ...initialData,
-  personalInfo: {
-    ...initialData.personalInfo,
-    fullName: 'Jordan Mensah',
-    jobTitle: 'Product Designer',
-    email: 'jordan.mensah@example.com',
-    phone: '+234 801 234 5678',
-    location: 'Lagos, Nigeria',
-    website: 'jordanmensah.design',
-  },
-};
 
 // ---------------------------------------------------------------------------
 // Categories — derived deterministically from each entry's own copy
@@ -107,7 +93,7 @@ function TemplateThumbnail({ entry }: { entry: TemplateSeoEntry }) {
     );
   }
 
-  const data: ResumeData = { ...sampleData, templateId: entry.id as ResumeData['templateId'] };
+  const data = getTemplatePreviewData(entry.id as ResumeData['templateId']);
   const themeColor = data.theme?.color || '#2563eb';
 
   return (

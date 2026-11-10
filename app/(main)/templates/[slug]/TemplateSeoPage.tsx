@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, BadgeCheck, Check, FileText, ScanSearch, Sparkles } from 'lucide-react';
 import { templates as htmlTemplates } from '@/components/html_templates';
-import { initialData } from '@/store/useResumeStore';
+import { getTemplatePreviewData } from '@/lib/template-preview-data';
 import type { ResumeData } from '@/store/useResumeStore';
 import { FaqJsonLd } from '@/components/landing/FaqJsonLd';
 import { BreadcrumbJsonLd } from '@/components/seo/Breadcrumbs';
@@ -13,20 +13,6 @@ import { V3Page, V3Pill } from '@/components/v3/V3Chrome';
 
 type HtmlTemplate = React.ComponentType<{ data: ResumeData; themeColor?: string }>;
 
-// Sample person shown in the live thumbnail. Base is the store's initialData;
-// only personalInfo is filled so the preview reads like a real resume.
-const sampleData = {
-  ...initialData,
-  personalInfo: {
-    ...initialData.personalInfo,
-    fullName: 'Jordan Mensah',
-    jobTitle: 'Product Designer',
-    email: 'jordan.mensah@example.com',
-    phone: '+234 801 234 5678',
-    location: 'Lagos, Nigeria',
-    website: 'jordanmensah.design',
-  },
-};
 
 function TemplateThumbnail({ entry }: { entry: TemplateSeoEntry }) {
   const Tmpl = (htmlTemplates as Record<string, HtmlTemplate | undefined>)[entry.id];
@@ -50,7 +36,7 @@ function TemplateThumbnail({ entry }: { entry: TemplateSeoEntry }) {
     );
   }
 
-  const data: ResumeData = { ...sampleData, templateId: entry.id as ResumeData['templateId'] };
+  const data = getTemplatePreviewData(entry.id as ResumeData['templateId']);
   const themeColor = data.theme?.color || '#2563eb';
 
   return (
