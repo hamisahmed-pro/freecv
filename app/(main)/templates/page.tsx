@@ -4,7 +4,7 @@ import TemplateGallery from '@/components/seo/TemplateGallery';
 const canonical = 'https://cvyon.com/templates';
 const title = 'Free Resume Templates — 180 ATS-Friendly Designs | Cvyon';
 const description =
-  'Browse 180 free ATS-friendly resume templates. No sign-up, no watermark, unlimited downloads. Click any design and the builder opens with that template already selected.';
+  'Browse 180 free ATS-friendly resume templates. No sign-up, no watermark, unlimited downloads. Preview a design or start building your resume.';
 
 export const metadata: Metadata = {
   title,

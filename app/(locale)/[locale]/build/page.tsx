@@ -22,8 +22,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const dict = await getBuilderDict(locale);
+  // Use the localized product name before the explanatory em dash, so
+  // every locale has a meaningful, concise title rather than English text.
+  const builderTitle = dict["builder.free_resume_builder_create_edit_and_down"].split(/[—–]/)[0].trim();
   return {
-    title: 'Resume Builder — Cvyon',
+    title: `${builderTitle} — Cvyon`,
     description: dict["builder.free_resume_builder_create_edit_and_down"],
     alternates: {
       canonical: `https://cvyon.com/${locale}/build`,

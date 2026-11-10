@@ -20,6 +20,12 @@ export const revalidate = 3600;
 // file/DB timestamps below.
 const CODE_LAST_MODIFIED = new Date('2026-10-16T00:00:00Z');
 
+// Keep lastmod accurate for routes changed by the November technical audit.
+// Unchanged pages retain their prior date rather than all claiming a refresh.
+const AUDIT_LAST_MODIFIED = new Date('2026-11-10T00:00:00Z');
+const updatedStaticRoutes = new Set(['', '/templates', '/ats-grader', '/cover-letter']);
+const updatedLocalizedRoutes = new Set(['/build', '/privacy', '/terms']);
+
 const staticRoutes: { path: string; priority: number }[] = [
   { path: '', priority: 1 },
   { path: '/build', priority: 0.9 },
@@ -75,7 +81,7 @@ function localizedArticleMtime(locale: string, slug: string): Date {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const routes: MetadataRoute.Sitemap = staticRoutes.map((r) => ({
     url: `${baseUrl}${r.path}`,
-    lastModified: CODE_LAST_MODIFIED,
+    lastModified: updatedStaticRoutes.has(r.path) ? AUDIT_LAST_MODIFIED : CODE_LAST_MODIFIED,
     changeFrequency: 'weekly' as const,
     priority: r.priority,
   }));
@@ -86,7 +92,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const r of localizedPageRoutes) {
       routes.push({
         url: `${baseUrl}/${locale}${r.path}`,
-        lastModified: CODE_LAST_MODIFIED,
+        lastModified: updatedLocalizedRoutes.has(r.path) ? AUDIT_LAST_MODIFIED : CODE_LAST_MODIFIED,
         changeFrequency: 'weekly' as const,
         priority: r.priority,
       });

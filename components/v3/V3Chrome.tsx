@@ -12,6 +12,7 @@ export type V3NavLink = { href: string; label: string };
 const DEFAULT_LINKS: V3NavLink[] = [
   { href: "/", label: "Home" },
   { href: "/build", label: "Builder" },
+  { href: "/templates", label: "Templates" },
   { href: "/recruiter", label: "For recruiters" },
   { href: "/support", label: "Support" },
 ];
@@ -23,7 +24,7 @@ const FOOTER_COLS: [string, { label: string; href: string }[]][] = [
       { label: "Builder", href: "/build" },
       { label: "ATS Grader", href: "/ats-grader" },
       { label: "Cover Letter", href: "/cover-letter" },
-      { label: "Templates", href: "/build" },
+      { label: "Templates", href: "/templates" },
     ],
   ],
   [
@@ -158,9 +159,9 @@ export function V3Footer() {
           </div>
           {FOOTER_COLS.map(([h, items]) => (
             <div key={h}>
-              <h4 className="mb-3 text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#8a8d9d]">
+              <h2 className="mb-3 text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#8a8d9d]">
                 {h}
-              </h4>
+              </h2>
               {items.map((it) => (
                 <Link
                   key={it.label}

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Sparkles, FileText, Loader2, Copy, CheckCircle2, Navigation } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import { V3Page, V3Eyebrow, V3Pill } from "@/components/v3/V3Chrome";
@@ -74,7 +75,7 @@ export default function CoverLetterClient() {
           AI Cover Letter <span className="text-brand">Generator</span>
         </h1>
         <p className="mx-auto mt-5 max-w-[650px] text-[17px] leading-relaxed text-muted">
-          Paste your resume and the job description. Our AI will write a highly tailored, conversion-optimized cover letter in 5 seconds.
+          Paste your resume and a job description to draft a role-specific cover letter. Review and personalize the result before applying.
         </p>
       </div>
 
@@ -171,6 +172,39 @@ export default function CoverLetterClient() {
           )}
         </div>
       </div>
+      <section aria-labelledby="cover-letter-guide" className="mx-auto mt-12 max-w-[920px] border-t border-line pt-10">
+        <h2 id="cover-letter-guide" className="text-2xl font-extrabold tracking-tight text-navy sm:text-3xl">
+          How to write a tailored cover letter with Cvyon
+        </h2>
+        <p className="mt-4 max-w-[760px] text-sm leading-7 text-muted">
+          A useful cover letter connects your real experience to the employer&apos;s needs. Paste your resume
+          and the job description into the generator, choose a tone, and use the draft as a starting point.
+          Check all dates, employers, achievements, and claims before sending it: AI-generated writing
+          can omit important context or introduce details that are not in your resume.
+        </p>
+        <div className="mt-7 grid gap-6 md:grid-cols-2">
+          <div>
+            <h3 className="text-base font-extrabold text-navy">What should the letter include?</h3>
+            <p className="mt-3 text-sm leading-6 text-muted">
+              Start with the role you want, then show one or two specific accomplishments related to its
+              requirements. Explain why this position interests you. Close with a concise invitation
+              to discuss your application instead of repeating your entire resume.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-base font-extrabold text-navy">Can I use the draft as-is?</h3>
+            <p className="mt-3 text-sm leading-6 text-muted">
+              Treat it as a first draft. Adjust the tone to match the organization, remove generic
+              statements, and make sure it sounds like you. When your resume needs work too,
+              you can edit it with Cvyon&apos;s free builder.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-4 text-sm font-extrabold text-brand">
+              <Link href="/build" className="underline underline-offset-4">Build your resume</Link>
+              <Link href="/templates" className="underline underline-offset-4">Explore resume templates</Link>
+            </div>
+          </div>
+        </div>
+      </section>
     </V3Page>
   );
 }

@@ -21,9 +21,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
+  const { privacy } = await getLegal(locale);
   return {
-    title: 'Privacy Policy — Cvyon',
-    description: 'How Cvyon collects, uses, and protects your data. No account required to build your resume; your documents stay yours.',
+    title: `${privacy.eyebrow} — Cvyon`,
+    description: privacy.sub,
     alternates: {
       canonical: `https://cvyon.com/${locale}/privacy`,
       languages: Object.fromEntries([
