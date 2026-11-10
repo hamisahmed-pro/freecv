@@ -12,6 +12,7 @@ import { ArticleJsonLd } from '@/components/blog/ArticleJsonLd';
 import { ContentJsonLd } from '@/components/blog/ContentJsonLd';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { AuthorBio } from '@/components/blog/AuthorBio';
+import { FeaturedFreeResumeTemplates, TutorResumeReadingPath, tutoringArticleSlugs } from '@/components/blog/SearchIntentJourneys';
 import { LOCALES } from '@/lib/locale';
 
 const display = Archivo_Black({ subsets: ["latin"], weight: "400", display: "swap" });
@@ -186,6 +187,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
         {/* Article Content */}
         <main className="max-w-3xl mx-auto px-6 mt-10 relative z-20">
+          {resolvedParams.slug === 'best-free-resume-templates' && <FeaturedFreeResumeTemplates />}
           <article className="riso-card overflow-hidden">
             {/* Header Image */}
             {post.header_image && (
@@ -209,6 +211,10 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               />
             </div>
           </article>
+
+          {tutoringArticleSlugs.includes(resolvedParams.slug) && (
+            <TutorResumeReadingPath currentSlug={resolvedParams.slug} />
+          )}
 
           {/* 2026-10-29 GSC fix: point the two video articles at their
               dedicated watch pages. The article embeds stay untouched; this
