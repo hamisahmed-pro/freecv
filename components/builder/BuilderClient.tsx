@@ -217,6 +217,198 @@ const ReactTemplates: Record<TemplateKey, TemplateComponent> = {
   ZenJapanese: dynamic(() => import('@/components/templates/ZenJapanese'), { ssr: true }),
   Zigzag: dynamic(() => import('@/components/templates/Zigzag'), { ssr: true }),
 };
+
+// PDF-template loaders: the same chunks as ReactTemplates above, but as
+// plain import() calls so the download handler can AWAIT the real module
+// before rendering. Rendering the next/dynamic component directly inside
+// react-pdf's pdf().toBlob() races the chunk load: on the first click per
+// template the lazy component still renders null, and react-pdf throws
+// "Cannot read properties of null (reading 'props')". A second click
+// works because the chunk is cached by then — the classic one-off failure
+// (reproduced live 2026-11-10: fail, succeed, fail on a new template).
+const ReactTemplateLoaders: Record<TemplateKey, () => Promise<{ default: TemplateComponent }>> = {
+  Academic: () => import('@/components/templates/Academic'),
+  AcademicJournal: () => import('@/components/templates/AcademicJournal'),
+  Advocate: () => import('@/components/templates/Advocate'),
+  Anchor: () => import('@/components/templates/Anchor'),
+  Aperture: () => import('@/components/templates/Aperture'),
+  Arsenal: () => import('@/components/templates/Arsenal'),
+  Atelier: () => import('@/components/templates/Atelier'),
+  Bandwidth: () => import('@/components/templates/Bandwidth'),
+  Bare: () => import('@/components/templates/Bare'),
+  Barrister: () => import('@/components/templates/Barrister'),
+  Beacon: () => import('@/components/templates/Beacon'),
+  Bichrome: () => import('@/components/templates/Bichrome'),
+  Bifocal: () => import('@/components/templates/Bifocal'),
+  Billboard: () => import('@/components/templates/Billboard'),
+  Blank: () => import('@/components/templates/Blank'),
+  Breakwater: () => import('@/components/templates/Breakwater'),
+  Brief: () => import('@/components/templates/Brief'),
+  Byline: () => import('@/components/templates/Byline'),
+  Cache: () => import('@/components/templates/Cache'),
+  Caliber: () => import('@/components/templates/Caliber'),
+  Calligraphy: () => import('@/components/templates/Calligraphy'),
+  Calm: () => import('@/components/templates/Calm'),
+  Canvas: () => import('@/components/templates/Canvas'),
+  Capsule: () => import('@/components/templates/Capsule'),
+  Cascade: () => import('@/components/templates/Cascade'),
+  Chancellor: () => import('@/components/templates/Chancellor'),
+  Checkpoint: () => import('@/components/templates/Checkpoint'),
+  Chevron: () => import('@/components/templates/Chevron'),
+  Clarity: () => import('@/components/templates/Clarity'),
+  Classic: () => import('@/components/templates/Classic'),
+  Clearance: () => import('@/components/templates/Clearance'),
+  Clinician: () => import('@/components/templates/Clinician'),
+  Collage: () => import('@/components/templates/Collage'),
+  Column: () => import('@/components/templates/Column'),
+  Compass: () => import('@/components/templates/Compass'),
+  Condensed: () => import('@/components/templates/Condensed'),
+  Consul: () => import('@/components/templates/Consul'),
+  Cornerstone: () => import('@/components/templates/Cornerstone'),
+  CorporateBlue: () => import('@/components/templates/CorporateBlue'),
+  Counsel: () => import('@/components/templates/Counsel'),
+  Covenant: () => import('@/components/templates/Covenant'),
+  Crimson: () => import('@/components/templates/Crimson'),
+  Density: () => import('@/components/templates/Density'),
+  Deploy: () => import('@/components/templates/Deploy'),
+  Diplomat: () => import('@/components/templates/Diplomat'),
+  Docket: () => import('@/components/templates/Docket'),
+  Draft: () => import('@/components/templates/Draft'),
+  Drift: () => import('@/components/templates/Drift'),
+  Duotone: () => import('@/components/templates/Duotone'),
+  Elegant: () => import('@/components/templates/Elegant'),
+  ElegantEditorial: () => import('@/components/templates/ElegantEditorial'),
+  Ember: () => import('@/components/templates/Ember'),
+  Engine: () => import('@/components/templates/Engine'),
+  Ensign: () => import('@/components/templates/Ensign'),
+  Estuary: () => import('@/components/templates/Estuary'),
+  Executive: () => import('@/components/templates/Executive'),
+  ExecutiveSplit: () => import('@/components/templates/ExecutiveSplit'),
+  Flagship: () => import('@/components/templates/Flagship'),
+  Folio: () => import('@/components/templates/Folio'),
+  Forest: () => import('@/components/templates/Forest'),
+  Forge: () => import('@/components/templates/Forge'),
+  Founder: () => import('@/components/templates/Founder'),
+  Framework: () => import('@/components/templates/Framework'),
+  Frontline: () => import('@/components/templates/Frontline'),
+  Gallery: () => import('@/components/templates/Gallery'),
+  Gateway: () => import('@/components/templates/Gateway'),
+  Gauge: () => import('@/components/templates/Gauge'),
+  Gigfolio: () => import('@/components/templates/Gigfolio'),
+  Gilt: () => import('@/components/templates/Gilt'),
+  Glyph: () => import('@/components/templates/Glyph'),
+  Gutter: () => import('@/components/templates/Gutter'),
+  Harbor: () => import('@/components/templates/Harbor'),
+  Headland: () => import('@/components/templates/Headland'),
+  Hush: () => import('@/components/templates/Hush'),
+  Inscription: () => import('@/components/templates/Inscription'),
+  Interface: () => import('@/components/templates/Interface'),
+  Jumbotron: () => import('@/components/templates/Jumbotron'),
+  Kernel: () => import('@/components/templates/Kernel'),
+  Kerning: () => import('@/components/templates/Kerning'),
+  Keystone: () => import('@/components/templates/Keystone'),
+  Kindred: () => import('@/components/templates/Kindred'),
+  Ladder: () => import('@/components/templates/Ladder'),
+  Launchpad: () => import('@/components/templates/Launchpad'),
+  Laurel: () => import('@/components/templates/Laurel'),
+  Ledger: () => import('@/components/templates/Ledger'),
+  Lighthouse: () => import('@/components/templates/Lighthouse'),
+  Lucid: () => import('@/components/templates/Lucid'),
+  Lumen: () => import('@/components/templates/Lumen'),
+  Magistrate: () => import('@/components/templates/Magistrate'),
+  Mainframe: () => import('@/components/templates/Mainframe'),
+  Maitre: () => import('@/components/templates/Maitre'),
+  Manuscript: () => import('@/components/templates/Manuscript'),
+  Marginalia: () => import('@/components/templates/Marginalia'),
+  Marketing: () => import('@/components/templates/Marketing'),
+  Marquee: () => import('@/components/templates/Marquee'),
+  Masthead: () => import('@/components/templates/Masthead'),
+  Meadow: () => import('@/components/templates/Meadow'),
+  Mentor: () => import('@/components/templates/Mentor'),
+  Meridian: () => import('@/components/templates/Meridian'),
+  Merit: () => import('@/components/templates/Merit'),
+  MinimalistSplit: () => import('@/components/templates/MinimalistSplit'),
+  ModernGradient: () => import('@/components/templates/ModernGradient'),
+  Mono: () => import('@/components/templates/Mono'),
+  Mosaic: () => import('@/components/templates/Mosaic'),
+  Navigator: () => import('@/components/templates/Navigator'),
+  Navy: () => import('@/components/templates/Navy'),
+  NightShift: () => import('@/components/templates/NightShift'),
+  Noir: () => import('@/components/templates/Noir'),
+  Nomad: () => import('@/components/templates/Nomad'),
+  Northstar: () => import('@/components/templates/Northstar'),
+  Ochre: () => import('@/components/templates/Ochre'),
+  OpEd: () => import('@/components/templates/OpEd'),
+  Overclock: () => import('@/components/templates/Overclock'),
+  Palette: () => import('@/components/templates/Palette'),
+  Paper: () => import('@/components/templates/Paper'),
+  Paragon: () => import('@/components/templates/Paragon'),
+  Parchment: () => import('@/components/templates/Parchment'),
+  Parse: () => import('@/components/templates/Parse'),
+  ParsePerfect: () => import('@/components/templates/ParsePerfect'),
+  Pedagogue: () => import('@/components/templates/Pedagogue'),
+  Pivot: () => import('@/components/templates/Pivot'),
+  Pixel: () => import('@/components/templates/Pixel'),
+  Podium: () => import('@/components/templates/Podium'),
+  Polyglot: () => import('@/components/templates/Polyglot'),
+  Portrait: () => import('@/components/templates/Portrait'),
+  Practitioner: () => import('@/components/templates/Practitioner'),
+  Protocol: () => import('@/components/templates/Protocol'),
+  Pullquote: () => import('@/components/templates/Pullquote'),
+  Quarto: () => import('@/components/templates/Quarto'),
+  Rail: () => import('@/components/templates/Rail'),
+  Rainmaker: () => import('@/components/templates/Rainmaker'),
+  Reentry: () => import('@/components/templates/Reentry'),
+  Regent: () => import('@/components/templates/Regent'),
+  Rucksack: () => import('@/components/templates/Rucksack'),
+  Satchel: () => import('@/components/templates/Satchel'),
+  Scanner: () => import('@/components/templates/Scanner'),
+  Senate: () => import('@/components/templates/Senate'),
+  Sepia: () => import('@/components/templates/Sepia'),
+  Showcase: () => import('@/components/templates/Showcase'),
+  Slate: () => import('@/components/templates/Slate'),
+  Sonnet: () => import('@/components/templates/Sonnet'),
+  Sovereign: () => import('@/components/templates/Sovereign'),
+  Split: () => import('@/components/templates/Split'),
+  Spotlight: () => import('@/components/templates/Spotlight'),
+  Spread: () => import('@/components/templates/Spread'),
+  Squeeze: () => import('@/components/templates/Squeeze'),
+  Stack: () => import('@/components/templates/Stack'),
+  Standard: () => import('@/components/templates/Standard'),
+  Still: () => import('@/components/templates/Still'),
+  Studio: () => import('@/components/templates/Studio'),
+  Summit: () => import('@/components/templates/Summit'),
+  SwissDesign: () => import('@/components/templates/SwissDesign'),
+  SwissGrid: () => import('@/components/templates/SwissGrid'),
+  SwissMinimal: () => import('@/components/templates/SwissMinimal'),
+  Syntax: () => import('@/components/templates/Syntax'),
+  Tandem: () => import('@/components/templates/Tandem'),
+  Teal: () => import('@/components/templates/Teal'),
+  TechPro: () => import('@/components/templates/TechPro'),
+  Teller: () => import('@/components/templates/Teller'),
+  Tenure: () => import('@/components/templates/Tenure'),
+  Throttle: () => import('@/components/templates/Throttle'),
+  Timeline: () => import('@/components/templates/Timeline'),
+  Trellis: () => import('@/components/templates/Trellis'),
+  Triad: () => import('@/components/templates/Triad'),
+  Tribunal: () => import('@/components/templates/Tribunal'),
+  Trifold: () => import('@/components/templates/Trifold'),
+  Tutor: () => import('@/components/templates/Tutor'),
+  TypographyFirst: () => import('@/components/templates/TypographyFirst'),
+  Uplink: () => import('@/components/templates/Uplink'),
+  Valor: () => import('@/components/templates/Valor'),
+  Vector: () => import('@/components/templates/Vector'),
+  Vellum: () => import('@/components/templates/Vellum'),
+  Vitrine: () => import('@/components/templates/Vitrine'),
+  Vivid: () => import('@/components/templates/Vivid'),
+  Warden: () => import('@/components/templates/Warden'),
+  Waypoint: () => import('@/components/templates/Waypoint'),
+  Whisper: () => import('@/components/templates/Whisper'),
+  Workshop: () => import('@/components/templates/Workshop'),
+  ZenJapanese: () => import('@/components/templates/ZenJapanese'),
+  Zigzag: () => import('@/components/templates/Zigzag'),
+};
+
 const HtmlTemplates: Record<TemplateKey, TemplateComponent> = {
   Academic: dynamic(() => import('@/components/html_templates/Academic'), { ssr: true }),
   AcademicJournal: dynamic(() => import('@/components/html_templates/AcademicJournal'), { ssr: true }),
@@ -896,6 +1088,23 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
     setTemplateId('Executive');
   }, [isHydrated, data.templateId, setTemplateId]);
 
+  // Warm the current template's PDF chunk in the background once the page is
+  // idle, so the first Download PDF click usually finds it already loaded.
+  // Correctness does not depend on this — handleDownload awaits the loader —
+  // it only makes that first click fast instead of waiting on the network.
+  useEffect(() => {
+    if (!isHydrated) return;
+    const loader = ReactTemplateLoaders[data.templateId as TemplateKey];
+    if (!loader) return;
+    const warm = () => { loader().catch(() => {}); };
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const id = (window as any).requestIdleCallback(warm, { timeout: 5000 });
+      return () => (window as any).cancelIdleCallback?.(id);
+    }
+    const t = setTimeout(warm, 1500);
+    return () => clearTimeout(t);
+  }, [isHydrated, data.templateId]);
+
   useEffect(() => {
     const updatePreviewMetrics = () => {
       const viewportWidth = previewViewportRef.current?.clientWidth || window.innerWidth;
@@ -1145,7 +1354,15 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
     setIsGeneratingPdf(true);
     try {
       const { pdf } = await import('@react-pdf/renderer');
-      const PdfTemplate = ReactTemplates[data.templateId as TemplateKey];
+      // Await the real PDF template module BEFORE rendering: the ReactTemplates
+      // entry is a next/dynamic component, and rendering it inside react-pdf
+      // races the chunk load — on the first click per template it still
+      // renders null and react-pdf throws "Cannot read properties of null
+      // (reading 'props')". A second click works because the chunk is cached.
+      // Loading the module directly removes the race entirely.
+      const loader = ReactTemplateLoaders[data.templateId as TemplateKey];
+      if (!loader) throw new Error('PDF template not available for ' + data.templateId);
+      const PdfTemplate = (await loader()).default as TemplateComponent;
       if (!PdfTemplate) throw new Error('PDF template not available for ' + data.templateId);
       const blob = await pdf(<PdfTemplate data={previewData} />).toBlob();
       if (!blob || blob.size < 1000) throw new Error('Generated PDF is unexpectedly small');
