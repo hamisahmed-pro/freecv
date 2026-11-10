@@ -306,8 +306,9 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
                 </Reveal>
               ))}
             </div>
-            <Reveal className="mt-8 text-center">
+            <Reveal className="mt-8 flex flex-wrap items-center justify-center gap-3 text-center">
               <Link href={L("/build")} className="v3-btn v3-btn-light px-6 py-3 text-[14px]">{dict.templates_section.cta} <ArrowRight size={15} /></Link>
+              <Link href="/templates" className="v3-btn px-6 py-3 text-[14px] underline underline-offset-4">Browse all 180 templates <ArrowUpRight size={15} /></Link>
             </Reveal>
           </div>
         </section>
@@ -397,7 +398,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
               <p className="mt-4 max-w-[220px] text-[12px] leading-relaxed text-muted">{dict.footer.tagline}</p>
             </div>
             {[
-              [dict.footer.col_product, [[dict.footer.link_builder, L("/build")], [dict.footer.link_ats_grader, L("/ats-grader")], [dict.footer.link_templates, L("/build")], [dict.footer.link_cover_letter, L("/cover-letter")], [dict.footer.link_pricing, L("/pricing")], [dict.footer.link_embed_badge, L("/embed")]]],
+              [dict.footer.col_product, [[dict.footer.link_builder, L("/build")], [dict.footer.link_ats_grader, L("/ats-grader")], [dict.footer.link_templates, "/templates"], [dict.footer.link_cover_letter, L("/cover-letter")], [dict.footer.link_pricing, L("/pricing")], [dict.footer.link_embed_badge, L("/embed")]]],
               [dict.footer.col_company, [[dict.footer.link_about, L("/about")], [dict.footer.link_career_blog, L("/blog")], [dict.footer.link_recruiter_portal, L("/recruiter")], [dict.footer.link_support, L("/support")], [dict.footer.link_zety_alt, L("/alternatives/zety-alternative")], [dict.footer.link_resumeio_alt, L("/alternatives/resume-io-alternative")], [dict.footer.link_novoresume_alt, L("/alternatives/novoresume-alternative")]]],
               [dict.footer.col_legal, [[dict.footer.link_privacy, L("/privacy")], [dict.footer.link_terms, L("/terms")], [dict.footer.link_manage_data, L("/manage-data")], [dict.footer.link_developers, L("/developers")]]],
             ].map(([h, items]) => (
