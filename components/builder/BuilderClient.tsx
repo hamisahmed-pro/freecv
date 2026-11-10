@@ -633,6 +633,10 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
   const [isRewriterOpen, setIsRewriterOpen] = useState(false);
   const [rewriteTone, setRewriteTone] = useState('Executive');
   const [isRewriting, setIsRewriting] = useState(false);
+  // Persistent rewrite failure message (same pattern as the grader's
+  // gradeError panel): a transient toast alone is too easy to miss, and
+  // without it a failed rewrite looks like the button did nothing.
+  const [rewriteError, setRewriteError] = useState<string | null>(null);
 
   // Tailor to Job (restored from pre-redesign builder)
   const [isTailorOpen, setIsTailorOpen] = useState(false);
@@ -945,6 +949,7 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
 
   const handleRewrite = async () => {
     setIsRewriting(true);
+    setRewriteError(null);
     try {
       const res = await fetch('/api/ai/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'rewrite', tone: rewriteTone, jobTitle: data.personalInfo.jobTitle, resumeData: { summary: data.summary, experience: data.experience.map(e => ({ id: e.id, description: e.description })) } }) });
       if (!res.ok) {
@@ -953,14 +958,24 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
         throw new Error(errMsg);
       }
       const json = await res.json();
-      if (json.summary) {
-        updateSummary(json.summary);
-        if (json.experience) json.experience.forEach((exp: any) => { if (exp.id && exp.description) updateExperience(exp.id, { description: exp.description }); });
+      if (!json.summary) {
+        // Never silently close on an empty/unshaped reply — that is exactly
+        // the "clicked rewrite and nothing happened" failure mode.
+        throw new Error('The rewrite came back empty. Please try again.');
       }
+      updateSummary(json.summary);
+      if (Array.isArray(json.experience)) json.experience.forEach((exp: any, i: number) => {
+        if (!exp.description) return;
+        // Match by id first; fall back to position — the model may return
+        // invented ids even when asked to keep the originals, and a missed
+        // id used to silently drop every rewritten bullet.
+        const target = data.experience.find((e) => e.id === exp.id) || data.experience[i];
+        if (target) updateExperience(target.id, { description: exp.description });
+      });
       // Only close on success — a failed rewrite keeps the modal open so the
       // user can retry without losing their tone selection.
       setIsRewriterOpen(false);
-    } catch (err: any) { toast.error('Rewrite failed: ' + err.message); }
+    } catch (err: any) { setRewriteError(err.message); toast.error('Rewrite failed: ' + err.message); }
     setIsRewriting(false);
   };
 
@@ -1831,7 +1846,13 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
                 style={{ '--theme-color': data.theme?.color || '#2563eb' } as React.CSSProperties}
               >
                 <ErrorBoundary fallbackTitle="Resume Preview Error" fallbackMessage="Could not render the current template. Try selecting another template or verifying your text inputs.">
-                  <HTMLPreview Tmpl={HtmlTemplates[data.templateId as TemplateKey]} data={previewData} />
+                  {/* autoHeight + onPaperHeight: the desktop preview used to
+                      render a fixed one-page (1056px) paper, so any CV longer
+                      than a page was clipped with nothing to scroll to. The
+                      mobile overlay got this fix on 2026-10-25; desktop gets
+                      the same treatment here so the frame grows to the full
+                      content and the canvas scrolls through it. */}
+                  <HTMLPreview Tmpl={HtmlTemplates[data.templateId as TemplateKey]} data={previewData} autoHeight onPaperHeight={(h) => setDesktopPreviewFit((f) => ({ ...f, paperH: h }))} />
                 </ErrorBoundary>
               </div>
             </div>
@@ -2105,6 +2126,11 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
                 {isRewriting ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
                 {isRewriting ? 'Rewriting Resume...' : 'Rewrite Entire Resume'}
               </button>
+              {rewriteError && (
+                <div className="mt-4 rounded-xl border border-[#f5c6c0] bg-[#fdecea] px-4 py-3 text-sm leading-relaxed text-[#8f1d1d]">
+                  <strong className="font-bold">Rewrite failed.</strong> {rewriteError} Please wait a moment and try again — the button above is ready to retry.
+                </div>
+              )}
             </div>
           </div>
         </div>

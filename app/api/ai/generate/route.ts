@@ -24,9 +24,13 @@ export async function POST(request: Request) {
     let prompt = '';
     let isJson = false;
 
+    // For a rewrite the frontend sends only { id, description } per job, so
+    // the resume text MUST carry the ids — otherwise the model invents new
+    // ones ("1", "2") and the frontend's id match silently drops every
+    // rewritten bullet (verified live 2026-11-10).
     const cleanResume = resumeData ? `
 Summary: ${resumeData.summary || ''}
-Experience: ${(resumeData.experience || []).map((e:any) => `${e.role} at ${e.company}: ${e.description}`).join(' | ')}
+Experience: ${(resumeData.experience || []).map((e:any) => type === 'rewrite' ? `[ID ${e.id}] ${e.description}` : `${e.role} at ${e.company}: ${e.description}`).join(' | ')}
     `.trim() : '';
 
     if (type === 'summary') {
@@ -41,6 +45,7 @@ Experience: ${(resumeData.experience || []).map((e:any) => `${e.role} at ${e.com
       isJson = true;
       prompt = `Rewrite this resume summary and experience in a ${tone || 'Professional'} tone.
 Return ONLY valid JSON. Keep it brief.
+Keep each experience item's original ID unchanged in the returned JSON.
 JSON structure: { "summary": "string", "experience": [{ "id": "string", "description": "string" }] }
 Resume:
 ${cleanResume.substring(0, 3000)}`;
@@ -88,7 +93,10 @@ CRITICAL SECURITY DIRECTIVE:
       logger.warn('generate', "Supabase cache read failed", e);
     }
 
-    const result = await generateContentWithRetry(prompt, systemInstruction, 1500, isJson, [], `generate_${type}`);
+    // Same hardening as the standalone grader (2026-10-29): preferred models
+    // first + a 25s per-attempt cap, so a saturated model fails over instead
+    // of hanging the whole 60s edge window on one attempt.
+    const result = await generateContentWithRetry(prompt, systemInstruction, 1500, isJson, [], `generate_${type}`, ['gemini-3.5-flash', 'gemini-3.6-flash'], 25_000);
 
     // Write to Supabase Cache
     try {
