@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useResumeStore } from "@/store/useResumeStore";
 import { UploadCloud, FileText, CheckCircle2, AlertCircle, Sparkles, Loader2, Target, Lightbulb, ChevronLeft, X, Share2, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -400,6 +401,45 @@ export default function ClientAtsGrader({ dict = en }: { dict?: Dict }) {
           </div>
         </div>
       </div>
+      {/* Supporting search-intent content stays below the tool, never between
+          the applicant and the upload/score workflow. No untranslated copy
+          is inserted into localized versions of the grader. */}
+      {dict.locale === "en" && (
+        <section aria-labelledby="ats-guide-title" className="mx-auto mt-14 max-w-[920px] border-t border-line pt-10">
+          <h2 id="ats-guide-title" className="text-2xl font-extrabold tracking-tight text-navy sm:text-3xl">
+            How to use your resume-to-job match results
+          </h2>
+          <p className="mt-4 max-w-[770px] text-sm leading-7 text-muted">
+            Cvyon compares the resume you upload with the job description you provide. The result summarizes
+            strengths, gaps, missing keywords, and practical next steps so you can tailor your application to
+            a specific role. It is a helpful screening simulation, not a prediction of how any employer&apos;s
+            applicant tracking system will rank or reject your resume.
+          </p>
+          <div className="mt-7 grid gap-6 md:grid-cols-2">
+            <div>
+              <h3 className="text-base font-extrabold text-navy">Get a more useful check</h3>
+              <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm leading-6 text-muted">
+                <li>Upload the version of your resume you plan to apply with, as a PDF or DOCX file.</li>
+                <li>Paste the full job description, including responsibilities and required qualifications.</li>
+                <li>Review the strengths, weaknesses, and missing terms before revising your resume.</li>
+              </ol>
+            </div>
+            <div>
+              <h3 className="text-base font-extrabold text-navy">What should you do next?</h3>
+              <p className="mt-3 text-sm leading-6 text-muted">
+                Only add relevant skills and accomplishments you can honestly support. Use a clear layout,
+                recognizable section headings, and job-specific evidence. Then check the updated document
+                against the same job description to see what changed.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-4 text-sm font-extrabold text-brand">
+                <Link href="/build" className="underline underline-offset-4">Improve your resume</Link>
+                <Link href="/templates" className="underline underline-offset-4">Browse free templates</Link>
+                <Link href="/blog/what-is-applicant-tracking-system" className="underline underline-offset-4">How ATS software works</Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </V3Page>
   );
 }
