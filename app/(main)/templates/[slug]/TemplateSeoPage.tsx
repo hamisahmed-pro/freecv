@@ -61,7 +61,7 @@ export default function TemplateSeoPage({ entry, more }: { entry: TemplateSeoEnt
       <FaqJsonLd faqs={entry.faqs} />
       <BreadcrumbJsonLd items={[
         { label: 'Home', href: '/' },
-        { label: `${entry.name} template` },
+        { label: `${entry.name} template`, href: `/templates/${entry.slug}` },
       ]} />
 
       {/* BREADCRUMB */}

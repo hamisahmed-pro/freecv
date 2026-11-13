@@ -95,7 +95,7 @@ export default async function LocalizedBlogPostPage({ params }: { params: Promis
             items={[
               { label: 'Home', href: `/${locale}` },
               { label: b.title || 'Blog', href: `/${locale}/blog` },
-              { label: post.title },
+              { label: post.title, href: `/${locale}/blog/${slug}` },
             ]}
             className="mb-4"
           />

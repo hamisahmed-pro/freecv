@@ -4,7 +4,13 @@ import { ChevronRight } from 'lucide-react';
 
 export interface Crumb {
   label: string;
-  href?: string;
+  // REQUIRED, not optional: Google flags a BreadcrumbList ListItem without
+  // an "item" URL as a critical structured-data error ("Missing field
+  // 'item' (in 'itemListElement')", GSC email 2026-11-13). The current page
+  // is a real crumb too — pass its own path as href; the visual nav still
+  // renders the last crumb as plain text, never as a link. Never pass a
+  // crumb with no URL: there is no valid "item" to emit for it.
+  href: string;
 }
 
 /**
@@ -19,7 +25,7 @@ export function BreadcrumbJsonLd({ items }: { items: Crumb[] }) {
       '@type': 'ListItem',
       position: i + 1,
       name: item.label,
-      ...(item.href ? { item: `https://cvyon.com${item.href}` } : {}),
+      item: `https://cvyon.com${item.href}`,
     })),
   };
   return (

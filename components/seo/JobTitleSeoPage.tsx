@@ -17,8 +17,7 @@ export default function JobTitleSeoPage({ entry, more }: { entry: JobTitleSeoEnt
       <FaqJsonLd faqs={entry.faqs} />
       <BreadcrumbJsonLd items={[
         { label: 'Home', href: '/' },
-        { label: 'Resume guides' },
-        { label: entry.jobTitle },
+        { label: entry.jobTitle, href: `/resume-for/${entry.slug}` },
       ]} />
 
       {/* BREADCRUMB */}

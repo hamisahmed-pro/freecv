@@ -168,7 +168,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               items={[
                 { label: 'Home', href: '/' },
                 { label: 'Blog', href: '/blog' },
-                { label: post.title },
+                { label: post.title, href: `/blog/${resolvedParams.slug}` },
               ]}
               className="mb-6 text-[#E8E7E1]"
             />

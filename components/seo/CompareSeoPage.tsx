@@ -16,8 +16,7 @@ export default function CompareSeoPage({ entry, more }: { entry: CompareSeoEntry
       <FaqJsonLd faqs={entry.faqs} />
       <BreadcrumbJsonLd items={[
         { label: 'Home', href: '/' },
-        { label: 'Alternatives' },
-        { label: `${entry.competitor} alternative` },
+        { label: `${entry.competitor} alternative`, href: `/alternatives/${entry.slug}` },
       ]} />
 
       {/* BREADCRUMB */}
