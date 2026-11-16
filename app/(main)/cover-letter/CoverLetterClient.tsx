@@ -43,6 +43,7 @@ export default function CoverLetterClient() {
       }
 
       setResult(data.coverLetter);
+      void trackEvent('cover_letter_generated', undefined, { tone });
     } catch (err: any) {
       setError(err.message);
     } finally {

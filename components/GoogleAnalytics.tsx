@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Script from "next/script";
 import { useResumeStore } from "@/store/useResumeStore";
 
@@ -28,18 +28,27 @@ declare global {
 export function GoogleAnalytics() {
   const analyticsConsent =
     useResumeStore((s) => s.data?.consents?.analytics) === true;
+  const [explicitConsent, setExplicitConsent] = useState(false);
+  useEffect(() => {
+    const sync = () => {
+      try { setExplicitConsent(localStorage.getItem('cvyon-consent-v2') === 'acknowledged'); }
+      catch { setExplicitConsent(false); }
+    };
+    sync();
+    window.addEventListener('cvyon:consent-changed', sync);
+    return () => window.removeEventListener('cvyon:consent-changed', sync);
+  }, []);
+  const active = analyticsConsent && explicitConsent;
 
   useEffect(() => {
-    if (!GA_ID || !analyticsConsent) return;
-    if (typeof window.gtag === "function") {
-      window.gtag("consent", "update", { analytics_storage: "granted" });
-    } else {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push(["consent", "update", { analytics_storage: "granted" }]);
-    }
-  }, [analyticsConsent]);
+    if (!GA_ID) return;
+    const w = window as Window & { [key: string]: unknown };
+    w['ga-disable-' + GA_ID] = !active;
+    window.gtag?.('consent', 'update', { analytics_storage: active ? 'granted' : 'denied' });
+  }, [active]);
 
-  if (!GA_ID) return null;
+  // Do not download or initialize the Google tag for undecided/declined visitors.
+  if (!GA_ID || !active) return null;
 
   return (
     <>

@@ -1,228 +1,104 @@
+// Browser telemetry: explicit consent, 30-minute sessions, first-party delivery.
+// No third-party geo call or personal resume content is sent to analytics.
+const CONSENT_KEY = 'cvyon-consent-v2';
+const SESSION_KEY = 'cvyon_session_v2';
+const SESSION_IDLE_MS = 30 * 60 * 1000;
 
-// ---- Session ID ----
-const getSessionId = () => {
-  if (typeof window === 'undefined') return 'server';
-  let sid = localStorage.getItem('cvyon_session_id');
-  if (!sid) {
-    sid = crypto.randomUUID();
-    localStorage.setItem('cvyon_session_id', sid);
-  }
-  return sid;
-};
-
-// ---- Device Detection ----
-function getDeviceType(): string {
-  if (typeof window === 'undefined') return 'unknown';
-  const ua = navigator.userAgent;
-  if (/tablet|ipad|playbook|silk/i.test(ua)) return 'tablet';
-  if (/mobile|iphone|ipod|android.*mobile|blackberry|opera mini|iemobile/i.test(ua)) return 'mobile';
-  return 'desktop';
-}
-
-// ---- Browser Detection ----
-function getBrowser(): string {
-  if (typeof window === 'undefined') return 'unknown';
-  const ua = navigator.userAgent;
-  // Bots / crawlers / non-browser agents get their own bucket so they don't
-  // pollute the "Other" browser bucket in analytics.
-  if (/bot|crawler|spider|crawling|slurp|mediapartners|baidu|yandex|sogou|exabot|facebot|ia_archiver|semrush|ahrefs|mj12|dotbot|petal|bytespider|gptbot|ccbot|claudebot|perplexity|googleother|google-inspectiontool|lighthouse|headlesschrome|phantomjs|selenium|playwright|puppeteer/i.test(ua)) return 'Bot';
-  if (/curl|wget|python-requests|python-urllib|go-http-client|java\/|okhttp|axios/i.test(ua)) return 'Bot';
-  if (ua.includes('Firefox/')) return 'Firefox';
-  if (ua.includes('Edg/')) return 'Edge';
-  if (ua.includes('OPR/') || ua.includes('Opera/')) return 'Opera';
-  if (ua.includes('SamsungBrowser/')) return 'Samsung Internet';
-  if (ua.includes('YaBrowser/')) return 'Yandex';
-  if (ua.includes('Chrome/') && !ua.includes('Edg/')) return 'Chrome';
-  if (ua.includes('Safari/') && !ua.includes('Chrome/')) return 'Safari';
-  if (ua.includes('MSIE') || ua.includes('Trident/')) return 'IE';
-  // In-app webviews (Instagram, Facebook, TikTok, etc.)
-  if (/FBAN|FBAV|Instagram|TikTok|Line\/|MicroMessenger|WeChat/i.test(ua)) return 'In-App WebView';
-  return 'Other';
-}
-
-// ---- OS Detection ----
-function getOS(): string {
-  if (typeof window === 'undefined') return 'unknown';
-  const ua = navigator.userAgent;
-  if (ua.includes('Win')) return 'Windows';
-  if (ua.includes('Mac') && !ua.includes('iPhone') && !ua.includes('iPad')) return 'macOS';
-  if (ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
-  if (ua.includes('Android')) return 'Android';
-  if (ua.includes('Linux')) return 'Linux';
-  if (ua.includes('CrOS')) return 'ChromeOS';
-  return 'Other';
-}
-
-// ---- Referrer Parsing ----
-function getReferrer(): string {
-  if (typeof window === 'undefined') return 'direct';
-  const ref = document.referrer;
-  if (!ref) return 'direct';
+function currentSessionId(): string {
+  const now = Date.now();
   try {
-    const hostname = new URL(ref).hostname.replace('www.', '');
-    // Don't count self-referrals
-    if (hostname === window.location.hostname) return 'direct';
-    return hostname;
-  } catch {
-    return 'direct';
+    const saved = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null') as { id?: string; last?: number } | null;
+    const valid = saved && typeof saved.id === 'string' &&
+      /^[0-9a-f-]{36}$/i.test(saved.id) && typeof saved.last === 'number' &&
+      now - saved.last < SESSION_IDLE_MS && saved.last <= now;
+    const id = valid ? saved!.id! : crypto.randomUUID();
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ id, last: now }));
+    return id;
+  } catch { return crypto.randomUUID(); }
+}
+
+const BOT_RE = /bot|crawler|spider|headless|lighthouse|playwright|puppeteer|selenium|phantom/i;
+function allowed(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    if (localStorage.getItem(CONSENT_KEY) !== 'acknowledged') return false;
+    // Read the persisted preferences rather than a stale component closure.
+    const state = JSON.parse(localStorage.getItem('cvyon-storage') || '{}');
+    return state?.state?.data?.consents?.analytics === true;
+  } catch { return false; }
+}
+
+function sourceParams(): Record<string, string | null> {
+  const q = new URLSearchParams(window.location.search);
+  const result: Record<string, string | null> = {};
+  for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']) {
+    result[key] = q.get(key)?.slice(0, 150) || null;
   }
+  return result;
 }
 
-// ---- UTM Attribution ----
-// Reads utm_* params from the URL on first visit and persists them in
-// localStorage so they survive across page navigations within the session.
-// A later visit with NEW utm params overwrites the stored ones (last-touch).
-export interface UTMParams {
-  utm_source: string | null;
-  utm_medium: string | null;
-  utm_campaign: string | null;
-  utm_term: string | null;
-  utm_content: string | null;
-}
-
-const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'] as const;
-const UTM_STORAGE_KEY = 'cvyon_utm_params';
-
-export function getUTMParams(): UTMParams {
-  const empty: UTMParams = {
-    utm_source: null,
-    utm_medium: null,
-    utm_campaign: null,
-    utm_term: null,
-    utm_content: null,
+export function getUTMParams() {
+  if (typeof window === 'undefined') return {
+    utm_source: null, utm_medium: null, utm_campaign: null, utm_term: null, utm_content: null,
   };
-  if (typeof window === 'undefined') return empty;
-
-  // 1. Check the current URL for fresh UTM params
-  let fresh: Partial<UTMParams> = {};
-  let hasFresh = false;
-  try {
-    const search = new URLSearchParams(window.location.search);
-    for (const key of UTM_KEYS) {
-      const val = search.get(key);
-      if (val) {
-        (fresh as any)[key] = val;
-        hasFresh = true;
-      }
-    }
-  } catch {
-    // URL parsing failed; fall through to stored
-  }
-
-  // 2. If fresh params exist, persist them (last-touch attribution)
-  if (hasFresh) {
-    try {
-      localStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(fresh));
-    } catch {
-      // storage unavailable; still return fresh values
-    }
-    return { ...empty, ...fresh };
-  }
-
-  // 3. Otherwise return previously stored params (if any)
-  try {
-    const stored = localStorage.getItem(UTM_STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      const result = { ...empty };
-      for (const key of UTM_KEYS) {
-        if (typeof parsed[key] === 'string') (result as any)[key] = parsed[key];
-      }
-      return result;
-    }
-  } catch {
-    // fall through
-  }
-
-  return empty;
+  return sourceParams();
 }
 
-// ---- Geo Data (cached per session) ----
-interface GeoData {
-  country: string;
-  city: string;
+function qaMode(): boolean {
+  try {
+    return localStorage.getItem('cvyon_analytics_exclude') === 'true' ||
+      location.pathname.startsWith('/admin') ||
+      navigator.webdriver === true;
+  } catch { return false; }
 }
 
-async function getGeoData(): Promise<GeoData> {
-  if (typeof window === 'undefined') return { country: '', city: '' };
-
-  // Check session cache first
-  const cached = sessionStorage.getItem('cvyon_geo');
-  if (cached) {
-    try { return JSON.parse(cached); } catch { /* fall through */ }
-  }
-
-  // Strategy 1: Client-side ipapi.co (free tier: 1,000/day)
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3000);
-    const res = await fetch('https://ipapi.co/json/', { signal: controller.signal });
-    clearTimeout(timeout);
-
-    if (res.ok) {
-      const data = await res.json();
-      if (data.country_name) {
-        const geo = { country: data.country_name, city: data.city || '' };
-        sessionStorage.setItem('cvyon_geo', JSON.stringify(geo));
-        return geo;
-      }
-    }
-  } catch {
-    // ipapi failed (rate limited or network error), fall through to server fallback
-  }
-
-  // Strategy 2: Server-side fallback via our own API route
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3000);
-    const res = await fetch('/api/geo', { signal: controller.signal });
-    clearTimeout(timeout);
-
-    if (res.ok) {
-      const data = await res.json();
-      const geo = { country: data.country || '', city: data.city || '' };
-      sessionStorage.setItem('cvyon_geo', JSON.stringify(geo));
-      return geo;
-    }
-  } catch {
-    // Both strategies failed, proceed without geo
-  }
-
-  return { country: '', city: '' };
-}
-
-// ---- Main Track Event ----
-export const trackEvent = async (eventType: string, templateId?: string, metadata?: Record<string, any>) => {
-  try {
-    const geo = await getGeoData();
-    const utm = getUTMParams();
-
-    // 2026-10-25 perf round 2: supabase-js was statically imported by this
-    // module, pulling ~100KB+ into /build's first chunk although the only
-    // call (this insert) runs after mount, after the geo fetch above, inside
-    // try/catch. Loaded on demand instead; events are preserved, just
-    // inserted after a fast same-origin chunk fetch.
-    const { supabase } = await import('./supabase');
-    await supabase.from('analytics_events').insert([{
-      event_type: eventType,
-      session_id: getSessionId(),
-      template_id: templateId || null,
-      country: geo.country || null,
-      city: geo.city || null,
-      device_type: getDeviceType(),
-      browser: getBrowser(),
-      os: getOS(),
-      referrer: getReferrer(),
-      utm_source: utm.utm_source,
-      utm_medium: utm.utm_medium,
-      utm_campaign: utm.utm_campaign,
-      utm_term: utm.utm_term,
-      utm_content: utm.utm_content,
-      page_url: typeof window !== 'undefined' ? window.location.pathname : null,
-      screen_width: typeof window !== 'undefined' ? window.innerWidth : null,
-      metadata: metadata || null
-    }]);
-  } catch (error) {
-    console.error('Analytics tracking failed', error);
-  }
+const GA_EVENTS: Record<string, string> = {
+  milestone_started: 'resume_builder_started',
+  download_completed: 'file_download',
+  ats_grader_completed: 'ats_analysis_completed',
+  cover_letter_generated: 'cover_letter_generated',
+  affiliate_job_clicked: 'select_content',
 };
+
+export async function trackEvent(
+  eventType: string, templateId?: string, metadata?: Record<string, unknown>
+): Promise<void> {
+  if (!allowed() || !/^[a-z][a-z0-9_]{2,63}$/.test(eventType)) return;
+  try {
+    const body = JSON.stringify({
+      event_id: crypto.randomUUID(),
+      created_at: new Date().toISOString(),
+      event_type: eventType,
+      session_id: currentSessionId(),
+      template_id: templateId || null,
+      page_url: window.location.pathname.slice(0, 250),
+      referrer: (() => {
+        try { return document.referrer ? new URL(document.referrer).hostname : 'direct'; }
+        catch { return 'direct'; }
+      })(),
+      ...sourceParams(),
+      screen_width: window.innerWidth,
+      metadata: metadata || null,
+      qa: qaMode(),
+      webdriver: navigator.webdriver === true,
+    });
+    if (body.length > 3000) return;
+    // The endpoint checks the server-signed consent cookie, validates fields and
+    // deduplicates by event_id + created_at. It never trusts client conversions as payments.
+    const promise = fetch('/api/analytics', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body, keepalive: true, credentials: 'same-origin',
+    });
+    // GA4 reflects user consent and receives no resume text, email or identities.
+    const gaName = GA_EVENTS[eventType];
+    if (gaName && !qaMode() && !BOT_RE.test(navigator.userAgent)) {
+      (window as Window & { gtag?: (...a: unknown[]) => void }).gtag?.(
+        'event', gaName, { page_path: window.location.pathname, template_id: templateId || undefined }
+      );
+    }
+    const res = await promise;
+    if (!res.ok && process.env.NODE_ENV !== 'production') console.warn('Telemetry rejected', res.status);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') console.warn('Telemetry delivery failed', error);
+  }
+}

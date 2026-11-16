@@ -19,10 +19,19 @@ export const useResumeStore = create<StoreState>()(
       }),
       {
         name: 'cvyon-storage',
-        version: 3,
+        version: 4,
         migrate: (persistedState: any, version: number) => {
           if (!persistedState || typeof persistedState !== 'object') {
             return persistedState;
+          }
+          // V4: legacy consents were preselected; they cannot prove an affirmative choice.
+          // Require every user to make a fresh, explicit choice before any tracking/CRM opt-in.
+          if (version < 4) {
+            const data = persistedState.data || {};
+            persistedState = { ...persistedState, data: {
+              ...data,
+              consents: { recruiterShare: false, emailJobs: false, analytics: false },
+            } };
           }
           // Gracefully migrate legacy local storage structures
           if (version < 2) {

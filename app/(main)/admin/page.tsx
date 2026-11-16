@@ -4,6 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { requireAdmin } from '@/lib/admin-auth';
 import { logger } from '@/lib/logger';
 import AdminDashboard from '@/components/admin/AdminDashboard';
+import InternalAnalyticsExclusion from '@/components/admin/InternalAnalyticsExclusion';
 
 export const dynamic = 'force-dynamic';
 
@@ -140,6 +141,7 @@ export default async function AdminPage() {
   });
 
   return (
+    <><InternalAnalyticsExclusion />
     <AdminDashboard
       candidates={mergedCandidates}
       analytics={analytics.data || []}
@@ -148,6 +150,6 @@ export default async function AdminPage() {
       featureFlags={featureFlags.data || []}
       blogPosts={blogPosts.data || []}
       appSettings={appSettings}
-    />
+    /></>
   );
 }

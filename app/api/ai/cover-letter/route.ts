@@ -1,7 +1,6 @@
 import { logger } from '@/lib/logger';
 import { NextResponse } from 'next/server';
 import { generateContentWithRetry, AiQuotaExhaustedError, AiOverloadedError, AiAccessDeniedError } from '@/lib/ai-retry';
-import { trackEvent } from '@/lib/analytics';
 import { checkRateLimit } from '@/lib/rate-limit';
 
 export async function POST(req: Request) {
@@ -37,9 +36,8 @@ Do NOT include generic placeholders like [Company Name] if it's in the text.`;
     // 4. Generate
     let result: any = await generateContentWithRetry(userPrompt, systemPrompt, 1500, true, [], 'cover_letter');
 
-    // 5. Analytics
-    trackEvent('cover_letter_generated', undefined, { tone, source: 'server' });
-
+    // Client telemetry is emitted after a successful response, with consent.
+    // Never invoke browser-only analytics from a server route.
     return NextResponse.json({ coverLetter: result.coverLetter || result.text || result });
   } catch (error: any) {
     logger.error('cover-letter', 'Cover Letter AI Error:', error);
