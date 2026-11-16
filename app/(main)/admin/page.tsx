@@ -53,10 +53,32 @@ export default async function AdminPage() {
   // fetch is date-bounded. Previously the latest 5000 events were pulled with
   // no date filter, so the labels silently went stale as volume grew.
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const fetchAnalytics = async () => {
+    const all: any[] = [];
+    const pageSize = 1000;
+    // Supabase's PostgREST row cap can silently truncate a requested 5000-row
+    // report to 1000. Page explicitly, retaining stable ordering per event id.
+    for (let offset = 0; offset < 50000; offset += pageSize) {
+      const { data, error } = await supabaseAdmin.from('analytics_events')
+        .select('*')
+        .gte('created_at', thirtyDaysAgo)
+        .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
+        .range(offset, offset + pageSize - 1);
+      if (error) {
+        logger.error('admin', 'Analytics pagination failed', { offset, message: error.message });
+        throw new Error('Failed to load reliable analytics');
+      }
+      all.push(...(data || []));
+      if (!data || data.length < pageSize) break;
+    }
+    if (all.length >= 50000) logger.warn('admin', 'Analytics exceeds 50000 rows; reporting should move to server aggregation');
+    return { data: all, error: null };
+  };
   const [candidatesList, profilesList, analytics, aiLogs, siteSettings, featureFlags, blogPosts, appSettingsRes] = await Promise.all([
     fetchCandidates(),
     fetchProfiles(),
-    supabaseAdmin.from('analytics_events').select('*').gte('created_at', thirtyDaysAgo).order('created_at', { ascending: false }).limit(5000),
+    fetchAnalytics(),
     supabaseAdmin.from('ai_usage_logs').select('*').order('created_at', { ascending: false }).limit(3000),
     supabaseAdmin.from('site_settings').select('*').maybeSingle(),
     supabaseAdmin.from('feature_flags').select('*').order('key'),
