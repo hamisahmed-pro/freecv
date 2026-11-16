@@ -1,186 +1,89 @@
 "use client";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { ArrowLeft, Eye, SearchCheck, FileDown, Loader2, ShieldCheck } from "lucide-react";
+import { V3Page, V3Eyebrow } from "@/components/v3/V3Chrome";
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { Eye, Download, MapPin, Monitor, ArrowLeft, Loader2, TrendingUp, Link2, Megaphone, Target } from 'lucide-react';
-import { V3Page, V3Eyebrow, V3Pill } from '@/components/v3/V3Chrome';
-import { trackEvent } from '@/lib/analytics';
+type Report = {
+  searchAppearances: number;
+  profileViews: null;
+  downloads: null;
+  measurementScope: string;
+  capped: boolean;
+  recentEvents: { event_type: string; created_at: string }[];
+};
 
-function SourceList({ items, emptyText }: { items: any[]; emptyText: string }) {
-  if (!items || items.length === 0) {
-    return <p className="py-8 text-center text-sm font-bold uppercase tracking-[0.14em] text-muted">{emptyText}</p>;
-  }
-  return (
-    <div className="space-y-4">
-      {items.map((item: any, i: number) => (
-        <div key={i} className="flex items-center justify-between border-b border-line pb-3 last:border-0 last:pb-0">
-          <span className="truncate text-[16px] font-bold text-navy">{item.name}</span>
-          <span className="ml-3 shrink-0 rounded-full bg-navy px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white">{item.count}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-export default function AnalyticsDashboard() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
+export default function CandidateVisibilityPage() {
+  const [report, setReport] = useState<Report | null>(null);
+  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   useEffect(() => {
-    const fetchAnalytics = async () => {
-      try {
-        const res = await fetch('/api/user/analytics');
-        if (res.ok) {
-          const json = await res.json();
-          setData(json);
+    const controller = new AbortController();
+    fetch("/api/user/analytics", { credentials: "same-origin", cache: "no-store", signal: controller.signal })
+      .then(async response => {
+        if (!response.ok) throw new Error("Analytics unavailable");
+        return (await response.json()) as Report;
+      })
+      .then(data => {
+        if (controller.signal.aborted) return;
+        if (data.measurementScope !== "candidate_recruiter_search_impressions") {
+          throw new Error("Unexpected measurement scope");
         }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAnalytics();
-    trackEvent('analytics_dashboard_viewed');
+        setReport(data); setStatus("ready");
+      })
+      .catch(() => { if (!controller.signal.aborted) setStatus("error"); });
+    return () => controller.abort();
   }, []);
 
-  if (loading) {
-    return (
-      <V3Page pageName="dashboard_analytics">
-        <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4">
-          <Loader2 size={40} className="animate-spin text-brand" />
-          <h2 className="text-sm font-black uppercase tracking-[0.2em] text-navy">Loading Analytics…</h2>
-        </div>
-      </V3Page>
-    );
-  }
-
-  return (
-    <V3Page pageName="dashboard_analytics">
-      <div className="mx-auto max-w-6xl">
-        <p role="status" className="mb-6 rounded-lg border border-line bg-paper p-4 text-sm text-muted">This report includes only profile-view records for your account. Resume downloads, traffic sources and visitor geography are unavailable until per-profile attribution can be verified. They are not estimated from site-wide traffic.</p>
-        <Link href="/dashboard" className="mb-6 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-navy/70 transition-colors hover:text-coral">
-          <ArrowLeft size={16} /> Back to Dashboard
-        </Link>
-
-        <div className="mb-10 flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <V3Eyebrow>§ resume analytics</V3Eyebrow>
-            <h1 className="text-4xl font-black tracking-tight text-navy sm:text-5xl">
-              Profile <span className="text-brand">Analytics</span>
-            </h1>
-            <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-muted">
-              See recruiter profile views associated with your CVYON account. Other users' activity is never included.
-            </p>
-          </div>
-          <V3Pill>
-            <TrendingUp size={14} /> Pro Analytics
-          </V3Pill>
-        </div>
-
-        {/* Top Stats */}
-        <div className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="flex items-center gap-6 rounded-2xl border border-line bg-paper p-8 shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand">
-              <Eye size={30} className="text-white" />
-            </div>
+  return <V3Page pageName="dashboard_analytics">
+    <div className="mx-auto max-w-4xl">
+      <Link href="/dashboard" className="mb-7 inline-flex items-center gap-2 text-xs font-extrabold text-muted hover:text-brand">
+        <ArrowLeft size={16} /> Back to dashboard
+      </Link>
+      <V3Eyebrow>Candidate visibility · account-specific</V3Eyebrow>
+      <h1 className="mt-3 text-3xl font-black tracking-tight text-navy sm:text-5xl">Your recruiter visibility</h1>
+      <p className="mt-4 max-w-2xl text-sm leading-7 text-muted">
+        This page shows recorded appearances of your profile in recruiter search results.
+        A search-result appearance is <strong>not</strong> confirmation that a recruiter opened,
+        read, or downloaded your resume.
+      </p>
+      <div className="mt-8 rounded-2xl border border-line bg-paper p-5 sm:p-7">
+        {status === "loading" && <p role="status" className="flex items-center gap-2 text-muted"><Loader2 size={17} className="animate-spin"/> Loading your account records…</p>}
+        {status === "error" && <p role="alert" className="text-sm text-red-700">We could not verify your analytics records. No figures are being estimated or substituted.</p>}
+        {status === "ready" && report && <>
+          <div className="flex items-center gap-4">
+            <div className="rounded-xl bg-brand/10 p-4 text-brand"><SearchCheck size={26}/></div>
             <div>
-              <p className="mb-1 text-[11px] font-extrabold uppercase tracking-[0.14em] text-muted">Recruiter Profile Views</p>
-              <h3 className="text-5xl font-black tracking-tight text-navy">{data?.views || 0}</h3>
+              <p className="text-xs font-extrabold uppercase tracking-wider text-muted">Recorded recruiter search appearances</p>
+              <p className="mt-1 text-4xl font-black tabular-nums text-navy">{report.searchAppearances.toLocaleString()}</p>
             </div>
           </div>
-
-          <div className="flex items-center gap-6 rounded-2xl border border-line bg-paper p-8 shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-coral">
-              <Download size={30} className="text-white" />
-            </div>
-            <div>
-              <p className="mb-1 text-[11px] font-extrabold uppercase tracking-[0.14em] text-muted">Resume Downloads</p>
-              <h3 className="text-5xl font-black tracking-tight text-navy">{typeof data?.downloads === 'number' ? data.downloads : 'Not tracked'}</h3>
-            </div>
-          </div>
-        </div>
-
-        {/* Traffic Sources */}
-        <div className="mb-10">
-          <h2 className="mb-5 flex items-center gap-2 text-xl font-extrabold tracking-tight text-navy">
-            <Link2 size={22} className="text-teal" /> Traffic Sources
-          </h2>
-          <div className="grid gap-8 lg:grid-cols-3">
-            <div className="rounded-2xl border border-line bg-paper p-6 shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
-              <h3 className="mb-4 flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-[0.14em] text-muted">
-                <Link2 size={16} className="text-brand" /> Top Referrers
-              </h3>
-              <SourceList items={data?.topReferrers} emptyText="No referrer data yet." />
-            </div>
-            <div className="rounded-2xl border border-line bg-paper p-6 shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
-              <h3 className="mb-4 flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-[0.14em] text-muted">
-                <Megaphone size={16} className="text-coral" /> Top UTM Sources
-              </h3>
-              <SourceList items={data?.topUtmSources} emptyText="No UTM data yet. Tag your links with ?utm_source=…" />
-            </div>
-            <div className="rounded-2xl border border-line bg-paper p-6 shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
-              <h3 className="mb-4 flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-[0.14em] text-muted">
-                <Target size={16} className="text-teal" /> Top UTM Campaigns
-              </h3>
-              <SourceList items={data?.topUtmCampaigns} emptyText="No campaign data yet." />
-            </div>
-          </div>
-        </div>
-
-        <div className="grid gap-8 lg:grid-cols-2">
-          {/* Geolocation Data */}
-          <div>
-            <h2 className="mb-5 flex items-center gap-2 text-xl font-extrabold tracking-tight text-navy">
-              <MapPin size={22} className="text-brand" /> Top Viewer Locations
-            </h2>
-            <div className="rounded-2xl border border-line bg-paper p-6 shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
-              {data?.topLocations?.length > 0 ? (
-                <div className="space-y-4">
-                  {data.topLocations.map((loc: any, i: number) => (
-                    <div key={i} className="flex items-center justify-between border-b border-line pb-3 last:border-0 last:pb-0">
-                      <span className="text-[16px] font-bold text-navy">{loc.name}</span>
-                      <span className="rounded-full bg-navy px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white">{loc.count} Views</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="py-8 text-center text-sm font-bold uppercase tracking-[0.14em] text-muted">No location data yet.</p>
-              )}
-            </div>
-          </div>
-
-          {/* Activity Feed */}
-          <div>
-            <h2 className="mb-5 flex items-center gap-2 text-xl font-extrabold tracking-tight text-navy">
-              <Monitor size={22} className="text-coral" /> Recent Activity
-            </h2>
-            <div className="rounded-2xl bg-navy p-6 text-white shadow-[0_8px_22px_rgba(23,27,75,0.18)]">
-              {data?.recentEvents?.length > 0 ? (
-                <div className="space-y-4">
-                  {data.recentEvents.map((ev: any, i: number) => (
-                    <div key={i} className="flex items-start gap-4 border-b border-white/10 pb-4 last:border-0 last:pb-0">
-                      <div className="mt-1">
-                        {ev.event_type.includes('download') ? <Download size={16} className="text-coral" /> : <Eye size={16} className="text-teal" />}
-                      </div>
-                      <div>
-                        <p className="font-bold">{ev.event_type.replace(/_/g, ' ').toUpperCase()}</p>
-                        <p className="mt-1 text-xs font-medium uppercase tracking-[0.12em] text-white/50">
-                          {new Date(ev.created_at).toLocaleString()} • {ev.device_type || 'Desktop'} • {ev.country || 'Unknown'}
-                          {ev.utm_source ? ` • ${ev.utm_source}` : ''}
-                          {ev.referrer && ev.referrer !== 'direct' ? ` • ${ev.referrer}` : ''}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="py-8 text-center text-sm font-bold uppercase tracking-[0.14em] text-white/50">No recent activity.</p>
-              )}
-            </div>
-          </div>
-        </div>
+          {report.capped && <p className="mt-3 text-sm text-muted">Showing the latest 1,000 recorded appearances; historical totals may be higher.</p>}
+          <h2 className="mt-7 text-lg font-extrabold text-navy">Recent search appearances</h2>
+          {report.recentEvents.length === 0
+            ? <p className="mt-3 text-sm text-muted">No recruiter search appearances have been recorded for your account.</p>
+            : <ol className="mt-3 space-y-2">{report.recentEvents.map((item,i)=>
+                <li key={i} className="flex items-center gap-2 rounded-lg bg-lavender/50 p-3 text-sm text-navy">
+                  <Eye size={15} aria-hidden="true"/> Appeared in recruiter matches · {new Date(item.created_at).toLocaleString()}
+                </li>
+              )}</ol>}
+        </>}
       </div>
-    </V3Page>
-  );
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        <section className="rounded-2xl border border-line bg-paper p-5">
+          <Eye className="text-brand" size={21}/>
+          <h2 className="mt-3 text-base font-extrabold text-navy">Actual profile opens</h2>
+          <p className="mt-2 text-sm text-muted">Not currently measured. We will not turn recruiter search impressions into fabricated profile-view counts.</p>
+        </section>
+        <section className="rounded-2xl border border-line bg-paper p-5">
+          <FileDown className="text-brand" size={21}/>
+          <h2 className="mt-3 text-base font-extrabold text-navy">Third-party resume downloads</h2>
+          <p className="mt-2 text-sm text-muted">Not currently measured per candidate. Your own builder exports are a separate action and should not be counted as recruiter downloads.</p>
+        </section>
+      </div>
+      <p className="mt-6 flex items-start gap-2 text-xs leading-relaxed text-muted">
+        <ShieldCheck size={18} className="shrink-0"/> Only events linked to your authenticated candidate record are shown. 
+        Analytics is privacy-scoped; unrecorded actions cannot be reconstructed.
+      </p>
+    </div>
+  </V3Page>;
 }
