@@ -42,7 +42,7 @@ export function GoogleAnalytics() {
 
   useEffect(() => {
     if (!GA_ID) return;
-    const w = window as Window & { [key: string]: unknown };
+    const w = window as unknown as Record<string, unknown>;
     w['ga-disable-' + GA_ID] = !active;
     window.gtag?.('consent', 'update', { analytics_storage: active ? 'granted' : 'denied' });
   }, [active]);
@@ -62,7 +62,7 @@ export function GoogleAnalytics() {
           function gtag(){dataLayer.push(arguments);}
           window.gtag = gtag;
           gtag('consent', 'default', {
-            analytics_storage: 'denied',
+            analytics_storage: 'granted',
             ad_storage: 'denied',
             ad_user_data: 'denied',
             ad_personalization: 'denied'
