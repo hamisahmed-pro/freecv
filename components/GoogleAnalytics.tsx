@@ -56,7 +56,8 @@ export function GoogleAnalytics() {
         src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
         strategy="lazyOnload"
       />
-      <Script id="ga-consent-init" strategy="afterInteractive">
+      <Script id="ga-consent-init" strategy="afterInteractive"
+        onReady={() => window.dispatchEvent(new Event('cvyon:ga-ready'))}>
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
