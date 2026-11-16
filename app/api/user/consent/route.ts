@@ -153,17 +153,19 @@ export async function POST(req: NextRequest) {
     // 4. Update BOTH opted_in_at (legacy) AND consent_given_at (new reliable flag)
     // This ensures users who opt-in via settings appear correctly in admin dashboard
     if (patch.consent_recruiter_share === true) {
-      const now = new Date().toISOString();
-
-      // Update the new specific consent column
-      await supabaseAdmin
+      const { error: updateError } = await supabaseAdmin
         .from('candidates')
-        .update({
-          consent_given_at: now,
-          opted_in_at: now, // Keep legacy sync
-          updated_at: now
-        })
+        .update({ consent_given_at: now, opted_in_at: now, updated_at: now })
         .eq('id', cand.id);
+      if (updateError) return NextResponse.json({ error: 'Consent status sync failed' }, { status: 503 });
+    } else {
+      // The active-consent marker must not remain enabled after revocation.
+      // Historical opt-in dates and the separate audit trail are preserved.
+      const { error: updateError } = await supabaseAdmin
+        .from('candidates')
+        .update({ consent_given_at: null, updated_at: now })
+        .eq('id', cand.id);
+      if (updateError) return NextResponse.json({ error: 'Consent revocation sync failed' }, { status: 503 });
     }
 
     // 5. Audit log

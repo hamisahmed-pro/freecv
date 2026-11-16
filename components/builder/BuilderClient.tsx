@@ -1469,16 +1469,18 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
             <p className="font-brand text-[10px] uppercase tracking-[0.14em] text-[#151a46]/55">{dict["builder.allow_recruiters_to_find_your_resume_on"]}</p>
           </div>
           <button onClick={() => {
-            const newShare = !data.consents.recruiterShare;
-            const nextConsents = { ...data.consents, recruiterShare: newShare };
-            setConsents(nextConsents);
-            if (isRealUserEmail(data.personalInfo.email)) {
-              fetch('/api/crm/optin', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...data, consents: nextConsents }),
-              }).catch((e) => console.warn('Background consent sync error', e));
-            }
+            // Only the authenticated consent endpoint can activate recruiter
+            // sharing. Do not optimistically toggle the local resume store or
+            // upload the resume before the server confirms the decision.
+            void (async () => {
+              const allow = !data.consents.recruiterShare;
+              try {
+                await setRecruiterConsent(allow);
+                toast.success(allow ? 'Recruiter sharing is enabled.' : 'Recruiter sharing is disabled.');
+              } catch (error) {
+                toast.error(error instanceof Error ? error.message : 'Could not save recruiter consent.');
+              }
+            })();
           }}
             role="switch"
             aria-checked={data.consents.recruiterShare}

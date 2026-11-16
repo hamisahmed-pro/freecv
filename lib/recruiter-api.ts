@@ -340,10 +340,16 @@ export async function getProfileViews(): Promise<ProfileViews | null> {
   try {
     const res = await authed("/api/user/profile-views");
     const json = await parse<any>(res);
+    // /api/user/profile-views returns a verified list of this candidate's
+    // recruiter interactions, not the legacy aggregate-number shape.
+    const records = Array.isArray(json?.views) ? json.views : null;
     return {
-      views: Number(json?.views ?? json?.viewCount ?? 0),
-      unlocks: Number(json?.unlocks ?? json?.unlockCount ?? 0),
-      recent: Array.isArray(json?.recent) ? json.recent : [],
+      views: records ? records.length : Number(json?.views ?? json?.viewCount ?? 0),
+      unlocks: records ? records.filter((row: { unlocked?: boolean }) => row.unlocked === true).length
+        : Number(json?.unlocks ?? json?.unlockCount ?? 0),
+      recent: records ? records.slice(0, 20).map((row: { at?: string; unlocked?: boolean }) => ({
+        at: row.at, unlocked: row.unlocked === true,
+      })) : (Array.isArray(json?.recent) ? json.recent : []),
     };
   } catch {
     return null; // endpoint may not exist yet — callers hide the section honestly
@@ -351,6 +357,16 @@ export async function getProfileViews(): Promise<ProfileViews | null> {
 }
 
 /* ------------------------- candidate consent ------------------------ */
+
+function useConsentRollbackFallback(previous: { recruiterShare: boolean; emailJobs: boolean; analytics: boolean }) {
+  // A failed receipt rollback must never leave an apparently successful UI toggle.
+  try {
+    import("@/store/useResumeStore").then(({ useResumeStore }) => {
+      useResumeStore.getState().setConsents(previous);
+    }).catch(() => {});
+  } catch { /* no browser state available */ }
+}
+
 
 export async function getRecruiterConsent(): Promise<{ optedIn: boolean; at?: string } | null> {
   try {
@@ -377,19 +393,30 @@ export async function setRecruiterConsent(allow: boolean): Promise<boolean> {
   if (!session?.user?.email) throw new ApiError("Sign in to save this preference.", 401, "auth");
   // The user clicked Allow or Stop sharing; issue a signed server receipt
   // before updating the authenticated candidate profile.
-  await acknowledgeConsent({ ...existingExplicitConsent(), recruiterShare: allow });
-  const res = await fetch("/api/user/consent", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${session.access_token}`,
-    },
-    body: JSON.stringify({
-      email: session.user.email,
-      consents: { consent_recruiter_share: allow },
-    }),
-  });
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok) throw new ApiError(json?.error || "Couldn't save your preference.", res.status, res.status === 401 || res.status === 403 ? "auth" : "http");
-  return !!json?.success;
+  const previous = existingExplicitConsent();
+  await acknowledgeConsent({ ...previous, recruiterShare: allow });
+  try {
+    const res = await fetch("/api/user/consent", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        email: session.user.email,
+        consents: { consent_recruiter_share: allow },
+      }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || !json?.success)
+      throw new ApiError(json?.error || "Couldn't save your preference.", res.status, res.status === 401 || res.status === 403 ? "auth" : "http");
+    return true;
+  } catch (error) {
+    // Roll back the browser choice if the authenticated server write failed.
+    // Never show "enabled" solely because the consent cookie request passed.
+    try { await acknowledgeConsent(previous); } catch {
+      useConsentRollbackFallback(previous);
+    }
+    throw error;
+  }
 }
