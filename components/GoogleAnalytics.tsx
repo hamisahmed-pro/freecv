@@ -57,7 +57,7 @@ export function GoogleAnalytics() {
         strategy="lazyOnload"
       />
       <Script id="ga-consent-init" strategy="afterInteractive"
-        onReady={() => window.dispatchEvent(new Event('cvyon:ga-ready'))}>
+        onReady={() => { window.dispatchEvent(new Event('cvyon:ga-ready')); }}>
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
