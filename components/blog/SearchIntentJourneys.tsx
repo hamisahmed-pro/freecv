@@ -42,6 +42,19 @@ export function FeaturedFreeResumeTemplates() {
           </Link>
         ))}
       </div>
+      <div className="mt-6 border-t-2 border-[#141312] pt-5">
+        <h3 className="fh text-lg font-black">Choose a resume design for the job, not just its appearance</h3>
+        <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
+          <div><dt className="font-extrabold">Traditional or regulated roles</dt>
+            <dd className="mt-1">Start with the straightforward Classic layout and conventional section headings.</dd></div>
+          <div><dt className="font-extrabold">Modern professional roles</dt>
+            <dd className="mt-1">Consider Swiss Minimal or Corporate Blue, then inspect text order and export readability yourself.</dd></div>
+          <div><dt className="font-extrabold">Early-career applicants</dt>
+            <dd className="mt-1">Prioritize education, projects and relevant achievements over decorative elements.</dd></div>
+          <div><dt className="font-extrabold">ATS-submitted applications</dt>
+            <dd className="mt-1">Use recognizable headings and selectable text. No template can guarantee an ATS score or interview.</dd></div>
+        </dl>
+      </div>
       <div className="mt-6 flex flex-wrap gap-3">
         <Link href="/templates" className="riso-btn">Browse all 180 designs →</Link>
         <Link href="/build?source=seo" className="riso-btn riso-btn-ghost">Build my resume →</Link>
@@ -91,5 +104,54 @@ export function TutorResumeReadingPath({ currentSlug }: { currentSlug: string })
         ))}
       </ul>
     </aside>
+  );
+}
+
+
+/** Search-facing, original concise answers that keep neighboring tutor pages
+ * distinct instead of forcing the same keyword onto all of them. */
+export function TutorSearchAnswer({ slug }: { slug: string }) {
+  const items: Record<string, { title: string; description: string; next: string; href: string; anchor: string }> = {
+    'tutoring-resume': {
+      title: 'How to write a tutoring resume',
+      description: 'List the subjects and grade levels you taught, the teaching approach you used, and specific evidence of progress. Structure your resume with a concise summary, relevant experience, education and skills; avoid generic claims without examples.',
+      next: 'Need to see a complete layout before writing?',
+      href: '/blog/tutoring-resume-example', anchor: 'View six tutoring resume examples',
+    },
+    'tutoring-resume-example': {
+      title: 'What a strong tutoring resume example demonstrates',
+      description: 'A convincing sample connects the learner group, subject, teaching action and measurable result. For instance: “Prepared weekly Algebra I practice plans for 8 students; six improved by at least one course grade.” This is fictional sample wording—replace it with truthful experience.',
+      next: 'Want to put your own achievements into the design?',
+      href: '/templates/tutor', anchor: 'Use an editable tutor resume template',
+    },
+    'describe-tutoring-experience': {
+      title: 'How to describe tutoring experience in one resume bullet',
+      description: 'Use this pattern: action verb + subject and learner group + teaching method + supported result. Only quote real scores, counts and achievements you can substantiate. “Tutored high-school biology students using weekly practice quizzes” is stronger than “helped students.”',
+      next: 'Need the entire resume, not just experience bullets?',
+      href: '/blog/tutoring-resume', anchor: 'Read the tutor resume writing guide',
+    },
+    'tutor-resume-template': {
+      title: 'Choose and edit a tutor resume template',
+      description: 'Use an existing template with standard education, experience and skills headings. Add tutoring subjects and relevant age groups. Review the rendered file before submitting; no template removes the need to check your content.',
+      next: 'Open the design and replace its sample details',
+      href: '/templates/tutor', anchor: 'Preview the editable tutor template',
+    },
+    'tutor-resume-examples': {
+      title: 'Tutor resume examples: make the evidence specific',
+      description: 'Examples should distinguish first-time tutors, online tutors, test-prep instructors and subject specialists. Match the sample closest to your real work, then edit every outcome so it is accurate.',
+      next: 'Want a practical writing process?',
+      href: '/blog/tutoring-resume', anchor: 'Start the tutoring resume guide',
+    },
+  };
+  const item = items[slug];
+  if (!item) return null;
+  return (
+    <section aria-label="Quick answer" className="mb-9 border-[3px] border-[#141312] bg-white p-6 shadow-[5px_5px_0_#141312]">
+      <p className="fm text-[11px] font-black uppercase tracking-widest text-[#2233FF]">Practical answer</p>
+      <h2 className="fh mt-2 text-xl font-black">{item.title}</h2>
+      <p className="mt-3 text-sm leading-7">{item.description}</p>
+      <p className="mt-3 text-sm"><strong>{item.next}</strong>{' '}
+        <Link className="font-extrabold underline decoration-2 underline-offset-4" href={item.href}>{item.anchor}</Link></p>
+    </section>
   );
 }
