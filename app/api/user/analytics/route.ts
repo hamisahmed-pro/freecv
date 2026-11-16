@@ -1,89 +1,34 @@
-import { logger } from '@/lib/logger';
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { supabaseAdmin } from '@/lib/supabase';
 
-export async function GET(request: Request) {
-  try {
-    // P0 fix (2026-09-23): this endpoint previously served the entire
-    // analytics_events table with zero auth. Require a signed-in session.
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // We'll just fetch all analytics events and group them (simulating "my links")
-    const { data: events, error } = await supabaseAdmin
-      .from('analytics_events')
-      .select('event_type, country, city, created_at, device_type, referrer, utm_source, utm_medium, utm_campaign')
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
-    const views = events.filter((e: any) => e.event_type.includes('view') || e.event_type === 'milestone_previewed').length;
-    const downloads = events.filter((e: any) => e.event_type === 'resume_downloaded' || e.event_type === 'milestone_downloaded').length;
-
-    // Group by country
-    const geoLocations = events.reduce((acc: any, event: any) => {
-      const loc = event.country || 'Unknown';
-      acc[loc] = (acc[loc] || 0) + 1;
-      return acc;
-    }, {});
-
-    const topLocations = Object.entries(geoLocations)
-      .map(([name, count]) => ({ name, count }))
-      .sort((a: any, b: any) => b.count - a.count)
-      .slice(0, 5);
-
-    // ---- Traffic Sources ----
-    // Top referrers (hostname), excluding self/direct
-    const referrerCounts = events.reduce((acc: any, event: any) => {
-      const ref = event.referrer || 'direct';
-      acc[ref] = (acc[ref] || 0) + 1;
-      return acc;
-    }, {});
-    const topReferrers = Object.entries(referrerCounts)
-      .map(([name, count]) => ({ name, count }))
-      .sort((a: any, b: any) => b.count - a.count)
-      .slice(0, 10);
-
-    // Top UTM sources (only events that carried UTM params)
-    const utmSourceCounts = events.reduce((acc: any, event: any) => {
-      if (!event.utm_source) return acc;
-      acc[event.utm_source] = (acc[event.utm_source] || 0) + 1;
-      return acc;
-    }, {});
-    const topUtmSources = Object.entries(utmSourceCounts)
-      .map(([name, count]) => ({ name, count }))
-      .sort((a: any, b: any) => b.count - a.count)
-      .slice(0, 10);
-
-    // Top UTM campaigns
-    const utmCampaignCounts = events.reduce((acc: any, event: any) => {
-      if (!event.utm_campaign) return acc;
-      const label = event.utm_source
-        ? `${event.utm_source} / ${event.utm_campaign}`
-        : event.utm_campaign;
-      acc[label] = (acc[label] || 0) + 1;
-      return acc;
-    }, {});
-    const topUtmCampaigns = Object.entries(utmCampaignCounts)
-      .map(([name, count]) => ({ name, count }))
-      .sort((a: any, b: any) => b.count - a.count)
-      .slice(0, 10);
-
-    return NextResponse.json({
-      views,
-      downloads,
-      topLocations,
-      topReferrers,
-      topUtmSources,
-      topUtmCampaigns,
-      recentEvents: events.slice(0, 10)
-    });
-  } catch (error: any) {
-    logger.error('analytics', 'Analytics fetch error:', error);
-    return NextResponse.json({ error: 'Could not load analytics.' }, { status: 500 });
+/** Never disclose site-wide analytics to a signed-in candidate. */
+export async function GET() {
+  const supabase = await createClient();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user?.email) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+  const { data: candidate, error: candidateError } = await supabaseAdmin
+    .from('candidates').select('id').eq('email', user.email.toLowerCase()).maybeSingle();
+  if (candidateError) return NextResponse.json({ error: 'Profile unavailable' }, { status: 503 });
+  let rows: { viewed_at: string }[] = [];
+  if (candidate?.id) {
+    const { data, error } = await supabaseAdmin
+      .from('profile_views').select('viewed_at')
+      .eq('candidate_profile_id', candidate.id)
+      .order('viewed_at', { ascending: false }).limit(1000);
+    if (error) return NextResponse.json({ error: 'Profile view data unavailable' }, { status: 503 });
+    rows = data || [];
+  }
+  return NextResponse.json({
+    views: rows.length, downloads: null, topLocations: [],
+    topReferrers: [], topUtmSources: [], topUtmCampaigns: [],
+    recentEvents: rows.slice(0, 10).map(v => ({
+      event_type: 'recruiter_profile_viewed', created_at: v.viewed_at,
+      country: null, device_type: null, referrer: null, utm_source: null,
+    })),
+    measurementScope: 'candidate_recruiter_profile',
+    capped: rows.length === 1000,
+  }, { headers: { 'Cache-Control': 'private, no-store' } });
 }
