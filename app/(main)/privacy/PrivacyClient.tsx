@@ -3,22 +3,51 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { V3Page, V3Eyebrow, V3Pill } from "@/components/v3/V3Chrome";
+import { supabase } from "@/lib/supabase";
+import { getRecruiterConsent, setRecruiterConsent } from "@/lib/recruiter-api";
 
 export default function PrivacyClient() {
-  const [doNotSell, setDoNotSell] = useState(false);
+  // The switch reflects a persisted recruiter-discovery choice, not just UI state.
+  const [doNotSell, setDoNotSell] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [privacyStatus, setPrivacyStatus] = useState('');
+  const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
-    // CCPA Global Privacy Control check — honor the browser's GPC signal
-    if (typeof navigator !== "undefined" && "globalPrivacyControl" in navigator) {
-      if ((navigator as any).globalPrivacyControl) {
-        setDoNotSell(true);
+    let alive = true;
+    const refresh = async () => {
+      const gpc = Boolean((navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!alive) return;
+      setSignedIn(Boolean(session));
+      if (!session) { setDoNotSell(true); return; }
+      const consent = await getRecruiterConsent();
+      if (!alive) return;
+      if (gpc && consent?.optedIn) {
+        try {
+          await setRecruiterConsent(false);
+          if (alive) setPrivacyStatus('Your browser’s privacy preference has been respected.');
+        } catch {
+          if (alive) setPrivacyStatus('We could not confirm your opt-out. Please retry or contact support.');
+        }
       }
-    }
+      if (alive) setDoNotSell(gpc || !consent?.optedIn);
+    };
+    void refresh();
+    return () => { alive = false; };
   }, []);
 
-  const toggleDoNotSell = () => {
-    setDoNotSell((v) => !v);
-    // In a real app, this would dispatch an API call to update the user's consent record
+  const toggleDoNotSell = async () => {
+    if (busy || doNotSell) return;
+    setBusy(true);
+    setPrivacyStatus('');
+    try {
+      await setRecruiterConsent(false);
+      setDoNotSell(true);
+      setPrivacyStatus('Confirmed: your profile is no longer shared with recruiters.');
+    } catch {
+      setPrivacyStatus('We could not save this opt-out. Please try again or contact support.');
+    } finally { setBusy(false); }
   };
 
   return (
@@ -105,16 +134,27 @@ export default function PrivacyClient() {
                 type="button"
                 role="switch"
                 aria-checked={doNotSell}
-                onClick={toggleDoNotSell}
+                onClick={() => { void toggleDoNotSell(); }}
+                disabled={busy || doNotSell}
                 className={`shrink-0 rounded-[10px] border px-[18px] py-3 text-[12px] font-extrabold transition-colors ${
                   doNotSell
                     ? "border-coral bg-coral text-white"
                     : "border-line bg-paper text-navy"
                 }`}
               >
-                {doNotSell ? "ON" : "OFF"}
+                {busy ? "Saving…" : doNotSell ? "ON" : "OFF"}
               </button>
             </div>
+            <p className="mt-3 text-[12px] leading-relaxed text-muted" role="status">
+              {privacyStatus || (doNotSell
+                ? "Recruiter sharing is disabled. To opt in later, use the explicit consent control in account settings."
+                : "Your recruiter-sharing preference is enabled. Switch this on to stop sharing.")}
+            </p>
+            {signedIn && (
+              <Link href="/settings" className="mt-2 inline-block text-[12px] font-bold text-brand underline">
+                Manage all consent preferences in your account
+              </Link>
+            )}
           </section>
 
           {/* 04 · Data retention */}
@@ -124,8 +164,11 @@ export default function PrivacyClient() {
               How long we retain data
             </h2>
             <p className="mt-3 max-w-[650px] text-[14px] leading-relaxed text-muted">
-              We retain analytics events for 12 months. Inactive candidate profiles are
-              automatically anonymized or deleted after 24 months of inactivity.
+              Our internal retention policy sets a 90-day target for raw analytics
+              events. Retention and deletion controls are reviewed as part of our
+              privacy operations; we do not claim that every record is already
+              automatically deleted on a fixed schedule. You can request access
+              to or deletion of your personal information at support@cvyon.com.
             </p>
           </section>
 
