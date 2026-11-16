@@ -7177,6 +7177,47 @@ export const templateSeoEntries: TemplateSeoEntry[] = [
       "Free ZenJapanese resume template: Japanese minimalism with warm paper and wide-tracked labels. Calm, confident resumes.",
   },
   {
+    id: "Rirekisho",
+    slug: "rirekisho",
+    name: "Rirekisho",
+    tagline: "The Japanese standard resume form — ruled, chronological, with a photo box.",
+    description:
+      "Rirekisho is the 履歴書, the standardized resume form Japanese employers expect: a photo box top-right, a chronological 学歴・職歴 table of education and work history, a 資格・免許 block for licenses and skills, and a 志望動機・自己PR block for motivation. This template lays your Cvyon resume out in exactly that form, with bilingual section labels so English-speaking applicants can use it too. Dates print exactly as you entered them — Western years are acceptable — and the photo box shows your builder photo when one is set. Print on A4 and attach a 4×3 cm photo.",
+    bestFor: [
+      "Applicants to Japanese employers",
+      "English teachers in Japan (ALT/JET)",
+      "New graduates applying in Japan",
+      "Anyone asked for a 履歴書 specifically",
+      "Bilingual applicants",
+    ],
+    designTraits: [
+      "Ruled form layout with a photo box",
+      "Chronological education & work-history table",
+      "Licenses & skills block",
+      "Motivation & self-PR block",
+      "Bilingual Japanese/English section labels",
+    ],
+    atsNotes:
+      "The ruled table is real text in a single column, so parsers read it in order. Dates print exactly as entered — Western years are acceptable on a rirekisho. The form expects a 4×3 cm photo in the top-right box.",
+    faqs: [
+      {
+        q: "Is this a real rirekisho form?",
+        a: "It lays out your resume in the rirekisho structure — photo box, chronological history table, licenses, and self-PR — on A4. It is not a scan of the official JIS form: dates print as you entered them (Western years are fine), and the photo box stays empty until you attach a 4×3 cm photo.",
+      },
+      {
+        q: "Do Japanese employers expect a photo?",
+        a: "Yes — a rirekisho is submitted with a 4×3 cm photo in the top-right box. Add your photo in the builder's personal-info section and it appears in the box; otherwise print the form and attach one.",
+      },
+      {
+        q: "Should I use this instead of a Western resume?",
+        a: "Only when the employer asks for a 履歴書 or you are applying in Japan. For US, UK, or EU roles, a Western template parses better in their systems.",
+      },
+    ],
+    metaTitle: "Rirekisho Resume Template — Free Japanese 履歴書 Form | Cvyon",
+    metaDescription:
+      "Free rirekisho resume template: the Japanese standard form with photo box, chronological history table, and self-PR. Fill it in online and download.",
+  },
+  {
     id: "Academic",
     slug: "academic",
     name: "Academic",

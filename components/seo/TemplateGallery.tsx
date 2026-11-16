@@ -255,6 +255,9 @@ export default function TemplateGallery() {
             and real selectable text. No lorem ipsum, no fake promises: each design has its own page explaining
             exactly who it suits and how ATS-safe it is.
           </p>
+          <p className="mt-4 max-w-2xl leading-relaxed text-[#141312]/85">
+            Not sure which design to pick? Read our <Link href="/blog/best-free-resume-templates" className="font-bold text-[#2233FF] underline underline-offset-2 hover:text-[#141312]">free resume templates guide</Link> — what makes a template ATS-friendly, the traps to avoid, and a 5-minute way to choose.
+          </p>
           <div className="fm mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#141312]/60">
             <span className="inline-flex items-center gap-2"><BadgeCheck size={15} className="text-[#0E8A4B]" /> No sign-up</span>
             <span className="inline-flex items-center gap-2"><BadgeCheck size={15} className="text-[#0E8A4B]" /> No watermark</span>

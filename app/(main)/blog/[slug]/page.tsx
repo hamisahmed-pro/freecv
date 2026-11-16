@@ -90,10 +90,23 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     description,
     alternates: {
       canonical: `https://cvyon.com/blog/${resolvedParams.slug}`,
+      // 2026-11-16 SEO audit (Fix 5): hreflang must only point at URLs
+      // that exist. Supabase-only articles (e.g. best-free-resume-templates
+      // and the newer guides) have no content/blog/<locale>/<slug>.json, so
+      // their /<locale>/blog/<slug> URLs 404 — emitting all 18 locales for
+      // them shipped 18 dead hreflang targets per page. Only locales with a
+      // real translation file get an alternate; the sitemap already uses
+      // the same existence check (localizedArticleExists).
       languages: Object.fromEntries([
         ['en', `https://cvyon.com/blog/${resolvedParams.slug}`],
         ['x-default', `https://cvyon.com/blog/${resolvedParams.slug}`],
-        ...LOCALES.map((l) => [l, `https://cvyon.com/${l}/blog/${resolvedParams.slug}`]),
+        ...LOCALES.filter((l) => {
+          try {
+            return fs.existsSync(path.join(process.cwd(), 'content', 'blog', l, `${resolvedParams.slug}.json`));
+          } catch {
+            return false;
+          }
+        }).map((l) => [l, `https://cvyon.com/${l}/blog/${resolvedParams.slug}`]),
       ]),
     },
     openGraph: {

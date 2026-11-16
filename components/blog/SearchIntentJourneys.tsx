@@ -51,12 +51,19 @@ export function FeaturedFreeResumeTemplates() {
   );
 }
 
+// 2026-11-16 SEO audit: the tutoring cluster has one owner per query type,
+// linked in a chain with keyword anchors — guide → examples → description →
+// template → builder. The box renders on every tutoring article except the
+// one the reader is already on (filtered by blog slug below).
 const tutorResources = [
-  { slug: 'tutoring-resume-example', title: 'See a complete tutoring resume example', path: '/blog/tutoring-resume-example' },
-  { slug: 'describe-tutoring-experience', title: 'Learn how to describe tutoring experience', path: '/blog/describe-tutoring-experience' },
-  { slug: 'tutor-resume-examples', title: 'Compare tutor resume examples', path: '/blog/tutor-resume-examples' },
-  { slug: 'tutor-template', title: 'Preview an editable Tutor resume template', path: '/templates/tutor' },
-  { slug: 'tutor-guide', title: 'Follow the tutor resume writing guide', path: '/resume-for/tutor' },
+  { slug: 'tutoring-resume', title: 'Tutoring resume: how to write one', path: '/blog/tutoring-resume' },
+  { slug: 'tutoring-resume-example', title: 'Tutoring resume examples', path: '/blog/tutoring-resume-example' },
+  { slug: 'tutor-resume-examples', title: 'More tutor resume examples', path: '/blog/tutor-resume-examples' },
+  { slug: 'describe-tutoring-experience', title: 'How to describe tutoring experience on a resume', path: '/blog/describe-tutoring-experience' },
+  { slug: 'tutor-resume-template', title: 'Tutor resume template', path: '/blog/tutor-resume-template' },
+  { slug: 'tutor-template', title: 'Tutor resume template design', path: '/templates/tutor' },
+  { slug: 'tutor-guide', title: 'Tutor resume example and writing guide', path: '/resume-for/tutor' },
+  { slug: 'tutor-build', title: 'Build your tutoring resume free', path: '/build' },
 ];
 
 export const tutoringArticleSlugs = [

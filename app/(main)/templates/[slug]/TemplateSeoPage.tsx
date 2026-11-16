@@ -84,6 +84,15 @@ export default function TemplateSeoPage({ entry, more }: { entry: TemplateSeoEnt
           </h1>
           <p className="mt-4 text-lg font-bold text-navy">{entry.tagline}</p>
           <p className="mt-4 max-w-xl leading-relaxed text-muted">{entry.description}</p>
+          {/* 2026-11-16 SEO audit: /templates/tutor and /resume-for/tutor are
+              different pages (template showcase vs writing guide), so neither
+              redirects — but they link to each other instead of splitting the
+              "tutor resume template" signal in silence. */}
+          {entry.slug === 'tutor' && (
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted">
+              Writing a tutoring resume? Read the <Link href="/resume-for/tutor" className="font-bold text-brand underline underline-offset-2 hover:text-navy">tutor resume example and writing guide</Link> — subjects, results, and ATS tips for tutors.
+            </p>
+          )}
 
           <div className="mt-8 flex flex-wrap gap-4">
             <Link

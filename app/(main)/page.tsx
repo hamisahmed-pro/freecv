@@ -6,21 +6,21 @@ import type { Metadata } from "next";
 // definition the homepage's visible copy also now opens with, so title, H1
 // context, meta, Open Graph, and schema all name the same entity and offer.
 export const metadata: Metadata = {
-  title: "Cvyon — Free Premium Resume Builder & ATS Grader",
-  description: "Cvyon is a free resume builder and ATS grader: build an ATS-friendly resume from 180+ templates, check it against a job posting, and download it free, no sign-up.",
+  title: "Cvyon: Free ATS Resume Builder in 18 Languages",
+  description: "Build an ATS-friendly resume or CV free in minutes with Cvyon. 18 languages, modern templates, AI-powered ATS check. No paywall.",
   alternates: { canonical: "https://cvyon.com" },
   openGraph: {
-    title: "Cvyon — Free Premium Resume Builder & ATS Grader",
-    description: "Cvyon is a free resume builder and ATS grader: build an ATS-friendly resume from 180+ templates, check it against a job posting, and download it free, no sign-up.",
+    title: "Cvyon: Free ATS Resume Builder in 18 Languages",
+    description: "Build an ATS-friendly resume or CV free in minutes with Cvyon. 18 languages, modern templates, AI-powered ATS check. No paywall.",
     url: "https://cvyon.com",
     siteName: "Cvyon",
     type: "website",
-    images: [{ url: "https://cvyon.com/og-image.jpg", width: 1200, height: 630, alt: "Cvyon — Free premium resume builder & ATS grader" }],
+    images: [{ url: "https://cvyon.com/og-image.jpg", width: 1200, height: 630, alt: "Cvyon — Free ATS resume builder in 18 languages" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cvyon — Free Premium Resume Builder & ATS Grader",
-    description: "Cvyon is a free resume builder and ATS grader: build an ATS-friendly resume from 180+ templates, check it against a job posting, and download it free, no sign-up.",
+    title: "Cvyon: Free ATS Resume Builder in 18 Languages",
+    description: "Build an ATS-friendly resume or CV free in minutes with Cvyon. 18 languages, modern templates, AI-powered ATS check. No paywall.",
     images: ["https://cvyon.com/og-image.jpg"],
   },
 };

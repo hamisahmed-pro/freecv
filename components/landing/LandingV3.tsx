@@ -399,7 +399,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
             </div>
             {[
               [dict.footer.col_product, [[dict.footer.link_builder, L("/build")], [dict.footer.link_ats_grader, L("/ats-grader")], [dict.footer.link_templates, "/templates"], [dict.footer.link_cover_letter, L("/cover-letter")], [dict.footer.link_pricing, L("/pricing")], [dict.footer.link_embed_badge, L("/embed")]]],
-              [dict.footer.col_company, [[dict.footer.link_about, L("/about")], [dict.footer.link_career_blog, L("/blog")], [dict.footer.link_recruiter_portal, L("/recruiter")], [dict.footer.link_support, L("/support")], [dict.footer.link_zety_alt, L("/alternatives/zety-alternative")], [dict.footer.link_resumeio_alt, L("/alternatives/resume-io-alternative")], [dict.footer.link_novoresume_alt, L("/alternatives/novoresume-alternative")]]],
+              [dict.footer.col_company, [[dict.footer.link_about, L("/about")], [dict.footer.link_career_blog, L("/blog")], [dict.footer.link_tutoring_guide, L("/blog/tutoring-resume")], [dict.footer.link_free_templates, L("/blog/best-free-resume-templates")], [dict.footer.link_recruiter_portal, L("/recruiter")], [dict.footer.link_support, L("/support")], [dict.footer.link_zety_alt, L("/alternatives/zety-alternative")], [dict.footer.link_resumeio_alt, L("/alternatives/resume-io-alternative")], [dict.footer.link_novoresume_alt, L("/alternatives/novoresume-alternative")]]],
               [dict.footer.col_legal, [[dict.footer.link_privacy, L("/privacy")], [dict.footer.link_terms, L("/terms")], [dict.footer.link_manage_data, L("/manage-data")], [dict.footer.link_developers, L("/developers")]]],
             ].map(([h, items]) => (
               <div key={h as string}>

@@ -117,7 +117,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Per-template SEO landing pages, derived from the data file (180 slugs).
+  // Per-template SEO landing pages, derived from the data file (183 slugs).
   const templateSlugs = templateSeoEntries.map((e) => e.slug);
   for (const slug of templateSlugs) {
     routes.push({

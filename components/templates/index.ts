@@ -134,6 +134,7 @@ import Rail from './Rail';
 import Rainmaker from './Rainmaker';
 import Reentry from './Reentry';
 import Regent from './Regent';
+import Rirekisho from './Rirekisho';
 import Rucksack from './Rucksack';
 import Satchel from './Satchel';
 import Scanner from './Scanner';
@@ -316,6 +317,7 @@ export const templates = {
   Rainmaker,
   Reentry,
   Regent,
+  Rirekisho,
   Rucksack,
   Satchel,
   Scanner,

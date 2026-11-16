@@ -1,4 +1,6 @@
 import React from 'react';
+import fs from 'fs';
+import path from 'path';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -30,8 +32,19 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   if (!isLocale(locale)) return {};
   const post = getLocalizedPost(locale, slug);
   if (!post) return { title: 'Post Not Found' };
+  // 2026-11-16 SEO audit (Fix 5): same existence filter as the EN page —
+  // only locales with a real translation file get an alternate, so hreflang
+  // never points at a URL that 404s.
   const languages: Record<string, string> = { en: `https://cvyon.com/blog/${slug}`, 'x-default': `https://cvyon.com/blog/${slug}` };
-  for (const l of LOCALES) languages[l] = `https://cvyon.com/${l}/blog/${slug}`;
+  for (const l of LOCALES) {
+    try {
+      if (fs.existsSync(path.join(process.cwd(), 'content', 'blog', l, `${slug}.json`))) {
+        languages[l] = `https://cvyon.com/${l}/blog/${slug}`;
+      }
+    } catch {
+      // A failed existence check drops that locale from hreflang; the page itself still renders.
+    }
+  }
   const canonical = `https://cvyon.com/${locale}/blog/${slug}`;
   const ogImage = post.header_image?.startsWith('http')
     ? post.header_image
