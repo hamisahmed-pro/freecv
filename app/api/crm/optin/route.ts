@@ -6,7 +6,7 @@ import { GoogleGenAI } from '@google/genai';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { pickGeminiCombo } from '@/lib/ai-retry';
 
-const CONSENT_VERSION = 'v1.0';
+const CONSENT_VERSION = 'v2.0';
 
 function completeness(d: any): number {
   let s = 0;

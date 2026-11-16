@@ -371,9 +371,13 @@ export async function getRecruiterConsent(): Promise<{ optedIn: boolean; at?: st
 }
 
 export async function setRecruiterConsent(allow: boolean): Promise<boolean> {
+  const { acknowledgeConsent, existingExplicitConsent } = await import("@/lib/consent-client");
   const { supabase } = await import("@/lib/supabase");
   const { data: { session } } = await supabase.auth.getSession();
   if (!session?.user?.email) throw new ApiError("Sign in to save this preference.", 401, "auth");
+  // The user clicked Allow or Stop sharing; issue a signed server receipt
+  // before updating the authenticated candidate profile.
+  await acknowledgeConsent({ ...existingExplicitConsent(), recruiterShare: allow });
   const res = await fetch("/api/user/consent", {
     method: "POST",
     headers: {

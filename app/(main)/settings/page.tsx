@@ -7,13 +7,14 @@ import { Shield, Download, Trash2, Lock, LogOut, CheckCircle2 } from 'lucide-rea
 import { V3Page, V3Eyebrow } from '@/components/v3/V3Chrome';
 import { RecruiterOptInCard } from '@/components/candidate/RecruiterOptInCard';
 import { RecruiterActivityCard } from '@/components/candidate/RecruiterActivityCard';
+import { acknowledgeConsent } from '@/lib/consent-client';
 
 export default function SettingsPage() {
   const [user, setUser] = useState<any>(null);
   const [consents, setConsents] = useState({
     consent_recruiter_share: false,
     consent_email_jobs: false,
-    consent_analytics: true,
+    consent_analytics: false,
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -38,7 +39,7 @@ export default function SettingsPage() {
           setConsents({
             consent_recruiter_share: !!d.consents.consent_recruiter_share,
             consent_email_jobs: !!d.consents.consent_email_jobs,
-            consent_analytics: d.consents.consent_analytics !== undefined ? !!d.consents.consent_analytics : true,
+            consent_analytics: !!d.consents.consent_analytics,
           });
         }
       } catch (err) {
@@ -57,6 +58,11 @@ export default function SettingsPage() {
     setSaving(true);
     
     try {
+      await acknowledgeConsent({
+        recruiterShare: nextConsents.consent_recruiter_share,
+        emailJobs: nextConsents.consent_email_jobs,
+        analytics: nextConsents.consent_analytics,
+      });
       const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch('/api/user/consent', {
         method: 'POST',
@@ -69,11 +75,12 @@ export default function SettingsPage() {
           consents: nextConsents
         })
       });
-      if (res.ok) {
-        setMsg('Preferences updated');
-        setTimeout(() => setMsg(''), 3000);
-      }
+      if (!res.ok) throw new Error('Unable to persist privacy settings');
+      setMsg('Preferences updated');
+      setTimeout(() => setMsg(''), 3000);
     } catch (e) {
+      setConsents(consents);
+      setMsg('Could not save this change. Please try again.');
       console.error('Failed to update consent preferences', e);
     } finally {
       setSaving(false);
