@@ -9,14 +9,16 @@ export function ConsentManager() {
   const { data, setConsents } = useResumeStore();
   const [isOpen, setIsOpen] = useState(false);
   const [hasSeen, setHasSeen] = useState(true);
+  const [savingError, setSavingError] = useState('');
 
   useEffect(() => {
-    const seen = localStorage.getItem('cvyon-consent-seen');
+    const seen = localStorage.getItem('cvyon-consent-v2');
     if (!seen) {
       setHasSeen(false);
+      setConsents({ recruiterShare: false, emailJobs: false, analytics: false });
       setIsOpen(true);
     }
-  }, []);
+  }, [setConsents]);
 
   // Let floating UI (e.g. the PWA install banner) know when the privacy dialog
   // is open so they can get out of the way instead of overlapping it.
@@ -27,6 +29,10 @@ export function ConsentManager() {
   useEffect(() => {
     const email = data.personalInfo?.email?.trim()?.toLowerCase();
     const isValidEmail = email && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+
+    // Never auto-share resume content based on legacy persisted defaults.
+    if (localStorage.getItem('cvyon-consent-v2') !== 'acknowledged' ||
+        (!data.consents.recruiterShare && !data.consents.emailJobs)) return;
 
     // Skip auto-sync for empty, demo, or placeholder emails
     const BLOCKED = ['jane@cvyon.dev', 'your.email@example.com', 'test@test.com', 'example@example.com', 'user@example.com'];
@@ -39,6 +45,7 @@ export function ConsentManager() {
     const timer = setTimeout(() => {
       fetch('/api/crm/optin', {
         method: 'POST',
+        credentials: 'same-origin',
         keepalive: true,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -49,31 +56,43 @@ export function ConsentManager() {
   }, [data.personalInfo.email, data.personalInfo.fullName, data.personalInfo.jobTitle, data.skills, data.consents]);
 
   const syncConsent = (updatedConsents: any) => {
+    if (!updatedConsents.recruiterShare && !updatedConsents.emailJobs) return;
     const email = data.personalInfo?.email?.trim()?.toLowerCase();
     const BLOCKED = ['jane@cvyon.dev', 'your.email@example.com', 'test@test.com', 'example@example.com', 'user@example.com', ''];
     if (!email || !email.includes('@') || BLOCKED.includes(email)) return;
     fetch('/api/crm/optin', {
       method: 'POST',
+      credentials: 'same-origin',
       keepalive: true,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...data, consents: updatedConsents }),
     }).catch((e) => console.warn('Consent sync error', e));
   };
 
-  const handleSave = () => {
-    localStorage.setItem('cvyon-consent-seen', 'true');
-    setHasSeen(true);
-    setIsOpen(false);
-    syncConsent(data.consents);
+  const acknowledge = async (choice: { recruiterShare: boolean; emailJobs: boolean; analytics: boolean }) => {
+    setSavingError('');
+    try {
+      const res = await fetch('/api/consent/ack', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(choice),
+      });
+      if (!res.ok) throw new Error('Receipt not saved');
+      localStorage.setItem('cvyon-consent-v2', 'acknowledged');
+      localStorage.setItem('cvyon-consent-seen', 'true');
+      setConsents(choice);
+      setHasSeen(true);
+      setIsOpen(false);
+      window.dispatchEvent(new Event('cvyon:consent-changed'));
+      syncConsent(choice);
+    } catch {
+      setSavingError('Your privacy preferences were not confirmed. Please try again.');
+    }
   };
 
+  const handleSave = () => { void acknowledge(data.consents); };
   const handleAcceptAll = () => {
-    const fullConsents = { recruiterShare: true, emailJobs: true, analytics: true };
-    setConsents(fullConsents);
-    localStorage.setItem('cvyon-consent-seen', 'true');
-    setHasSeen(true);
-    setIsOpen(false);
-    syncConsent(fullConsents);
+    void acknowledge({ recruiterShare: true, emailJobs: true, analytics: true });
   };
 
   // The privacy dialog appears only on first visit (until dismissed). There is
@@ -181,6 +200,7 @@ export function ConsentManager() {
             </div>
           </div>
 
+          {savingError && <p role="alert" className="mb-2 text-[11px] font-semibold text-red-700">{savingError}</p>}
           <div className="flex gap-2">
             <button
               onClick={handleSave}

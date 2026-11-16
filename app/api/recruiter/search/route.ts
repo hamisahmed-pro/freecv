@@ -25,7 +25,7 @@ export async function GET(req: Request) {
     const pageSize = Math.min(100, Math.max(1, parseInt(url.searchParams.get('pageSize') || '50', 10)));
     const offset = (page - 1) * pageSize;
 
-    let rq = supabaseAdmin.from('candidate_profiles').select('*, candidates(*)', { count: 'exact' }).eq('consent_recruiter_share', true).is('deleted_at', null);
+    let rq = supabaseAdmin.from('candidate_profiles').select('*, candidates(*)', { count: 'exact' }).eq('consent_recruiter_share', true).eq('consent_version', 'v2.0').is('deleted_at', null);
     
     if (q) {
       // Use PostgreSQL Full-Text Search on search_vector if formatted query is valid
@@ -47,6 +47,7 @@ export async function GET(req: Request) {
       const fallback = await supabaseAdmin.from('candidate_profiles')
         .select('*, candidates(*)', { count: 'exact' })
         .eq('consent_recruiter_share', true)
+        .eq('consent_version', 'v2.0')
         .is('deleted_at', null)
         .ilike('current_title', `%${q}%`)
         .order('completeness_score', { ascending: false, nullsFirst: false })

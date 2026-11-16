@@ -22,7 +22,7 @@ const CODE_LAST_MODIFIED = new Date('2026-10-16T00:00:00Z');
 
 // Keep lastmod accurate for routes changed by the November technical audit.
 // Unchanged pages retain their prior date rather than all claiming a refresh.
-const AUDIT_LAST_MODIFIED = new Date('2026-11-10T00:00:00Z');
+const AUDIT_LAST_MODIFIED = new Date('2026-11-16T00:00:00Z');
 const updatedStaticRoutes = new Set(['', '/templates', '/ats-grader', '/cover-letter']);
 const updatedLocalizedRoutes = new Set(['/build', '/privacy', '/terms']);
 

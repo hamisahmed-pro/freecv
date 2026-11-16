@@ -1,11 +1,12 @@
 import { logger } from '@/lib/logger';
-import { NextResponse } from 'next/server';
+import { CONSENT_COOKIE, verifyConsentReceipt } from '@/lib/consent-receipt';
+import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase';
 import { GoogleGenAI } from '@google/genai';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { pickGeminiCombo } from '@/lib/ai-retry';
 
-const CONSENT_VERSION = 'v1.0';
+const CONSENT_VERSION = 'v2.0';
 
 function completeness(d: any): number {
   let s = 0;
@@ -36,7 +37,7 @@ function sanitizeStringList(arr: any): string[] {
   return Array.from(new Set(out));
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   // Generous rate limit to prevent dropping opt-ins while preventing spam
   const rateLimitResponse = await checkRateLimit(request, { limit: 60, windowMs: 60_000 });
   if (rateLimitResponse) return rateLimitResponse;
@@ -158,6 +159,17 @@ export async function POST(request: Request) {
       data?.analytics,
       false
     );
+    const receipt = verifyConsentReceipt(request.cookies.get(CONSENT_COOKIE)?.value);
+    // A user-controlled JSON boolean is not proof of consent. The signed,
+    // HttpOnly receipt is issued only after an affirmative privacy action.
+    if (!receipt || (consent_recruiter_share && !receipt.recruiterShare) ||
+        (consent_email_jobs && !receipt.emailJobs) ||
+        (consent_analytics && !receipt.analytics)) {
+      return NextResponse.json({ error: 'Explicit consent receipt required' }, { status: 403 });
+    }
+    if (!consent_recruiter_share && !consent_email_jobs) {
+      return NextResponse.json({ skipped: true, reason: 'No CRM opt-in' });
+    }
     const now = new Date().toISOString();
     const score = Math.min(100, Math.max(0, completeness(data)));
 

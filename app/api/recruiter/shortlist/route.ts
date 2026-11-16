@@ -24,6 +24,7 @@ async function eligibleProfile(profileId: string) {
     .select('id, current_title, summary, city, country, experience_years, skills, completeness_score')
     .eq('id', profileId)
     .eq('consent_recruiter_share', MATCH_ELIGIBILITY.consent_recruiter_share)
+      .eq('consent_version', 'v2.0')
     .is('deleted_at', MATCH_ELIGIBILITY.deleted_at)
     .single();
   return data;
@@ -44,7 +45,7 @@ export async function GET(req: Request) {
   try {
     const { data, error } = await supabaseAdmin
       .from('shortlists')
-      .select('candidate_profile_id, created_at, stage, note, updated_at, candidate_profiles(id, current_title, summary, city, country, experience_years, skills, completeness_score, consent_recruiter_share)')
+      .select('candidate_profile_id, created_at, stage, note, updated_at, candidate_profiles(id, current_title, summary, city, country, experience_years, skills, completeness_score, consent_recruiter_share, consent_version)')
       .eq('recruiter_id', recruiter.id)
       .order('created_at', { ascending: false })
       .limit(200);
@@ -54,7 +55,7 @@ export async function GET(req: Request) {
       .map((row: any) => {
         const p = row.candidate_profiles;
         // Consent may have been revoked after shortlisting — drop silently.
-        if (!p || p.consent_recruiter_share !== true) return null;
+        if (!p || p.consent_recruiter_share !== true || p.consent_version !== 'v2.0') return null;
         return {
           profileId: row.candidate_profile_id,
           shortlistedAt: row.created_at,

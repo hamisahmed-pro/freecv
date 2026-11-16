@@ -1,9 +1,10 @@
 import { logger } from '@/lib/logger';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { CONSENT_COOKIE, verifyConsentReceipt } from '@/lib/consent-receipt';
 import { supabaseAdmin } from '@/lib/supabase';
 import { createClient } from '@supabase/supabase-js';
 
-const CONSENT_VERSION = 'v1.0';
+const CONSENT_VERSION = 'v2.0';
 
 /**
  * Verify the caller's Supabase session token and return their email.
@@ -50,14 +51,16 @@ export async function GET(req: Request) {
 
     const profile = cand?.candidate_profiles?.[0] || cand?.candidate_profiles || null;
 
-    // True opt-in: unknown/missing consent is treated as NOT granted.
+    // Legacy v1 consent was preselected in local storage. It is not evidence
+    // of affirmative opt-in: require a fresh, signed v2 acknowledgement.
+    const confirmed = profile?.consent_version === CONSENT_VERSION;
     return NextResponse.json({
       success: true,
       candidate: cand || null,
       consents: {
-        consent_recruiter_share: profile?.consent_recruiter_share ?? false,
-        consent_email_jobs: profile?.consent_email_jobs ?? false,
-        consent_analytics: profile?.consent_analytics ?? false,
+        consent_recruiter_share: confirmed && profile?.consent_recruiter_share === true,
+        consent_email_jobs: confirmed && profile?.consent_email_jobs === true,
+        consent_analytics: confirmed && profile?.consent_analytics === true,
       }
     });
   } catch (e: any) {
@@ -65,7 +68,7 @@ export async function GET(req: Request) {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const sessionEmail = await getSessionEmail(req);
     if (!sessionEmail) {
@@ -79,6 +82,22 @@ export async function POST(req: Request) {
     }
     const okEmail = sessionEmail;
     const c = body?.consents || {};
+    // Only exact booleans are consent choices. No coercion from strings.
+    const getChoice = (long: string, short: string): boolean | null => {
+      const candidate = c[long] ?? c[short];
+      return typeof candidate === 'boolean' ? candidate : null;
+    };
+    const explicit = {
+      recruiterShare: getChoice('consent_recruiter_share', 'recruiterShare'),
+      emailJobs: getChoice('consent_email_jobs', 'emailJobs'),
+      analytics: getChoice('consent_analytics', 'analytics'),
+    };
+    const receipt = verifyConsentReceipt(req.cookies.get(CONSENT_COOKIE)?.value);
+    if ((explicit.recruiterShare === true && receipt?.recruiterShare !== true) ||
+        (explicit.emailJobs === true && receipt?.emailJobs !== true) ||
+        (explicit.analytics === true && receipt?.analytics !== true)) {
+      return NextResponse.json({ error: 'Fresh explicit consent is required' }, { status: 403 });
+    }
 
     const now = new Date().toISOString();
 
@@ -108,15 +127,9 @@ export async function POST(req: Request) {
     // True opt-in: omitted fields fall back to the stored value, and to FALSE
     // (never TRUE) when nothing was stored before.
     const patch = {
-      consent_recruiter_share: c.consent_recruiter_share !== undefined
-        ? Boolean(c.consent_recruiter_share)
-        : (c.recruiterShare !== undefined ? Boolean(c.recruiterShare) : (existingProf?.consent_recruiter_share ?? false)),
-      consent_email_jobs: c.consent_email_jobs !== undefined
-        ? Boolean(c.consent_email_jobs)
-        : (c.emailJobs !== undefined ? Boolean(c.emailJobs) : (existingProf?.consent_email_jobs ?? false)),
-      consent_analytics: c.consent_analytics !== undefined
-        ? Boolean(c.consent_analytics)
-        : (c.analytics !== undefined ? Boolean(c.analytics) : (existingProf?.consent_analytics ?? false)),
+      consent_recruiter_share: explicit.recruiterShare ?? (existingProf?.consent_version === CONSENT_VERSION && existingProf?.consent_recruiter_share === true),
+      consent_email_jobs: explicit.emailJobs ?? (existingProf?.consent_version === CONSENT_VERSION && existingProf?.consent_email_jobs === true),
+      consent_analytics: explicit.analytics ?? (existingProf?.consent_version === CONSENT_VERSION && existingProf?.consent_analytics === true),
       consent_version: CONSENT_VERSION,
       consent_at: now,
       updated_at: now,

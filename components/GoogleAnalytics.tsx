@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Script from "next/script";
 import { useResumeStore } from "@/store/useResumeStore";
 
@@ -28,18 +28,27 @@ declare global {
 export function GoogleAnalytics() {
   const analyticsConsent =
     useResumeStore((s) => s.data?.consents?.analytics) === true;
+  const [explicitConsent, setExplicitConsent] = useState(false);
+  useEffect(() => {
+    const sync = () => {
+      try { setExplicitConsent(localStorage.getItem('cvyon-consent-v2') === 'acknowledged'); }
+      catch { setExplicitConsent(false); }
+    };
+    sync();
+    window.addEventListener('cvyon:consent-changed', sync);
+    return () => window.removeEventListener('cvyon:consent-changed', sync);
+  }, []);
+  const active = analyticsConsent && explicitConsent;
 
   useEffect(() => {
-    if (!GA_ID || !analyticsConsent) return;
-    if (typeof window.gtag === "function") {
-      window.gtag("consent", "update", { analytics_storage: "granted" });
-    } else {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push(["consent", "update", { analytics_storage: "granted" }]);
-    }
-  }, [analyticsConsent]);
+    if (!GA_ID) return;
+    const w = window as unknown as Record<string, unknown>;
+    w['ga-disable-' + GA_ID] = !active;
+    window.gtag?.('consent', 'update', { analytics_storage: active ? 'granted' : 'denied' });
+  }, [active]);
 
-  if (!GA_ID) return null;
+  // Do not download or initialize the Google tag for undecided/declined visitors.
+  if (!GA_ID || !active) return null;
 
   return (
     <>
@@ -47,19 +56,20 @@ export function GoogleAnalytics() {
         src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
         strategy="lazyOnload"
       />
-      <Script id="ga-consent-init" strategy="afterInteractive">
+      <Script id="ga-consent-init" strategy="afterInteractive"
+        onReady={() => { window.dispatchEvent(new Event('cvyon:ga-ready')); }}>
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           window.gtag = gtag;
           gtag('consent', 'default', {
-            analytics_storage: 'denied',
+            analytics_storage: 'granted',
             ad_storage: 'denied',
             ad_user_data: 'denied',
             ad_personalization: 'denied'
           });
           gtag('js', new Date());
-          gtag('config', '${GA_ID}');
+          gtag('config', '${GA_ID}', { send_page_view: false });
         `}
       </Script>
     </>

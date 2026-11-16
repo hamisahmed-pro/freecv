@@ -55,6 +55,7 @@ export async function POST(req: Request) {
       .select('id, current_title, country')
       .eq('id', profileId)
       .eq('consent_recruiter_share', MATCH_ELIGIBILITY.consent_recruiter_share)
+      .eq('consent_version', 'v2.0')
       .is('deleted_at', MATCH_ELIGIBILITY.deleted_at)
       .single();
     if (!profile) {

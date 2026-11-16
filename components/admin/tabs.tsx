@@ -21,9 +21,29 @@ const usd = (n: number) => `$${(n || 0).toLocaleString(undefined, { minimumFract
 /* shared analytics helpers */
 function dailySeries(events: any[], days = 14) {
   const m: Record<string, number> = {};
+  const seen = new Set<string>();
   for (let i = days - 1; i >= 0; i--) m[new Date(Date.now() - i * 864e5).toISOString().slice(0, 10)] = 0;
-  events.forEach((e) => { const d = (e.created_at || "").slice(0, 10); if (d in m) m[d]++; });
+  events.forEach((e) => {
+    const d = (e.created_at || "").slice(0, 10);
+    if (!(d in m)) return;
+    const unique = d + ":" + (e.session_id || e.id || e.created_at);
+    if (seen.has(unique)) return;
+    seen.add(unique);
+    m[d]++;
+  });
   return Object.entries(m);
+}
+function groupBySession(events: any[], key: string, fallback = "Unknown") {
+  const seen = new Set<string>();
+  const output: Record<string, number> = {};
+  events.forEach((e) => {
+    const sid = String(e.session_id || e.id || e.created_at);
+    if (seen.has(sid)) return;
+    seen.add(sid);
+    const value = String(e[key] || fallback);
+    output[value] = (output[value] || 0) + 1;
+  });
+  return output;
 }
 function groupBy(events: any[], key: string, fallback = "Unknown") {
   return events.reduce((acc: Record<string, number>, x) => { const v = x[key] || fallback; acc[v] = (acc[v] || 0) + 1; return acc; }, {});
@@ -91,7 +111,7 @@ export function OverviewTab({ candidates, analytics, aiLogs }: { candidates: any
     return Object.values(m);
   }, [candidates]);
 
-  const device = useMemo(() => groupBy(human, "device_type"), [human]);
+  const device = useMemo(() => groupBySession(human, "device_type"), [human]);
 
   return (
     <div className="space-y-7">
@@ -100,14 +120,14 @@ export function OverviewTab({ candidates, analytics, aiLogs }: { candidates: any
         <Reveal><Kpi label="Talent pool" value={<CountUp to={candidates.length} />} sub={`${candidates.filter(c => c.consent_recruiter_share).length} recruiter-ready`} accent={t.cob} icon={<Users size={16} />} spark={optSpark} /></Reveal>
         <Reveal delay={60}><Kpi label="MRR (seats)" value={<CountUp to={o?.mrr || 0} prefix="$" decimals={0} />} sub="subscriptions" accent={t.green} icon={<DollarSign size={16} />} delta={o?.mrr ? 12 : 0} /></Reveal>
         <Reveal delay={120}><Kpi label="Job referrals" value={<CountUp to={o?.referralClicksMonth || 0} decimals={0} />} sub={`est. ${usd(o?.referralCpcEstMonth || 0)} CPC · telemetry`} accent={t.gold} icon={<MousePointerClick size={16} />} /></Reveal>
-        <Reveal delay={180}><Kpi label="Total visits (30d)" value={<CountUp to={funnel.sessions} />} sub={`${human.length.toLocaleString()} events · ${quality.botSessionCount} bot-like sessions excluded`} accent={t.verm} icon={<Activity size={16} />} /></Reveal>
+        <Reveal delay={180}><Kpi label="Observed sessions (30d)" value={<CountUp to={funnel.sessions} />} sub={`${human.length.toLocaleString()} eligible events · ${quality.botSessionCount} automated/internal sessions excluded`} accent={t.verm} icon={<Activity size={16} />} /></Reveal>
       </div>
 
       {/* Traffic line + Funnel side-by-side */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Reveal className="lg:col-span-2">
           <Card className="p-5">
-            <SectionLabel color={t.cob}>traffic · last 14 days</SectionLabel>
+            <SectionLabel color={t.cob}>observed sessions · last 14 days</SectionLabel>
             <LineChart data={visits} labels={visitLabels} color={t.cob} height={200} />
           </Card>
         </Reveal>
@@ -133,7 +153,7 @@ export function OverviewTab({ candidates, analytics, aiLogs }: { candidates: any
               ))}
             </div>
             <p className="pt-3 text-[10px]" style={{ color: t.faint }}>Builder funnel (sessions that reached /build) · {builderFunnel.sessions.toLocaleString()} entrants → {builderFunnel.started.toLocaleString()} started ({builderStartConv}%) → {builderFunnel.downloaded.toLocaleString()} downloaded ({builderDlConv}% of starters)</p>
-            <p className="pt-1 text-[10px]" style={{ color: t.faint }}>Unique sessions per stage · {quality.botSessionCount} bot-like sessions excluded</p>
+            <p className="pt-1 text-[10px]" style={{ color: t.faint }}>Unique sessions per stage · {quality.botSessionCount} automated/internal sessions excluded</p>
           </Card>
         </Reveal>
       </div>
@@ -162,7 +182,7 @@ export function AnalyticsTab({ analytics }: { analytics: any[] }) {
   const days = useMemo(() => dailySeries(human, 30), [human]);
   const visits = days.map(([, v]) => v);
   const labels = days.map(([d]) => d.slice(5));
-  const countries = useMemo(() => topN(groupBy(human, "country"), 8), [human]);
+  const countries = useMemo(() => topN(groupBySession(human, "country"), 8), [human]);
   // Scope the template breakdown to events that actually carry a template —
   // template-less events (landing, ATS grader, cover letter, plain page views)
   // previously collapsed into a meaningless "Unknown" majority.
@@ -170,10 +190,14 @@ export function AnalyticsTab({ analytics }: { analytics: any[] }) {
     () => topN(groupBy(human.filter((e) => TEMPLATE_EVENTS.has(e.event_type) && e.template_id), "template_id"), 7),
     [human]
   );
-  const browsers = useMemo(() => topN(groupBy(human, "browser"), 6), [human]);
+  const browsers = useMemo(() => topN(groupBySession(human, "browser"), 6), [human]);
   const referrers = useMemo(() => {
     const counts: Record<string, number> = {};
+    const seen = new Set<string>();
     human.forEach((e) => {
+      const sid = String(e.session_id || e.id || e.created_at);
+      if (seen.has(sid)) return;
+      seen.add(sid);
       const host = referrerHost(e.referrer || "");
       counts[host] = (counts[host] || 0) + 1;
     });
@@ -211,8 +235,8 @@ export function AnalyticsTab({ analytics }: { analytics: any[] }) {
 
   return (
     <div className="space-y-7">
-      <Reveal><SectionLabel>traffic · 30 days</SectionLabel>
-        <p className="pb-2 text-[11px]" style={{ color: t.faint }}>{quality.botSessionCount} bot-like sessions ({quality.botEventCount.toLocaleString()} events) excluded</p>
+      <Reveal><SectionLabel>observed sessions · 30 days</SectionLabel>
+        <p className="pb-2 text-[11px]" style={{ color: t.faint }}>{quality.botSessionCount} known automated/internal sessions ({quality.botEventCount.toLocaleString()} events) excluded. Remaining traffic is unclassified, not independently verified human.</p>
         <Card className="p-5"><LineChart data={visits} labels={labels} color={t.cob} height={260} /></Card></Reveal>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -261,7 +285,7 @@ export function EventLogTab({ events = [] }: { events?: any[] }) {
     <div className="space-y-5">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <Reveal><SectionLabel color={t.cob}>event log · raw analytics events</SectionLabel>
-          <p className="text-[11px] uppercase tracking-widest" style={{ color: t.muted }}>{events.length.toLocaleString()} events captured · {quality.botSessionCount} bot-like sessions flagged</p></Reveal>
+          <p className="text-[11px] uppercase tracking-widest" style={{ color: t.muted }}>{events.length.toLocaleString()} events captured · {quality.botSessionCount} automated/internal sessions flagged</p></Reveal>
       </div>
       {rows.length === 0 ? <Card><EmptyState icon={<Activity size={32} />} title="No events logged yet." hint="Events are captured from site traffic automatically." /></Card> :
         <>

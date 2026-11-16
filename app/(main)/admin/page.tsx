@@ -4,6 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { requireAdmin } from '@/lib/admin-auth';
 import { logger } from '@/lib/logger';
 import AdminDashboard from '@/components/admin/AdminDashboard';
+import InternalAnalyticsExclusion from '@/components/admin/InternalAnalyticsExclusion';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,10 +53,32 @@ export default async function AdminPage() {
   // fetch is date-bounded. Previously the latest 5000 events were pulled with
   // no date filter, so the labels silently went stale as volume grew.
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const fetchAnalytics = async () => {
+    const all: any[] = [];
+    const pageSize = 1000;
+    // Supabase's PostgREST row cap can silently truncate a requested 5000-row
+    // report to 1000. Page explicitly, retaining stable ordering per event id.
+    for (let offset = 0; offset < 50000; offset += pageSize) {
+      const { data, error } = await supabaseAdmin.from('analytics_events')
+        .select('*')
+        .gte('created_at', thirtyDaysAgo)
+        .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
+        .range(offset, offset + pageSize - 1);
+      if (error) {
+        logger.error('admin', 'Analytics pagination failed', { offset, message: error.message });
+        throw new Error('Failed to load reliable analytics');
+      }
+      all.push(...(data || []));
+      if (!data || data.length < pageSize) break;
+    }
+    if (all.length >= 50000) logger.warn('admin', 'Analytics exceeds 50000 rows; reporting should move to server aggregation');
+    return { data: all, error: null };
+  };
   const [candidatesList, profilesList, analytics, aiLogs, siteSettings, featureFlags, blogPosts, appSettingsRes] = await Promise.all([
     fetchCandidates(),
     fetchProfiles(),
-    supabaseAdmin.from('analytics_events').select('*').gte('created_at', thirtyDaysAgo).order('created_at', { ascending: false }).limit(5000),
+    fetchAnalytics(),
     supabaseAdmin.from('ai_usage_logs').select('*').order('created_at', { ascending: false }).limit(3000),
     supabaseAdmin.from('site_settings').select('*').maybeSingle(),
     supabaseAdmin.from('feature_flags').select('*').order('key'),
@@ -94,9 +117,9 @@ export default async function AdminPage() {
       experience_years: c.experience_years ?? prof?.experience_years ?? 0,
       skills: (Array.isArray(prof?.skills) && prof.skills.length > 0) ? prof.skills : (c.skills || []),
       completeness_score: prof?.completeness_score || (c.skills?.length ? 85 : 70),
-      consent_recruiter_share: prof?.consent_recruiter_share ?? false,
-      consent_email_jobs: prof?.consent_email_jobs ?? false,
-      consent_analytics: prof?.consent_analytics ?? false,
+      consent_recruiter_share: prof?.consent_version === 'v2.0' && prof?.consent_recruiter_share === true,
+      consent_email_jobs: prof?.consent_version === 'v2.0' && prof?.consent_email_jobs === true,
+      consent_analytics: prof?.consent_version === 'v2.0' && prof?.consent_analytics === true,
       opted_in_at: c.opted_in_at || c.created_at || prof?.consent_at || prof?.created_at,
       created_at: c.created_at || c.opted_in_at || prof?.created_at,
       updated_at: c.updated_at || prof?.updated_at,
@@ -121,9 +144,9 @@ export default async function AdminPage() {
         experience_years: p.experience_years ?? 0,
         skills: p.skills || [],
         completeness_score: p.completeness_score || 80,
-        consent_recruiter_share: p.consent_recruiter_share ?? false,
-        consent_email_jobs: p.consent_email_jobs ?? false,
-        consent_analytics: p.consent_analytics ?? false,
+        consent_recruiter_share: p.consent_version === 'v2.0' && p.consent_recruiter_share === true,
+        consent_email_jobs: p.consent_version === 'v2.0' && p.consent_email_jobs === true,
+        consent_analytics: p.consent_version === 'v2.0' && p.consent_analytics === true,
         opted_in_at: p.consent_at || p.created_at,
         created_at: p.created_at,
         updated_at: p.updated_at,
@@ -140,6 +163,7 @@ export default async function AdminPage() {
   });
 
   return (
+    <><InternalAnalyticsExclusion />
     <AdminDashboard
       candidates={mergedCandidates}
       analytics={analytics.data || []}
@@ -148,6 +172,6 @@ export default async function AdminPage() {
       featureFlags={featureFlags.data || []}
       blogPosts={blogPosts.data || []}
       appSettings={appSettings}
-    />
+    /></>
   );
 }

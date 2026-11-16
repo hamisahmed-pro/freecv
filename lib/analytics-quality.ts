@@ -52,7 +52,7 @@ export function analyzeSessionQuality(events: any[]): QualityReport {
     if (!s) { s = { total: 0, byType: new Map(), hasBotBrowser: false }; perSession.set(sid, s); }
     s.total += 1;
     s.byType.set(e.event_type, (s.byType.get(e.event_type) || 0) + 1);
-    if (e.browser === 'Bot') s.hasBotBrowser = true;
+    if (e.browser === 'Bot' || ['bot','internal','qa'].includes(e.traffic_type)) s.hasBotBrowser = true;
   }
   const botSessions = new Set<string>();
   for (const [sid, s] of perSession) {

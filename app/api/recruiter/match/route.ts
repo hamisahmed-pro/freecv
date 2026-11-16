@@ -32,6 +32,7 @@ function eligiblePool() {
     .from('candidate_profiles')
     .select('id, current_title, summary, city, country, experience_years, skills, completeness_score')
     .eq('consent_recruiter_share', MATCH_ELIGIBILITY.consent_recruiter_share)
+      .eq('consent_version', 'v2.0')
     .is('deleted_at', MATCH_ELIGIBILITY.deleted_at);
 }
 

@@ -26,7 +26,7 @@ export async function POST(req: Request) {
   try {
     const { data, error } = await supabaseAdmin
       .from('shortlists')
-      .select('candidate_profile_id, stage, note, candidate_profiles(id, current_title, summary, city, country, experience_years, skills, completeness_score, consent_recruiter_share)')
+      .select('candidate_profile_id, stage, note, candidate_profiles(id, current_title, summary, city, country, experience_years, skills, completeness_score, consent_recruiter_share, consent_version)')
       .eq('recruiter_id', recruiter.id)
       .order('created_at', { ascending: false })
       .limit(200);
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
       .map((row: any) => {
         const p = row.candidate_profiles;
         // Same consent check as shortlist GET — drop silently if consent revoked.
-        if (!p || p.consent_recruiter_share !== true) return null;
+        if (!p || p.consent_recruiter_share !== true || p.consent_version !== 'v2.0') return null;
         return {
           profileId: row.candidate_profile_id,
           stage: row.stage ?? 'new',
