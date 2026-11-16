@@ -11,7 +11,7 @@ export async function GET() {
 
   const [cand, pool, recs, tickets, ai, exp, pipe, subs, clicks] = await Promise.all([
     supabaseAdmin.from('candidates').select('id', { count: 'exact', head: true }).is('deleted_at', null),
-    supabaseAdmin.from('candidate_profiles').select('consent_recruiter_share').is('deleted_at', null),
+    supabaseAdmin.from('candidate_profiles').select('consent_recruiter_share, consent_version').is('deleted_at', null),
     supabaseAdmin.from('recruiters').select('status, subscriptions(status)'),
     supabaseAdmin.from('support_tickets').select('status'),
     supabaseAdmin.from('ai_usage_logs').select('cost_estimate').gte('created_at', ms),
@@ -21,7 +21,7 @@ export async function GET() {
     supabaseAdmin.from('job_clicks').select('cpc_value').gte('created_at', ms),
   ]);
 
-  const consented = (pool.data || []).filter((c: any) => c.consent_recruiter_share).length;
+  const consented = (pool.data || []).filter((c: any) => c.consent_recruiter_share && c.consent_version === 'v2.0').length;
   const activeRecs = (recs.data || []).filter((r: any) => (r.subscriptions || []).some((s: any) => s.status === 'active')).length;
   const openTickets = (tickets.data || []).filter((t: any) => t.status !== 'closed').length;
   const aiCost = (ai.data || []).reduce((s: number, l: any) => s + (Number(l.cost_estimate) || 0), 0);

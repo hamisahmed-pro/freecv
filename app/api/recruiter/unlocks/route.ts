@@ -24,7 +24,7 @@ export async function GET(req: Request) {
       .from('contact_unlocks')
       .select(
         'id, receipt_ref, credits_spent, unlocked_at, candidate_profile_id, ' +
-          'candidate_profiles(id, current_title, city, country, completeness_score, consent_recruiter_share)'
+          'candidate_profiles(id, current_title, city, country, completeness_score, consent_recruiter_share, consent_version)'
       )
       .eq('recruiter_id', recruiter.id)
       .order('unlocked_at', { ascending: false })
@@ -34,7 +34,7 @@ export async function GET(req: Request) {
     const items = (data || [])
       .map((row: any) => {
         const p = row.candidate_profiles;
-        if (!p || p.consent_recruiter_share !== true) return null; // consent revoked later — drop
+        if (!p || p.consent_recruiter_share !== true || p.consent_version !== 'v2.0') return null; // consent revoked later — drop
         return {
           id: row.id,
           receiptRef: row.receipt_ref,
