@@ -58,6 +58,7 @@ export default function AnalyticsDashboard() {
   return (
     <V3Page pageName="dashboard_analytics">
       <div className="mx-auto max-w-6xl">
+        <p role="status" className="mb-6 rounded-lg border border-line bg-paper p-4 text-sm text-muted">This report includes only profile-view records for your account. Resume downloads, traffic sources and visitor geography are unavailable until per-profile attribution can be verified. They are not estimated from site-wide traffic.</p>
         <Link href="/dashboard" className="mb-6 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-navy/70 transition-colors hover:text-coral">
           <ArrowLeft size={16} /> Back to Dashboard
         </Link>
@@ -66,10 +67,10 @@ export default function AnalyticsDashboard() {
           <div>
             <V3Eyebrow>§ resume analytics</V3Eyebrow>
             <h1 className="text-4xl font-black tracking-tight text-navy sm:text-5xl">
-              Link-in-Bio <span className="text-brand">Analytics</span>
+              Profile <span className="text-brand">Analytics</span>
             </h1>
             <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-muted">
-              See exactly who is viewing and downloading your public Cvyon resume.
+              See recruiter profile views associated with your CVYON account. Other users' activity is never included.
             </p>
           </div>
           <V3Pill>
@@ -84,7 +85,7 @@ export default function AnalyticsDashboard() {
               <Eye size={30} className="text-white" />
             </div>
             <div>
-              <p className="mb-1 text-[11px] font-extrabold uppercase tracking-[0.14em] text-muted">Total Profile Views</p>
+              <p className="mb-1 text-[11px] font-extrabold uppercase tracking-[0.14em] text-muted">Recruiter Profile Views</p>
               <h3 className="text-5xl font-black tracking-tight text-navy">{data?.views || 0}</h3>
             </div>
           </div>
@@ -94,8 +95,8 @@ export default function AnalyticsDashboard() {
               <Download size={30} className="text-white" />
             </div>
             <div>
-              <p className="mb-1 text-[11px] font-extrabold uppercase tracking-[0.14em] text-muted">Total PDF Downloads</p>
-              <h3 className="text-5xl font-black tracking-tight text-navy">{data?.downloads || 0}</h3>
+              <p className="mb-1 text-[11px] font-extrabold uppercase tracking-[0.14em] text-muted">Resume Downloads</p>
+              <h3 className="text-5xl font-black tracking-tight text-navy">{typeof data?.downloads === 'number' ? data.downloads : 'Not tracked'}</h3>
             </div>
           </div>
         </div>
