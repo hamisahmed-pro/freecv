@@ -358,7 +358,7 @@ export async function getProfileViews(): Promise<ProfileViews | null> {
 
 /* ------------------------- candidate consent ------------------------ */
 
-function useConsentRollbackFallback(previous: { recruiterShare: boolean; emailJobs: boolean; analytics: boolean }) {
+function restoreLocalConsentChoice(previous: { recruiterShare: boolean; emailJobs: boolean; analytics: boolean }) {
   // A failed receipt rollback must never leave an apparently successful UI toggle.
   try {
     import("@/store/useResumeStore").then(({ useResumeStore }) => {
@@ -415,7 +415,7 @@ export async function setRecruiterConsent(allow: boolean): Promise<boolean> {
     // Roll back the browser choice if the authenticated server write failed.
     // Never show "enabled" solely because the consent cookie request passed.
     try { await acknowledgeConsent(previous); } catch {
-      useConsentRollbackFallback(previous);
+      restoreLocalConsentChoice(previous);
     }
     throw error;
   }
