@@ -1275,13 +1275,9 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
     const deviceType = typeof window !== 'undefined' && window.innerWidth < 1024 ? 'mobile' : 'desktop';
     trackEvent('download_attempted', data.templateId, { ...telemetry, device_type: deviceType, density: data.density || 'comfortable' });
     try {
-      if (isRealUserEmail(data.personalInfo.email)) {
-        try {
-          fetch('/api/crm/optin', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
-            .then(r => { if (!r.ok) r.text().then(t => console.error('[CRM opt-in] HTTP', r.status, t)); })
-            .catch(err => console.error('[CRM opt-in] Network error:', err));
-        } catch (err) { console.error('[CRM opt-in] Sync error:', err); }
-      }
+      // Exporting a personal document is NOT permission to submit it to a
+      // recruiter database. CRM enrolment is handled separately by the
+      // explicit, verified consent flow in ConsentManager.
       // Capture the rendered template (inlined computed styles + table
       // layout) so the DOCX matches the selected template's design. Falls
       // back to the server-side generic builder when capture is unavailable.
@@ -1343,13 +1339,8 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
     const telemetry = getTelemetryMetadata('pdf');
     const deviceType = typeof window !== 'undefined' && window.innerWidth < 1024 ? 'mobile' : 'desktop';
     trackEvent('download_attempted', data.templateId, { ...telemetry, device_type: deviceType, density: data.density || 'comfortable' });
-    if (isRealUserEmail(data.personalInfo.email)) {
-      try {
-        fetch('/api/crm/optin', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
-          .then(r => { if (!r.ok) r.text().then(t => console.error('[CRM opt-in] HTTP', r.status, t)); })
-          .catch(err => console.error('[CRM opt-in] Network error:', err));
-      } catch (err) { console.error('[CRM opt-in] Sync error:', err); }
-    }
+    // A PDF download never automatically submits resume details to CRM.
+    // Opt-in is an independent, authenticated and revocable action.
     // Generate the PDF programmatically with React-PDF (client-side) so the
     // file contains ONLY the resume — no browser print headers/footers (date,
     // title, URL, page numbers) and no PWA install banner. window.print()

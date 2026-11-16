@@ -55,7 +55,7 @@ export async function GET(req: Request) {
       .eq('email', email.toLowerCase())
       .single();
     if (!cand?.id) {
-      return NextResponse.json({ views: [] });
+      return NextResponse.json({ views: [], measurementScope: 'recruiter_search_impressions' });
     }
 
     const { data, error } = await supabaseAdmin
@@ -70,8 +70,9 @@ export async function GET(req: Request) {
       at: v.viewed_at,
       recruiterLabel: v.recruiters?.company_name?.trim() || 'A recruiter',
       unlocked: Boolean(v.unlocked),
+      type: 'search_appearance',
     }));
-    return NextResponse.json({ views });
+    return NextResponse.json({ views, measurementScope: 'recruiter_search_impressions' });
   } catch (e: any) {
     logger.error('profile-views', 'user/profile-views error', e);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

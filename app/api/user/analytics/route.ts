@@ -22,13 +22,16 @@ export async function GET() {
     rows = data || [];
   }
   return NextResponse.json({
-    views: rows.length, downloads: null, topLocations: [],
+    // The profile_views ledger records recruiter MATCH impressions, not
+    // a verified profile opening. Do not label the number as actual views.
+    searchAppearances: rows.length, profileViews: null, downloads: null,
+    topLocations: [],
     topReferrers: [], topUtmSources: [], topUtmCampaigns: [],
     recentEvents: rows.slice(0, 10).map(v => ({
-      event_type: 'recruiter_profile_viewed', created_at: v.viewed_at,
+      event_type: 'recruiter_search_appearance', created_at: v.viewed_at,
       country: null, device_type: null, referrer: null, utm_source: null,
     })),
-    measurementScope: 'candidate_recruiter_profile',
+    measurementScope: 'candidate_recruiter_search_impressions',
     capped: rows.length === 1000,
   }, { headers: { 'Cache-Control': 'private, no-store' } });
 }
