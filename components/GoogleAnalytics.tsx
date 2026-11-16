@@ -68,7 +68,7 @@ export function GoogleAnalytics() {
             ad_personalization: 'denied'
           });
           gtag('js', new Date());
-          gtag('config', '${GA_ID}');
+          gtag('config', '${GA_ID}', { send_page_view: false });
         `}
       </Script>
     </>

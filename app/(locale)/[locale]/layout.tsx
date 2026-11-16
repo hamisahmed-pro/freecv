@@ -63,6 +63,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { Suspense } from "react";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import UnifiedPageViewTracker from "@/components/UnifiedPageViewTracker";
 
 const RTL_LOCALES = new Set(["ar", "ur"]);
 
@@ -109,6 +110,7 @@ export default async function LocaleRootLayout({
             <AffiliateTracker />
           </Suspense>
           <GoogleAnalytics />
+          <UnifiedPageViewTracker />
           <Toaster position="top-right" />
           <PWAInstallBanner />
         </AuthProvider>

@@ -54,6 +54,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { Suspense } from "react";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import UnifiedPageViewTracker from "@/components/UnifiedPageViewTracker";
 
 export default function RootLayout({
   children,
@@ -92,6 +93,7 @@ export default function RootLayout({
             <AffiliateTracker />
           </Suspense>
           <GoogleAnalytics />
+          <UnifiedPageViewTracker />
           <Toaster position="top-right" />
           <PWAInstallBanner />
         </AuthProvider>

@@ -52,6 +52,7 @@ function qaMode(): boolean {
   } catch { return false; }
 }
 
+let lastPageView: { path: string; at: number } | null = null;
 const GA_EVENTS: Record<string, string> = {
   milestone_started: 'resume_builder_started',
   download_completed: 'file_download',
@@ -64,6 +65,11 @@ export async function trackEvent(
   eventType: string, templateId?: string, metadata?: Record<string, unknown>
 ): Promise<void> {
   if (!allowed() || !/^[a-z][a-z0-9_]{2,63}$/.test(eventType)) return;
+  if (eventType === 'page_view') {
+    const now = Date.now();
+    if (lastPageView?.path === window.location.pathname && now - lastPageView.at < 2000) return;
+    lastPageView = { path: window.location.pathname, at: now };
+  }
   try {
     const body = JSON.stringify({
       event_id: crypto.randomUUID(),
