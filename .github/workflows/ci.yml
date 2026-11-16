@@ -29,3 +29,28 @@ jobs:
 
       - name: Run Unit Tests
         run: npx tsx --test __tests__/*.test.ts
+
+
+  consent-browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout reviewed code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Consent and first-party analytics smoke test — all writes intercepted
+        run: node scripts/telemetry-browser-smoke.mjs
+        env:
+          CVYON_QA_BASE_URL: https://cvyon.com
