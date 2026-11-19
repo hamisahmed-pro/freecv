@@ -10,7 +10,7 @@ import { ArticleJsonLd } from '@/components/blog/ArticleJsonLd';
 import { ContentJsonLd } from '@/components/blog/ContentJsonLd';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { sanitizeHtml } from '@/lib/sanitizeHtml';
-import { getLocalizedPost, getEnglishVideoObject, blogOrder } from '@/lib/blog-i18n';
+import { getLocalizedPost, getEnglishVideoObject, blogOrder, localizeArticleLinks } from '@/lib/blog-i18n';
 import { isLocale, LOCALES, type Locale } from '../../page';
 import type { Dict } from '@/dictionaries/en';
 
@@ -94,7 +94,7 @@ export default async function LocalizedBlogPostPage({ params }: { params: Promis
 
   return (
     <div dir={rtl ? 'rtl' : 'ltr'} lang={locale}>
-      <V3Page pageName="blog_article">
+      <V3Page pageName="blog_article" locale={locale}>
         <ArticleJsonLd post={jsonLdPost} />
         <ContentJsonLd content={post.content_html} />
         {videoObject && (
@@ -127,20 +127,12 @@ export default async function LocalizedBlogPostPage({ params }: { params: Promis
             {dateStr}
           </div>
 
-          {locale === "ja" && slug === "japanese-resume-template" && (
-            <aside className="mt-6 rounded-xl border border-line bg-paper p-5 text-sm leading-7 text-navy">
-              <strong>履歴書（りれきしょ）の形式について：</strong>
-              このページでは日本の一般的な履歴書の書き方を解説します。
-              Cvyon の通常の履歴書ビルダーは、公式な日本式履歴書フォームそのものを生成する機能ではありません。
-              応募先が指定する書式や写真・日付欄などの要件を必ず確認してください。
-            </aside>
-          )}
           <article className="mt-8 overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_8px_22px_rgba(23,27,75,0.08)]">
             <div className="relative aspect-[2/1] w-full overflow-hidden border-b border-line">
               <Image src={img} alt={post.title} fill sizes="(max-width: 768px) 100vw, 768px" className="object-cover" priority />
             </div>
             <div className="px-6 py-8 sm:px-10 sm:py-10">
-              <div className="blog-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(stripLeadingH1(post.content_html)) }} />
+              <div className="blog-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(localizeArticleLinks(stripLeadingH1(post.content_html), locale)) }} />
             </div>
           </article>
 
@@ -150,7 +142,7 @@ export default async function LocalizedBlogPostPage({ params }: { params: Promis
               {b.cta_p || "Build an ATS-friendly resume with Cvyon's free builder — no signup, no watermark."}
             </p>
             <Link
-              href={`/${locale}/build`}
+              href={`/${locale}/build${slug === 'japanese-resume-template' ? '?source=seo&template=Rirekisho' : ''}`}
               className="mt-5 inline-flex items-center gap-2 rounded-[10px] bg-brand px-[22px] py-3.5 text-[12px] font-extrabold uppercase tracking-wider text-white shadow-[0_8px_18px_rgba(85,72,245,0.22)] transition-transform hover:-translate-y-px"
             >
               {b.cta_button || 'Build my resume'} <ArrowRight size={16} />

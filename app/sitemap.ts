@@ -23,6 +23,8 @@ const CODE_LAST_MODIFIED = new Date('2026-11-19T00:00:00Z'); // 2026-11-19: ever
 // Keep lastmod accurate for routes changed by the November technical audit.
 // Unchanged pages retain their prior date rather than all claiming a refresh.
 const AUDIT_LAST_MODIFIED = new Date('2026-11-16T00:00:00Z');
+const RESOURCE_LAST_MODIFIED = new Date('2026-11-19T00:00:00Z');
+const updatedArticleResources = new Set(['best-free-resume-templates', 'describe-tutoring-experience', 'tutoring-resume-example']);
 const updatedStaticRoutes = new Set(['', '/templates', '/ats-grader', '/cover-letter']);
 const updatedLocalizedRoutes = new Set(['/build', '/privacy', '/terms']);
 
@@ -139,7 +141,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const slug of templateSlugs) {
     routes.push({
       url: `${baseUrl}/templates/${slug}`,
-      lastModified: CODE_LAST_MODIFIED,
+      lastModified: slug === 'rirekisho' ? RESOURCE_LAST_MODIFIED : CODE_LAST_MODIFIED,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     });
@@ -176,13 +178,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       if (!error && Array.isArray(data)) {
         for (const post of data) {
           if (!post?.slug) continue;
+          const articleDate = new Date(post.updated_at || post.created_at || Date.now());
           routes.push({
             url: `${baseUrl}/blog/${post.slug}`,
-            lastModified: post.updated_at
-              ? new Date(post.updated_at)
-              : post.created_at
-                ? new Date(post.created_at)
-                : new Date(),
+            lastModified: updatedArticleResources.has(post.slug) && articleDate < RESOURCE_LAST_MODIFIED
+              ? RESOURCE_LAST_MODIFIED : articleDate,
             changeFrequency: 'weekly' as const,
             priority: 0.6,
             alternates: { languages: languagesFor(`/blog/${post.slug}`, (l) => localizedArticleExists(l, post.slug)) },

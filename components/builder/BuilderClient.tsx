@@ -1,5 +1,6 @@
 "use client";
 
+import { tutorBullets } from '@/lib/tutor-examples';
 import toast from 'react-hot-toast';
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -1054,6 +1055,30 @@ export default function BuilderClient({ dict, locale }: { dict: Record<string, s
     const params = new URLSearchParams(window.location.search);
     if (params.get('source') !== 'seo') return;
     const template = params.get('template') as TemplateKey | null;
+    if (template === 'Tutor' && params.get('example') === 'learning-center') {
+      const pristine = Object.entries({ ...data, consents: initialData.consents }).every(
+        ([key, value]) => JSON.stringify(value) === JSON.stringify(initialData[key as keyof ResumeData])
+      );
+      onboardingAppliedRef.current = true;
+      if (pristine) {
+        setAllData({
+          templateId: 'Tutor',
+          resumeTitle: 'Learning center resume',
+          personalInfo: { ...data.personalInfo, jobTitle: 'Learning Center Assistant' },
+          summary: '',
+          education: [],
+          skills: [],
+          experience: [{ id: 'learning-center', company: '', role: 'Learning Center Assistant',
+            startDate: '', endDate: '', description: tutorBullets[0].text }],
+        });
+        initialDataRef.current = null;
+        trackEvent('template_selected', 'Tutor', { source: 'seo', example: 'learning-center' });
+      } else {
+        toast('Your existing draft is open. You can copy the example bullet from the tutoring guide.');
+      }
+      window.history.replaceState({}, '', window.location.pathname);
+      return;
+    }
     const jobTitle = params.get('jobTitle');
     const summary = params.get('summary');
     const skills = (params.get('skills') || '').split('|').map(skill => skill.trim()).filter(Boolean);
