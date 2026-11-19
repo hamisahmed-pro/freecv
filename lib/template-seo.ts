@@ -1054,9 +1054,9 @@ export const templateSeoEntries: TemplateSeoEntry[] = [
         a: "Yes — one column, real text, conventional section headings, and no graphics or tables.",
       },
     ],
-    metaTitle: "Senate Resume Template — Free Bold Professional CV | Cvyon",
+    metaTitle: "Senate Resume Template — Free Professional CV Template, No Signup | Cvyon",
     metaDescription:
-      "Free Senate resume template: a heavyweight name over a full-width theme rule. Confident, modern formatting for directors and operations leaders.",
+      "Free Senate resume template for directors, managers and government careers. Build online in minutes — no signup, no watermark, PDF + DOCX export.",
   },
   {
     id: "Covenant",
