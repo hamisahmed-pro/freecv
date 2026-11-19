@@ -1,3 +1,5 @@
+import { TutorBulletSelector } from './TutorBulletSelector';
+import { tutorBullets, tutorExampleUrl } from '@/lib/tutor-examples';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -150,6 +152,16 @@ export function TutorSearchAnswer({ slug }: { slug: string }) {
       <p className="fm text-[11px] font-black uppercase tracking-widest text-[#2233FF]">Practical answer</p>
       <h2 className="fh mt-2 text-xl font-black">{item.title}</h2>
       <p className="mt-3 text-sm leading-7">{item.description}</p>
+      {slug === 'describe-tutoring-experience' && <TutorBulletSelector />}
+      {slug === 'tutoring-resume-example' && (
+        <div className="mt-5 border-t-2 border-[#141312] pt-4">
+          <h3 className="fh text-lg font-bold">First tutoring job at a learning center</h3>
+          <p className="mt-2 text-sm">Applying after a role at Kumon or another learning center? Use your actual job title and distinguish assisting an instructor from teaching your own class.</p>
+          <p className="mt-3 text-sm"><strong>Example experience entry</strong><br />Learning Center Assistant · [Center name] · [Dates worked]</p>
+          <blockquote className="my-3 border-l-4 border-[#2233FF] pl-3 text-sm">{tutorBullets[0].text}</blockquote>
+          <Link href={tutorExampleUrl} className="font-bold underline">Edit this learning-center example in Cvyon →</Link>
+        </div>
+      )}
       <p className="mt-3 text-sm"><strong>{item.next}</strong>{' '}
         <Link className="font-extrabold underline decoration-2 underline-offset-4" href={item.href}>{item.anchor}</Link></p>
     </section>
