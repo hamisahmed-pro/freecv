@@ -12,6 +12,7 @@ import { HomeJsonLd } from "./HomeJsonLd";
 import { FAQS } from "./LandingF_FAQS";
 import { en, type Dict } from "@/dictionaries/en";
 import LanguageSwitcher from "@/components/landing/LanguageSwitcher";
+import { LOCALES, LOCALE_NAMES } from "@/lib/locale";
 
 function makeSample(dict: Dict): any {
   const sc: any = (dict as any).sample_cv || (en as any).sample_cv;
@@ -411,6 +412,12 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
                   <Link key={label} href={href} className="mb-2.5 block text-[12px] text-[#6d7184] transition-colors hover:text-navy">{label}</Link>
                 ))}
               </div>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-x-4 gap-y-2 py-5">
+            <Link href="/" hrefLang="en" className="text-[12px] text-[#6d7184] transition-colors hover:text-navy">English</Link>
+            {LOCALES.map((l) => (
+              <Link key={l} href={`/${l}`} hrefLang={l} className="text-[12px] text-[#6d7184] transition-colors hover:text-navy">{LOCALE_NAMES[l]}</Link>
             ))}
           </div>
           <div className="flex flex-col justify-between gap-3 pt-5 text-[9px] font-extrabold uppercase tracking-[0.1em] text-[#6a6d81] sm:flex-row">

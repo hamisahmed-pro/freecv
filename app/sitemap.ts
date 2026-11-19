@@ -18,7 +18,7 @@ export const revalidate = 3600;
 // Last-modified for code-driven routes (static pages, templates, comparisons,
 // job-title guides). Bump when site content changes; articles use their own
 // file/DB timestamps below.
-const CODE_LAST_MODIFIED = new Date('2026-10-16T00:00:00Z');
+const CODE_LAST_MODIFIED = new Date('2026-11-19T00:00:00Z'); // 2026-11-19: every code-driven page changed (footer locale links sitewide; sitemap alternates below)
 
 // Keep lastmod accurate for routes changed by the November technical audit.
 // Unchanged pages retain their prior date rather than all claiming a refresh.
@@ -78,12 +78,27 @@ function localizedArticleMtime(locale: string, slug: string): Date {
   }
 }
 
+// 2026-11-19: sitemap hreflang alternates. Page-level hreflang already ships
+// (2026-11-16 audit); the sitemap now carries the same map as a second
+// discovery channel. Only families that exist under /{locale} get alternates,
+// and article alternates are existence-filtered exactly like generateMetadata.
+const LOCALIZED_FAMILIES = new Set(['', '/build', '/ats-grader', '/blog', '/privacy', '/terms']);
+function languagesFor(path: string, exists?: (locale: string) => boolean): Record<string, string> {
+  const languages: Record<string, string> = { en: `${baseUrl}${path}`, 'x-default': `${baseUrl}${path}` };
+  for (const locale of LOCALES) {
+    if (exists && !exists(locale)) continue;
+    languages[locale] = `${baseUrl}/${locale}${path}`;
+  }
+  return languages;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const routes: MetadataRoute.Sitemap = staticRoutes.map((r) => ({
     url: `${baseUrl}${r.path}`,
     lastModified: updatedStaticRoutes.has(r.path) ? AUDIT_LAST_MODIFIED : CODE_LAST_MODIFIED,
     changeFrequency: 'weekly' as const,
     priority: r.priority,
+    ...(LOCALIZED_FAMILIES.has(r.path) ? { alternates: { languages: languagesFor(r.path) } } : {}),
   }));
 
   // Localized page routes: /{locale}/, /{locale}/ats-grader, /{locale}/blog,
@@ -95,6 +110,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: updatedLocalizedRoutes.has(r.path) ? AUDIT_LAST_MODIFIED : CODE_LAST_MODIFIED,
         changeFrequency: 'weekly' as const,
         priority: r.priority,
+        alternates: { languages: languagesFor(r.path) },
       });
     }
   }
@@ -113,6 +129,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: localizedArticleMtime(locale, slug),
         changeFrequency: 'weekly' as const,
         priority: 0.6,
+        alternates: { languages: languagesFor(`/blog/${slug}`, (l) => localizedArticleExists(l, slug)) },
       });
     }
   }
@@ -168,6 +185,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
                 : new Date(),
             changeFrequency: 'weekly' as const,
             priority: 0.6,
+            alternates: { languages: languagesFor(`/blog/${post.slug}`, (l) => localizedArticleExists(l, post.slug)) },
           });
         }
       }

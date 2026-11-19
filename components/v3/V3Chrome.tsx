@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/brand/Logo";
+import { LOCALES, LOCALE_NAMES } from "@/lib/locale";
 import { AnalyticsTracker } from "@/components/landing/AnalyticsTracker";
 
 export type V3NavLink = { href: string; label: string };
@@ -174,7 +175,13 @@ export function V3Footer() {
             </div>
           ))}
         </div>
-        <div className="mt-7 border-t border-[#d9dae0] pt-[18px] text-[10px] font-medium uppercase tracking-[0.08em] text-[#8a8d9d]">
+        <div className="mt-7 flex flex-wrap gap-x-4 gap-y-2">
+          <Link href="/" hrefLang="en" className="text-[12px] text-[#696d80] transition-colors hover:text-brand">English</Link>
+          {LOCALES.map((l) => (
+            <Link key={l} href={`/${l}`} hrefLang={l} className="text-[12px] text-[#696d80] transition-colors hover:text-brand">{LOCALE_NAMES[l]}</Link>
+          ))}
+        </div>
+        <div className="mt-5 border-t border-[#d9dae0] pt-[18px] text-[10px] font-medium uppercase tracking-[0.08em] text-[#8a8d9d]">
           © 2026 Cvyon · Built in the open · Free for candidates, funded by recruiters
         </div>
       </div>
