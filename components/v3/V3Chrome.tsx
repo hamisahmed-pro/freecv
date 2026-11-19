@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ArrowRight } from "lucide-react";
+import { localizedPageHref, type Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/brand/Logo";
 import { AnalyticsTracker } from "@/components/landing/AnalyticsTracker";
@@ -50,7 +51,9 @@ export function V3Nav({
   links = DEFAULT_LINKS,
   cta = { label: "Build free →", href: "/build" },
   switcher,
+  locale,
 }: {
+  locale?: Locale;
   logoSub?: string;
   links?: V3NavLink[];
   cta?: { label: string; href: string };
@@ -68,17 +71,17 @@ export function V3Nav({
       />
       <header className="sticky top-0 z-40 border-b border-line bg-cream/95 backdrop-blur-md">
         <div className="mx-auto flex h-[72px] max-w-[1120px] items-center justify-between gap-6 px-5">
-          <Link href="/" className="flex items-center" aria-label="Cvyon home">
+          <Link href={localizedPageHref("/", locale)} className="flex items-center" aria-label="Cvyon home">
             <Logo size={30} wordSize={22} sub={logoSub} />
           </Link>
           <nav className="hidden items-center gap-7 md:flex">
             {links.map((l) => (
               <Link
                 key={l.href}
-                href={l.href}
+                href={localizedPageHref(l.href, locale)}
                 className={cn(
                   "text-[12px] font-extrabold text-[#565a70] transition-colors hover:text-brand",
-                  pathname === l.href && "text-brand"
+                  pathname === localizedPageHref(l.href, locale) && "text-brand"
                 )}
               >
                 {l.label}
@@ -88,7 +91,7 @@ export function V3Nav({
           <div className="flex items-center gap-2.5">
             {switcher}
             <Link
-              href={cta.href}
+              href={localizedPageHref(cta.href, locale)}
               className="hidden items-center gap-2 rounded-[10px] bg-brand px-[18px] py-3 text-[12px] font-extrabold text-white shadow-[0_8px_18px_rgba(85,72,245,0.22)] transition-transform hover:-translate-y-px sm:inline-flex"
             >
               {cta.label}
@@ -120,18 +123,18 @@ export function V3Nav({
             {links.map((l) => (
               <Link
                 key={l.href}
-                href={l.href}
+                href={localizedPageHref(l.href, locale)}
                 onClick={() => setOpen(false)}
                 className={cn(
                   "border-b border-line py-5 font-brand text-2xl font-extrabold tracking-tight",
-                  pathname === l.href ? "text-coral" : "text-navy"
+                  pathname === localizedPageHref(l.href, locale) ? "text-coral" : "text-navy"
                 )}
               >
                 {l.label}
               </Link>
             ))}
             <Link
-              href={cta.href}
+              href={localizedPageHref(cta.href, locale)}
               onClick={() => setOpen(false)}
               className="mt-8 inline-flex items-center justify-center gap-2 rounded-[10px] bg-brand px-[18px] py-4 text-[13px] font-extrabold text-white"
             >
@@ -144,13 +147,13 @@ export function V3Nav({
   );
 }
 
-export function V3Footer() {
+export function V3Footer({ locale }: { locale?: Locale } = {}) {
   return (
     <footer className="border-t border-line bg-[#f2f1ea]">
       <div className="mx-auto max-w-[1120px] px-5 py-[42px]">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <Link href="/" className="inline-block" aria-label="Cvyon home">
+            <Link href={localizedPageHref("/", locale)} className="inline-block" aria-label="Cvyon home">
               <Logo size={30} wordSize={22} />
             </Link>
             <p className="mt-3 max-w-[240px] text-[12px] leading-relaxed text-[#696d80]">
@@ -165,7 +168,7 @@ export function V3Footer() {
               {items.map((it) => (
                 <Link
                   key={it.label}
-                  href={it.href}
+                  href={localizedPageHref(it.href, locale)}
                   className="block py-[3.5px] text-[12px] text-[#696d80] transition-colors hover:text-brand"
                 >
                   {it.label}
@@ -193,7 +196,9 @@ export function V3Page({
   children,
   wide = false,
   switcher,
+  locale,
 }: {
+  locale?: Locale;
   pageName: string;
   logoSub?: string;
   links?: V3NavLink[];
@@ -205,11 +210,11 @@ export function V3Page({
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-cream font-brand text-navy antialiased">
       <AnalyticsTracker />
-      <V3Nav logoSub={logoSub} links={links} cta={cta} switcher={switcher} />
+      <V3Nav locale={locale} logoSub={logoSub} links={links} cta={cta} switcher={switcher} />
       <main className={cn("mx-auto px-5 py-14", wide ? "max-w-[1120px]" : "max-w-[1120px]")}>
         {children}
       </main>
-      <V3Footer />
+      <V3Footer locale={locale} />
     </div>
   );
 }

@@ -24,3 +24,13 @@ export function localePrefix(locale: string): string {
 export function localizedPath(path: string, locale: string): string {
   return `${localePrefix(locale)}${path}`;
 }
+
+const localizedPages = new Set(['/', '/build', '/ats-grader', '/blog', '/privacy', '/terms']);
+
+/** Only prefix routes that have a page in this language. */
+export function localizedPageHref(href: string, locale?: Locale): string {
+  if (!locale) return href;
+  const [pathname] = href.split(/[?#]/);
+  if (!localizedPages.has(pathname)) return href;
+  return `/${locale}${pathname === '/' ? '' : pathname}${href.slice(pathname.length)}`;
+}

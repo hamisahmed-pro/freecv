@@ -122,7 +122,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const slug of templateSlugs) {
     routes.push({
       url: `${baseUrl}/templates/${slug}`,
-      lastModified: CODE_LAST_MODIFIED,
+      lastModified: slug === 'rirekisho' ? new Date('2026-11-19T00:00:00Z') : CODE_LAST_MODIFIED,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     });

@@ -7180,9 +7180,9 @@ export const templateSeoEntries: TemplateSeoEntry[] = [
     id: "Rirekisho",
     slug: "rirekisho",
     name: "Rirekisho",
-    tagline: "The Japanese standard resume form — ruled, chronological, with a photo box.",
+    tagline: "A Japanese résumé with a chronological history table and space for an optional photo.",
     description:
-      "Rirekisho is the 履歴書, the standardized resume form Japanese employers expect: a photo box top-right, a chronological 学歴・職歴 table of education and work history, a 資格・免許 block for licenses and skills, and a 志望動機・自己PR block for motivation. This template lays your Cvyon resume out in exactly that form, with bilingual section labels so English-speaking applicants can use it too. Dates print exactly as you entered them — Western years are acceptable — and the photo box shows your builder photo when one is set. Print on A4 and attach a 4×3 cm photo.",
+      "Use Cvyon’s A4 rirekisho to list education and employment in chronological order, enter qualifications, and explain your motivation. Bilingual section labels guide you through each part. If the employer supplies a specific form, use that form. Add a photo only if the application requests one.",
     bestFor: [
       "Applicants to Japanese employers",
       "English teachers in Japan (ALT/JET)",
@@ -7198,15 +7198,15 @@ export const templateSeoEntries: TemplateSeoEntry[] = [
       "Bilingual Japanese/English section labels",
     ],
     atsNotes:
-      "The ruled table is real text in a single column, so parsers read it in order. Dates print exactly as entered — Western years are acceptable on a rirekisho. The form expects a 4×3 cm photo in the top-right box.",
+      "The history table uses selectable text. Use one date system consistently and check the order of your entries before submitting.",
     faqs: [
       {
         q: "Is this a real rirekisho form?",
-        a: "It lays out your resume in the rirekisho structure — photo box, chronological history table, licenses, and self-PR — on A4. It is not a scan of the official JIS form: dates print as you entered them (Western years are fine), and the photo box stays empty until you attach a 4×3 cm photo.",
+        a: "This is Cvyon’s bilingual A4 layout. If the vacancy calls for the ministry’s model or the employer’s own form, use the version specified in the instructions.",
       },
       {
         q: "Do Japanese employers expect a photo?",
-        a: "Yes — a rirekisho is submitted with a 4×3 cm photo in the top-right box. Add your photo in the builder's personal-info section and it appears in the box; otherwise print the form and attach one.",
+        a: "Check the application instructions. The ministry’s model marks the photo area for use when needed. If requested, add a photo in the builder or attach one to the printed form at the size specified.",
       },
       {
         q: "Should I use this instead of a Western resume?",
@@ -7215,7 +7215,7 @@ export const templateSeoEntries: TemplateSeoEntry[] = [
     ],
     metaTitle: "Rirekisho Resume Template — Free Japanese 履歴書 Form | Cvyon",
     metaDescription:
-      "Free rirekisho resume template: the Japanese standard form with photo box, chronological history table, and self-PR. Fill it in online and download.",
+      "Free rirekisho resume template: a bilingual Japanese layout with photo box, chronological history table, and self-PR. Fill it in online and download.",
   },
   {
     id: "Academic",

@@ -233,7 +233,7 @@ export default function Rirekisho({ data }: { data: ResumeData }) {
                       </View>
                     )}
                   </View>
-                  <Text style={styles.photoNote}>Attach a 4 × 3 cm photo</Text>
+                  <Text style={styles.photoNote}>Photo if requested</Text>
                 </View>
               </View>
             ),
@@ -341,7 +341,7 @@ export default function Rirekisho({ data }: { data: ResumeData }) {
         )}
 
         <Text style={styles.footerNote}>
-          履歴書は A4 サイズで印刷し、4×3 cm の写真を貼ってください。Print on A4 and attach a 4×3 cm photograph.
+          A4で印刷。写真は応募先の指定に応じて添付してください。Print on A4. Attach a photo if requested.
         </Text>
       </Page>
     </Document>

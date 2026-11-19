@@ -2,6 +2,7 @@
 // Articles live at content/blog/{locale}/{slug}.json (translated) with
 // content/blog/en/{slug}.json as the structural fallback (dates, images).
 import fs from 'fs';
+import { localizedPageHref, type Locale } from './locale';
 import path from 'path';
 
 export interface BlogPost {
@@ -81,3 +82,16 @@ export function readingTimeMinutes(html: string): number {
   return Math.max(2, Math.round(words / 200));
 }
 
+
+/** Resolve article destinations before sanitizing the final HTML. */
+export function localizeArticleLinks(html: string, locale: Locale): string {
+  return html.replace(/(<a\s+[^<>]*?\bhref=["'])([^"']+)(["'])/gi, (match, before, href, after) => {
+    const local = href.replace(/^https?:\/\/cvyon\.com(?=\/|$)/i, '') || '/';
+    const article = local.match(/^\/blog\/([a-z0-9-]+)([?#].*)?$/);
+    if (article && fs.existsSync(path.join(ROOT, locale, `${article[1]}.json`))) {
+      return `${before}/${locale}${local}${after}`;
+    }
+    const page = localizedPageHref(local, locale);
+    return page === local ? match : before + page + after;
+  });
+}
