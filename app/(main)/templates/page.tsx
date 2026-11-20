@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import TemplateGallery from '@/components/seo/TemplateGallery';
+import { BreadcrumbJsonLd } from '@/components/seo/Breadcrumbs';
 
 const canonical = 'https://cvyon.com/templates';
 const title = 'Free Resume Templates — 180 ATS-Friendly Designs | Cvyon';
@@ -25,5 +26,15 @@ export const metadata: Metadata = {
 };
 
 export default function TemplatesIndexPage() {
-  return <TemplateGallery />;
+  return (
+    <>
+      <BreadcrumbJsonLd
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Resume Templates', href: '/templates' },
+        ]}
+      />
+      <TemplateGallery />
+    </>
+  );
 }
