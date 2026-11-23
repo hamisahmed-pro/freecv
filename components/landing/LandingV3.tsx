@@ -130,6 +130,7 @@ export default function LandingV3({ dict = en }: { dict?: Dict }) {
             <a href="#grader" className="transition-colors hover:text-navy">{dict.nav.ats_grader}</a>
             <a href="#plates" className="transition-colors hover:text-navy">{dict.nav.templates}</a>
             <a href="#how" className="transition-colors hover:text-navy">{dict.nav.how}</a>
+            <a href={L("/blog")} className="transition-colors hover:text-navy">Blog</a>
           </nav>
           <div className="flex items-center gap-3">
             <LanguageSwitcher current={dict.locale} />
